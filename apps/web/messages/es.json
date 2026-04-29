@@ -5,13 +5,14 @@
   "landing": {
     "utility": {
       "lang": { "label": "Idioma", "en": "English", "es": "Español" },
+      "grant_aligned": "Alineado con CDFA y F3 · Valle Central · 2026",
       "for_employers": "Para empleadores · Publicar un trabajo",
       "help": "Help · Ayuda",
       "skip": "Saltar al contenido principal"
     },
     "nav": {
-      "workers": "Trabajadores",
-      "employers": "Empleadores",
+      "for_workers": "Para trabajadores",
+      "for_employers": "Para empleadores",
       "training_orgs": "Capacitadores",
       "how_it_works": "Cómo funciona",
       "pricing": "Precios",
@@ -46,7 +47,15 @@
     },
     "trust": {
       "eyebrow": "Construido con",
-      "subtitle": "Financiadores y socios en todo el Valle"
+      "subtitle": "Financiadores y socios en todo el Valle",
+      "partners": {
+        "cdfa": { "name": "CDFA", "caption": "Depto. de Alim. y Ag." },
+        "f3": { "name": "F3", "caption": "Granjas · Alim. · Futuro" },
+        "calosba": { "name": "CalOSBA", "caption": "Pequeño Negocio" },
+        "edd": { "name": "EDD ▪︎ Área Local", "caption": "Juntas Laborales" },
+        "eoc": { "name": "Fresno EOC", "caption": "Socio de capacitación" },
+        "crla": { "name": "CRLA", "caption": "Asist. Legal Rural" }
+      }
     },
     "audience": {
       "eyebrow": "Una plataforma · tres roles",
@@ -84,160 +93,297 @@
       }
     },
     "how": {
-      "eyebrow": "CÓMO FUNCIONA",
-      "headline": { "line1": "De \"hola\"", "line2": "a tu primera contratación verificada." },
+      "eyebrow": "Para trabajadores · 4 pasos · 6 minutos",
+      "headline": { "line1": "De un \"hola\"", "line2": "a tu primera contratación verificada." },
+      "aside": {
+        "headline": "in English, too",
+        "body": "Cada paso en ES + EN, predeterminado en ES."
+      },
       "step": {
-        "1": { "label": "PASO 01", "title": "Regístrate con tu teléfono", "body": "Un código de 6 dígitos por mensaje. Sin app, sin contraseña.", "outcome": "en 60 segundos" },
-        "2": { "label": "PASO 02", "title": "Crea tu perfil en minutos", "body": "Sube tu currículum o sáltatelo — agrega habilidades, condado y disponibilidad.", "outcome": "privado hasta que apliques" },
-        "3": { "label": "PASO 03", "title": "Aplica a trabajos verificados", "body": "Filtra por condado, habilidad, salario. Alertas SMS al aparecer trabajos nuevos.", "outcome": "salario capturado al contratar" },
-        "4": { "label": "PASO 04", "title": "Gana certificados que viajan", "body": "Certificados bilingües llegan a tu cartera. Comparte por enlace.", "outcome": "tuyos para siempre" }
+        "1": {
+          "title": "Regístrate con tu teléfono",
+          "body": "Ingresa tu número, recibe un código por SMS, ya estás dentro. Sin contraseña, sin app store, sin correo — solo un código de un solo uso en tu idioma.",
+          "tech": "~ 60 segundos · Twilio SMS OTP"
+        },
+        "2": {
+          "title": "Sube tu currículum — o sáltatelo",
+          "body": "Si tienes uno en cualquier idioma, súbelo una vez. Lo procesamos y llenamos tu perfil. ¿No tienes? Agrega tus habilidades directamente. Nunca vuelves a subirlo.",
+          "tech": "~ 2 minutos · JSON estructurado, siempre editable"
+        },
+        "3": {
+          "title": "Ve trabajos reales cerca de ti",
+          "body": "Filtra por condado, habilidad o salario. Cada empleador tiene insignia de licencia verificada. Cada salario se muestra antes de aplicar. Alertas SMS para búsquedas guardadas.",
+          "tech": "Siempre gratis · 5 condados · ~140 publicaciones activas"
+        },
+        "4": {
+          "title": "Te contratan. Queda registrado.",
+          "body": "Aplica con un toque. Rastrea por SMS. Cuando te contratan, el salario queda registrado — y la credencial entra a tu cartera, lista para la próxima cosecha.",
+          "tech": "Salario registrado · Alineado WIOA · reportable a subvenciones"
+        }
       }
     },
     "employer_showcase": {
-      "eyebrow": "PARA EMPLEADORES",
+      "eyebrow": "Para empleadores",
       "headline": "Un panel diseñado para cómo realmente contratas.",
-      "body": "Publica un trabajo bilingüe en tres minutos. Mira llegar a los aplicantes en un tablero — aplicó, revisado, contratado — con el salario que ofreciste capturado para reportes de subvención.",
-      "bullet1": { "title": "Publica una vez, en dos idiomas", "body": "El asistente de traducción redacta el segundo idioma. Tú revisas, tú publicas." },
-      "bullet2": { "title": "Arrastra para contratar", "body": "Mueve aplicantes en el tablero. Salario y fecha de inicio se capturan al contratar." },
-      "bullet3": { "title": "Rechaza en masa sin quemar puentes", "body": "Un clic rechaza a diez aplicantes. Cada uno recibe un SMS respetuoso, bilingüe." },
-      "cta": { "primary": "Publicar un trabajo", "secondary": "Ver precios" },
-      "mock": {
-        "title": "Publicaciones activas",
-        "kpi_active": "12 activas",
-        "kpi_filled": "47 cubiertas · YTD",
-        "col_applied": "Aplicó",
-        "col_reviewed": "Revisado",
-        "col_hired": "Contratado",
-        "wage_label": "salario al contratar"
-      }
+      "body": "Publica un trabajo bilingüe en tres minutos. Mira a los aplicantes llegar a un tablero que captura el salario al contratar. Mueve trabajadores a través de la temporada sin volver a teclear nada — y deja que tu oficial de subvención exporte un reporte WIOA limpio el viernes por la tarde.",
+      "bullet1": { "title": "Publicaciones bilingües, automáticas.", "body": "Escribe una vez en cualquier idioma; generamos la versión bilingüe. Edita ambos lados cuando quieras." },
+      "bullet2": { "title": "Tablero contratar-a-registro.", "body": "Arrastra de Aplicó → Revisado → Contratado. Cada contratación captura el salario y crea una colocación registrable." },
+      "bullet3": { "title": "FLC verificado, antes de publicar.", "body": "Envía tu licencia CA DIR/DLSE al registrarte; admin confirma en 1 día hábil. La insignia \"FLC verificado\" es la única señal que pedimos a los trabajadores que confíen." },
+      "cta": { "primary": "Publica tu primer trabajo — Gratis", "secondary": "Hablar con ventas" }
     },
     "verification": {
-      "eyebrow": "CONFIANZA · POR DISEÑO",
+      "eyebrow": "El diferenciador de confianza",
       "headline": { "line1": "Cada empleador aquí ha sido", "line2": "verificado — por nombre." },
-      "body": "Los Contratistas de Mano de Obra Agrícola deben tener una licencia activa CA DIR/DLSE, confirmada por personal de AgConn antes de que cualquier publicación esté en línea. Los productores se verifican con nombre del negocio, EIN y condado. Los nuevos empleadores se aprueban normalmente en un día hábil.",
-      "detail": {
-        "1": { "label": "LICENCIA FLC", "value": "CA DIR/DLSE confirmada" },
-        "2": { "label": "ÚLTIMA RE-VERIFICACIÓN", "value": "Trimestralmente" },
-        "3": { "label": "NÚMERO DE LICENCIA", "value": "Guardado, oculto al público" }
-      },
-      "card": { "verified_badge": "EMPLEADOR VERIFICADO", "name": "Driscoll's Madera Ranch", "type": "Productor · Condado de Madera", "since": "Verificado desde mar. 2026" }
+      "body": "Los Contratistas de Mano de Obra Agrícola deben tener una licencia activa CA DIR/DLSE y un registro federal MSPA. Los productores se confirman contra el registro de empresas del Secretario de Estado de California. No tomamos a los aplicantes por su palabra — verificamos el registro, y luego lo verificamos cada noche.",
+      "bullet1": "FLC: licencia bajo CA Labor Code §1682, verificada manualmente en 1 día, luego cada noche por scraper",
+      "bullet2": "Productor: nombre del negocio + EIN contra la búsqueda de entidades del Secretario de Estado",
+      "bullet3": "Vencimientos o lapsos de licencia se marcan automáticamente — trabajadores y oficiales de subvención son notificados"
     },
     "bilingual": {
-      "eyebrow": "EN ESPAÑOL · IN ENGLISH",
+      "eyebrow": "Bilingüe · no traducido",
       "headline": { "line1": "Español e inglés,", "line2": "en la misma página." },
-      "body": "Cada texto de interfaz, cada SMS, cada correo, cada certificado existe en ambos idiomas desde el primer momento. El español es revisado por hablantes nativos mexicanos, no traducido automáticamente. Los trabajadores eligen su idioma una vez; todo lo demás sigue.",
-      "pillar": {
-        "1": { "title": "La misma página", "body": "Cambia entre inglés y español en cualquier lugar. La URL, el JSON-LD y la imagen OG cambian." },
-        "2": { "title": "El mismo SMS", "body": "¿El trabajador eligió ES al registrarse? Cada mensaje llega en español. Alertas de trabajo, confirmaciones de contratación, recordatorios de capacitación." },
-        "3": { "title": "El mismo certificado", "body": "El certificado PDF es bilingüe en la misma página — encabezado en inglés, cuerpo en español, fechas en los dos idiomas. Un artefacto, dos idiomas." }
+      "body": "Cada texto de interfaz, cada SMS, cada correo, cada certificado existe en ambos idiomas desde el primer día. Los trabajadores predeterminan en español; los empleadores en inglés; cualquiera puede cambiar con un toque.",
+      "sms": {
+        "label": "SMS · Solicitud enviada · ES",
+        "body": "Hola María — tu solicitud para \"Recolector de fresa\" en Driscoll's Madera fue recibida. Te avisaremos en cuanto el empleador la revise. — AgConn",
+        "meta": "Twilio · en cola en pg-boss · enviado a las 09:42 PT"
+      },
+      "email": {
+        "label": "Correo · Nuevo aplicante · EN",
+        "subject": "A new applicant for Recolector de fresa",
+        "body": "Maria E. Hernández — 5 yrs experience, EN/ES, Fresno County. Review the applicant in your dashboard.",
+        "meta": "Resend · React Email · noreply@agconn.com"
+      },
+      "cert": {
+        "label": "Certificado · PDF bilingüe",
+        "id": "CRED-AGC-04829",
+        "en": "Pesticide Handler Safety Training",
+        "es": "Capacitación de Manejo de Pesticidas",
+        "meta": "React-PDF · firmado bajo UETA · Azure Blob"
       }
     },
     "impact": {
-      "eyebrow": "EL TRABAJO · EN NÚMEROS",
-      "headline": "Trabajo real, comprobado con datos.",
-      "body": "Publicamos lo que podemos — conteos por condado, salarios mediano, capacitaciones completadas, empleadores verificados — actualizados cada noche. Los SSN y la información personal nunca aparecen en ningún número público.",
+      "eyebrow": "Impacto · Q2 2026 · Valle Central",
+      "headline": { "line1": "Números que vale", "line2": "la pena reportar." },
+      "body": "Cada métrica aquí es defendible para subvenciones: contada desde registros, exportable en formatos alineados con WIOA, y auditada contra los datos fuente cada noche.",
       "tile": {
-        "workers": { "label": "Trabajadores colocados · últimos 12 meses", "value": "2,484", "caption": "alineado con WIOA" },
-        "wage": { "label": "Salario mediano al contratarse", "value": "$18.20", "caption": "por hora · últimos 12 meses" },
-        "trainings": { "label": "Capacitaciones completadas · últimos 12 meses", "value": "1,382", "caption": "CDFA + F3" },
-        "employers": { "label": "Empleadores verificados, hoy", "value": "184", "caption": "DIR/DLSE confirmados" }
+        "workers": { "label": "Trabajadores colocados", "body": "Contrataciones de temporada verificadas en Fresno, Tulare, Kern, Kings y Madera" },
+        "wage": { "label": "Salario promedio al contratar", "body": "$3.40 sobre el mínimo agrícola de CA — cada tarifa por hora capturada al contratar" },
+        "retention": { "label": "Retención Q2→Q4", "body": "De los trabajadores colocados que siguen empleados en el seguimiento del segundo trimestre" },
+        "certs": { "label": "Certificados bilingües", "body": "Emitidos a través de programas de capacitación financiados por CDFA y F3 en 2026" }
       },
-      "cta": { "dashboard": "¿Quieres profundizar? Nuestro panel público se actualiza cada noche.", "link": "Ver panel" },
-      "source": "FUENTE · ALINEADO CON WIOA · CADA NOCHE · TENANT=CV",
-      "suppressed": "Próximamente"
+      "cta": { "dashboard": "¿Quieres profundizar? Nuestro panel público se actualiza cada noche.", "link": "Abrir el panel de impacto" },
+      "source": "FUENTE · ALINEADO CON WIOA · CADA NOCHE · TENANT=CV"
     },
     "featured_jobs": {
-      "eyebrow": "PUBLICACIONES NUEVAS · ACTUALIZADAS CADA HORA",
-      "headline": "Trabajo real, publicado por empleadores verificados.",
-      "view_all": "Ver todos los trabajos",
-      "filter": { "all": "Todos los condados" },
-      "sort": { "label": "Ordenar", "wage_desc": "Salario, alto → bajo", "newest": "Más reciente" },
-      "card": { "view": "Ver", "apply": "Aplicar", "verified": "VERIFICADO" },
-      "empty": "Sin publicaciones activas."
+      "eyebrow": "Destacados · esta semana · 142 activos",
+      "headline": "Trabajo real, publicado a nombre.",
+      "view_all": "Ver los 142 trabajos",
+      "filter": {
+        "all": "Todos · 142",
+        "fresno": "Fresno · 48",
+        "tulare": "Tulare · 31",
+        "kern": "Kern · 28",
+        "madera": "Madera · 21",
+        "kings": "Kings · 14"
+      },
+      "sort": "Ordenar: Salario, alto → bajo",
+      "card": {
+        "verified_flc": "VERIFIED FLC",
+        "verified_grower": "VERIFIED GROWER",
+        "hourly": "Por hora",
+        "apply": "Aplicar"
+      },
+      "jobs": {
+        "1": { "title_es": "Recolector de fresa", "title_en": "Strawberry harvest picker", "employer": "Driscoll's Madera Ranch", "location": "Madera · 2.4 mi", "wage": "$18.50–$22", "type": "flc", "tags": ["Fresa", "Lun–Sáb", "Sin exp. requerida"] },
+        "2": { "title_es": "Manejo de pesticidas", "title_en": "Pesticide handler", "employer": "Sun-Maid Growers · Visalia", "location": "Tulare · 8.1 mi", "wage": "$22.00", "type": "flc", "tags": ["Cert. requerido", "Todo el año", "Bilingüe req."] },
+        "3": { "title_es": "Operador de montacargas", "title_en": "Forklift operator", "employer": "Wonderful Citrus · Reedley", "location": "Fresno · 5.2 mi", "wage": "$24.00", "type": "grower", "tags": ["Cert. OSHA", "Turno de día", "Beneficios"] },
+        "4": { "title_es": "Técnico de irrigación", "title_en": "Irrigation technician", "employer": "Grimmway Farms · Bakersfield", "location": "Kern · 3.7 mi", "wage": "$21.00", "type": "flc", "tags": ["2+ años exp.", "Todo el año", "Camioneta"] }
+      }
     },
     "featured_training": {
-      "eyebrow": "APRENDE · GUARDA EL CERTIFICADO",
-      "headline": "Habilidades que conservas, por escrito.",
-      "view_all": "Ver toda la capacitación",
-      "card": { "free": "Gratis", "view": "Ver", "spots_left": "{n} de {capacity} espacios disponibles" },
-      "empty": "Sin programas próximos."
+      "eyebrow": "Capacitación gratuita · financiada por CDFA y F3",
+      "headline": { "line1": "Habilidades que conservas,", "line2": "por escrito." },
+      "body": "Programas dirigidos por Fresno EOC, CRLA, y otros socios regionales — financiados por CDFA, F3 y CalOSBA. Cada finalización produce un certificado bilingüe firmado electrónicamente que vive en tu cartera de habilidades.",
+      "card": {
+        "free": "Gratis",
+        "enroll": "Inscribirme"
+      },
+      "programs": {
+        "1": { "badge": "CDFA · 16 HRS", "schedule": "Comienza 5/12 · Fresno", "title_es": "Manejo seguro de pesticidas", "title_en": "Pesticide Handler Safety Training", "body": "Aprende a manejar, mezclar y aplicar pesticidas de uso restringido de manera segura. Requerido por CDFA para manejadores con licencia.", "tags": ["Instructor bilingüe", "Cert. al completar"], "price": "Gratis", "feature": false },
+        "2": { "badge": "F3 · 24 HRS", "schedule": "Comienza 6/02 · Visalia", "title_es": "Operación de montacargas", "title_en": "OSHA Forklift Operator Certification", "body": "Curso de 3 días alineado con OSHA. Instrucción práctica en el patio de capacitación de Fresno EOC en Visalia. Examen incluido.", "tags": ["Práctico", "Cert. OSHA"], "price": "Gratis", "feature": false },
+        "3": { "badge": "CalOSBA · 8 HRS", "schedule": "Comienza 5/20 · Bakersfield", "title_es": "Mantenimiento de tractores", "title_en": "Small Tractor Maintenance & Repair", "body": "Curso de un día en el centro agrícola de Bakersfield College. Bases de motor, hidráulica, diagnóstico.", "tags": ["Sábado", "Equipo provisto"], "price": "Gratis", "feature": false },
+        "4": { "badge": "CDFA · 12 HRS", "schedule": "Comienza 6/15 · Madera", "title_es": "Riego eficiente", "title_en": "Drip Irrigation & Water Stewardship", "body": "Programa de 2 días sobre instalación de sistemas de goteo, monitoreo y bases de derechos de agua de CA. Enfoque para trabajadores.", "tags": ["Alta demanda", "Estipendio incl."], "price": "Gratis + $200 estipendio", "feature": true }
+      }
     },
     "testimonials": {
-      "eyebrow": "DE LAS PERSONAS · QUE LO USAN",
+      "eyebrow": "Voces del Valle",
       "headline": { "line1": "De las personas que", "line2": "lo usan cada temporada." },
-      "placeholder_badge": "PLACEHOLDER · v3"
+      "1": { "surface": "moss", "quote": "Antes pasaba dos semanas buscando trabajo cada cosecha. Ahora recibo un mensaje, aplico, y el lunes ya estoy en el campo. Y mi certificado de pesticidas vale en cualquier rancho.", "name": "María Hernández", "role": "Trabajadora · Condado de Madera · 8 años" },
+      "2": { "surface": "bone", "quote": "The kanban replaced our paper applicant binder. Wage capture happens at hire, not weeks later. When my F3 grant officer asked for a Q1 report, I exported it in two minutes — same fields she submits to CalJOBS.", "name": "Tomás Reyes", "role": "FLC · Hernández Crews · Tulare" },
+      "3": { "surface": "sage", "quote": "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AgConn generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.", "name": "Janelle Park, MPA", "role": "Directora Laboral · Fresno EOC" }
     },
     "pricing": {
-      "eyebrow": "PLANES · CRECEN CONTIGO",
-      "headline": "Planes que se ajustan a tu temporada.",
-      "toggle": { "monthly": "Mensual", "yearly": "Anual · ahorra 2 meses" },
+      "eyebrow": "Precios · para empleadores",
+      "headline": { "line1": "Gratis para trabajadores.", "line2": "Siempre." },
+      "body": "Trabajadores y capacitadores nunca pagan. Empleadores empiezan gratis con hasta dos publicaciones — actualicen solo cuando necesiten más. Anual ahorra dos meses.",
+      "toggle": { "yearly": "Anual · ahorra 2 mo", "monthly": "Mensual" },
       "plan": {
-        "free": { "name": "Gratis", "price": { "monthly": "$0/mes", "yearly": "$0/año" }, "cta": "Empezar gratis", "feature1": "2 publicaciones activas", "feature2": "Revisión de aplicantes (tablero + rechazo masivo)", "feature3": "Verificación FLC", "feature4": "Publicaciones bilingües, alertas por SMS" },
-        "pro": { "name": "Pro", "price": { "monthly": "$99/mes", "yearly": "$990/año · ahorra $198" }, "ribbon": "El más popular", "cta": "Elegir Pro", "feature1": "Publicaciones ilimitadas", "feature2": "Búsqueda de trabajadores · base verificada", "feature3": "Listado prioritario en secciones destacadas", "feature4": "Portal de facturación autoservicio" },
-        "enterprise": { "name": "Empresarial", "price": { "monthly": "$299/mes", "yearly": "$2,990/año · ahorra $598" }, "cta": "Contactar ventas", "feature1": "Todo lo de Pro", "feature2": "Cuenta multi-usuario", "feature3": "Cobertura de condados personalizada", "feature4": "Reportes de subvención con tu marca" }
+        "free": {
+          "badge": "GRATIS · COMUNIDAD", "name": "Gratis", "intro": "Para pequeños productores y contrataciones de temporada. Para incorporar la cola larga del Valle.",
+          "price": {
+            "monthly": { "amount": "$0", "unit": "/ siempre", "note": "" },
+            "yearly": { "amount": "$0", "unit": "/ siempre", "note": "" }
+          },
+          "feature1": "2 publicaciones activas",
+          "feature2": "Tablero de aplicantes",
+          "feature3": "Verificación FLC incluida",
+          "feature4": "-Búsqueda de trabajadores",
+          "feature5": "-Listado prioritario",
+          "feature6": "-Exportes de subvención personalizados",
+          "cta": { "label": "Empezar gratis", "href": "#final-cta" }
+        },
+        "pro": {
+          "badge": "PRO · PRODUCTORES Y FLCs", "name": "Pro", "ribbon": "El más popular", "intro": "Para FLCs en activo y productores con múltiples publicaciones por temporada.",
+          "price": {
+            "monthly": { "amount": "$99", "unit": "/ mes, facturado mensualmente", "note": "" },
+            "yearly": { "amount": "$82.50", "unit": "/ mes, facturado anualmente", "note": "$990/año · vs $99/mes mensual" }
+          },
+          "feature1": "Publicaciones activas ilimitadas",
+          "feature2": "Búsqueda en la base de trabajadores del Valle",
+          "feature3": "Listado prioritario en la app del trabajador",
+          "feature4": "Portal de facturación Stripe autoservicio",
+          "feature5": "Exportes WIOA (CSV + XLSX)",
+          "feature6": "-Multi-usuario, marca personalizada",
+          "cta": { "label": "Iniciar prueba Pro", "href": "#final-cta" }
+        },
+        "enterprise": {
+          "badge": "EMPRESARIAL · MULTI-TENANT", "name": "Empresarial", "intro": "Para juntas laborales y operadores multi-condado con necesidades de reportes de subvención.",
+          "price": {
+            "monthly": { "amount": "$299", "unit": "/ mes, facturado mensualmente", "note": "" },
+            "yearly": { "amount": "$249.17", "unit": "/ mes, facturado anualmente", "note": "$2,990/año · vs $299/mes mensual" }
+          },
+          "feature1": "Todo lo de Pro",
+          "feature2": "Cuentas multi-usuario y roles",
+          "feature3": "Cobertura de condados personalizada",
+          "feature4": "Exportes de subvención con tu marca + portadas",
+          "feature5": "Contacto de éxito dedicado + SLA",
+          "feature6": "Tenant de marca blanca disponible",
+          "cta": { "label": "Hablar con ventas", "href": "mailto:sales@agconn.com" }
+        }
       },
-      "footnote": "Todos los planes incluyen verificación FLC, publicaciones bilingües, alertas por SMS.",
+      "footnote": "Todos los planes incluyen verificación FLC, publicaciones bilingües, alertas SMS y exportes alineados con subvenciones.",
       "compare_link": "Comparar planes en detalle"
     },
     "faq": {
-      "eyebrow": "PREGUNTAS · EN LENGUAJE CLARO",
+      "eyebrow": "FAQ · Preguntas frecuentes",
       "headline": "Preguntas, en lenguaje claro.",
-      "intro": "Preguntas reales de conversaciones reales con trabajadores, FLCs y capacitadores. Si falta algo, escríbenos — lo agregaremos.",
-      "contact_cta": "Escríbenos",
-      "expand": "Mostrar respuesta",
-      "collapse": "Ocultar respuesta"
+      "intro": "Preguntas reales de conversaciones reales con trabajadores, FLCs y oficiales de subvención del Valle. ¿No ves la tuya? Pregúntanos directamente.",
+      "grant_card": {
+        "eyebrow": "Para oficiales de subvención",
+        "headline": "¿Necesitas un recorrido de 30 minutos por los exportes WIOA?",
+        "body": "Escribe a grants@agconn.com — lo agendamos en 48h."
+      },
+      "items": {
+        "1": { "q": "¿AgConn es realmente gratis para los trabajadores?", "a": "Sí. Los trabajadores nunca pagan — ni por registrarse, ni por aplicar, ni por certificados, ni por notificaciones SMS. La plataforma se financia con suscripciones de empleadores y alianzas de subvenciones. It's completely free for workers, in English too." },
+        "2": { "q": "¿Cómo verifican a los Contratistas de Mano de Obra Agrícola?", "a": "Cada FLC debe tener una licencia activa CA DIR/DLSE y un registro federal MSPA. Confirmamos ambos manualmente al registrarse (en 1 día hábil) y volvemos a verificar cada noche por scraper. Los lapsos o revocaciones se marcan automáticamente y las publicaciones del empleador se pausan hasta resolverse." },
+        "3": { "q": "¿Los certificados de AgConn son legalmente válidos?", "a": "Sí. Los certificados son documentos React-PDF firmados electrónicamente bajo CA UETA, con verificación criptográfica embebida. Incluyen el identificador de la organización emisora, el financiador del programa, fechas, y un ID de credencial único verificable desde la página pública del certificado." },
+        "4": { "q": "¿Necesito una computadora para usar AgConn?", "a": "No. AgConn funciona en cualquier teléfono con SMS — no necesitas computadora, smartphone, app store, ni correo electrónico. Te registras con tu número de teléfono, recibes alertas de trabajos por mensaje de texto, y aplicas con un toque." },
+        "5": { "q": "¿Qué campos WIOA incluyen los exportes de AgConn?", "a": "Los exportes incluyen todos los campos requeridos del Título I de WIOA más extensiones específicas para CalJOBS: elementos PIRL 100–1900, datos demográficos (con consentimiento), detalles de colocación con empleador + salario + fecha de inicio, completaciones de capacitación, IDs de credencial, y retención de seguimiento. Disponible como CSV y XLSX, con un mapeador de campos personalizado." },
+        "6": { "q": "¿Puedo exportar mis datos si dejo la plataforma?", "a": "Sí — en cualquier momento, en JSON o CSV, sin cargo y sin rampa de salida. Los trabajadores pueden exportar su perfil completo + aplicaciones + certificados. Los empleadores pueden exportar sus publicaciones + tablero de aplicantes + contrataciones. Los capacitadores pueden exportar listas + completaciones + metadatos de certificados." },
+        "7": { "q": "¿Cuándo expandirá AgConn más allá del Valle Central?", "a": "El Condado Imperial y el Valle de Salinas son los siguientes en el roadmap (objetivo Q4 2026), pendiente de alineación de subvenciones con socios regionales de CDFA. Fuera de California requerirá diligencia legal y de licencias estado por estado — estamos comenzando ese trabajo pero no comprometeremos una fecha hasta que la infraestructura de verificación sea confiable." },
+        "8": { "q": "¿Mi información está protegida?", "a": "Sí. Los datos personales de los trabajadores nunca se comparten sin consentimiento explícito. Los empleadores solo ven los perfiles de quienes les aplican. Los reportes de subvención son agregados y anónimos. Cumplimos con CCPA, FERPA (para datos de capacitación), y la política federal de privacidad WIOA." }
+      }
     },
     "final": {
+      "eyebrow": "Two ways in · Dos caminos",
       "headline": { "es": "Empieza hoy.", "en": "Start today." },
-      "body": "Sin tarjeta de crédito. Sin app store. Sin formularios largos. Los trabajadores se registran con su teléfono, los empleadores con un correo.",
-      "workers": { "title": "Para trabajadores", "label": "Número de teléfono móvil", "placeholder": "(555) 555-1234", "cta": "Enviarme un código", "help": "Te enviaremos un código de 6 dígitos. Aplican tarifas estándar.", "success": "Acabamos de enviarte un mensaje. Ábrelo y toca el enlace." },
-      "employers": { "title": "Para empleadores", "label": "Correo de trabajo", "placeholder": "tú@tunegocio.com", "cta": "Publicar tu primer trabajo", "help": "Enlace mágico a tu bandeja.", "success": "Revisa tu bandeja de entrada para el enlace mágico." }
+      "body": "Sin tarjeta de crédito. Sin app store. Sin formularios largos. Los trabajadores se registran con un teléfono en menos de un minuto. Los empleadores publican su primer trabajo gratis. Los capacitadores solicitan una cuenta de organización con un clic.",
+      "workers": {
+        "eyebrow": "FOR WORKERS · TRABAJADORES",
+        "headline": "Regístrate por teléfono — encuentra trabajo esta semana.",
+        "label": "Número de teléfono móvil",
+        "placeholder": "(555) 555-1234",
+        "cta": "Enviar código",
+        "help": "Te enviaremos un código de 6 dígitos. Aplican tarifas estándar.",
+        "success": "Acabamos de enviarte un mensaje. Ábrelo y toca el enlace."
+      },
+      "employers": {
+        "eyebrow": "FOR EMPLOYERS · GROWERS & FLCs",
+        "headline": "Publica tu primer trabajo — gratis, en 3 minutos.",
+        "cta": "Crear cuenta de empleador",
+        "help": "La verificación FLC normalmente se completa en 1 día hábil."
+      }
     },
     "footer": {
-      "tagline": "Plataforma laboral bilingüe · Valle Central, CA",
-      "col": {
-        "workers": { "title": "Trabajadores", "find_work": "Encontrar trabajo", "training": "Capacitaciones", "wallet": "Cartera de habilidades", "signin": "Iniciar sesión" },
-        "employers": { "title": "Empleadores", "post": "Publicar un trabajo", "pricing": "Precios", "flc": "Verificación FLC", "signin": "Iniciar sesión" },
-        "training": { "title": "Capacitadores", "apply": "Solicitar cuenta", "reporting": "Reportes", "resources": "Recursos" },
-        "company": { "title": "Empresa", "about": "Acerca de", "contact": "Contacto", "press": "Prensa", "careers": "Carreras" }
+      "tagline": "Del campo, a tu futuro.",
+      "description": "Una plataforma laboral bilingüe que conecta a trabajadores agrícolas, productores y capacitadores del Valle Central con trabajos verificados, salarios pagados y credenciales portátiles.",
+      "counties_label": "Sirviendo ahora",
+      "counties": {
+        "fresno": "Condado de Fresno",
+        "tulare": "Condado de Tulare",
+        "kern": "Condado de Kern",
+        "kings": "Condado de Kings",
+        "madera": "Condado de Madera"
       },
-      "nap": { "org": "AgConn, PBC", "location": "Fresno, CA", "email": "support@agconn.com" }
+      "col": {
+        "workers": {
+          "title": "Para trabajadores",
+          "browse": "Buscar trabajos",
+          "training": "Encontrar capacitación",
+          "wallet": "Cartera de habilidades",
+          "rights": "Derechos · Worker rights",
+          "promotora": "Recursos de promotora",
+          "signin": "Iniciar sesión"
+        },
+        "employers": {
+          "title": "Para empleadores",
+          "post": "Publicar un trabajo",
+          "search": "Búsqueda de trabajadores",
+          "flc": "Verificación FLC",
+          "pricing": "Precios",
+          "stories": "Historias de clientes",
+          "sales": "Hablar con ventas"
+        },
+        "partners": {
+          "title": "Socios y oficiales de subvención",
+          "training_orgs": "Organizaciones de capacitación",
+          "workforce": "Juntas laborales",
+          "wioa": "Exportes WIOA / CalJOBS",
+          "impact": "Panel de impacto",
+          "press": "Kit de prensa",
+          "research": "Investigación y datos"
+        },
+        "company": {
+          "title": "Empresa",
+          "about": "Acerca de",
+          "mission": "Misión y valores",
+          "careers": "Carreras",
+          "trust": "Confianza y seguridad",
+          "status": "Estado · 99.94%",
+          "contact": "Contacto"
+        }
+      },
+      "newsletter": {
+        "headline": "Mantente informado.",
+        "body": "Actualizaciones trimestrales sobre impacto, programas y políticas. EN o ES — tu elección.",
+        "label": "Correo electrónico",
+        "placeholder": "tú@ejemplo.com",
+        "cta": "Suscribirme",
+        "success": "Suscrito. Revisa tu bandeja."
+      }
     },
     "legal": {
       "copyright": "© 2026 AgConn, PBC · Una California Public Benefit Corp.",
       "built_in": "Construido en Fresno, CA",
-      "privacy": { "en": "Privacy", "es": "Privacidad" },
-      "terms": { "en": "Terms", "es": "Términos" },
+      "status": "Todos los sistemas normales",
+      "privacy_en": "Privacy",
+      "terms_en": "Terms",
       "accessibility": "Accessibility",
+      "privacy_es": "Privacidad",
+      "terms_es": "Términos",
       "sitemap": "Sitemap",
       "llms_txt": "llms.txt"
     }
-  },
-  "jobs": {
-    "fresa": { "title": "Recolector de fresa", "employer": "Driscoll's Madera Ranch", "county": "Condado de Madera" },
-    "uva": { "title": "Podador de uva", "employer": "Bronco Wine Co.", "county": "Condado de Fresno" },
-    "almendra": { "title": "Operador de cosechadora — almendra", "employer": "Paramount Farming", "county": "Condado de Kern" },
-    "lechuga": { "title": "Cortador de lechuga", "employer": "Tanimura & Antle", "county": "Condado de Kings" }
-  },
-  "programs": {
-    "pesticidas": { "title": "Manejo seguro de pesticidas", "org": "Fresno EOC", "funder": "CDFA" },
-    "irrigation": { "title": "Mantenimiento de riego por goteo", "org": "F3 Innovate · Mendota", "funder": "F3" },
-    "tractor": { "title": "Operación básica de tractor", "org": "Reedley College", "funder": "CDFA" },
-    "first_aid": { "title": "Primeros auxilios y prevención de golpe de calor", "org": "Madera Coalition", "funder": "CDFA" }
-  },
-  "testimonials": {
-    "1": { "quote": "El primer trabajo que conseguí por aquí pagó lo que dijo. Eso ya no es común.", "translation": "The first job I found here paid what it said it would. That's not common anymore.", "name": "María R.", "context": "Recolectora · Condado de Tulare · Primavera 2026" },
-    "2": { "quote": "Posting a bilingual job used to take me a whole afternoon. Now it's three minutes.", "translation": "Publicar un trabajo bilingüe me tomaba toda una tarde. Ahora son tres minutos.", "name": "Bronco Wine Co.", "context": "Productor · Condado de Fresno" },
-    "3": { "quote": "WIOA reporting that took us a week now exports in a click. Our funders noticed.", "translation": "Los reportes WIOA que nos tomaban una semana ahora se exportan con un clic. Nuestros financiadores lo notaron.", "name": "Fresno EOC", "context": "Socio de capacitación financiado por CDFA" }
-  },
-  "faq": {
-    "1": { "q": "¿Cómo encuentro trabajo agrícola de temporada en el Condado de Fresno?", "a": "Regístrate con tu teléfono, elige tu condado y habilidades, y AgConn te enviará un mensaje cuando los trabajos coincidentes estén disponibles. Cada empleador en la lista del Valle tiene una licencia CA DIR/DLSE confirmada. También puedes ver trabajos sin registrarte — solo el paso de aplicar pide tu teléfono." },
-    "2": { "q": "¿Necesito un teléfono inteligente o una app para usar AgConn?", "a": "No. La página web funciona en cualquier teléfono con navegador, y enviamos alertas de trabajo por SMS. No hay app que instalar, ni app store, ni correo requerido para los trabajadores." },
-    "3": { "q": "¿Qué es una licencia de Contratista de Mano de Obra Agrícola (FLC) y cómo la verifican?", "a": "Un FLC es un contratista laboral con licencia estatal que contrata a trabajadores agrícolas en nombre de los productores. AgConn verifica el estado de la licencia de cada FLC contra el registro CA DIR/DLSE antes de que cualquier publicación esté en línea, y vuelve a verificar trimestralmente. Los productores (las granjas mismas) se verifican por nombre del negocio, EIN y registros del condado." },
-    "4": { "q": "¿Las capacitaciones son realmente gratis?", "a": "La mayoría sí. Los programas financiados por subvenciones de CDFA o F3 son gratis para los trabajadores — ese es el propósito explícito de esas subvenciones. Cuando un programa cobra, AgConn muestra el costo en la tarjeta del programa antes de inscribirte." },
-    "5": { "q": "¿Qué significa \"bilingüe desde el primer momento\"?", "a": "Cada texto de interfaz, cada SMS, cada correo y cada certificado se escribe en inglés y español desde el día que se publica. El español es revisado por hablantes nativos mexicanos, no traducido automáticamente. No hay un \"idioma principal\" — son ciudadanos iguales." },
-    "6": { "q": "¿Compartirán mi información con alguien?", "a": "La información personal de los trabajadores nunca se comparte sin consentimiento. Los empleadores solo ven lo que tú decides poner en tu perfil, y solo después de que apliques. Los conteos agregados y anonimizados (como \"trabajadores colocados en el Condado de Fresno\") se publican en el panel público para responsabilidad de subvenciones — ningún individuo es identificable." },
-    "7": { "q": "¿Y si mi condado no está en la lista?", "a": "AgConn lanzó en Fresno, Tulare, Kern, Kings y Madera. Expandimos a nuevos condados conforme firmamos socios allá. Cuéntanos tu condado y lo agregamos a la lista de espera — cuando abramos el siguiente condado, tú recibirás el primer mensaje." },
-    "8": { "q": "¿Cómo se financia AgConn?", "a": "AgConn es una California Public Benefit Corporation financiada por subvenciones de fundaciones (inicialmente F3) y planes pagados modestos para empleadores (Pro y Empresarial). Los trabajadores y los capacitadores siempre usan AgConn gratis. Nuestras finanzas se resumen anualmente en la página Acerca de." }
   }
 }

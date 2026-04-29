@@ -1,51 +1,60 @@
 import { useTranslations } from 'next-intl';
-import { ArrowRight } from '@/components/primitives/ArrowRight';
-import type { FeaturedProgram } from '@/data/programs';
 
-export function FeaturedProgramCard({ program }: { program: FeaturedProgram }) {
-  const t = useTranslations();
+type Props = { id: '1' | '2' | '3' | '4' };
+
+export function FeaturedProgramCard({ id }: Props) {
+  const t = useTranslations(`landing.featured_training.programs.${id}`);
   const cardT = useTranslations('landing.featured_training.card');
-  const pct = ((program.capacity - program.spotsLeft) / program.capacity) * 100;
+  const isFeature = (t.raw('feature') as unknown) === true;
+  const tags = t.raw('tags') as string[];
+
+  const containerClass = isFeature
+    ? 'bg-moss'
+    : 'bg-bone border-hairline border';
+  const titleClass = isFeature ? 'text-bone' : 'text-ink';
+  const subtitleClass = isFeature ? 'text-sage' : 'text-soil';
+  const bodyClass = isFeature ? 'text-sage' : 'text-text-deep';
+  const scheduleClass = isFeature ? 'text-honey' : 'text-soil';
+  const tagBgClass = isFeature ? 'bg-soil text-bone' : 'bg-sage text-ink';
+  const dividerClass = isFeature ? 'border-soil' : 'border-hairline';
+  const priceClass = isFeature ? 'text-honey' : 'text-moss';
+  const ctaClass = isFeature ? 'bg-honey text-ink' : 'bg-moss text-bone';
 
   return (
-    <article className="border-soil/15 bg-bone flex h-full flex-col gap-4 border p-6 transition-colors hover:border-soil/40">
+    <article className={`flex h-full flex-col gap-4 p-8 ${containerClass}`}>
       <div className="flex items-center justify-between">
-        <span className="bg-honey text-ink px-2 py-1 font-sans text-[10px] font-semibold tracking-[0.06em]">
-          {t(program.funderKey as never)}
-        </span>
-        <span className="text-soil font-mono text-[11px]">{program.startDate}</span>
+        <div className="bg-honey px-2.5 py-1">
+          <span className="text-ink font-sans text-[10px] font-semibold tracking-[0.06em]">
+            {t('badge')}
+          </span>
+        </div>
+        <span className={`font-mono text-[11px] ${scheduleClass}`}>{t('schedule')}</span>
       </div>
 
       <div>
-        <h3 className="text-ink font-serif text-lg font-semibold leading-tight tracking-tight">
-          {t(program.titleKey as never)}
+        <h3 className={`font-serif text-2xl font-semibold leading-tight tracking-[-0.02em] ${titleClass}`}>
+          {t('title_es')}
         </h3>
-        <p className="text-soil mt-1 font-sans text-[13px]">{t(program.orgKey as never)}</p>
+        <p className={`mt-0.5 font-sans text-[13px] italic ${subtitleClass}`}>{t('title_en')}</p>
       </div>
 
-      <div className="flex flex-col gap-1 pt-1">
-        <p className="text-soil font-mono text-[11px]">
-          {cardT('spots_left', { n: program.spotsLeft, capacity: program.capacity })}
-        </p>
-        <div className="bg-sage/40 relative h-1.5 w-full">
-          <div
-            className="bg-moss absolute inset-y-0 left-0"
-            style={{ width: `${pct}%` }}
-            aria-hidden
-          />
-        </div>
-      </div>
+      <p className={`font-sans text-sm leading-relaxed ${bodyClass}`}>{t('body')}</p>
 
-      <div className="border-soil/15 mt-auto flex items-center justify-between border-t pt-4">
-        <span className="text-moss bg-sage/50 px-2 py-1 font-sans text-[11px] font-semibold tracking-[0.06em] uppercase">
-          {cardT('free')} · {program.hours}h
-        </span>
+      <ul className="flex flex-wrap gap-1.5">
+        {tags.map((tag, i) => (
+          <li key={i} className={`px-2.5 py-1 ${tagBgClass}`}>
+            <span className="font-sans text-[11px]">{tag}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className={`mt-auto flex items-center justify-between border-t pt-3.5 ${dividerClass}`}>
+        <span className={`font-serif text-lg font-semibold ${priceClass}`}>{t('price')}</span>
         <a
-          href={`/training/${program.id}`}
-          className="text-moss inline-flex items-center gap-1.5 font-sans text-sm font-semibold"
+          href={`/training/${id}`}
+          className={`px-4 py-2.5 font-sans text-[13px] font-semibold ${ctaClass}`}
         >
-          <span>{cardT('view')}</span>
-          <ArrowRight size={12} stroke="#2D4030" />
+          {cardT('enroll')}
         </a>
       </div>
     </article>

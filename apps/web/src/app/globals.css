@@ -85,11 +85,17 @@
 @theme {
   /* Tierra named palette — bg-bone, text-ink, border-soil, etc. */
   --color-bone: #efe6d2;
+  --color-bone-warm: #e7dbbe;
   --color-moss: #2d4030;
   --color-honey: #c8a24a;
   --color-sage: #d9cfb6;
   --color-ink: #1f1b14;
+  --color-ink-deep: #15110a;
   --color-soil: #5c4326;
+  --color-soil-light: #7a6644;
+  --color-text-deep: #3a3326;
+  --color-hairline: #d4c8ab;
+  --color-hairline-warm: #c7bca0;
 
   /* Font tokens — wired by next/font in layout.tsx */
   --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;

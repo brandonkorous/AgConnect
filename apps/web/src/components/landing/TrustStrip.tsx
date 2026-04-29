@@ -1,37 +1,43 @@
-import { useLocale, useTranslations } from 'next-intl';
-import { partners } from '@/data/partners';
-import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
+import { useTranslations } from 'next-intl';
+
+const partners = [
+  { id: 'cdfa', italic: false },
+  { id: 'f3', italic: true },
+  { id: 'calosba', italic: false },
+  { id: 'edd', italic: false },
+  { id: 'eoc', italic: false },
+  { id: 'crla', italic: true },
+] as const;
 
 export function TrustStrip() {
   const t = useTranslations('landing.trust');
-  const locale = useLocale();
 
   return (
-    <section className="bg-bone border-soil/15 w-full border-y">
-      <div className="mx-auto max-w-[1280px] px-5 py-12 md:px-8 md:py-14 lg:px-20 lg:py-16">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-8">
-          <div className="flex items-center gap-3.5">
-            <span className="bg-soil/40 h-px w-8 shrink-0" aria-hidden />
-            <EyebrowLabel tone="soil">{t('eyebrow')}</EyebrowLabel>
-          </div>
-          <p className="text-soil font-sans text-sm">{t('subtitle')}</p>
+    <section className="bg-bone-warm border-hairline w-full border-y">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-5 py-12 md:px-8 lg:px-20">
+        <div className="flex items-center gap-4">
+          <span className="text-moss font-serif text-base italic">{t('eyebrow')}</span>
+          <span className="bg-soil h-px flex-1 shrink basis-0" aria-hidden />
+          <span className="text-soil font-sans text-[13px] font-semibold tracking-[0.16em] uppercase">
+            {t('subtitle')}
+          </span>
         </div>
 
-        <ul className="grid grid-cols-3 items-center gap-x-2 gap-y-8 md:grid-cols-6">
-          {partners.map((partner, i) => (
-            <li
-              key={partner.id}
-              className="flex items-center justify-center"
-              aria-label={locale === 'es' ? partner.altEs : partner.altEn}
-            >
-              <span className="text-soil/70 font-serif text-xl font-semibold tracking-tight md:text-2xl">
-                {partner.abbreviation}
-              </span>
-              {i < partners.length - 1 && (
+        <ul className="flex flex-wrap items-center justify-between gap-y-6 gap-x-8">
+          {partners.map((p, i) => (
+            <li key={p.id} className="flex items-center gap-8">
+              <div className="flex flex-col items-start gap-1">
                 <span
-                  className="bg-soil/15 ml-2 h-9 w-px shrink-0 md:ml-4 hidden md:block"
-                  aria-hidden
-                />
+                  className={`text-moss font-serif text-2xl font-semibold tracking-[-0.02em] ${p.italic ? 'italic' : ''}`}
+                >
+                  {t(`partners.${p.id}.name`)}
+                </span>
+                <span className="text-soil font-sans text-[11px] tracking-[0.06em] uppercase">
+                  {t(`partners.${p.id}.caption`)}
+                </span>
+              </div>
+              {i < partners.length - 1 && (
+                <span className="bg-soil/30 hidden h-9 w-px shrink-0 lg:block" aria-hidden />
               )}
             </li>
           ))}

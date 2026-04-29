@@ -2,105 +2,71 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowRight } from '@/components/primitives/ArrowRight';
-import { PlanCard } from './PlanCard';
-
-type Cycle = 'monthly' | 'yearly';
+import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
+import { PlanCard, type Cycle } from './PlanCard';
 
 export function Pricing() {
   const t = useTranslations('landing.pricing');
-  const [cycle, setCycle] = useState<Cycle>('monthly');
+  const [cycle, setCycle] = useState<Cycle>('yearly');
 
   return (
-    <section id="pricing" className="bg-moss text-bone w-full">
-      <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-8 md:py-24 lg:px-20 lg:py-28">
-        <div className="flex flex-col items-start gap-6 pb-14 md:flex-row md:items-end md:justify-between">
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center gap-3.5">
-              <span className="bg-honey h-px w-8 shrink-0" aria-hidden />
-              <span className="text-honey label">{t('eyebrow')}</span>
-            </div>
-            <h2 className="font-serif text-[40px] font-medium leading-[1.05] tracking-tight md:text-[56px]">
-              {t('headline')}
+    <section id="pricing" className="bg-bone-warm w-full">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-16 px-5 py-24 md:px-8 md:py-28 lg:px-20 lg:py-30">
+        <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end lg:gap-16">
+          <div className="flex max-w-[680px] flex-col gap-4">
+            <EyebrowLabel tone="soil" withRule>
+              {t('eyebrow')}
+            </EyebrowLabel>
+            <h2 className="text-ink font-serif text-[40px] font-medium leading-[1.05] tracking-[-0.03em] md:text-[52px] lg:text-[64px]">
+              {t('headline.line1')}
+              <br />
+              {t('headline.line2')}
             </h2>
+            <p className="text-text-deep mt-2 max-w-[580px] font-sans text-lg leading-relaxed">
+              {t('body')}
+            </p>
           </div>
-          <div className="border-bone/20 inline-flex border" role="tablist" aria-label="Billing cycle">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={cycle === 'monthly'}
-              onClick={() => setCycle('monthly')}
-              className={`px-5 py-2.5 font-sans text-sm font-medium transition-colors ${
-                cycle === 'monthly' ? 'bg-bone text-moss' : 'text-bone/80 hover:text-bone'
-              }`}
-            >
-              {t('toggle.monthly')}
-            </button>
+          <div
+            role="tablist"
+            aria-label="Billing cycle"
+            className="border-hairline bg-bone flex items-center gap-2 border p-1.5"
+          >
             <button
               type="button"
               role="tab"
               aria-selected={cycle === 'yearly'}
               onClick={() => setCycle('yearly')}
-              className={`px-5 py-2.5 font-sans text-sm font-medium transition-colors ${
-                cycle === 'yearly' ? 'bg-bone text-moss' : 'text-bone/80 hover:text-bone'
+              className={`px-4 py-2 font-sans text-[13px] font-semibold transition-colors ${
+                cycle === 'yearly' ? 'bg-moss text-bone' : 'text-soil hover:text-ink'
               }`}
             >
               {t('toggle.yearly')}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={cycle === 'monthly'}
+              onClick={() => setCycle('monthly')}
+              className={`px-4 py-2 font-sans text-[13px] font-medium transition-colors ${
+                cycle === 'monthly' ? 'bg-moss text-bone font-semibold' : 'text-soil hover:text-ink'
+              }`}
+            >
+              {t('toggle.monthly')}
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <PlanCard
-            variant="free"
-            name={t('plan.free.name')}
-            price={t(`plan.free.price.${cycle}`)}
-            features={[
-              t('plan.free.feature1'),
-              t('plan.free.feature2'),
-              t('plan.free.feature3'),
-              t('plan.free.feature4'),
-            ]}
-            cta={t('plan.free.cta')}
-            ctaHref="#final-cta"
-          />
-          <PlanCard
-            variant="pro"
-            name={t('plan.pro.name')}
-            price={t(`plan.pro.price.${cycle}`)}
-            ribbon={t('plan.pro.ribbon')}
-            features={[
-              t('plan.pro.feature1'),
-              t('plan.pro.feature2'),
-              t('plan.pro.feature3'),
-              t('plan.pro.feature4'),
-            ]}
-            cta={t('plan.pro.cta')}
-            ctaHref="#final-cta"
-          />
-          <PlanCard
-            variant="enterprise"
-            name={t('plan.enterprise.name')}
-            price={t(`plan.enterprise.price.${cycle}`)}
-            features={[
-              t('plan.enterprise.feature1'),
-              t('plan.enterprise.feature2'),
-              t('plan.enterprise.feature3'),
-              t('plan.enterprise.feature4'),
-            ]}
-            cta={t('plan.enterprise.cta')}
-            ctaHref="mailto:sales@agconn.com"
-          />
+          <PlanCard plan="free" cycle={cycle} />
+          <PlanCard plan="pro" cycle={cycle} />
+          <PlanCard plan="enterprise" cycle={cycle} />
         </div>
 
-        <div className="border-bone/15 mt-12 flex flex-col items-start gap-3 border-t pt-6 md:flex-row md:items-center md:justify-between">
-          <p className="text-bone/70 font-sans text-sm">{t('footnote')}</p>
-          <a
-            href="/pricing"
-            className="text-honey hover:text-bone inline-flex items-center gap-1.5 font-sans text-sm font-semibold"
-          >
-            <span>{t('compare_link')}</span>
-            <ArrowRight size={12} stroke="#C8A24A" />
+        <div className="flex flex-col items-center justify-center gap-3 pt-4 md:flex-row md:gap-6">
+          <p className="text-soil font-sans text-sm">{t('footnote')}</p>
+          <span className="bg-soil/30 hidden h-4 w-px md:block" aria-hidden />
+          <a href="/pricing" className="text-moss hover:text-ink font-sans text-sm font-semibold">
+            {t('compare_link')} →
           </a>
         </div>
       </div>

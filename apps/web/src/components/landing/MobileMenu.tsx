@@ -7,8 +7,8 @@ import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { LocaleToggle } from './LocaleToggle';
 
 const links = [
-  { href: '#workers', key: 'workers' },
-  { href: '#employers', key: 'employers' },
+  { href: '#workers', key: 'for_workers' },
+  { href: '#employers', key: 'for_employers' },
   { href: '#training-orgs', key: 'training_orgs' },
   { href: '#how', key: 'how_it_works' },
   { href: '#pricing', key: 'pricing' },

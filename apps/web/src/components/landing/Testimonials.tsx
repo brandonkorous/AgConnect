@@ -1,32 +1,31 @@
 import { useTranslations } from 'next-intl';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
-import { testimonials } from '@/data/testimonials';
 import { TestimonialCard } from './TestimonialCard';
+
+const ids = ['1', '2', '3'] as const;
 
 export function Testimonials() {
   const t = useTranslations('landing.testimonials');
 
   return (
-    <section className="bg-sage w-full">
-      <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-8 md:py-24 lg:px-20 lg:py-28">
-        <div className="flex flex-col gap-5 pb-14">
+    <section className="bg-bone w-full">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-16 px-5 py-24 md:px-8 md:py-28 lg:px-20 lg:py-30">
+        <div className="flex max-w-[920px] flex-col gap-4">
           <EyebrowLabel tone="soil" withRule>
             {t('eyebrow')}
           </EyebrowLabel>
-          <h2 className="text-ink max-w-[680px] font-serif text-[40px] font-medium leading-[1.05] tracking-tight md:text-[56px]">
+          <h2 className="text-ink font-serif text-[40px] font-medium leading-[1.05] tracking-[-0.03em] md:text-[52px] lg:text-[64px]">
             {t('headline.line1')}
             <br />
-            <span className="italic">{t('headline.line2')}</span>
+            {t('headline.line2')}
           </h2>
         </div>
 
-        <ul className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <li key={testimonial.id}>
-              <TestimonialCard testimonial={testimonial} />
-            </li>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {ids.map((id) => (
+            <TestimonialCard key={id} id={id} />
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

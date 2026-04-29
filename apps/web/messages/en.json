@@ -5,13 +5,14 @@
   "landing": {
     "utility": {
       "lang": { "label": "Language", "en": "English", "es": "Spanish" },
+      "grant_aligned": "CDFA & F3 grant-aligned · Central Valley · 2026",
       "for_employers": "For employers · Post a job",
       "help": "Help · Ayuda",
       "skip": "Skip to main content"
     },
     "nav": {
-      "workers": "Workers",
-      "employers": "Employers",
+      "for_workers": "For workers",
+      "for_employers": "For employers",
       "training_orgs": "Training orgs",
       "how_it_works": "How it works",
       "pricing": "Pricing",
@@ -46,7 +47,15 @@
     },
     "trust": {
       "eyebrow": "Built with",
-      "subtitle": "Funders & partners across the Valley"
+      "subtitle": "Funders & partners across the Valley",
+      "partners": {
+        "cdfa": { "name": "CDFA", "caption": "Cal. Dept. of Food & Ag." },
+        "f3": { "name": "F3", "caption": "Farms · Food · Future" },
+        "calosba": { "name": "CalOSBA", "caption": "Office of Small Biz" },
+        "edd": { "name": "EDD ▪︎ Local Area", "caption": "Workforce Boards" },
+        "eoc": { "name": "Fresno EOC", "caption": "Training partner" },
+        "crla": { "name": "CRLA", "caption": "Rural Legal Asst." }
+      }
     },
     "audience": {
       "eyebrow": "One platform · three roles",
@@ -84,160 +93,297 @@
       }
     },
     "how": {
-      "eyebrow": "HOW IT WORKS",
-      "headline": { "line1": "From \"hola\"", "line2": "to your first verified hire." },
+      "eyebrow": "For workers · 4 steps · 6 minutes",
+      "headline": { "line1": "From \"hello\"", "line2": "to your first verified hire." },
+      "aside": {
+        "headline": "en español, también",
+        "body": "Every step in EN + ES, default to ES."
+      },
       "step": {
-        "1": { "label": "STEP 01", "title": "Sign up with your phone", "body": "A 6-digit text gets you in. No app, no password.", "outcome": "in 60 seconds" },
-        "2": { "label": "STEP 02", "title": "Build your profile in minutes", "body": "Upload a resume or skip — fill in skills, county, and availability.", "outcome": "private until you apply" },
-        "3": { "label": "STEP 03", "title": "Apply to verified jobs", "body": "Filter by county, skill, wage. SMS alerts when new jobs match.", "outcome": "wages captured at hire" },
-        "4": { "label": "STEP 04", "title": "Earn certs that travel", "body": "Bilingual certificates land in your skills wallet. Share by link.", "outcome": "yours forever" }
+        "1": {
+          "title": "Sign up with your phone",
+          "body": "Enter your phone number, get an SMS code, you're in. No password, no app store, no email — just a one-time code in the language you prefer.",
+          "tech": "~ 60 seconds · Twilio SMS OTP"
+        },
+        "2": {
+          "title": "Upload a resume — or skip it",
+          "body": "If you have one in any language, upload it once. We'll parse it and pre-fill your profile. Don't have one? Add your skills directly. Either way, you'll never re-upload again.",
+          "tech": "~ 2 minutes · structured JSON, always editable"
+        },
+        "3": {
+          "title": "See real jobs near you",
+          "body": "Filter by county, skill, or wage. Every employer carries a verified-license badge. Every wage is shown before you click. SMS alert opt-in for any saved search.",
+          "tech": "Always free · 5 counties · ~140 active postings"
+        },
+        "4": {
+          "title": "Get hired. On the record.",
+          "body": "Apply with one tap. Track status by SMS. When you're hired, the wage is recorded — and the credential goes into your skills wallet, ready for the next harvest.",
+          "tech": "Wage on record · WIOA-aligned · grant-reportable"
+        }
       }
     },
     "employer_showcase": {
-      "eyebrow": "FOR EMPLOYERS",
+      "eyebrow": "For employers",
       "headline": "A dashboard built for the way you actually hire.",
-      "body": "Post a bilingual job in three minutes. Watch applicants land in a kanban — applied, reviewed, hired — with the wage you offered captured for grant reporting.",
-      "bullet1": { "title": "Post once, in two languages", "body": "The translation helper drafts the second language for you. You review, you publish." },
-      "bullet2": { "title": "Drag to hire", "body": "Move applicants across the kanban. Wage and start date capture happens at the hire step." },
-      "bullet3": { "title": "Bulk reject without burning bridges", "body": "One click rejects ten applicants. Each gets a respectful, bilingual SMS." },
-      "cta": { "primary": "Post a job", "secondary": "See pricing" },
-      "mock": {
-        "title": "Active postings",
-        "kpi_active": "12 active",
-        "kpi_filled": "47 filled · YTD",
-        "col_applied": "Applied",
-        "col_reviewed": "Reviewed",
-        "col_hired": "Hired",
-        "wage_label": "wage at hire"
-      }
+      "body": "Post a bilingual job in three minutes. Watch applicants land in a kanban that captures wage on hire. Move workers across the season without re-keying anything — and let your grant officer pull a clean WIOA-aligned report on Friday afternoon.",
+      "bullet1": { "title": "Bilingual postings, automatic.", "body": "Write once in either language; we generate the bilingual variant. Edit either side any time." },
+      "bullet2": { "title": "Hire-to-record kanban.", "body": "Drag from Applied → Reviewed → Hired. Each hire captures wage and creates a recordable placement." },
+      "bullet3": { "title": "FLC verified, before posting.", "body": "Submit your CA DIR/DLSE license at signup; admin confirms within 1 business day. The \"Verified FLC\" badge is the only signal we ask workers to trust." },
+      "cta": { "primary": "Post your first job — Free", "secondary": "Talk to sales" }
     },
     "verification": {
-      "eyebrow": "TRUST · BY DESIGN",
+      "eyebrow": "The trust differentiator",
       "headline": { "line1": "Every employer here has been", "line2": "verified — by name." },
-      "body": "Farm Labor Contractors must hold an active CA DIR/DLSE license, confirmed by AgConn staff before any posting goes live. Growers verify with a business name + EIN + county check. New employers usually clear in one business day.",
-      "detail": {
-        "1": { "label": "FLC LICENSE", "value": "CA DIR/DLSE confirmed" },
-        "2": { "label": "LAST RE-VERIFIED", "value": "Quarterly" },
-        "3": { "label": "LICENSE NUMBER", "value": "Stored, redacted in public" }
-      },
-      "card": { "verified_badge": "VERIFIED EMPLOYER", "name": "Driscoll's Madera Ranch", "type": "Grower · Madera County", "since": "Verified since Mar 2026" }
+      "body": "Farm Labor Contractors must hold an active CA DIR/DLSE license and a federal MSPA registration. Growers are confirmed against the California Secretary of State business registry. We don't take applicants on their word — we check the record, then re-check it nightly.",
+      "bullet1": "FLC: CA Labor Code §1682 license, verified manually within 1 day, then nightly via scraper",
+      "bullet2": "Grower: business name + EIN against CA Secretary of State entity search",
+      "bullet3": "License lapses or expirations are flagged automatically — workers and grant officers are notified"
     },
     "bilingual": {
-      "eyebrow": "EN ESPAÑOL · IN ENGLISH",
+      "eyebrow": "Bilingual · not translated",
       "headline": { "line1": "Spanish and English,", "line2": "on the same page." },
-      "body": "Every UI string, every SMS, every email, every certificate exists in both languages from byte zero. ES is reviewed by native Mexican-Spanish speakers, not auto-translated. Workers choose their language once; everything else follows.",
-      "pillar": {
-        "1": { "title": "Same page", "body": "Toggle between English and Spanish anywhere. The URL, the JSON-LD, and the OG image all switch." },
-        "2": { "title": "Same SMS", "body": "Worker chose ES at sign-up? Every text we send arrives in Spanish. Job alerts, hire confirmations, training reminders." },
-        "3": { "title": "Same certificate", "body": "The training certificate PDF is bilingual on the same page — English headline, Spanish body, dual dates. One artifact, two languages." }
+      "body": "Every UI string, every SMS, every email, every certificate exists in both languages from day one. Workers default to Spanish; employers default to English; either side can switch with one tap.",
+      "sms": {
+        "label": "SMS · Application sent · ES",
+        "body": "Hola María — tu solicitud para \"Recolector de fresa\" en Driscoll's Madera fue recibida. Te avisaremos en cuanto el empleador la revise. — AgConn",
+        "meta": "Twilio · queued in pg-boss · sent at 09:42 PT"
+      },
+      "email": {
+        "label": "Email · New applicant · EN",
+        "subject": "A new applicant for Recolector de fresa",
+        "body": "Maria E. Hernández — 5 yrs experience, EN/ES, Fresno County. Review the applicant in your dashboard.",
+        "meta": "Resend · React Email · noreply@agconn.com"
+      },
+      "cert": {
+        "label": "Certificate · Bilingual PDF",
+        "id": "CRED-AGC-04829",
+        "en": "Pesticide Handler Safety Training",
+        "es": "Capacitación de Manejo de Pesticidas",
+        "meta": "React-PDF · UETA e-signed · Azure Blob"
       }
     },
     "impact": {
-      "eyebrow": "THE WORK · IN NUMBERS",
-      "headline": "Real work, proved by data.",
-      "body": "We publish what we can — county counts, median wages, training completions, verified-employer counts — refreshed nightly. SSNs and PII never appear in any public number.",
+      "eyebrow": "Impact · Q2 2026 · Central Valley",
+      "headline": { "line1": "Numbers worth", "line2": "reporting on." },
+      "body": "Every metric here is grant-defensible: counted from records, exportable in WIOA-aligned formats, and audited against the source data nightly.",
       "tile": {
-        "workers": { "label": "Workers placed · last 12 months", "value": "2,484", "caption": "WIOA-aligned" },
-        "wage": { "label": "Median wage at placement", "value": "$18.20", "caption": "per hour · last 12 months" },
-        "trainings": { "label": "Trainings completed · last 12 months", "value": "1,382", "caption": "CDFA + F3" },
-        "employers": { "label": "Verified employers, today", "value": "184", "caption": "DIR/DLSE confirmed" }
+        "workers": { "label": "Workers placed", "body": "Verified seasonal hires across Fresno, Tulare, Kern, Kings & Madera" },
+        "wage": { "label": "Avg. wage at hire", "body": "$3.40 above CA agricultural minimum — every hourly rate captured at hire" },
+        "retention": { "label": "Q2→Q4 retention", "body": "Of placed workers still employed at the second-quarter follow-up" },
+        "certs": { "label": "Bilingual certificates", "body": "Issued through CDFA & F3-funded training programs in 2026" }
       },
-      "cta": { "dashboard": "Want to dig in? Our public dashboard updates nightly.", "link": "View dashboard" },
-      "source": "SOURCE · WIOA-ALIGNED · NIGHTLY · TENANT=CV",
-      "suppressed": "Coming soon"
+      "cta": { "dashboard": "Want to dig in? Our public dashboard updates nightly.", "link": "Open the impact dashboard" },
+      "source": "SOURCE · WIOA-ALIGNED · NIGHTLY · TENANT=CV"
     },
     "featured_jobs": {
-      "eyebrow": "FRESH POSTINGS · UPDATED HOURLY",
-      "headline": "Real work, posted by verified employers.",
-      "view_all": "View all jobs",
-      "filter": { "all": "All counties" },
-      "sort": { "label": "Sort", "wage_desc": "Wage, high → low", "newest": "Newest" },
-      "card": { "view": "View", "apply": "Apply", "verified": "VERIFIED" },
-      "empty": "No active postings right now."
+      "eyebrow": "Featured · live this week · 142 active",
+      "headline": "Real work, posted by name.",
+      "view_all": "Browse all 142 jobs",
+      "filter": {
+        "all": "All 142",
+        "fresno": "Fresno · 48",
+        "tulare": "Tulare · 31",
+        "kern": "Kern · 28",
+        "madera": "Madera · 21",
+        "kings": "Kings · 14"
+      },
+      "sort": "Sort: Wage, high → low",
+      "card": {
+        "verified_flc": "VERIFIED FLC",
+        "verified_grower": "VERIFIED GROWER",
+        "hourly": "Hourly",
+        "apply": "Apply"
+      },
+      "jobs": {
+        "1": { "title_es": "Recolector de fresa", "title_en": "Strawberry harvest picker", "employer": "Driscoll's Madera Ranch", "location": "Madera · 2.4 mi", "wage": "$18.50–$22", "type": "flc", "tags": ["Strawberry", "Mon–Sat", "No exp. required"] },
+        "2": { "title_es": "Manejo de pesticidas", "title_en": "Pesticide handler", "employer": "Sun-Maid Growers · Visalia", "location": "Tulare · 8.1 mi", "wage": "$22.00", "type": "flc", "tags": ["Cert. required", "Year-round", "Bilingual req."] },
+        "3": { "title_es": "Operador de montacargas", "title_en": "Forklift operator", "employer": "Wonderful Citrus · Reedley", "location": "Fresno · 5.2 mi", "wage": "$24.00", "type": "grower", "tags": ["OSHA cert.", "Day shift", "Benefits"] },
+        "4": { "title_es": "Técnico de irrigación", "title_en": "Irrigation technician", "employer": "Grimmway Farms · Bakersfield", "location": "Kern · 3.7 mi", "wage": "$21.00", "type": "flc", "tags": ["2+ yrs exp.", "Year-round", "Truck provided"] }
+      }
     },
     "featured_training": {
-      "eyebrow": "LEARN A SKILL · KEEP THE CERT",
-      "headline": "Skills you keep, in writing.",
-      "view_all": "View all training",
-      "card": { "free": "Free", "view": "View", "spots_left": "{n} of {capacity} spots left" },
-      "empty": "No upcoming programs right now."
+      "eyebrow": "Free training · CDFA & F3 funded",
+      "headline": { "line1": "Skills you keep,", "line2": "in writing." },
+      "body": "Programs run by Fresno EOC, CRLA, and other regional partners — funded by CDFA, F3, and CalOSBA. Every completion produces a bilingual, e-signed certificate that lives in your skills wallet.",
+      "card": {
+        "free": "Free",
+        "enroll": "Inscribirme"
+      },
+      "programs": {
+        "1": { "badge": "CDFA · 16 HRS", "schedule": "Starts 5/12 · Fresno", "title_es": "Manejo seguro de pesticidas", "title_en": "Pesticide Handler Safety Training", "body": "Learn how to handle, mix, and apply restricted-use pesticides safely. CDFA-required for licensed handlers.", "tags": ["Bilingual instructor", "Cert. on completion"], "price": "Free", "feature": false },
+        "2": { "badge": "F3 · 24 HRS", "schedule": "Starts 6/02 · Visalia", "title_es": "Operación de montacargas", "title_en": "OSHA Forklift Operator Certification", "body": "3-day OSHA-aligned course. Hands-on instruction at Fresno EOC's Visalia training yard. Test included.", "tags": ["Hands-on", "OSHA cert."], "price": "Free", "feature": false },
+        "3": { "badge": "CalOSBA · 8 HRS", "schedule": "Starts 5/20 · Bakersfield", "title_es": "Mantenimiento de tractores", "title_en": "Small Tractor Maintenance & Repair", "body": "One-day course at Bakersfield College's ag center. Engine basics, hydraulics, troubleshooting.", "tags": ["Saturday", "Equipment provided"], "price": "Free", "feature": false },
+        "4": { "badge": "CDFA · 12 HRS", "schedule": "Starts 6/15 · Madera", "title_es": "Riego eficiente", "title_en": "Drip Irrigation & Water Stewardship", "body": "2-day program on drip system installation, monitoring, and CA water-rights basics. Worker-focused.", "tags": ["High demand", "Stipend incl."], "price": "Free + $200 stipend", "feature": true }
+      }
     },
     "testimonials": {
-      "eyebrow": "FROM THE PEOPLE · WHO USE IT",
+      "eyebrow": "Voices from the Valley",
       "headline": { "line1": "From the people who", "line2": "use it every season." },
-      "placeholder_badge": "PLACEHOLDER · v3"
+      "1": { "surface": "moss", "quote": "Antes pasaba dos semanas buscando trabajo cada cosecha. Ahora recibo un mensaje, aplico, y el lunes ya estoy en el campo. Y mi certificado de pesticidas vale en cualquier rancho.", "name": "María Hernández", "role": "Worker · Madera County · 8 yrs" },
+      "2": { "surface": "bone", "quote": "The kanban replaced our paper applicant binder. Wage capture happens at hire, not weeks later. When my F3 grant officer asked for a Q1 report, I exported it in two minutes — same fields she submits to CalJOBS.", "name": "Tomás Reyes", "role": "FLC · Hernández Crews · Tulare" },
+      "3": { "surface": "sage", "quote": "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AgConn generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.", "name": "Janelle Park, MPA", "role": "Workforce Director · Fresno EOC" }
     },
     "pricing": {
-      "eyebrow": "PLANS · GROW WITH YOU",
-      "headline": "Plans that fit your season.",
-      "toggle": { "monthly": "Monthly", "yearly": "Yearly · save 2 months" },
+      "eyebrow": "Pricing · for employers",
+      "headline": { "line1": "Free for workers.", "line2": "Always." },
+      "body": "Workers and training organizations never pay. Employers start free with up to two postings — upgrade only when you need more. Annual saves two months.",
+      "toggle": { "yearly": "Annual · save 2 mo", "monthly": "Monthly" },
       "plan": {
-        "free": { "name": "Free", "price": { "monthly": "$0/mo", "yearly": "$0/yr" }, "cta": "Start free", "feature1": "2 active job postings", "feature2": "Applicant review (kanban + bulk reject)", "feature3": "FLC verification", "feature4": "Bilingual postings, SMS alerts" },
-        "pro": { "name": "Pro", "price": { "monthly": "$99/mo", "yearly": "$990/yr · save $198" }, "ribbon": "Most popular", "cta": "Choose Pro", "feature1": "Unlimited active postings", "feature2": "Worker search · vetted pool", "feature3": "Priority listing in featured sections", "feature4": "Self-serve billing portal" },
-        "enterprise": { "name": "Enterprise", "price": { "monthly": "$299/mo", "yearly": "$2,990/yr · save $598" }, "cta": "Contact sales", "feature1": "Everything in Pro", "feature2": "Multi-user account", "feature3": "Custom county coverage", "feature4": "Branded grant reports" }
+        "free": {
+          "badge": "FREE · COMMUNITY", "name": "Free", "intro": "For small growers and seasonal hires. Onboard the long tail of the Valley.",
+          "price": {
+            "monthly": { "amount": "$0", "unit": "/ forever", "note": "" },
+            "yearly": { "amount": "$0", "unit": "/ forever", "note": "" }
+          },
+          "feature1": "2 active job postings",
+          "feature2": "Applicant kanban",
+          "feature3": "FLC verification included",
+          "feature4": "-Worker search",
+          "feature5": "-Priority listing",
+          "feature6": "-Custom grant exports",
+          "cta": { "label": "Start free", "href": "#final-cta" }
+        },
+        "pro": {
+          "badge": "PRO · GROWERS & FLCs", "name": "Pro", "ribbon": "Most popular", "intro": "For working FLCs and growers running multiple postings per season.",
+          "price": {
+            "monthly": { "amount": "$99", "unit": "/ mo, billed monthly", "note": "" },
+            "yearly": { "amount": "$82.50", "unit": "/ mo, billed annually", "note": "$990/yr · vs $99/mo monthly" }
+          },
+          "feature1": "Unlimited active postings",
+          "feature2": "Worker search across the Valley pool",
+          "feature3": "Priority listing on the worker app",
+          "feature4": "Self-serve Stripe billing portal",
+          "feature5": "WIOA exports (CSV + XLSX)",
+          "feature6": "-Multi-user, custom branding",
+          "cta": { "label": "Start a Pro trial", "href": "#final-cta" }
+        },
+        "enterprise": {
+          "badge": "ENTERPRISE · MULTI-TENANT", "name": "Enterprise", "intro": "For workforce boards and multi-county operators with grant reporting needs.",
+          "price": {
+            "monthly": { "amount": "$299", "unit": "/ mo, billed monthly", "note": "" },
+            "yearly": { "amount": "$249.17", "unit": "/ mo, billed annually", "note": "$2,990/yr · vs $299/mo monthly" }
+          },
+          "feature1": "Everything in Pro",
+          "feature2": "Multi-user accounts & roles",
+          "feature3": "Custom county coverage",
+          "feature4": "Branded grant exports + cover sheets",
+          "feature5": "Dedicated success contact + SLA",
+          "feature6": "White-label tenant available",
+          "cta": { "label": "Talk to sales", "href": "mailto:sales@agconn.com" }
+        }
       },
-      "footnote": "All plans include FLC verification, bilingual postings, SMS alerts.",
+      "footnote": "All plans include FLC verification, bilingual postings, SMS notifications, and grant-aligned exports.",
       "compare_link": "Compare plans in detail"
     },
     "faq": {
-      "eyebrow": "QUESTIONS · IN PLAIN LANGUAGE",
+      "eyebrow": "FAQ · Preguntas frecuentes",
       "headline": "Questions, in plain language.",
-      "intro": "Real questions from real conversations with workers, FLCs, and training orgs. If something's missing, email us — we'll add it.",
-      "contact_cta": "Email us",
-      "expand": "Expand answer",
-      "collapse": "Collapse answer"
+      "intro": "Real questions from real conversations with workers, FLCs, and grant officers across the Valley. Don't see yours? Ask us directly.",
+      "grant_card": {
+        "eyebrow": "For grant officers",
+        "headline": "Need a 30-minute walkthrough of WIOA exports?",
+        "body": "Email grants@agconn.com — we'll book it within 48h."
+      },
+      "items": {
+        "1": { "q": "Is AgConn really free for workers?", "a": "Yes. Workers never pay — not for signup, not for applications, not for certificates, not for SMS notifications. The platform is funded by employer subscriptions and grant partnerships. Es completamente gratuito para los trabajadores, en español también." },
+        "2": { "q": "How do you verify Farm Labor Contractors?", "a": "Every FLC must hold an active CA DIR/DLSE license and a federal MSPA registration. We confirm both manually at signup (within 1 business day) and re-check nightly via scraper. License lapses or revocations are flagged automatically and the employer's postings are paused until resolved." },
+        "3": { "q": "Are AgConn certificates legally valid?", "a": "Yes. Certificates are React-PDF documents e-signed under California UETA, with cryptographic verification embedded in the file. They include the issuing organization's identifier, the program funder, dates, and a unique credential ID that's verifiable from the public certificate page." },
+        "4": { "q": "¿Necesito una computadora para usar AgConn?", "a": "No. AgConn funciona en cualquier teléfono con SMS — no necesitas computadora, smartphone, app store, ni correo electrónico. Te registras con tu número de teléfono, recibes alertas de trabajos por mensaje de texto, y aplicas con un toque." },
+        "5": { "q": "What WIOA fields do AgConn exports include?", "a": "Exports include all required WIOA Title I fields plus CalJOBS-specific extensions: PIRL elements 100–1900, demographic data (where consented), placement details with employer + wage + start date, training program completions, credential IDs, and follow-up retention. Available as CSV and XLSX, with a custom field mapper for state-specific overlays." },
+        "6": { "q": "Can I export my data if I leave the platform?", "a": "Yes — at any time, in JSON or CSV, with no fee and no exit ramp. Workers can export their full profile + applications + certificates. Employers can export their postings + applicant pipeline + hires. Training orgs can export rosters + completions + certificate metadata." },
+        "7": { "q": "When will AgConn expand beyond the Central Valley?", "a": "Imperial County and the Salinas Valley are next on the roadmap (target Q4 2026), pending grant alignment with regional CDFA partners. Outside California will require state-by-state legal and licensing diligence — we're starting that work but won't commit a date until verification infrastructure is reliable." },
+        "8": { "q": "¿Mi información está protegida?", "a": "Sí. Los datos personales de los trabajadores nunca se comparten sin consentimiento explícito. Los empleadores solo ven los perfiles de quienes les aplican. Los reportes de subvención son agregados y anónimos. Cumplimos con CCPA, FERPA (para datos de capacitación), y la política federal de privacidad WIOA." }
+      }
     },
     "final": {
+      "eyebrow": "Two ways in · Dos caminos",
       "headline": { "es": "Empieza hoy.", "en": "Start today." },
-      "body": "No credit card. No app store. No long form. Workers sign up with their phone, employers with an email.",
-      "workers": { "title": "For workers", "label": "Mobile phone number", "placeholder": "(555) 555-1234", "cta": "Send me a code", "help": "We'll text a 6-digit code. Std rates apply.", "success": "We just texted you. Open the message and tap the link." },
-      "employers": { "title": "For employers", "label": "Work email", "placeholder": "you@yourbusiness.com", "cta": "Post your first job", "help": "Magic link to your inbox.", "success": "Check your inbox for the magic link." }
+      "body": "No credit card. No app store. No long form. Workers sign up with a phone in under a minute. Employers post their first job free. Training organizations apply for an org account in a click.",
+      "workers": {
+        "eyebrow": "FOR WORKERS · TRABAJADORES",
+        "headline": "Sign up by phone — find work this week.",
+        "label": "Mobile phone number",
+        "placeholder": "(555) 555-1234",
+        "cta": "Send code",
+        "help": "We'll text you a 6-digit code. Standard message rates may apply.",
+        "success": "We just texted you. Open the message and tap the link."
+      },
+      "employers": {
+        "eyebrow": "FOR EMPLOYERS · GROWERS & FLCs",
+        "headline": "Post your first job — free, in 3 minutes.",
+        "cta": "Create employer account",
+        "help": "FLC verification typically completes within 1 business day."
+      }
     },
     "footer": {
-      "tagline": "Bilingual workforce platform · Central Valley, CA",
-      "col": {
-        "workers": { "title": "Workers", "find_work": "Find work", "training": "Trainings", "wallet": "Skills wallet", "signin": "Sign in" },
-        "employers": { "title": "Employers", "post": "Post a job", "pricing": "Pricing", "flc": "FLC verification", "signin": "Sign in" },
-        "training": { "title": "Training orgs", "apply": "Apply for org account", "reporting": "Reporting", "resources": "Resources" },
-        "company": { "title": "Company", "about": "About", "contact": "Contact", "press": "Press", "careers": "Careers" }
+      "tagline": "From the field, to your future.",
+      "description": "A bilingual workforce platform connecting Central Valley farmworkers, growers, and training organizations to verified jobs, paid wages, and portable credentials.",
+      "counties_label": "Now serving",
+      "counties": {
+        "fresno": "Fresno County",
+        "tulare": "Tulare County",
+        "kern": "Kern County",
+        "kings": "Kings County",
+        "madera": "Madera County"
       },
-      "nap": { "org": "AgConn, PBC", "location": "Fresno, CA", "email": "support@agconn.com" }
+      "col": {
+        "workers": {
+          "title": "For workers",
+          "browse": "Browse jobs",
+          "training": "Find training",
+          "wallet": "Skills wallet",
+          "rights": "Worker rights · Derechos",
+          "promotora": "Promotora resources",
+          "signin": "Sign in"
+        },
+        "employers": {
+          "title": "For employers",
+          "post": "Post a job",
+          "search": "Worker search",
+          "flc": "FLC verification",
+          "pricing": "Pricing",
+          "stories": "Customer stories",
+          "sales": "Talk to sales"
+        },
+        "partners": {
+          "title": "Partners & Grant Officers",
+          "training_orgs": "Training organizations",
+          "workforce": "Workforce boards",
+          "wioa": "WIOA / CalJOBS exports",
+          "impact": "Impact dashboard",
+          "press": "Press kit",
+          "research": "Research & data"
+        },
+        "company": {
+          "title": "Company",
+          "about": "About",
+          "mission": "Mission & values",
+          "careers": "Careers",
+          "trust": "Trust & security",
+          "status": "Status · 99.94%",
+          "contact": "Contact"
+        }
+      },
+      "newsletter": {
+        "headline": "Stay in the loop.",
+        "body": "Quarterly updates on impact, programs, and policy. EN or ES — your choice.",
+        "label": "Email address",
+        "placeholder": "you@example.com",
+        "cta": "Subscribe",
+        "success": "Subscribed. Check your inbox."
+      }
     },
     "legal": {
       "copyright": "© 2026 AgConn, PBC · A California Public Benefit Corp.",
       "built_in": "Built in Fresno, CA",
-      "privacy": { "en": "Privacy", "es": "Privacidad" },
-      "terms": { "en": "Terms", "es": "Términos" },
+      "status": "All systems normal",
+      "privacy_en": "Privacy",
+      "terms_en": "Terms",
       "accessibility": "Accessibility",
+      "privacy_es": "Privacidad",
+      "terms_es": "Términos",
       "sitemap": "Sitemap",
       "llms_txt": "llms.txt"
     }
-  },
-  "jobs": {
-    "fresa": { "title": "Recolector de fresa", "employer": "Driscoll's Madera Ranch", "county": "Madera County" },
-    "uva": { "title": "Podador de uva", "employer": "Bronco Wine Co.", "county": "Fresno County" },
-    "almendra": { "title": "Operador de cosechadora — almendra", "employer": "Paramount Farming", "county": "Kern County" },
-    "lechuga": { "title": "Cortador de lechuga", "employer": "Tanimura & Antle", "county": "Kings County" }
-  },
-  "programs": {
-    "pesticidas": { "title": "Manejo seguro de pesticidas", "org": "Fresno EOC", "funder": "CDFA" },
-    "irrigation": { "title": "Drip irrigation maintenance", "org": "F3 Innovate · Mendota", "funder": "F3" },
-    "tractor": { "title": "Operación básica de tractor", "org": "Reedley College", "funder": "CDFA" },
-    "first_aid": { "title": "First aid & heat illness prevention", "org": "Madera Coalition", "funder": "CDFA" }
-  },
-  "testimonials": {
-    "1": { "quote": "El primer trabajo que conseguí por aquí pagó lo que dijo. Eso ya no es común.", "translation": "The first job I found here paid what it said it would. That's not common anymore.", "name": "María R.", "context": "Picker · Tulare County · Spring 2026" },
-    "2": { "quote": "Posting a bilingual job used to take me a whole afternoon. Now it's three minutes.", "translation": "Publicar un trabajo bilingüe me tomaba toda una tarde. Ahora son tres minutos.", "name": "Bronco Wine Co.", "context": "Grower · Fresno County" },
-    "3": { "quote": "WIOA reporting that took us a week now exports in a click. Our funders noticed.", "translation": "Los reportes WIOA que nos tomaban una semana ahora se exportan con un clic. Nuestros financiadores lo notaron.", "name": "Fresno EOC", "context": "CDFA-funded training partner" }
-  },
-  "faq": {
-    "1": { "q": "How do I find seasonal farm work in Fresno County?", "a": "Sign up with your phone, choose your county and skills, and AgConn will text you when matching jobs go live. Every employer in the Valley list has a confirmed CA DIR/DLSE license. You can also browse jobs without signing up — only the apply step asks for your phone." },
-    "2": { "q": "Do I need a smartphone or an app to use AgConn?", "a": "No. The web page works on any phone with a browser, and we send job alerts by SMS. There's no app to install, no app store, and no email required for workers." },
-    "3": { "q": "What is a Farm Labor Contractor (FLC) license, and how do you verify it?", "a": "An FLC is a state-licensed labor contractor that hires farmworkers on behalf of growers. AgConn checks every FLC's license status against the CA DIR/DLSE registry before any posting goes live, and re-checks quarterly. Growers (the farms themselves) are verified by business name, EIN, and county records." },
-    "4": { "q": "Are training programs really free?", "a": "Most are. Programs funded by CDFA or F3 grants are free to workers — that's the explicit purpose of those grants. Where a program charges a fee, AgConn shows the fee on the program card before you enroll." },
-    "5": { "q": "What does \"bilingual from byte zero\" actually mean?", "a": "Every interface string, every SMS, every email, and every certificate is written in both English and Spanish from the day it ships. Spanish copy is reviewed by native Mexican-Spanish speakers, not auto-translated. There is no \"primary language\" — they're equal citizens." },
-    "6": { "q": "Will my information be shared with anyone?", "a": "Workers' personal information is never shared without consent. Employers see only what you choose to put on your profile, and only after you apply. Aggregate, anonymized counts (like \"workers placed in Fresno County\") are published on the public dashboard for grant accountability — no individual is ever identifiable." },
-    "7": { "q": "What if my county isn't on the list?", "a": "AgConn launched in Fresno, Tulare, Kern, Kings, and Madera. We expand to new counties as we sign up partner organizations there. Tell us your county and we'll add it to the waitlist — when we open the next county, you'll get the first text." },
-    "8": { "q": "How is AgConn funded?", "a": "AgConn is a California Public Benefit Corporation funded by foundation grants (initially F3) and modest paid plans for employers (Pro and Enterprise). Workers and training organizations always use AgConn for free. Our financials are summarized annually on the About page." }
   }
 }

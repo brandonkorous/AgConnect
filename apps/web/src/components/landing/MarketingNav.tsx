@@ -3,8 +3,8 @@ import { Wordmark } from '@/components/primitives/Wordmark';
 import { MobileMenu } from './MobileMenu';
 
 const links = [
-  { href: '#workers', key: 'workers' },
-  { href: '#employers', key: 'employers' },
+  { href: '#workers', key: 'for_workers' },
+  { href: '#employers', key: 'for_employers' },
   { href: '#how', key: 'how_it_works' },
   { href: '#pricing', key: 'pricing' },
 ] as const;

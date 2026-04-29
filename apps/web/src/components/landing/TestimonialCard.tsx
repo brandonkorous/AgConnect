@@ -1,42 +1,52 @@
 import { useTranslations } from 'next-intl';
-import type { Testimonial } from '@/data/testimonials';
 
-const initialBg: Record<Testimonial['role'], string> = {
-  worker: 'bg-honey text-ink',
-  employer: 'bg-moss text-bone',
-  training: 'bg-soil text-bone',
-};
+type Props = { id: '1' | '2' | '3' };
 
-export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
-  const t = useTranslations('testimonials');
-  const placeholderT = useTranslations('landing.testimonials');
-  const name = t(`${testimonial.id}.name`);
-  const initial = name.trim().charAt(0).toUpperCase();
+export function TestimonialCard({ id }: Props) {
+  const t = useTranslations(`landing.testimonials.${id}`);
+  const surface = t('surface');
+
+  const isMoss = surface === 'moss';
+  const isSage = surface === 'sage';
+
+  const containerClass = isMoss
+    ? 'bg-moss'
+    : isSage
+      ? 'bg-sage'
+      : 'bg-white border-hairline border';
+  const quoteMarkColor = isSage ? 'text-moss' : 'text-honey';
+  const bodyClass = isMoss ? 'text-bone' : 'text-ink';
+  const dividerClass = isMoss ? 'border-soil' : isSage ? 'border-hairline-warm' : 'border-hairline';
+  const nameClass = isMoss ? 'text-bone' : 'text-ink';
+  const roleClass = isMoss ? 'text-honey' : 'text-soil';
+  const initialBg = isMoss ? 'bg-honey text-ink' : isSage ? 'bg-soil text-bone' : 'bg-moss text-bone';
+  const name = t('name');
+  const initial = name.trim().charAt(0);
 
   return (
-    <article className="border-ink/15 bg-bone flex h-full flex-col gap-5 border p-8">
-      <p className="text-ink font-serif text-2xl leading-snug italic">
-        "{t(`${testimonial.id}.quote`)}"
-      </p>
-      <p className="text-soil font-sans text-sm leading-relaxed">
-        {t(`${testimonial.id}.translation`)}
+    <article className={`flex h-full min-h-[420px] flex-col gap-6 p-10 ${containerClass}`}>
+      <span
+        className={`font-serif text-[108px] font-light leading-none italic tracking-[-0.04em] ${quoteMarkColor}`}
+        aria-hidden
+      >
+        “
+      </span>
+      <p
+        className={`font-serif text-[26px] font-medium leading-snug tracking-[-0.015em] ${bodyClass}`}
+      >
+        {t('quote')}
       </p>
 
-      <div className="border-soil/20 mt-auto flex items-center gap-3 border-t pt-5">
-        <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center font-serif text-lg font-semibold italic ${initialBg[testimonial.role]}`}
+      <div className={`mt-auto flex items-center gap-3.5 border-t pt-4 ${dividerClass}`}>
+        <span
+          className={`flex size-12 shrink-0 items-center justify-center rounded-full font-serif text-xl font-semibold ${initialBg}`}
         >
           {initial}
+        </span>
+        <div className="flex flex-col gap-0.5">
+          <p className={`font-sans text-[15px] font-semibold ${nameClass}`}>{name}</p>
+          <p className={`font-sans text-[13px] ${roleClass}`}>{t('role')}</p>
         </div>
-        <div className="flex flex-1 flex-col">
-          <p className="text-ink font-sans text-sm font-semibold">{name}</p>
-          <p className="text-soil font-sans text-xs">{t(`${testimonial.id}.context`)}</p>
-        </div>
-        {testimonial.isPlaceholder && (
-          <span className="text-soil/70 font-mono text-[10px] tracking-[0.04em]">
-            {placeholderT('placeholder_badge')}
-          </span>
-        )}
       </div>
     </article>
   );
