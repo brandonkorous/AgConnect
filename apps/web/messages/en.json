@@ -3,13 +3,241 @@
     "product_name": "AgConn"
   },
   "landing": {
+    "utility": {
+      "lang": { "label": "Language", "en": "English", "es": "Spanish" },
+      "for_employers": "For employers · Post a job",
+      "help": "Help · Ayuda",
+      "skip": "Skip to main content"
+    },
+    "nav": {
+      "workers": "Workers",
+      "employers": "Employers",
+      "training_orgs": "Training orgs",
+      "how_it_works": "How it works",
+      "pricing": "Pricing",
+      "resources": "Resources",
+      "signin": "Sign in",
+      "cta_primary": "Find work",
+      "menu_open": "Open menu",
+      "menu_close": "Close menu"
+    },
     "hero": {
-      "eyebrow": "FROM THE FIELD",
-      "title": {
-        "line1": "From the field,",
-        "line2": "to your future."
+      "now_serving": "Now serving · Fresno · Tulare · Kern · Kings · Madera",
+      "headline": { "line1": "From the field,", "line2": "to your future." },
+      "subhead": "AgConn connects Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs — bilingual from day one, with a portable record of your skills that travels with you to the next harvest.",
+      "cta": { "primary": "Find work today", "secondary": "Hire a verified crew" },
+      "trust": { "rating": "4.9 / 5", "line": "Trusted by 2,400+ workers and 180+ verified employers across the Valley" },
+      "phone": {
+        "greeting": "Hola, María —",
+        "jobs_near": "14 trabajos cerca de ti.",
+        "verified_flc": "VERIFIED FLC",
+        "training_label": "CAPACITACIÓN F3",
+        "distance": "2.4 mi",
+        "spots": "5/12",
+        "job_title": "Recolector de fresa",
+        "employer": "Driscoll's Madera Ranch",
+        "wage": "$18.50–$22 / hr",
+        "apply": "Aplicar",
+        "training_title": "Manejo de pesticidas",
+        "training_meta": "Fresno EOC · 16 hrs · Gratis",
+        "lang_pill": "ES · EN"
       },
-      "shellNotice": "Shell is up. Tierra theme is loaded. Sections come next."
+      "toast": { "hired": "Hired · $19.50/hr · today" }
+    },
+    "trust": {
+      "eyebrow": "Built with",
+      "subtitle": "Funders & partners across the Valley"
+    },
+    "audience": {
+      "eyebrow": "One platform · three roles",
+      "headline": { "line1": "A platform that knows", "line2": "who's on the other side." },
+      "intro": "Workers, employers, and training organizations each get a purpose-built experience — connected by a single record of work, in two languages, kept on file for as long as it matters.",
+      "workers": {
+        "eyebrow": "FOR WORKERS",
+        "subscript": "trabajadores",
+        "headline": { "line1": "Find work this week.", "line2": "Build a record that travels." },
+        "bullet1": "Real seasonal jobs, verified employers, wages on record",
+        "bullet2": "Free CDFA & F3 training programs with bilingual certs",
+        "bullet3": "SMS alerts in your language. No app store, no email needed.",
+        "bullet4": "A skills wallet that travels with you, harvest to harvest",
+        "cta": "Sign up with your phone"
+      },
+      "employers": {
+        "eyebrow": "FOR EMPLOYERS",
+        "subscript": "growers & FLCs",
+        "headline": { "line1": "Hire a verified crew.", "line2": "Skip the paperwork." },
+        "bullet1": "Bilingual job postings, ready in minutes — no rewrites",
+        "bullet2": "Applicant kanban: applied → reviewed → hired, with wage capture",
+        "bullet3": "DLSE/FLC license verification — admin-confirmed in 1 day",
+        "bullet4": "Worker search across a vetted pool by skill, county, availability",
+        "cta": "Post your first job — Free"
+      },
+      "training": {
+        "eyebrow": "FOR TRAINING ORGS",
+        "subscript": "capacitadores",
+        "headline": { "line1": "Issue credentials.", "line2": "Report on outcomes." },
+        "bullet1": "Bilingual program listings, capacity, and waitlists",
+        "bullet2": "React-PDF certificates, e-signed under UETA",
+        "bullet3": "WIOA-aligned exports for CDFA, F3, CalJOBS reporting",
+        "bullet4": "SMS reminders 48h + 2h before each session, bilingual",
+        "cta": "Apply for an org account"
+      }
+    },
+    "how": {
+      "eyebrow": "HOW IT WORKS",
+      "headline": { "line1": "From \"hola\"", "line2": "to your first verified hire." },
+      "step": {
+        "1": { "label": "STEP 01", "title": "Sign up with your phone", "body": "A 6-digit text gets you in. No app, no password.", "outcome": "in 60 seconds" },
+        "2": { "label": "STEP 02", "title": "Build your profile in minutes", "body": "Upload a resume or skip — fill in skills, county, and availability.", "outcome": "private until you apply" },
+        "3": { "label": "STEP 03", "title": "Apply to verified jobs", "body": "Filter by county, skill, wage. SMS alerts when new jobs match.", "outcome": "wages captured at hire" },
+        "4": { "label": "STEP 04", "title": "Earn certs that travel", "body": "Bilingual certificates land in your skills wallet. Share by link.", "outcome": "yours forever" }
+      }
+    },
+    "employer_showcase": {
+      "eyebrow": "FOR EMPLOYERS",
+      "headline": "A dashboard built for the way you actually hire.",
+      "body": "Post a bilingual job in three minutes. Watch applicants land in a kanban — applied, reviewed, hired — with the wage you offered captured for grant reporting.",
+      "bullet1": { "title": "Post once, in two languages", "body": "The translation helper drafts the second language for you. You review, you publish." },
+      "bullet2": { "title": "Drag to hire", "body": "Move applicants across the kanban. Wage and start date capture happens at the hire step." },
+      "bullet3": { "title": "Bulk reject without burning bridges", "body": "One click rejects ten applicants. Each gets a respectful, bilingual SMS." },
+      "cta": { "primary": "Post a job", "secondary": "See pricing" },
+      "mock": {
+        "title": "Active postings",
+        "kpi_active": "12 active",
+        "kpi_filled": "47 filled · YTD",
+        "col_applied": "Applied",
+        "col_reviewed": "Reviewed",
+        "col_hired": "Hired",
+        "wage_label": "wage at hire"
+      }
+    },
+    "verification": {
+      "eyebrow": "TRUST · BY DESIGN",
+      "headline": { "line1": "Every employer here has been", "line2": "verified — by name." },
+      "body": "Farm Labor Contractors must hold an active CA DIR/DLSE license, confirmed by AgConn staff before any posting goes live. Growers verify with a business name + EIN + county check. New employers usually clear in one business day.",
+      "detail": {
+        "1": { "label": "FLC LICENSE", "value": "CA DIR/DLSE confirmed" },
+        "2": { "label": "LAST RE-VERIFIED", "value": "Quarterly" },
+        "3": { "label": "LICENSE NUMBER", "value": "Stored, redacted in public" }
+      },
+      "card": { "verified_badge": "VERIFIED EMPLOYER", "name": "Driscoll's Madera Ranch", "type": "Grower · Madera County", "since": "Verified since Mar 2026" }
+    },
+    "bilingual": {
+      "eyebrow": "EN ESPAÑOL · IN ENGLISH",
+      "headline": { "line1": "Spanish and English,", "line2": "on the same page." },
+      "body": "Every UI string, every SMS, every email, every certificate exists in both languages from byte zero. ES is reviewed by native Mexican-Spanish speakers, not auto-translated. Workers choose their language once; everything else follows.",
+      "pillar": {
+        "1": { "title": "Same page", "body": "Toggle between English and Spanish anywhere. The URL, the JSON-LD, and the OG image all switch." },
+        "2": { "title": "Same SMS", "body": "Worker chose ES at sign-up? Every text we send arrives in Spanish. Job alerts, hire confirmations, training reminders." },
+        "3": { "title": "Same certificate", "body": "The training certificate PDF is bilingual on the same page — English headline, Spanish body, dual dates. One artifact, two languages." }
+      }
+    },
+    "impact": {
+      "eyebrow": "THE WORK · IN NUMBERS",
+      "headline": "Real work, proved by data.",
+      "body": "We publish what we can — county counts, median wages, training completions, verified-employer counts — refreshed nightly. SSNs and PII never appear in any public number.",
+      "tile": {
+        "workers": { "label": "Workers placed · last 12 months", "value": "2,484", "caption": "WIOA-aligned" },
+        "wage": { "label": "Median wage at placement", "value": "$18.20", "caption": "per hour · last 12 months" },
+        "trainings": { "label": "Trainings completed · last 12 months", "value": "1,382", "caption": "CDFA + F3" },
+        "employers": { "label": "Verified employers, today", "value": "184", "caption": "DIR/DLSE confirmed" }
+      },
+      "cta": { "dashboard": "Want to dig in? Our public dashboard updates nightly.", "link": "View dashboard" },
+      "source": "SOURCE · WIOA-ALIGNED · NIGHTLY · TENANT=CV",
+      "suppressed": "Coming soon"
+    },
+    "featured_jobs": {
+      "eyebrow": "FRESH POSTINGS · UPDATED HOURLY",
+      "headline": "Real work, posted by verified employers.",
+      "view_all": "View all jobs",
+      "filter": { "all": "All counties" },
+      "sort": { "label": "Sort", "wage_desc": "Wage, high → low", "newest": "Newest" },
+      "card": { "view": "View", "apply": "Apply", "verified": "VERIFIED" },
+      "empty": "No active postings right now."
+    },
+    "featured_training": {
+      "eyebrow": "LEARN A SKILL · KEEP THE CERT",
+      "headline": "Skills you keep, in writing.",
+      "view_all": "View all training",
+      "card": { "free": "Free", "view": "View", "spots_left": "{n} of {capacity} spots left" },
+      "empty": "No upcoming programs right now."
+    },
+    "testimonials": {
+      "eyebrow": "FROM THE PEOPLE · WHO USE IT",
+      "headline": { "line1": "From the people who", "line2": "use it every season." },
+      "placeholder_badge": "PLACEHOLDER · v3"
+    },
+    "pricing": {
+      "eyebrow": "PLANS · GROW WITH YOU",
+      "headline": "Plans that fit your season.",
+      "toggle": { "monthly": "Monthly", "yearly": "Yearly · save 2 months" },
+      "plan": {
+        "free": { "name": "Free", "price": { "monthly": "$0/mo", "yearly": "$0/yr" }, "cta": "Start free", "feature1": "2 active job postings", "feature2": "Applicant review (kanban + bulk reject)", "feature3": "FLC verification", "feature4": "Bilingual postings, SMS alerts" },
+        "pro": { "name": "Pro", "price": { "monthly": "$99/mo", "yearly": "$990/yr · save $198" }, "ribbon": "Most popular", "cta": "Choose Pro", "feature1": "Unlimited active postings", "feature2": "Worker search · vetted pool", "feature3": "Priority listing in featured sections", "feature4": "Self-serve billing portal" },
+        "enterprise": { "name": "Enterprise", "price": { "monthly": "$299/mo", "yearly": "$2,990/yr · save $598" }, "cta": "Contact sales", "feature1": "Everything in Pro", "feature2": "Multi-user account", "feature3": "Custom county coverage", "feature4": "Branded grant reports" }
+      },
+      "footnote": "All plans include FLC verification, bilingual postings, SMS alerts.",
+      "compare_link": "Compare plans in detail"
+    },
+    "faq": {
+      "eyebrow": "QUESTIONS · IN PLAIN LANGUAGE",
+      "headline": "Questions, in plain language.",
+      "intro": "Real questions from real conversations with workers, FLCs, and training orgs. If something's missing, email us — we'll add it.",
+      "contact_cta": "Email us",
+      "expand": "Expand answer",
+      "collapse": "Collapse answer"
+    },
+    "final": {
+      "headline": { "es": "Empieza hoy.", "en": "Start today." },
+      "body": "No credit card. No app store. No long form. Workers sign up with their phone, employers with an email.",
+      "workers": { "title": "For workers", "label": "Mobile phone number", "placeholder": "(555) 555-1234", "cta": "Send me a code", "help": "We'll text a 6-digit code. Std rates apply.", "success": "We just texted you. Open the message and tap the link." },
+      "employers": { "title": "For employers", "label": "Work email", "placeholder": "you@yourbusiness.com", "cta": "Post your first job", "help": "Magic link to your inbox.", "success": "Check your inbox for the magic link." }
+    },
+    "footer": {
+      "tagline": "Bilingual workforce platform · Central Valley, CA",
+      "col": {
+        "workers": { "title": "Workers", "find_work": "Find work", "training": "Trainings", "wallet": "Skills wallet", "signin": "Sign in" },
+        "employers": { "title": "Employers", "post": "Post a job", "pricing": "Pricing", "flc": "FLC verification", "signin": "Sign in" },
+        "training": { "title": "Training orgs", "apply": "Apply for org account", "reporting": "Reporting", "resources": "Resources" },
+        "company": { "title": "Company", "about": "About", "contact": "Contact", "press": "Press", "careers": "Careers" }
+      },
+      "nap": { "org": "AgConn, PBC", "location": "Fresno, CA", "email": "support@agconn.com" }
+    },
+    "legal": {
+      "copyright": "© 2026 AgConn, PBC · A California Public Benefit Corp.",
+      "built_in": "Built in Fresno, CA",
+      "privacy": { "en": "Privacy", "es": "Privacidad" },
+      "terms": { "en": "Terms", "es": "Términos" },
+      "accessibility": "Accessibility",
+      "sitemap": "Sitemap",
+      "llms_txt": "llms.txt"
     }
+  },
+  "jobs": {
+    "fresa": { "title": "Recolector de fresa", "employer": "Driscoll's Madera Ranch", "county": "Madera County" },
+    "uva": { "title": "Podador de uva", "employer": "Bronco Wine Co.", "county": "Fresno County" },
+    "almendra": { "title": "Operador de cosechadora — almendra", "employer": "Paramount Farming", "county": "Kern County" },
+    "lechuga": { "title": "Cortador de lechuga", "employer": "Tanimura & Antle", "county": "Kings County" }
+  },
+  "programs": {
+    "pesticidas": { "title": "Manejo seguro de pesticidas", "org": "Fresno EOC", "funder": "CDFA" },
+    "irrigation": { "title": "Drip irrigation maintenance", "org": "F3 Innovate · Mendota", "funder": "F3" },
+    "tractor": { "title": "Operación básica de tractor", "org": "Reedley College", "funder": "CDFA" },
+    "first_aid": { "title": "First aid & heat illness prevention", "org": "Madera Coalition", "funder": "CDFA" }
+  },
+  "testimonials": {
+    "1": { "quote": "El primer trabajo que conseguí por aquí pagó lo que dijo. Eso ya no es común.", "translation": "The first job I found here paid what it said it would. That's not common anymore.", "name": "María R.", "context": "Picker · Tulare County · Spring 2026" },
+    "2": { "quote": "Posting a bilingual job used to take me a whole afternoon. Now it's three minutes.", "translation": "Publicar un trabajo bilingüe me tomaba toda una tarde. Ahora son tres minutos.", "name": "Bronco Wine Co.", "context": "Grower · Fresno County" },
+    "3": { "quote": "WIOA reporting that took us a week now exports in a click. Our funders noticed.", "translation": "Los reportes WIOA que nos tomaban una semana ahora se exportan con un clic. Nuestros financiadores lo notaron.", "name": "Fresno EOC", "context": "CDFA-funded training partner" }
+  },
+  "faq": {
+    "1": { "q": "How do I find seasonal farm work in Fresno County?", "a": "Sign up with your phone, choose your county and skills, and AgConn will text you when matching jobs go live. Every employer in the Valley list has a confirmed CA DIR/DLSE license. You can also browse jobs without signing up — only the apply step asks for your phone." },
+    "2": { "q": "Do I need a smartphone or an app to use AgConn?", "a": "No. The web page works on any phone with a browser, and we send job alerts by SMS. There's no app to install, no app store, and no email required for workers." },
+    "3": { "q": "What is a Farm Labor Contractor (FLC) license, and how do you verify it?", "a": "An FLC is a state-licensed labor contractor that hires farmworkers on behalf of growers. AgConn checks every FLC's license status against the CA DIR/DLSE registry before any posting goes live, and re-checks quarterly. Growers (the farms themselves) are verified by business name, EIN, and county records." },
+    "4": { "q": "Are training programs really free?", "a": "Most are. Programs funded by CDFA or F3 grants are free to workers — that's the explicit purpose of those grants. Where a program charges a fee, AgConn shows the fee on the program card before you enroll." },
+    "5": { "q": "What does \"bilingual from byte zero\" actually mean?", "a": "Every interface string, every SMS, every email, and every certificate is written in both English and Spanish from the day it ships. Spanish copy is reviewed by native Mexican-Spanish speakers, not auto-translated. There is no \"primary language\" — they're equal citizens." },
+    "6": { "q": "Will my information be shared with anyone?", "a": "Workers' personal information is never shared without consent. Employers see only what you choose to put on your profile, and only after you apply. Aggregate, anonymized counts (like \"workers placed in Fresno County\") are published on the public dashboard for grant accountability — no individual is ever identifiable." },
+    "7": { "q": "What if my county isn't on the list?", "a": "AgConn launched in Fresno, Tulare, Kern, Kings, and Madera. We expand to new counties as we sign up partner organizations there. Tell us your county and we'll add it to the waitlist — when we open the next county, you'll get the first text." },
+    "8": { "q": "How is AgConn funded?", "a": "AgConn is a California Public Benefit Corporation funded by foundation grants (initially F3) and modest paid plans for employers (Pro and Enterprise). Workers and training organizations always use AgConn for free. Our financials are summarized annually on the About page." }
   }
 }
