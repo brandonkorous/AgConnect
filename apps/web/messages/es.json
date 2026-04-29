@@ -1,0 +1,15 @@
+{
+  "brand": {
+    "product_name": "AgConn"
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "DESDE EL CAMPO",
+      "title": {
+        "line1": "Desde el campo,",
+        "line2": "hasta tu futuro."
+      },
+      "shellNotice": "El esqueleto está activo. El tema Tierra está cargado. Las secciones siguen."
+    }
+  }
+}

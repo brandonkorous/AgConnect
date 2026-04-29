@@ -1,0 +1,15 @@
+{
+  "brand": {
+    "product_name": "AgConn"
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "FROM THE FIELD",
+      "title": {
+        "line1": "From the field,",
+        "line2": "to your future."
+      },
+      "shellNotice": "Shell is up. Tierra theme is loaded. Sections come next."
+    }
+  }
+}

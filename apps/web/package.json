@@ -1,0 +1,36 @@
+{
+  "name": "@agconn/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --turbopack -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.2.4",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "next-intl": "4.11.0",
+    "@fortawesome/fontawesome-svg-core": "7.2.0",
+    "@fortawesome/free-solid-svg-icons": "7.2.0",
+    "@fortawesome/free-brands-svg-icons": "7.2.0",
+    "@fortawesome/react-fontawesome": "3.3.1",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "4.2.4",
+    "@tailwindcss/postcss": "4.2.4",
+    "daisyui": "5.5.19",
+    "postcss": "^8.5.0",
+    "typescript": "6.0.3",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.2.4"
+  }
+}
