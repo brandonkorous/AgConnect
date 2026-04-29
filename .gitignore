@@ -42,3 +42,10 @@ coverage/
 # Misc
 .turbo/
 .cache/
+
+# Playwright + dev artifacts
+.playwright-mcp/
+test-results/
+playwright-report/
+landing-*.png
+landing-*.jpeg
