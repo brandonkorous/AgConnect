@@ -278,6 +278,41 @@ export const auditRegistry = {
     retentionDays: 1460,
     metadata: ['shiftId', 'assignmentId', 'fields'],
   },
+  'employer.payroll.period.created': {
+    resourceType: 'payroll_period',
+    retentionDays: 2555,
+    metadata: ['periodId', 'startDate', 'endDate'],
+  },
+  'employer.payroll.period.status_changed': {
+    resourceType: 'payroll_period',
+    retentionDays: 2555,
+    metadata: ['periodId', 'fromStatus', 'toStatus'],
+  },
+  'employer.payroll.line.updated': {
+    resourceType: 'payroll_line',
+    retentionDays: 2555,
+    metadata: ['lineId', 'periodId', 'fields'],
+  },
+  'employer.compliance.item.created': {
+    resourceType: 'compliance_item',
+    retentionDays: 2555,
+    metadata: ['itemId', 'category', 'itemKey'],
+  },
+  'employer.compliance.item.updated': {
+    resourceType: 'compliance_item',
+    retentionDays: 2555,
+    metadata: ['itemId', 'fields'],
+  },
+  'employer.message.conversation.created': {
+    resourceType: 'conversation',
+    retentionDays: 1460,
+    metadata: ['conversationId', 'participantCount'],
+  },
+  'employer.message.sent': {
+    resourceType: 'message',
+    retentionDays: 1460,
+    metadata: ['conversationId', 'channel'],
+  },
 } as const satisfies Record<string, RegistryEntry>;
 
 export type AuditAction = keyof typeof auditRegistry;

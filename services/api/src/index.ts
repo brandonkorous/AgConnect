@@ -42,6 +42,10 @@ import {
 import { employerBillingRoutes } from './employer/billing/routes';
 import { employerCrewsRoutes } from './employer/crews/routes';
 import { employerShiftsRoutes } from './employer/shifts/routes';
+import { employerPayrollRoutes } from './employer/payroll/routes';
+import { employerComplianceRoutes } from './employer/compliance/routes';
+import { employerMessagesRoutes } from './employer/messages/routes';
+import { employerReportsRoutes } from './employer/reports/routes';
 
 const app = new Hono<{ Variables: AuditCtxVars }>();
 
@@ -109,6 +113,8 @@ app.get('/health', (c) => ok(c, { status: 'ok' }));
 app.get('/ready', (c) => ok(c, { status: 'ready' }));
 
 app.route('/v1/landing', landingRoutes);
+app.route('/v1/landing/jobs', publicJobsRoutes);
+app.route('/v1/landing/training', publicTrainingRoutes);
 app.route('/v1/me', meRoutes);
 app.route('/v1/me/invitations', meInvitationsRoutes);
 app.route('/v1/me/enrollments', enrollmentsRoutes);
@@ -132,6 +138,10 @@ app.route('/v1/employer/invitations', employerInvitationsRoutes);
 app.route('/v1/employer/billing', employerBillingRoutes);
 app.route('/v1/employer/crews', employerCrewsRoutes);
 app.route('/v1/employer/shifts', employerShiftsRoutes);
+app.route('/v1/employer/payroll', employerPayrollRoutes);
+app.route('/v1/employer/compliance', employerComplianceRoutes);
+app.route('/v1/employer/messages', employerMessagesRoutes);
+app.route('/v1/employer/reports', employerReportsRoutes);
 app.route('/v1/webhooks/resend', resendWebhookRoutes);
 app.route('/v1/webhooks/clerk', clerkWebhookRoutes);
 app.route('/v1/webhooks/twilio', twilioWebhookRoutes);

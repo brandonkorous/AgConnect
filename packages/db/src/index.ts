@@ -49,6 +49,10 @@ export {
   CrewMemberRole,
   ShiftStatus,
   ShiftAssignmentStatus,
+  PayrollPeriodStatus,
+  ComplianceItemStatus,
+  MessageChannel,
+  MessageDirection,
 } from '@prisma/client';
 export type {
   Tenant,
@@ -77,6 +81,12 @@ export type {
   CrewMember,
   Shift,
   ShiftAssignment,
+  PayrollPeriod,
+  PayrollLine,
+  ComplianceItem,
+  Conversation,
+  ConversationParticipant,
+  Message,
 } from '@prisma/client';
 
 export type Db = PrismaClient;

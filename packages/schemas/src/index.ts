@@ -12,4 +12,8 @@ export * from './employer-jobs';
 export * from './employer-applications';
 export * from './employer-workers';
 export * from './employer-crews';
+export * from './employer-payroll';
+export * from './employer-compliance';
+export * from './employer-messages';
+export * from './employer-reports';
 export * from './billing';

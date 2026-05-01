@@ -181,23 +181,25 @@
       "headline": "Números que vale la pena reportar.",
       "body": "Cada métrica aquí es defendible para subvenciones: contada desde registros, exportable en formatos alineados con WIOA, y auditada contra los datos fuente cada noche.",
       "tile": {
-        "workers": {
+        "workersPlaced": {
           "label": "Trabajadores colocados",
           "body": "Contrataciones de temporada verificadas en Fresno, Tulare, Kern, Kings y Madera"
         },
-        "wage": {
-          "label": "Salario promedio al contratar",
-          "body": "$3.40 sobre el mínimo agrícola de CA — cada tarifa por hora capturada al contratar"
+        "medianWage": {
+          "label": "Salario mediano al contratar",
+          "body": "Sobre el mínimo agrícola de CA — cada tarifa por hora capturada al contratar"
         },
-        "retention": {
-          "label": "Retención Q2→Q4",
-          "body": "De los trabajadores colocados que siguen empleados en el seguimiento del segundo trimestre"
+        "trainingsCompleted": {
+          "label": "Capacitaciones completadas",
+          "body": "Certificados bilingües obtenidos a través de programas de CDFA y F3"
         },
-        "certs": {
-          "label": "Certificados bilingües",
-          "body": "Emitidos a través de programas de capacitación financiados por CDFA y F3 en 2026"
+        "verifiedEmployers": {
+          "label": "Empleadores verificados",
+          "body": "Licencia FLC o atestación de productor revisada a mano antes de cualquier publicación"
         }
       },
+      "coming_soon": "Los números aparecerán cuando crucemos el umbral de reporte — próximamente.",
+      "tile_coming_soon": "Próximamente",
       "cta": {
         "dashboard": "¿Quieres profundizar? Nuestro panel público se actualiza cada noche.",
         "link": "Abrir el panel de impacto"
@@ -1536,6 +1538,91 @@
       "share_title": "Compartir este trabajo",
       "apply_via_sms": "O envía JOB al (559) 555-0142",
       "apply_by_label": "Aplicar antes de"
+    },
+    "saved_searches": {
+      "meta": { "title": "Búsquedas guardadas" },
+      "eyebrow": "Recibe avisos cuando aparezcan coincidencias",
+      "title": { "lead": "Tus búsquedas", "em": "guardadas" },
+      "sub": "Te enviamos texto o correo cuando hay trabajos nuevos que coinciden con tus filtros. Pausa los avisos cuando quieras.",
+      "add": "Nueva búsqueda",
+      "alerts": {
+        "pause": "Pausar avisos",
+        "resume": "Reanudar avisos",
+        "both": "SMS + Correo"
+      },
+      "last_notified": "Último aviso {date}",
+      "empty": {
+        "title": "No tienes búsquedas guardadas.",
+        "body": "Guarda una combinación de filtros desde Buscar trabajos para recibir avisos.",
+        "cta_browse": "Buscar trabajos"
+      },
+      "form": {
+        "title": "Nueva búsqueda guardada",
+        "name": "Nombre (opcional)",
+        "name_placeholder": "Cosecha de uva en Madera",
+        "county": "Condado",
+        "wage_min": "Salario mínimo por hora ($)",
+        "alert_channel": "Avisarme por",
+        "channel": {
+          "sms": "SMS", "email": "Correo",
+          "both": "Ambos", "none": "No avisar"
+        },
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando…",
+        "error": "No se pudo guardar. Intenta de nuevo.",
+        "error_phone": "Agrega un teléfono para recibir avisos por SMS."
+      }
+    }
+  },
+  "public_jobs": {
+    "meta": {
+      "title": "Trabajos agrícolas en el Valle Central de California · AgConn",
+      "description": "Trabajos agrícolas verificados en todo el Valle Central. Inscríbete gratis para postular por SMS — no necesitas inglés."
+    },
+    "h1": "Trabajos agrícolas en el Valle Central",
+    "intro": "Empleadores verificados, salarios justos y protecciones reales. Explora vacantes o inscríbete para postular por SMS en inglés o español.",
+    "empty": "No hay trabajos activos por ahora. Vuelve pronto — se publican vacantes nuevas cada día durante la temporada.",
+    "load_more": "Cargar más →",
+    "detail": {
+      "back": "Todos los trabajos",
+      "verified": "Verificado",
+      "wage_label": "Pago",
+      "starts_on": "Inicia {date}",
+      "about": "Sobre este trabajo",
+      "housing": "Vivienda incluida",
+      "transport": "Transporte incluido",
+      "apply_cta": "Inscríbete para postular",
+      "signin_note": "Gratis · 60 segundos · Solo necesitamos tu número de teléfono.",
+      "sms_label": "Postular por SMS",
+      "apply_by_label": "Aplicar antes de"
+    }
+  },
+  "public_training": {
+    "meta": {
+      "title": "Capacitación agrícola gratuita · AgConn",
+      "description": "Programas de capacitación agrícola financiados por CDFA y F3 en el Valle Central. Obtén certificaciones que aumentan tu salario."
+    },
+    "h1": "Capacitación agrícola gratuita",
+    "intro": "Certificaciones gratuitas financiadas por CDFA y la iniciativa F3. La mayoría paga un estipendio durante la capacitación y desbloquean puestos mejor pagados.",
+    "empty": "No hay programas activos ahora. Vuelve pronto.",
+    "load_more": "Cargar más →",
+    "detail": {
+      "back": "Todos los programas",
+      "fund_label": "Financiado por {fund}",
+      "free": "Gratis",
+      "cost": "Costo",
+      "starts_on": "Inicia {date}",
+      "ends_on": "Termina {date}",
+      "about": "Sobre esta capacitación",
+      "topics": "Temas",
+      "you_will_receive": "Recibirás",
+      "cert": "Un certificado bilingüe",
+      "reminders": "Mensajes de recordatorio antes de cada sesión",
+      "apply_cta": "Inscríbete para participar",
+      "signin_note": "Gratis · 60 segundos · Solo necesitamos tu número de teléfono.",
+      "spots_left": "{n} de {capacity} cupos disponibles",
+      "full": "Lleno"
     }
   },
   "shell": {
@@ -1884,6 +1971,38 @@
         "close": "Cerrar",
         "duplicate": "Duplicar"
       },
+      "list_head": {
+        "eyebrow": "Publicaciones",
+        "title_a": "Publicaciones",
+        "title_b": "de empleo",
+        "summary": "{open, plural, =0 {Sin publicaciones abiertas} one {1 publicación abierta} other {# publicaciones abiertas}} · {spots} puestos restantes · {applicants} aplicantes esta semana",
+        "duplicate": "Duplicar publicación",
+        "all_crops": "Todos los cultivos",
+        "sort_urgent": "Ordenar: Más urgentes",
+        "tab": {
+          "all": "Todas",
+          "open": "Abiertas",
+          "urgent": "Urgentes",
+          "filled": "Completas",
+          "drafts": "Borradores",
+          "closed": "Cerradas"
+        },
+        "status": {
+          "filled": "Lleno",
+          "closed": "Cerrado",
+          "draft": "Borrador",
+          "spots_open": "{n, plural, =1 {1 puesto abierto} other {# puestos abiertos}}"
+        },
+        "starts": "Inicia",
+        "crew": "Cuadrilla",
+        "confirmed": "confirmados",
+        "applicants_short": "aplicantes",
+        "new_short": "nuevos",
+        "review_n": "Revisar {n}",
+        "templates_title": "Ahorra 6 minutos — usa una plantilla",
+        "templates_body": "3 plantillas guardadas: Cosecha de uva · Vareo de almendro · Línea de selección. Edita fechas y publica.",
+        "templates_cta": "Ver plantillas"
+      },
       "form": {
         "section_title": "Título",
         "section_description": "Descripción",
@@ -1935,6 +2054,38 @@
       "reviewed": "Revisado",
       "hired": "Contratado",
       "rejected": "Rechazado"
+    },
+    "candidates": {
+      "title": "Candidatos",
+      "title_a": "Candidatos",
+      "title_b": "· {count} activos",
+      "eyebrow": "Embudo",
+      "summary": "{new} nuevos · {reviewed} revisados · {interview} en entrevista · {hired} contratados esta temporada",
+      "filters": "Filtros",
+      "bulk_message": "Mensaje masivo",
+      "empty": "Aún sin candidatos — comparte tu publicación para empezar a recibir solicitudes.",
+      "tab": {
+        "all": "Todos",
+        "new": "Nuevos",
+        "reviewed": "Revisados",
+        "interview": "Entrevista",
+        "offer": "Oferta",
+        "hired": "Contratados",
+        "archived": "Archivados"
+      },
+      "col": {
+        "candidate": "Candidato",
+        "applied_for": "Aplicó para",
+        "match": "Afinidad",
+        "skills": "Habilidades",
+        "stage": "Etapa",
+        "applied": "Aplicado",
+        "actions": "Acciones"
+      },
+      "action": {
+        "message": "Mensaje",
+        "hire": "Contratar"
+      }
     },
     "kanban": {
       "applied": "Aplicados",

@@ -1,30 +1,104 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { listInbox } from '@/lib/api/employer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilter, faBolt } from '@fortawesome/free-solid-svg-icons';
+import { listInbox, type ApplicantCardView } from '@/lib/api/employer';
+import {
+  CandidateRowActions,
+  RowCheckbox,
+} from '@/components/employer/candidates/RowActions';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'employer.inbox' });
+  const t = await getTranslations({ locale, namespace: 'employer.candidates' });
   return { title: `AgConn — ${t('title')}` };
 }
 
-export default async function EmployerInboxPage({ params }: Props) {
+export default async function CandidatesPage({ params }: Props) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'employer.inbox' });
+  const t = await getTranslations({ locale, namespace: 'employer.candidates' });
+  const tStatus = await getTranslations({ locale, namespace: 'employer.kanban' });
   const apps = await listInbox();
+
+  const counts = {
+    all: apps.length,
+    new: apps.filter((a) => a.status === 'applied').length,
+    reviewed: apps.filter((a) => a.status === 'reviewed').length,
+    interview: 0,
+    offer: 0,
+    hired: apps.filter((a) => a.status === 'hired').length,
+    archived: apps.filter((a) => a.status === 'rejected' || a.status === 'withdrawn').length,
+  };
+
+  const tabs: Array<{
+    key: 'all' | 'new' | 'reviewed' | 'interview' | 'offer' | 'hired' | 'archived';
+    n: number;
+    active?: boolean;
+  }> = [
+    { key: 'all', n: counts.all, active: true },
+    { key: 'new', n: counts.new },
+    { key: 'reviewed', n: counts.reviewed },
+    { key: 'interview', n: counts.interview },
+    { key: 'offer', n: counts.offer },
+    { key: 'hired', n: counts.hired },
+    { key: 'archived', n: counts.archived },
+  ];
 
   return (
     <div className="px-8 pb-16 pt-8">
-      <div className="mb-6">
-        <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
-          pipeline
-        </p>
-        <h1 className="font-display mt-1 text-4xl font-light leading-tight tracking-tight">
-          {t('title')}
-        </h1>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+            {t('eyebrow')}
+          </p>
+          <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
+            {t('title_a')}{' '}
+            <em className="text-primary not-italic font-light">
+              {t('title_b', { count: counts.all })}
+            </em>
+          </h1>
+          <div className="text-base-content/70 mt-2 text-sm">
+            {t('summary', {
+              new: counts.new,
+              reviewed: counts.reviewed,
+              interview: counts.interview,
+              hired: counts.hired,
+            })}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
+          >
+            <FontAwesomeIcon icon={faFilter} className="h-3 w-3" />
+            {t('filters')}
+          </button>
+          <button type="button" className="btn btn-sm btn-primary rounded-full">
+            <FontAwesomeIcon icon={faBolt} className="h-3 w-3" />
+            {t('bulk_message')}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-base-100 border-base-300 mb-5 inline-flex w-fit gap-1 rounded-full border p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            className={[
+              'rounded-full px-3.5 py-1.5 text-xs font-semibold',
+              tab.active
+                ? 'bg-base-content text-base-100'
+                : 'text-base-content/70',
+            ].join(' ')}
+          >
+            {t(`tab.${tab.key}`)} <span className="opacity-60 font-mono">{tab.n}</span>
+          </button>
+        ))}
       </div>
 
       {apps.length === 0 ? (
@@ -33,41 +107,25 @@ export default async function EmployerInboxPage({ params }: Props) {
         </div>
       ) : (
         <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border">
+          <div className="bg-base-200 border-base-300 text-base-content/60 grid grid-cols-[24px_2fr_1.4fr_0.8fr_1.4fr_0.9fr_0.8fr_90px] gap-3 border-b px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-wider">
+            <input type="checkbox" className="checkbox checkbox-xs" disabled />
+            <span>{t('col.candidate')}</span>
+            <span>{t('col.applied_for')}</span>
+            <span>{t('col.match')}</span>
+            <span>{t('col.skills')}</span>
+            <span>{t('col.stage')}</span>
+            <span>{t('col.applied')}</span>
+            <span className="text-right">{t('col.actions')}</span>
+          </div>
           {apps.map((a, i) => (
-            <Link
+            <Row
               key={a.id}
-              href={`/${locale}/employer/applications/${a.id}`}
-              className={[
-                'border-base-300 hover:bg-base-200 grid grid-cols-[40px_1.6fr_1fr_0.8fr_0.8fr_72px] items-center gap-4 px-5 py-4 transition-colors',
-                i < apps.length - 1 ? 'border-b' : '',
-              ].join(' ')}
-            >
-              <div className="bg-primary text-primary-content grid h-9 w-9 place-items-center rounded-full text-xs font-bold">
-                {a.worker.firstName[0]}
-                {a.worker.lastInitial}
-              </div>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">
-                  {a.worker.firstName} {a.worker.lastInitial}.
-                </div>
-                <div className="text-base-content/60 truncate text-xs">{a.worker.county}</div>
-              </div>
-              <div className="text-base-content/80 truncate text-sm">
-                {locale === 'es' ? a.job.titleEs : a.job.titleEn}
-              </div>
-              <div className="text-base-content/70 font-mono text-xs">
-                {a.worker.skillsMatchCount} match
-              </div>
-              <span
-                className={[
-                  'rounded-full px-2 py-0.5 text-center font-mono text-[10px] font-bold uppercase',
-                  statusToneClass(a.status),
-                ].join(' ')}
-              >
-                {t(a.status)}
-              </span>
-              <div className="text-base-content/60 text-right text-xs">{relTime(a.appliedAt)}</div>
-            </Link>
+              a={a}
+              locale={locale}
+              t={t}
+              tStatus={tStatus}
+              border={i < apps.length - 1}
+            />
           ))}
         </div>
       )}
@@ -75,26 +133,113 @@ export default async function EmployerInboxPage({ params }: Props) {
   );
 }
 
-function statusToneClass(status: string): string {
-  switch (status) {
-    case 'applied':
-      return 'bg-warning/15 text-warning';
-    case 'reviewed':
-      return 'bg-info/15 text-info';
-    case 'hired':
-      return 'bg-success/15 text-success';
-    case 'rejected':
-      return 'bg-error/15 text-error';
-    default:
-      return 'bg-base-200 text-base-content/60';
-  }
+function Row({
+  a,
+  locale,
+  t,
+  tStatus,
+  border,
+}: {
+  a: ApplicantCardView;
+  locale: string;
+  t: Awaited<ReturnType<typeof getTranslations>>;
+  tStatus: Awaited<ReturnType<typeof getTranslations>>;
+  border: boolean;
+}) {
+  const matchPct = Math.min(100, Math.round((a.worker.skillsMatchCount / 3) * 100));
+  const stageTone =
+    a.status === 'applied'
+      ? 'bg-base-200 text-base-content/70'
+      : a.status === 'reviewed'
+        ? 'bg-primary/15 text-primary'
+        : a.status === 'hired'
+          ? 'bg-success/15 text-success'
+          : 'bg-error/15 text-error';
+
+  return (
+    <Link
+      href={`/${locale}/employer/applications/${a.id}`}
+      className={[
+        'hover:bg-base-200 grid grid-cols-[24px_2fr_1.4fr_0.8fr_1.4fr_0.9fr_0.8fr_90px] items-center gap-3 px-5 py-3.5 text-sm transition-colors',
+        border ? 'border-base-300 border-b' : '',
+      ].join(' ')}
+    >
+      <RowCheckbox />
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="bg-base-content text-base-100 grid h-8 w-8 shrink-0 place-items-center rounded-full font-mono text-[11px] font-bold">
+          {(a.worker.firstName[0] ?? '').toUpperCase()}
+          {a.worker.lastInitial.toUpperCase()}
+        </div>
+        <div className="min-w-0">
+          <div className="truncate font-semibold">
+            {a.worker.firstName} {a.worker.lastInitial}.
+          </div>
+          <div className="text-base-content/60 truncate text-[11px]">
+            {a.worker.county ?? '—'}
+          </div>
+        </div>
+      </div>
+      <div className="min-w-0">
+        <div className="truncate font-medium">
+          {locale === 'es' ? a.job.titleEs : a.job.titleEn}
+        </div>
+        <div className="text-base-content/60 truncate text-[11px]">
+          {a.worker.skills.slice(0, 2).join(' · ')}
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <div
+          className="grid h-9 w-9 place-items-center rounded-full"
+          style={{
+            background: `conic-gradient(var(--color-primary) ${matchPct * 3.6}deg, var(--color-base-200) 0)`,
+          }}
+        >
+          <div className="bg-base-100 text-primary grid h-7 w-7 place-items-center rounded-full font-mono text-[10px] font-bold">
+            {matchPct}
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {a.worker.skills.slice(0, 3).map((s) => (
+          <span
+            key={s}
+            className="bg-base-200 text-base-content/80 rounded px-1.5 py-0.5 text-[10px] font-semibold"
+          >
+            {s}
+          </span>
+        ))}
+      </div>
+      <div>
+        <span
+          className={[
+            'rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider',
+            stageTone,
+          ].join(' ')}
+        >
+          {tStatus(a.status === 'withdrawn' ? 'rejected' : a.status)}
+        </span>
+      </div>
+      <div className="text-base-content/60 text-[11px]">{relTime(a.appliedAt, locale)}</div>
+      <CandidateRowActions
+        applicationId={a.id}
+        messageLabel={t('action.message')}
+        hireLabel={t('action.hire')}
+      />
+    </Link>
+  );
 }
 
-function relTime(iso: string): string {
+function relTime(iso: string, locale: string): string {
   const d = new Date(iso).getTime();
   const diff = Date.now() - d;
   const h = Math.floor(diff / 3_600_000);
+  const days = Math.floor(h / 24);
+  if (locale === 'es') {
+    if (h < 1) return 'ahora';
+    if (h < 24) return `hace ${h}h`;
+    return `hace ${days}d`;
+  }
   if (h < 1) return 'now';
   if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
+  return `${days}d ago`;
 }

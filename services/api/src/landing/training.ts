@@ -56,7 +56,7 @@ publicTrainingRoutes.get('/:slug', async (c) => {
     include: { org: { include: { employerProfile: true } } },
   });
   if (!program) return err(c, 404, 'not_found');
-  if (program.status === ProgramStatus.draft || program.status === ProgramStatus.archived) {
+  if (program.status === ProgramStatus.draft || program.status === ProgramStatus.canceled) {
     return err(c, 404, 'not_found');
   }
 

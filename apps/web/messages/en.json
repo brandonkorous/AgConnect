@@ -181,23 +181,25 @@
       "headline": "Numbers worth reporting on.",
       "body": "Every metric here is grant-defensible: counted from records, exportable in WIOA-aligned formats, and audited against the source data nightly.",
       "tile": {
-        "workers": {
+        "workersPlaced": {
           "label": "Workers placed",
           "body": "Verified seasonal hires across Fresno, Tulare, Kern, Kings & Madera"
         },
-        "wage": {
-          "label": "Avg. wage at hire",
-          "body": "$3.40 above CA agricultural minimum — every hourly rate captured at hire"
+        "medianWage": {
+          "label": "Median wage at hire",
+          "body": "Above CA agricultural minimum — every hourly rate captured at hire"
         },
-        "retention": {
-          "label": "Q2→Q4 retention",
-          "body": "Of placed workers still employed at the second-quarter follow-up"
+        "trainingsCompleted": {
+          "label": "Trainings completed",
+          "body": "Bilingual certificates earned through CDFA & F3-funded programs"
         },
-        "certs": {
-          "label": "Bilingual certificates",
-          "body": "Issued through CDFA & F3-funded training programs in 2026"
+        "verifiedEmployers": {
+          "label": "Verified employers",
+          "body": "FLC license or grower attestation checked by hand before any posting"
         }
       },
+      "coming_soon": "Numbers go live as soon as we cross the reporting floor — coming soon.",
+      "tile_coming_soon": "Coming soon",
       "cta": {
         "dashboard": "Want to dig in? Our public dashboard updates nightly.",
         "link": "Open the impact dashboard"
@@ -222,6 +224,8 @@
         "verified_flc": "VERIFIED FLC",
         "verified_grower": "VERIFIED GROWER",
         "hourly": "Hourly",
+        "daily": "Daily",
+        "piece": "Piece-rate",
         "apply": "Apply"
       },
       "jobs": {
@@ -281,7 +285,8 @@
       "body": "Programs run by Fresno EOC, CRLA, and other regional partners — funded by CDFA, F3, and CalOSBA. Every completion produces a bilingual, e-signed certificate that lives in your skills wallet.",
       "card": {
         "free": "Free",
-        "enroll": "Enroll"
+        "enroll": "Enroll",
+        "spots_left": "{n, plural, =0 {Waitlist only} =1 {1 of {capacity} spots left} other {# of {capacity} spots left}}"
       },
       "programs": {
         "1": {
@@ -1536,6 +1541,91 @@
       "share_title": "Share this job",
       "apply_via_sms": "Or text JOB to (559) 555-0142",
       "apply_by_label": "Apply by"
+    },
+    "saved_searches": {
+      "meta": { "title": "Saved searches" },
+      "eyebrow": "Get notified when matches appear",
+      "title": { "lead": "Your saved", "em": "searches" },
+      "sub": "We text or email you when new jobs match your filters. Pause alerts any time.",
+      "add": "New saved search",
+      "alerts": {
+        "pause": "Pause alerts",
+        "resume": "Resume alerts",
+        "both": "SMS + Email"
+      },
+      "last_notified": "Last notified {date}",
+      "empty": {
+        "title": "No saved searches yet.",
+        "body": "Save a filter combination from Browse jobs to get alerts.",
+        "cta_browse": "Browse jobs"
+      },
+      "form": {
+        "title": "New saved search",
+        "name": "Name (optional)",
+        "name_placeholder": "Madera grape harvest",
+        "county": "County",
+        "wage_min": "Min hourly wage ($)",
+        "alert_channel": "Notify me by",
+        "channel": {
+          "sms": "SMS", "email": "Email",
+          "both": "Both", "none": "Don't notify"
+        },
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…",
+        "error": "Couldn't save. Try again.",
+        "error_phone": "Add a phone number to get SMS alerts."
+      }
+    }
+  },
+  "public_jobs": {
+    "meta": {
+      "title": "California Central Valley farm jobs · AgConn",
+      "description": "Verified farm jobs across the Central Valley. Sign up free to apply by SMS — no English required."
+    },
+    "h1": "Farm jobs in the Central Valley",
+    "intro": "Verified employers, fair wages, and real protections. Browse openings or sign up to apply by SMS in English or Spanish.",
+    "empty": "No active jobs right now. Check back soon — new postings open daily during the season.",
+    "load_more": "Load more →",
+    "detail": {
+      "back": "All jobs",
+      "verified": "Verified",
+      "wage_label": "Wage",
+      "starts_on": "Starts {date}",
+      "about": "About this job",
+      "housing": "Housing provided",
+      "transport": "Transportation provided",
+      "apply_cta": "Sign up to apply",
+      "signin_note": "Free · 60 seconds · Your phone number is all we need.",
+      "sms_label": "Apply by SMS",
+      "apply_by_label": "Apply by"
+    }
+  },
+  "public_training": {
+    "meta": {
+      "title": "Free agriculture training · AgConn",
+      "description": "CDFA + F3-funded farm training programs across the Central Valley. Earn certifications that raise your wage."
+    },
+    "h1": "Free agriculture training",
+    "intro": "Free certifications funded by CDFA and the F3 initiative. Most pay a stipend during training and unlock higher-paying roles.",
+    "empty": "No active programs right now. Check back soon.",
+    "load_more": "Load more →",
+    "detail": {
+      "back": "All programs",
+      "fund_label": "{fund}-funded",
+      "free": "Free",
+      "cost": "Cost",
+      "starts_on": "Starts {date}",
+      "ends_on": "Ends {date}",
+      "about": "About this training",
+      "topics": "Topics",
+      "you_will_receive": "You'll receive",
+      "cert": "A bilingual certificate",
+      "reminders": "Reminder texts before each session",
+      "apply_cta": "Sign up to enroll",
+      "signin_note": "Free · 60 seconds · Your phone number is all we need.",
+      "spots_left": "{n} of {capacity} spots left",
+      "full": "Full"
     }
   },
   "shell": {
@@ -1886,6 +1976,38 @@
         "close": "Close",
         "duplicate": "Duplicate"
       },
+      "list_head": {
+        "eyebrow": "Postings",
+        "title_a": "Job",
+        "title_b": "postings",
+        "summary": "{open, plural, =0 {No open postings} one {1 open posting} other {# open postings}} · {spots} spots remaining · {applicants} applicants this week",
+        "duplicate": "Duplicate posting",
+        "all_crops": "All crops",
+        "sort_urgent": "Sort: Most urgent",
+        "tab": {
+          "all": "All postings",
+          "open": "Open",
+          "urgent": "Urgent",
+          "filled": "Filled",
+          "drafts": "Drafts",
+          "closed": "Closed"
+        },
+        "status": {
+          "filled": "Filled",
+          "closed": "Closed",
+          "draft": "Draft",
+          "spots_open": "{n, plural, =1 {1 spot open} other {# spots open}}"
+        },
+        "starts": "Starts",
+        "crew": "Crew",
+        "confirmed": "confirmed",
+        "applicants_short": "applicants",
+        "new_short": "new",
+        "review_n": "Review {n}",
+        "templates_title": "Save 6 minutes — repost from a template",
+        "templates_body": "3 saved templates: Grape harvest crew · Almond sweep crew · Sort line. Edit dates and post.",
+        "templates_cta": "Browse templates"
+      },
       "form": {
         "section_title": "Title",
         "section_description": "Description",
@@ -1937,6 +2059,38 @@
       "reviewed": "Reviewed",
       "hired": "Hired",
       "rejected": "Rejected"
+    },
+    "candidates": {
+      "title": "Candidates",
+      "title_a": "Candidates",
+      "title_b": "· {count} active",
+      "eyebrow": "Pipeline",
+      "summary": "{new} new · {reviewed} reviewed · {interview} in interview · {hired} hired this season",
+      "filters": "Filters",
+      "bulk_message": "Bulk message",
+      "empty": "No candidates yet — share your posting to start receiving applications.",
+      "tab": {
+        "all": "All",
+        "new": "New",
+        "reviewed": "Reviewed",
+        "interview": "Interview",
+        "offer": "Offer",
+        "hired": "Hired",
+        "archived": "Archived"
+      },
+      "col": {
+        "candidate": "Candidate",
+        "applied_for": "Applied for",
+        "match": "Match",
+        "skills": "Skills",
+        "stage": "Stage",
+        "applied": "Applied",
+        "actions": "Actions"
+      },
+      "action": {
+        "message": "Message",
+        "hire": "Hire"
+      }
     },
     "kanban": {
       "applied": "Applied",

@@ -201,6 +201,30 @@ enum ShiftAssignmentStatus {
   completed
 }
 
+enum PayrollPeriodStatus {
+  draft
+  approved
+  paid
+}
+
+enum ComplianceItemStatus {
+  ok
+  warn
+  fail
+}
+
+enum MessageChannel {
+  app
+  sms
+  whatsapp
+  broadcast
+}
+
+enum MessageDirection {
+  inbound
+  outbound
+}
+
 model Tenant {
   id        String       @id @default(uuid()) @db.Uuid
   slug      String       @unique
@@ -234,6 +258,12 @@ model Tenant {
   crewMembers       CrewMember[]
   shifts            Shift[]
   shiftAssignments  ShiftAssignment[]
+  payrollPeriods    PayrollPeriod[]
+  payrollLines      PayrollLine[]
+  complianceItems   ComplianceItem[]
+  conversations     Conversation[]
+  conversationParticipants ConversationParticipant[]
+  messages          Message[]
 
   @@map("tenants")
 }
@@ -366,6 +396,13 @@ model User {
   crewMemberships     CrewMember[]
   shiftsOwned         Shift[]            @relation("ShiftEmployer")
   shiftAssignments    ShiftAssignment[]
+  payrollOwned        PayrollPeriod[]    @relation("PayrollEmployer")
+  payrollApproved     PayrollPeriod[]    @relation("PayrollApprover")
+  payrollLines        PayrollLine[]
+  complianceItems     ComplianceItem[]   @relation("ComplianceEmployer")
+  conversationsOwned  Conversation[]     @relation("ConversationEmployer")
+  conversationParticipations ConversationParticipant[]
+  messagesSent        Message[]
 
   @@index([tenantId])
   @@index([phone])
@@ -907,4 +944,154 @@ model ShiftAssignment {
   @@index([workerUserId, shiftId])
   @@index([status])
   @@map("shift_assignments")
+}
+
+// Payroll period — bounded date range with aggregated line items.
+// See docs/20-employer/07-payroll/02-data-model.md.
+model PayrollPeriod {
+  id            String              @id @default(uuid()) @db.Uuid
+  tenantId      String              @db.Uuid             @map("tenant_id")
+  employerId    String                                    @map("employer_id")
+  startDate     DateTime            @db.Date              @map("start_date")
+  endDate       DateTime            @db.Date              @map("end_date")
+  payDate       DateTime            @db.Date              @map("pay_date")
+  status        PayrollPeriodStatus @default(draft)
+  approvedAt    DateTime?                                  @map("approved_at")
+  approvedById  String?                                    @map("approved_by_id")
+  paidAt        DateTime?                                  @map("paid_at")
+  createdAt     DateTime            @default(now())       @map("created_at")
+  updatedAt     DateTime            @updatedAt            @map("updated_at")
+
+  tenant        Tenant            @relation(fields: [tenantId], references: [id])
+  employer      User              @relation("PayrollEmployer", fields: [employerId], references: [id])
+  approvedBy    User?             @relation("PayrollApprover", fields: [approvedById], references: [id])
+  lines         PayrollLine[]
+
+  @@index([tenantId])
+  @@index([employerId, startDate])
+  @@index([status])
+  @@map("payroll_periods")
+}
+
+model PayrollLine {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid             @map("tenant_id")
+  periodId        String   @db.Uuid             @map("period_id")
+  workerUserId    String                          @map("worker_user_id")
+  role            String?
+  hours           Decimal  @db.Decimal(6, 2)   @default(0)
+  overtimeHours   Decimal  @db.Decimal(6, 2)   @default(0)              @map("overtime_hours")
+  grossCents      Int      @default(0)                                  @map("gross_cents")
+  bonusCents      Int      @default(0)                                  @map("bonus_cents")
+  taxesCents      Int      @default(0)                                  @map("taxes_cents")
+  netCents        Int      @default(0)                                  @map("net_cents")
+  notes           String?
+  approvedAt      DateTime?                                              @map("approved_at")
+  createdAt       DateTime @default(now())                              @map("created_at")
+  updatedAt       DateTime @updatedAt                                   @map("updated_at")
+
+  tenant          Tenant        @relation(fields: [tenantId], references: [id])
+  period          PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  worker          User          @relation(fields: [workerUserId], references: [id])
+
+  @@unique([periodId, workerUserId])
+  @@index([tenantId])
+  @@index([workerUserId])
+  @@map("payroll_lines")
+}
+
+// Compliance — flat item registry per employer.
+// See docs/20-employer/08-compliance/02-data-model.md.
+model ComplianceItem {
+  id           String                @id @default(uuid()) @db.Uuid
+  tenantId     String                @db.Uuid             @map("tenant_id")
+  employerId   String                                      @map("employer_id")
+  category     String                                      // 'documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', custom
+  itemKey      String                                      @map("item_key")
+  label        String
+  status       ComplianceItemStatus  @default(ok)
+  details      String?
+  evidenceUrl  String?                                     @map("evidence_url")
+  dueAt        DateTime?                                   @map("due_at")
+  resolvedAt   DateTime?                                   @map("resolved_at")
+  createdAt    DateTime              @default(now())       @map("created_at")
+  updatedAt    DateTime              @updatedAt            @map("updated_at")
+
+  tenant       Tenant @relation(fields: [tenantId], references: [id])
+  employer     User   @relation("ComplianceEmployer", fields: [employerId], references: [id])
+
+  @@unique([employerId, category, itemKey])
+  @@index([tenantId])
+  @@index([employerId, status])
+  @@index([dueAt])
+  @@map("compliance_items")
+}
+
+// In-app messaging — SMS/WhatsApp use existing sms package; this is the
+// per-conversation/per-message log + thread index for the messages UI.
+// See docs/20-employer/09-messaging/02-data-model.md.
+model Conversation {
+  id            String         @id @default(uuid()) @db.Uuid
+  tenantId      String         @db.Uuid             @map("tenant_id")
+  employerId    String                              @map("employer_id")
+  title         String
+  isGroup       Boolean        @default(false)     @map("is_group")
+  channel       MessageChannel @default(app)
+  pinnedShiftId String?        @db.Uuid            @map("pinned_shift_id")
+  lastMessageAt DateTime?                          @map("last_message_at")
+  createdAt     DateTime       @default(now())     @map("created_at")
+  updatedAt     DateTime       @updatedAt          @map("updated_at")
+  deletedAt     DateTime?                          @map("deleted_at")
+
+  tenant        Tenant                    @relation(fields: [tenantId], references: [id])
+  employer      User                      @relation("ConversationEmployer", fields: [employerId], references: [id])
+  participants  ConversationParticipant[]
+  messages      Message[]
+
+  @@index([tenantId])
+  @@index([employerId, lastMessageAt])
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id              String         @id @default(uuid()) @db.Uuid
+  tenantId        String         @db.Uuid             @map("tenant_id")
+  conversationId  String         @db.Uuid             @map("conversation_id")
+  userId          String                              @map("user_id")
+  joinedAt        DateTime       @default(now())     @map("joined_at")
+  leftAt          DateTime?                          @map("left_at")
+  unreadCount     Int            @default(0)         @map("unread_count")
+  lastReadAt      DateTime?                          @map("last_read_at")
+
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+  @@index([tenantId])
+  @@index([userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id              String           @id @default(uuid()) @db.Uuid
+  tenantId        String           @db.Uuid             @map("tenant_id")
+  conversationId  String           @db.Uuid             @map("conversation_id")
+  senderUserId    String                                @map("sender_user_id")
+  body            String
+  channel         MessageChannel   @default(app)
+  direction       MessageDirection @default(outbound)
+  smsLogId        String?          @db.Uuid             @map("sms_log_id")
+  metadata        Json             @default("{}")
+  createdAt       DateTime         @default(now())     @map("created_at")
+  deletedAt       DateTime?                            @map("deleted_at")
+
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender          User         @relation(fields: [senderUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([conversationId, createdAt])
+  @@index([senderUserId])
+  @@map("messages")
 }

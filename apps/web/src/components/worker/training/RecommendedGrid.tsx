@@ -68,7 +68,7 @@ export function RecommendedGrid({ programs, locale }: Props) {
             >
               <div className="flex items-start gap-3.5">
                 <div className="bg-base-200 text-primary grid h-12 w-12 shrink-0 place-items-center rounded-xl">
-                  <FontAwesomeIcon icon={ICONS[i % ICONS.length]} className="h-5 w-5" />
+                  <FontAwesomeIcon icon={ICONS[i % ICONS.length] ?? faLeaf} className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">

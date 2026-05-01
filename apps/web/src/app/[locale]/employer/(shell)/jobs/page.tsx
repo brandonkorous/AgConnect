@@ -38,14 +38,18 @@ export default async function EmployerJobsPage({ params }: Props) {
     closed: jobs.filter((j) => j.status === 'closed').length,
   };
 
-  const filters = [
+  const filters: Array<{
+    key: 'all' | 'open' | 'urgent' | 'filled' | 'drafts' | 'closed';
+    n: number;
+    active?: boolean;
+  }> = [
     { key: 'all',    n: counts.all,    active: true },
     { key: 'open',   n: counts.open },
     { key: 'urgent', n: counts.urgent },
     { key: 'filled', n: counts.filled },
     { key: 'drafts', n: counts.drafts },
     { key: 'closed', n: counts.closed },
-  ] as const;
+  ];
 
   const totalsLine = tHead('summary', {
     open: counts.open,
