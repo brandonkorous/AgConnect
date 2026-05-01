@@ -42,3 +42,22 @@ body {
 .badge {
     @apply px-3 py-2;
 }
+
+/* Tierra: cream surfaces wash out daisyUI's default 20% base-content border.
+   Lift inputs / selects / textareas to a more visible border so fields read
+   as fields, not as text on a card. Focus state still uses the strong
+   base-content outline daisyUI ships. */
+.input,
+.select,
+.textarea,
+.file-input {
+  --input-color: var(--color-base-300);
+  border-color: var(--color-base-300);
+}
+[data-theme='tierra-dark'] .input,
+[data-theme='tierra-dark'] .select,
+[data-theme='tierra-dark'] .textarea,
+[data-theme='tierra-dark'] .file-input {
+  --input-color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+  border-color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+}

@@ -270,6 +270,7 @@ model Tenant {
   conversations     Conversation[]
   conversationParticipants ConversationParticipant[]
   messages          Message[]
+  translationKeys   TranslationKey[]
 
   @@map("tenants")
 }
@@ -1101,4 +1102,53 @@ model Message {
   @@index([conversationId, createdAt])
   @@index([senderUserId])
   @@map("messages")
+}
+
+// ============================================================================
+// TranslationKey — DB-backed UI copy.
+//
+// The single source of truth for all UI copy. Replaces apps/web/messages/{en,es}.json.
+// next-intl loads messages from this table at request time, cached via
+// unstable_cache with revalidate-tag so admin edits propagate within ~5 min.
+//
+// Tenant override resolution: rows with tenantId = NULL are global defaults.
+// Rows with a specific tenantId override the global default for that tenant
+// (same namespace + key + locale). Resolved at load time, not at write time.
+//
+// Edge runtime carve-out: /og/landing and any other edge-runtime route uses
+// env-var-or-literal for brand primitives (product_name, hero headline) and
+// does NOT call this table. Document new edge routes the same way.
+//
+// See docs/00-foundation/04-i18n/02-data-model.md for the full pattern.
+// ============================================================================
+model TranslationKey {
+  id          String            @id @default(uuid()) @db.Uuid
+  tenantId    String?           @db.Uuid                              @map("tenant_id")
+  namespace   String                                                                              // e.g. "marketing.faq_page", "landing.hero"
+  key         String                                                                              // dot-path within namespace, e.g. "headline", "tile.workersPlaced.label"
+  locale      Lang
+  value       String            @db.Text
+  status      TranslationStatus @default(published)
+  reviewedBy  String?                                                  @map("reviewed_by")
+  reviewedAt  DateTime?                                                @map("reviewed_at")
+  publishedAt DateTime?                                                @map("published_at")
+  createdAt   DateTime          @default(now())                        @map("created_at")
+  updatedAt   DateTime          @updatedAt                             @map("updated_at")
+
+  tenant      Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // NOTE: uniqueness on (tenant_id, namespace, key, locale) is enforced by
+  // partial indexes in the migration SQL (translation_keys_global_unique,
+  // translation_keys_tenant_unique). Prisma doesn't model partial indexes,
+  // so this constraint lives at the SQL layer only. Don't add @@unique here.
+  @@index([tenantId, locale])
+  @@index([namespace, locale])
+  @@map("translation_keys")
+}
+
+enum TranslationStatus {
+  draft
+  needs_review
+  reviewed
+  published
 }

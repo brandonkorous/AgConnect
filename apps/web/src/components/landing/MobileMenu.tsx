@@ -1,24 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { LocaleToggle } from './LocaleToggle';
 import { ThemeToggle } from '@/components/primitives/ThemeToggle';
 
-const links = [
-    { href: '#workers', key: 'for_workers' },
-    { href: '#employers', key: 'for_employers' },
-    { href: '#training-orgs', key: 'training_orgs' },
-    { href: '#how', key: 'how_it_works' },
-    { href: '#pricing', key: 'pricing' },
-    { href: '#faq', key: 'resources' },
-] as const;
+function buildLinks(locale: string) {
+    return [
+        { href: `/${locale}/workers`, key: 'for_workers' },
+        { href: `/${locale}/employers`, key: 'for_employers' },
+        { href: `/${locale}/how-it-works`, key: 'how_it_works' },
+        { href: `/${locale}/pricing`, key: 'pricing' },
+        { href: `/${locale}/partners#training-orgs`, key: 'training_orgs' },
+        { href: `/${locale}/resources`, key: 'resources' },
+    ] as const;
+}
 
 export function MobileMenu() {
     const t = useTranslations('landing.nav');
     const tUtility = useTranslations('landing.utility');
+    const locale = useLocale();
+    const links = buildLinks(locale);
     const themeLabels = {
         light: tUtility('theme.light'),
         dark: tUtility('theme.dark'),
@@ -78,14 +82,14 @@ export function MobileMenu() {
                     </nav>
                     <div className="flex flex-col gap-3 px-5 pb-10">
                         <a
-                            href="#final-cta"
+                            href={`/${locale}/worker/sign-up`}
                             onClick={() => setOpen(false)}
                             className="btn btn-primary btn-lg btn-block"
                         >
                             {t('cta_primary')}
                         </a>
                         <a
-                            href="#signin"
+                            href={`/${locale}/sign-in`}
                             onClick={() => setOpen(false)}
                             className="btn btn-outline btn-primary btn-lg btn-block"
                         >

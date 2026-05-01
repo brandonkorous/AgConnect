@@ -1,4 +1,4 @@
-import { PgBoss } from 'pg-boss';
+import PgBoss from 'pg-boss';
 
 // Thin wrapper around the resume-parser pg-boss queue. Lives here in the API
 // rather than in @agconn/llm because the queue contract is owned by the

@@ -53,6 +53,29 @@ Section vertical padding:
 
 > **Inferred:** Container widths above match the 1440px Tierra landing-page artboard. If the design moves to 1536px or 1600px ultra-wide layouts later, the content max-width should NOT grow past 1280px — Tierra's text columns are deliberately narrower than their container so reading length stays in the 65–75 character ideal.
 
+## One responsive codebase — not a separate mobile site
+
+AgConn is **one fully responsive codebase**, not two. There is no `m.agconn.com`, no `mobile/` directory, no separate mobile-only deploy. Every public surface uses the responsive type scale ([brand/03-typography.md](03-typography.md)), this spacing scale, and Tailwind's breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`) to render correctly across mobile (≥360px), tablet (≥640px), desktop (≥1024px), and wide (≥1440px).
+
+**Reading width vs. page width — they're different.** The "max-width 760px content" callouts that appear in some feature `04-ui.md` files (e.g., FAQ, article body) are **line-length caps for prose**, NOT page-width caps. Pages should always full-bleed via `container mx-auto lg:px-20`; narrow reading columns nest inside that bleed.
+
+```tsx
+// Wrong — page caps at 768px on a 2000px viewport (looks mobile-only)
+<div className="mx-auto max-w-3xl px-5 py-24">…</div>
+
+// Right — full-bleed page, narrow reading column nested
+<section className="bg-base-100">
+  <div className="container mx-auto px-5 py-24 md:px-8 lg:px-20 lg:py-30">
+    <div className="grid grid-cols-1 gap-16 lg:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)]">
+      <header className="lg:sticky lg:top-8 lg:self-start">…eyebrow + headline…</header>
+      <div className="max-w-prose">…long-form copy or accordion…</div>
+    </div>
+  </div>
+</section>
+```
+
+**Worker Field Mode is the one exception, and it's not a marketing concern.** A separate one-handed in-field worker UX is on the roadmap (deferred per [project_field_mode.md](../../C:/Users/brand/.claude/projects/g--code--wizeworks-AgConnect/memory/project_field_mode.md) — surfaces as authenticated `/[locale]/worker/field` once observed, not a parallel marketing site). Public marketing pages stay as one responsive codebase.
+
 ## Grid
 
 - **Desktop**: 12 columns, 24px gutter.

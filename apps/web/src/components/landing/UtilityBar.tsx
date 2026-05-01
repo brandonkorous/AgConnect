@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons';
 import { LocaleToggle } from './LocaleToggle';
@@ -6,6 +6,7 @@ import { ThemeToggle } from '@/components/primitives/ThemeToggle';
 
 export function UtilityBar() {
     const t = useTranslations('landing.utility');
+    const locale = useLocale();
     const themeLabels = {
         light: t('theme.light'),
         dark: t('theme.dark'),
@@ -30,11 +31,11 @@ export function UtilityBar() {
                         <ThemeToggle tone="bone" separator="·" labels={themeLabels} />
                     </div>
                     <span className="hidden text-neutral-content/40 text-xs md:inline" aria-hidden>|</span>
-                    <a href="#employers" className="link link-hover text-neutral-content hover:text-neutral-content hidden text-xs md:inline">
+                    <a href={`/${locale}/employers`} className="link link-hover text-neutral-content hover:text-neutral-content hidden text-xs md:inline">
                         {t('for_employers')}
                     </a>
                     <span className="hidden text-neutral-content/40 text-xs md:inline" aria-hidden>|</span>
-                    <a href="mailto:support@agconn.com" className="link link-hover text-neutral-content hover:text-neutral-content hidden text-xs md:inline">
+                    <a href={`/${locale}/faq`} className="link link-hover text-neutral-content hover:text-neutral-content hidden text-xs md:inline">
                         {t('help')}
                     </a>
                 </div>

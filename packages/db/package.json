@@ -14,6 +14,8 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
+    "i18n:seed": "tsx scripts/seed-translations.ts",
+    "i18n:check": "tsx scripts/check-i18n-parity.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -9,7 +9,7 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "i18n:check": "node scripts/check-i18n-parity.mjs",
+    "i18n:check": "pnpm --filter @agconn/db i18n:check",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed"
   },

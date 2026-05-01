@@ -66,7 +66,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             <body className="bg-base-200 text-base-content antialiased">
                 <MaybeClerkProvider>
                     <NextIntlClientProvider locale={locale} messages={messages}>
-                        <AppShellProviders enablePwa>
+                        <AppShellProviders enablePwa={process.env.NODE_ENV === 'production'}>
                             {children}
                         </AppShellProviders>
                     </NextIntlClientProvider>

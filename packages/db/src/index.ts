@@ -56,6 +56,7 @@ export {
   ComplianceItemStatus,
   MessageChannel,
   MessageDirection,
+  TranslationStatus,
 } from '@prisma/client';
 export type {
   Tenant,
@@ -90,6 +91,7 @@ export type {
   Conversation,
   ConversationParticipant,
   Message,
+  TranslationKey,
 } from '@prisma/client';
 
 export type Db = PrismaClient;

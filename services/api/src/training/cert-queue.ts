@@ -1,4 +1,4 @@
-import { PgBoss } from 'pg-boss';
+import PgBoss from 'pg-boss';
 
 // Producer-side wrapper for the cert generator queue. The consumer lives in
 // services/cert-generator and owns the queue contract; we just publish.

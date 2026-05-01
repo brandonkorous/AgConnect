@@ -8,7 +8,7 @@ export function Testimonials() {
     const t = useTranslations('landing.testimonials');
 
     return (
-        <section className="bg-base-100 w-full">
+        <section id="testimonials" className="bg-base-100 w-full scroll-mt-24">
             <div className="container mx-auto flex flex-col gap-16 px-5 py-24 md:px-8 md:py-28 lg:px-20 lg:py-30">
                 <div className="flex flex-col gap-4">
                     <EyebrowLabel tone="soil" withRule>

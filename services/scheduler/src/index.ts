@@ -1,4 +1,4 @@
-import { PgBoss } from 'pg-boss';
+import PgBoss from 'pg-boss';
 import { runSavedSearchDispatcher } from './saved-search-dispatcher.js';
 import { runTrainingReminders } from './training-reminders.js';
 

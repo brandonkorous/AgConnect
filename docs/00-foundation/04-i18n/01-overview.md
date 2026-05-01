@@ -7,6 +7,7 @@ AgConn is bilingual EN/ES from day one — not as a translation layer over Engli
 ## Stack
 
 - **next-intl 4.11.0** — App Router-native i18n with locale-prefixed routes (`/en/...`, `/es/...`).
+- **`translation_keys` Postgres table** — DB-backed UI copy, single source of truth (since 2026-05-01). See [02-data-model.md](02-data-model.md). Replaces the previous `apps/web/messages/{en,es}.json` files.
 - **Prisma `_en` / `_es` paired columns** for stored content (job postings, training programs).
 - **Twilio bilingual SMS templates** keyed by `users.preferredLang`.
 - **React Email components** with locale prop.
@@ -26,7 +27,7 @@ AgConn is bilingual EN/ES from day one — not as a translation layer over Engli
 
 | surface                                 | mechanism                                           |
 | --------------------------------------- | --------------------------------------------------- |
-| UI strings                              | `packages/i18n/{en,es}.json` consumed via next-intl |
+| UI strings                              | `translation_keys` table (DB-backed), loaded via next-intl `getRequestConfig` — see [02-data-model.md](02-data-model.md) |
 | Database content (titles, descriptions) | `_en` / `_es` paired columns                        |
 | SMS messages                            | bilingual templates in `packages/sms/templates`     |
 | Emails                                  | React Email components with `locale` prop           |
