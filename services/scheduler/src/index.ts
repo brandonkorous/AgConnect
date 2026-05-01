@@ -14,45 +14,45 @@ import { runTrainingReminders } from './training-reminders.js';
 const ENV_KEYS_REQUIRED = ['DATABASE_URL'] as const;
 
 function assertEnv(): void {
-  const missing = ENV_KEYS_REQUIRED.filter((k) => !process.env[k]);
-  if (missing.length > 0) {
-    throw new Error(`scheduler: missing required env: ${missing.join(', ')}`);
-  }
+    const missing = ENV_KEYS_REQUIRED.filter((k) => !process.env[k]);
+    if (missing.length > 0) {
+        throw new Error(`scheduler: missing required env: ${missing.join(', ')}`);
+    }
 }
 
 let boss: PgBoss | null = null;
 
 async function start(): Promise<void> {
-  assertEnv();
-  boss = new PgBoss({
-    connectionString: process.env.DATABASE_URL!,
-    schema: 'pgboss',
-  });
-  boss.on('error', (err) => {
-    console.error('[scheduler] pg-boss error', err);
-  });
-  await boss.start();
+    assertEnv();
+    boss = new PgBoss({
+        connectionString: process.env.DATABASE_URL!,
+        schema: 'pgboss',
+    });
+    boss.on('error', (err) => {
+        console.error('[scheduler] pg-boss error', err);
+    });
+    await boss.start();
 
-  await runSavedSearchDispatcher(boss);
-  await runTrainingReminders(boss);
+    await runSavedSearchDispatcher(boss);
+    await runTrainingReminders(boss);
 
-  console.log('[scheduler] running');
+    console.log('[scheduler] running');
 }
 
 async function shutdown(signal: string): Promise<void> {
-  console.log(`[scheduler] received ${signal}, stopping…`);
-  try {
-    await boss?.stop({ graceful: true, timeout: 10_000 });
-  } catch (err) {
-    console.error('[scheduler] error during shutdown', err);
-  }
-  process.exit(0);
+    console.log(`[scheduler] received ${signal}, stopping…`);
+    try {
+        await boss?.stop({ graceful: true, timeout: 10_000 });
+    } catch (err) {
+        console.error('[scheduler] error during shutdown', err);
+    }
+    process.exit(0);
 }
 
 process.on('SIGTERM', () => void shutdown('SIGTERM'));
 process.on('SIGINT', () => void shutdown('SIGINT'));
 
 void start().catch((err) => {
-  console.error('[scheduler] fatal startup error', err);
-  process.exit(1);
+    console.error('[scheduler] fatal startup error', err);
+    process.exit(1);
 });

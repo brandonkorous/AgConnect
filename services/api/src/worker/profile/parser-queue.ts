@@ -10,19 +10,19 @@ let cached: PgBoss | null = null;
 let starting: Promise<PgBoss> | null = null;
 
 export async function getResumeParserBoss(): Promise<PgBoss> {
-  if (cached) return cached;
-  if (starting) return starting;
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error('DATABASE_URL is not set — required for resume parser queue');
+    if (cached) return cached;
+    if (starting) return starting;
+    const url = process.env.DATABASE_URL;
+    if (!url) throw new Error('DATABASE_URL is not set — required for resume parser queue');
 
-  starting = (async () => {
-    const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
-    boss.on('error', (err) => console.error('[resume-parser-queue] error', err));
-    await boss.start();
-    await boss.createQueue(RESUME_PARSE_QUEUE);
-    cached = boss;
-    return boss;
-  })();
+    starting = (async () => {
+        const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
+        boss.on('error', (err) => console.error('[resume-parser-queue] error', err));
+        await boss.start();
+        await boss.createQueue(RESUME_PARSE_QUEUE);
+        cached = boss;
+        return boss;
+    })();
 
-  return starting;
+    return starting;
 }
