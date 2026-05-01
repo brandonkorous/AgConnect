@@ -10,6 +10,7 @@ import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../mi
 import type { AuditCtxVars } from '../../middleware/audit';
 import { enqueueEmployerEmail } from '@agconn/email';
 import { shapeEmployer, verificationStatus } from '../shared';
+import { seedDefaultComplianceItems, seedInitialPayrollPeriod } from './seed-defaults';
 
 export const employerOnboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerOnboardingRoutes.use('*', requireAuth);
@@ -59,6 +60,9 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
     });
 
     await tx.user.update({ where: { id: userId }, data: { onboarded: true } });
+
+    await seedDefaultComplianceItems(tx, tenantId, userId);
+    await seedInitialPayrollPeriod(tx, tenantId, userId);
 
     return created;
   });

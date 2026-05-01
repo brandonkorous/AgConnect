@@ -2,6 +2,75 @@
   "brand": {
     "product_name": "AgConn"
   },
+  "marketing": {
+    "faq_page": {
+      "eyebrow": "FAQ",
+      "headline": "Questions, in plain language.",
+      "intro": "Common questions about how AgConn works for workers, employers, and training organizations.",
+      "extras_label": "More detail",
+      "still_questions": {
+        "headline": "Still have questions?",
+        "body": "We answer every email within two business days, in your language.",
+        "cta_email": "Email support@agconn.com",
+        "cta_home": "Back to home"
+      },
+      "meta": {
+        "title": "FAQ — AgConn",
+        "description": "Common questions about finding seasonal farm work, FLC verification, CDFA training, and how AgConn keeps every record bilingual."
+      }
+    },
+    "faq_extras": {
+      "data_privacy": {
+        "question": "What does AgConn do with my phone number?",
+        "answer": "We use your phone number to send sign-in codes, job alerts you opt into, and a weekly digest in your language. We do not sell, share, or rent your number to anyone. You can delete your account and all associated phone records at any time from your profile."
+      },
+      "wage_disputes": {
+        "question": "What if my employer pays less than the posted wage?",
+        "answer": "Every job posting on AgConn shows a wage range that the employer signed off on. If the actual pay is below the posted minimum, report it from the job page or by replying to your hire confirmation SMS. We log the report, contact the employer, and pause new postings from that employer if the dispute is verified. Repeat issues remove the employer from the platform."
+      },
+      "training_cert_validity": {
+        "question": "Does my CDFA certificate work outside California?",
+        "answer": "CDFA-funded trainings are recognized California-wide. Some certifications (pesticide handler, forklift operator) follow federal OSHA standards and transfer across states; others are California-specific. Each training program lists its scope on the program page. Your skills wallet preserves the certificate PDF in both languages so you can share proof with any employer."
+      },
+      "employer_payouts": {
+        "question": "When does an employer get charged on AgConn?",
+        "answer": "Free plan employers are never charged — they get 2 active postings and applicant review. Pro plan employers pay monthly or annually for unlimited postings and worker search. There is no per-hire fee and no commission on wages. Workers never pay anything."
+      },
+      "tenant_onboarding": {
+        "question": "Can a workforce board run their own AgConn instance?",
+        "answer": "Yes — AgConn is multi-tenant from day one. Workforce boards, county agencies, or grant administrators can run an AgConn tenant with their own employer set, training programs, and reporting dashboards. Branding stays under your organization. Contact partnerships@agconn.com to start a tenant onboarding."
+      },
+      "platform_uptime": {
+        "question": "What is the platform uptime guarantee?",
+        "answer": "AgConn targets 99.9% uptime measured monthly. SMS sign-in, job browse, and applications are the highest-priority paths. Status updates publish at status.agconn.com when an incident affects more than five minutes of a public surface."
+      }
+    },
+    "impact_page": {
+      "eyebrow": "Public impact dashboard",
+      "headline": "How the work shows up.",
+      "intro": "Live numbers on placements, wages, training completions, and verified employers — refreshed nightly, WIOA-aligned, and grant-defensible.",
+      "back_home": "Back to home",
+      "meta": {
+        "title": "Impact dashboard — AgConn",
+        "description": "Live impact dashboard for AgConn — Central Valley placements, median wage at hire, training completions, and verified employers, refreshed nightly."
+      }
+    },
+    "resources": {
+      "eyebrow": "Resources",
+      "headline": "Long-form guides, coming soon.",
+      "intro": "Articles on farmworker rights, FLC compliance, and training programs are rolling out shortly. Sign up below to get them in your inbox.",
+      "form_label": "Email address",
+      "form_placeholder": "you@example.com",
+      "form_cta": "Subscribe",
+      "form_help": "We'll only email when a new article is ready. Unsubscribe any time.",
+      "form_success": "We saved your spot. We'll send the first article when it lands.",
+      "suggest_topic": "Want to suggest a topic? Email editorial@agconn.com →",
+      "meta": {
+        "title": "Resources — AgConn",
+        "description": "Long-form bilingual articles on farmworker rights, FLC compliance, and Central Valley training programs."
+      }
+    }
+  },
   "landing": {
     "utility": {
       "lang": {
@@ -511,7 +580,8 @@
         "placeholder": "(555) 555-1234",
         "cta": "Send code",
         "help": "We'll text you a 6-digit code. Standard message rates may apply.",
-        "success": "We just texted you. Open the message and tap the link."
+        "success": "We just texted you. Open the message and tap the link.",
+        "signup_direct": "Have an account? Sign up directly →"
       },
       "employers": {
         "eyebrow": "FOR EMPLOYERS",
@@ -2144,10 +2214,18 @@
     },
     "workers": {
       "title": "Find workers",
+      "title_a": "Worker",
+      "title_b": "search · {count, plural, =0 {no results} one {1 result} other {# results}}",
+      "eyebrow": "Talent pool",
       "subtitle": "Search verified workers by skill, county, certification, and availability.",
       "filters": "Filters",
       "all_counties": "All counties",
-      "results": "{count} workers",
+      "search_placeholder": "Skills, certifications, distance…",
+      "filter": {
+        "all_counties": "All counties"
+      },
+      "sort_match": "Sort: Best match",
+      "results": "{count, plural, =0 {No workers match these filters} one {1 worker matches} other {# workers match}}",
       "match_label": "match",
       "view": "View profile",
       "invite": "Invite to apply",
@@ -2191,7 +2269,43 @@
       "crew_leaders": "Crew leaders",
       "size": "Size",
       "rating": "Rating",
-      "message_foreman": "Message {firstName}"
+      "message_foreman": "Message {firstName}",
+      "new_crew_label": "New crew",
+      "new_crew": {
+        "title": "New crew",
+        "name_label": "Crew name",
+        "name_placeholder": "Crew A · Grape harvest",
+        "name_help": "Combine the crew letter with the work it does — e.g. \"Crew B · Sort line\".",
+        "color_label": "Color",
+        "color": {
+          "primary": "Green",
+          "accent": "Amber",
+          "info": "Blue",
+          "success": "Sage",
+          "warning": "Sand"
+        },
+        "notes_label": "Notes (optional)",
+        "cancel": "Cancel",
+        "confirm": "Create crew",
+        "error": "Could not create crew."
+      },
+      "new_shift_form": {
+        "back": "Back to crews",
+        "title": "New shift",
+        "subtitle": "Schedule a single shift. Optionally tied to a crew so the schedule grid lights up automatically.",
+        "crew_label": "Crew (optional)",
+        "crew_none": "No crew — ad-hoc shift",
+        "crew_help": "If unset, the shift won't appear on the crew row of the weekly grid.",
+        "date_label": "Date",
+        "start_time_label": "Start time",
+        "end_time_label": "End time (optional)",
+        "location_label": "Location",
+        "location_placeholder": "Block 7-North",
+        "notes_label": "Notes (optional)",
+        "cancel": "Cancel",
+        "confirm": "Create shift",
+        "error": "Could not create shift."
+      }
     },
     "payroll": {
       "title": "Payroll",
@@ -2227,6 +2341,21 @@
         "col_actions": "Actions",
         "edit": "Edit",
         "approve": "Approve"
+      },
+      "generate_from_shifts": "Generate from shifts",
+      "new_period": "New period",
+      "status_approved": "Approved",
+      "status_paid": "Paid",
+      "error_generate": "Could not generate lines.",
+      "error_approve": "Could not approve period.",
+      "new_period_modal": {
+        "title": "New pay period",
+        "start_date": "Period start (Mon)",
+        "end_date": "Period end (Sun)",
+        "pay_date": "Pay date (Fri)",
+        "cancel": "Cancel",
+        "confirm": "Create period",
+        "error": "Could not create period."
       }
     },
     "compliance": {
@@ -2241,6 +2370,49 @@
       "severity": {
         "urgent": "URGENT",
         "soon": "SOON"
+      },
+      "new_item": {
+        "cta": "New item",
+        "title": "New compliance item",
+        "category_label": "Category",
+        "category": {
+          "documentation": "Worker documentation",
+          "safety": "Worker safety (Cal/OSHA)",
+          "wage_hour": "Wage & hour",
+          "pesticide": "Pesticide records",
+          "h2a": "H-2A program",
+          "custom": "Other"
+        },
+        "label_label": "What needs to be tracked?",
+        "label_placeholder": "e.g. Form I-9 expirations",
+        "status_label": "Current status",
+        "status": {
+          "ok": "OK",
+          "warn": "Needs attention",
+          "fail": "Action required"
+        },
+        "details_label": "Details (optional)",
+        "due_label": "Due date (optional)",
+        "cancel": "Cancel",
+        "confirm": "Add item",
+        "error": "Could not create item."
+      },
+      "edit_item": {
+        "cta": "Edit item",
+        "title": "Update item",
+        "status_label": "Status",
+        "status": {
+          "ok": "OK",
+          "warn": "Needs attention",
+          "fail": "Action required"
+        },
+        "details_label": "Details",
+        "evidence_label": "Evidence URL (optional)",
+        "due_label": "Due date",
+        "resolved_label": "Mark as resolved (sets resolved_at to now)",
+        "cancel": "Cancel",
+        "confirm": "Save",
+        "error": "Could not update item."
       }
     },
     "messages": {
@@ -2265,6 +2437,27 @@
         "heat": "Heat advisory"
       },
       "search_placeholder": "Search messages…",
+      "new_conversation": {
+        "cta_thread": "New thread",
+        "cta_broadcast": "New broadcast",
+        "title_thread": "Start a thread",
+        "title_broadcast": "Start a broadcast",
+        "subject_label": "Subject",
+        "subject_placeholder": "What's it about?",
+        "channel_label": "Channel",
+        "channel": {
+          "app": "In-app",
+          "sms": "SMS",
+          "whatsapp": "WhatsApp"
+        },
+        "participants_label": "Participants",
+        "participants_placeholder": "user_abc123, user_def456",
+        "participants_help": "Worker user IDs, separated by commas or new lines.",
+        "cancel": "Cancel",
+        "confirm": "Create",
+        "error": "Could not start the conversation.",
+        "error_no_participants": "Add at least one participant."
+      },
       "channel": {
         "app": "APP",
         "sms": "SMS",
@@ -2303,7 +2496,11 @@
     },
     "billing": {
       "title": "Billing",
+      "title_a": "Billing",
+      "title_b": "& plan",
+      "eyebrow": "Account",
       "current_plan": "Current plan",
+      "current": "Current",
       "free": "Free",
       "pro": "Pro",
       "enterprise": "Enterprise",
@@ -2311,12 +2508,18 @@
       "yearly": "yearly",
       "renews_on": "Renews on {date}",
       "ends_on": "Ends on {date}",
+      "payment_saved": "payment method on file",
       "manage_billing": "Manage billing",
       "history": "Billing history",
       "stripe_unavailable": "Billing is not available yet — please contact support.",
       "upgrade_pro": "Upgrade to Pro",
       "upgrade_enterprise": "Upgrade to Enterprise",
       "interval_toggle": "Pay yearly (save 2 months)",
+      "pitch": {
+        "free": "Get started — post up to 2 jobs, no card required.",
+        "pro": "Hire actively — unlimited postings, worker search, priority listing.",
+        "enterprise": "Scale — multi-user, custom counties, branded grant reports."
+      },
       "feature": {
         "active_postings": "Active postings",
         "active_postings_unlimited": "Unlimited",
@@ -2335,8 +2538,28 @@
     "profile": {
       "title": "Business profile",
       "subtitle": "Update your business details. License changes trigger re-verification.",
+      "title_a": "Business",
+      "title_b": "profile",
+      "eyebrow": "Account",
       "save": "Save changes",
-      "saved": "Saved"
+      "saved": "Saved",
+      "sidebar": {
+        "status_label": "Verification status",
+        "status": {
+          "verified": "Verified",
+          "pending": "Pending review",
+          "rejected": "Action needed"
+        },
+        "verified_at": "Verified {date}",
+        "rejection_reason": "Reason: {reason}",
+        "business_id": "Business identity",
+        "legal_name": "Legal name",
+        "dba_name": "Doing business as",
+        "license_type": "Type",
+        "flc_license": "FLC license #",
+        "ein": "EIN",
+        "county": "Primary county"
+      }
     }
   },
   "admin": {

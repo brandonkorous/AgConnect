@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { getCurrentPayrollPeriod, listPayrollLines } from '@/lib/api/employer-ops';
+import { PayrollActions } from '@/components/employer/payroll/PayrollActions';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -15,7 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PayrollPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.payroll' });
-  const [period, lines] = await Promise.all([getCurrentPayrollPeriod(), listPayrollLines()]);
+  const period = await getCurrentPayrollPeriod();
+  const lines = await listPayrollLines(period.id);
 
   const fmtCents = (c: number, withSign = false) => {
     const n = c / 100;
@@ -47,19 +48,7 @@ export default async function PayrollPage({ params }: Props) {
             })}
           </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
-          >
-            <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
-            {t('export_forms')}
-          </button>
-          <button type="button" className="btn btn-sm btn-primary rounded-full">
-            <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
-            {t('approve')}
-          </button>
-        </div>
+        <PayrollActions periodId={period.id} status={period.status} />
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">

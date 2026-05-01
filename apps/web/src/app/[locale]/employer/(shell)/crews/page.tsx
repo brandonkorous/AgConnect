@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDownload, faComments, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { listCrews, listShifts, startOfWorkWeek, type ShiftView } from '@/lib/api/employer-ops';
+import { NewCrewButton } from '@/components/employer/crews/NewCrewButton';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -63,6 +64,7 @@ export default async function CrewsPage({ params }: Props) {
             <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
             {t('export')}
           </button>
+          <NewCrewButton />
           <Link
             href={`/${locale}/employer/crews/new-shift`}
             className="btn btn-sm btn-primary rounded-full"

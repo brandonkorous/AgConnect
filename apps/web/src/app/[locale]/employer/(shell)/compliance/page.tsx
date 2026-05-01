@@ -6,6 +6,10 @@ import {
   listComplianceCategories,
   listComplianceActions,
 } from '@/lib/api/employer-ops';
+import {
+  NewComplianceItemButton,
+  EditComplianceItemButton,
+} from '@/components/employer/compliance/ComplianceItemActions';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -40,13 +44,16 @@ export default async function CompliancePage({ params }: Props) {
             {t('summary', { actions: actions.length })}
           </div>
         </div>
-        <button
-          type="button"
-          className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
-        >
-          <FontAwesomeIcon icon={faDownload} className="h-3.5 w-3.5" />
-          {t('audit_pdf')}
-        </button>
+        <div className="flex gap-2">
+          <NewComplianceItemButton />
+          <button
+            type="button"
+            className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
+          >
+            <FontAwesomeIcon icon={faDownload} className="h-3.5 w-3.5" />
+            {t('audit_pdf')}
+          </button>
+        </div>
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-[260px_1fr]">
@@ -167,6 +174,16 @@ export default async function CompliancePage({ params }: Props) {
                       <div className="text-xs font-medium">{it.label}</div>
                       <div className="text-base-content/60 text-[11px]">{it.details}</div>
                     </div>
+                    {it.id && (
+                      <EditComplianceItemButton
+                        itemId={it.id}
+                        status={it.status}
+                        details={it.details}
+                        evidenceUrl={it.evidenceUrl ?? null}
+                        dueAt={it.dueAt}
+                        label={it.label}
+                      />
+                    )}
                   </div>
                 );
               })}

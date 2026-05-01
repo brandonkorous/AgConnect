@@ -2,6 +2,75 @@
   "brand": {
     "product_name": "AgConn"
   },
+  "marketing": {
+    "faq_page": {
+      "eyebrow": "Preguntas",
+      "headline": "Preguntas, en lenguaje claro.",
+      "intro": "Preguntas comunes sobre cómo funciona AgConn para trabajadores, empleadores y capacitadores.",
+      "extras_label": "Más detalle",
+      "still_questions": {
+        "headline": "¿Más preguntas?",
+        "body": "Respondemos cada correo en menos de dos días hábiles, en tu idioma.",
+        "cta_email": "Escribir a support@agconn.com",
+        "cta_home": "Volver al inicio"
+      },
+      "meta": {
+        "title": "Preguntas frecuentes — AgConn",
+        "description": "Preguntas comunes sobre cómo encontrar trabajo agrícola de temporada, verificación de FLC, capacitación de CDFA y cómo AgConn mantiene cada registro bilingüe."
+      }
+    },
+    "faq_extras": {
+      "data_privacy": {
+        "question": "¿Qué hace AgConn con mi número de teléfono?",
+        "answer": "Usamos tu número para enviarte códigos de inicio de sesión, alertas de trabajo que tú elijas, y un resumen semanal en tu idioma. No vendemos, compartimos ni alquilamos tu número a nadie. Puedes borrar tu cuenta y todos los registros asociados desde tu perfil en cualquier momento."
+      },
+      "wage_disputes": {
+        "question": "¿Qué pasa si mi empleador paga menos del salario publicado?",
+        "answer": "Cada publicación de trabajo en AgConn muestra un rango salarial que el empleador firmó. Si el pago real es menor al mínimo publicado, repórtalo desde la página del trabajo o respondiendo al SMS de contratación. Registramos el reporte, contactamos al empleador y pausamos nuevas publicaciones de ese empleador si se confirma. Casos repetidos retiran al empleador de la plataforma."
+      },
+      "training_cert_validity": {
+        "question": "¿Mi certificado de CDFA es válido fuera de California?",
+        "answer": "Las capacitaciones financiadas por CDFA se reconocen en todo California. Algunas certificaciones (manejo de pesticidas, operador de montacargas) siguen normas federales de OSHA y se transfieren entre estados; otras son específicas de California. Cada programa indica su alcance en la página del programa. Tu cartera de habilidades guarda el PDF del certificado en ambos idiomas para que puedas compartir tu credencial con cualquier empleador."
+      },
+      "employer_payouts": {
+        "question": "¿Cuándo se cobra a un empleador en AgConn?",
+        "answer": "Los empleadores del plan Gratis nunca pagan — reciben 2 publicaciones activas y revisión de aplicantes. Los del plan Pro pagan mensual o anualmente por publicaciones ilimitadas y búsqueda de trabajadores. No hay tarifa por contratación ni comisión sobre salarios. Los trabajadores nunca pagan nada."
+      },
+      "tenant_onboarding": {
+        "question": "¿Puede una junta laboral tener su propia instancia de AgConn?",
+        "answer": "Sí — AgConn es multi-inquilino desde el primer día. Juntas laborales, agencias del condado o administradores de subvenciones pueden tener una instancia de AgConn con su propio conjunto de empleadores, programas de capacitación y reportes. La marca se mantiene bajo tu organización. Contacta partnerships@agconn.com para empezar."
+      },
+      "platform_uptime": {
+        "question": "¿Cuál es la garantía de disponibilidad de la plataforma?",
+        "answer": "AgConn tiene como meta 99.9% de disponibilidad medida mensualmente. El inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones son las prioridades más altas. Los avisos de incidentes se publican en status.agconn.com cuando un incidente afecta más de cinco minutos a una superficie pública."
+      }
+    },
+    "impact_page": {
+      "eyebrow": "Panel de impacto público",
+      "headline": "Cómo aparece el trabajo.",
+      "intro": "Números en vivo sobre colocaciones, salarios, capacitaciones completadas y empleadores verificados — actualizados cada noche, alineados con WIOA y defendibles para subvenciones.",
+      "back_home": "Volver al inicio",
+      "meta": {
+        "title": "Panel de impacto — AgConn",
+        "description": "Panel de impacto en vivo de AgConn — colocaciones del Valle Central, salario mediano al contratar, capacitaciones completadas y empleadores verificados, actualizados cada noche."
+      }
+    },
+    "resources": {
+      "eyebrow": "Recursos",
+      "headline": "Guías a profundidad, próximamente.",
+      "intro": "Artículos sobre derechos de trabajadores agrícolas, cumplimiento FLC y programas de capacitación están por publicarse. Suscríbete para recibirlos en tu correo.",
+      "form_label": "Correo electrónico",
+      "form_placeholder": "tu@ejemplo.com",
+      "form_cta": "Suscribirse",
+      "form_help": "Solo enviamos correo cuando publicamos un nuevo artículo. Puedes cancelar en cualquier momento.",
+      "form_success": "Te apartamos un lugar. Te enviaremos el primer artículo cuando esté listo.",
+      "suggest_topic": "¿Quieres sugerir un tema? Escribe a editorial@agconn.com →",
+      "meta": {
+        "title": "Recursos — AgConn",
+        "description": "Artículos bilingües a profundidad sobre derechos de trabajadores agrícolas, cumplimiento FLC y programas de capacitación del Valle Central."
+      }
+    }
+  },
   "landing": {
     "utility": {
       "lang": {
@@ -221,9 +290,11 @@
       },
       "sort": "Ordenar: Salario, alto → bajo",
       "card": {
-        "verified_flc": "VERIFIED FLC",
-        "verified_grower": "VERIFIED GROWER",
+        "verified_flc": "FLC VERIFICADO",
+        "verified_grower": "PRODUCTOR VERIFICADO",
         "hourly": "Por hora",
+        "daily": "Por día",
+        "piece": "Por destajo",
         "apply": "Aplicar"
       },
       "jobs": {
@@ -283,7 +354,8 @@
       "body": "Programas dirigidos por Fresno EOC, CRLA, y otros socios regionales — financiados por CDFA, F3 y CalOSBA. Cada finalización produce un certificado bilingüe firmado electrónicamente que vive en tu cartera de habilidades.",
       "card": {
         "free": "Gratis",
-        "enroll": "Inscribirme"
+        "enroll": "Inscribirme",
+        "spots_left": "{n, plural, =0 {Solo lista de espera} =1 {1 de {capacity} espacios disponibles} other {# de {capacity} espacios disponibles}}"
       },
       "programs": {
         "1": {
@@ -508,7 +580,8 @@
         "placeholder": "(555) 555-1234",
         "cta": "Enviar código",
         "help": "Te enviaremos un código de 6 dígitos. Aplican tarifas estándar.",
-        "success": "Acabamos de enviarte un mensaje. Ábrelo y toca el enlace."
+        "success": "Acabamos de enviarte un mensaje. Ábrelo y toca el enlace.",
+        "signup_direct": "¿Ya tienes cuenta? Regístrate directamente →"
       },
       "employers": {
         "eyebrow": "PARA EMPLEADORES",
@@ -2139,10 +2212,18 @@
     },
     "workers": {
       "title": "Buscar trabajadores",
+      "title_a": "Búsqueda",
+      "title_b": "de trabajadores · {count, plural, =0 {sin resultados} one {1 resultado} other {# resultados}}",
+      "eyebrow": "Talento disponible",
+      "search_placeholder": "Habilidades, certificaciones, distancia…",
+      "filter": {
+        "all_counties": "Todos los condados"
+      },
+      "sort_match": "Ordenar: Mejor coincidencia",
       "subtitle": "Busca trabajadores verificados por habilidad, condado, certificación y disponibilidad.",
       "filters": "Filtros",
       "all_counties": "Todos los condados",
-      "results": "{count} trabajadores",
+      "results": "{count, plural, =0 {Ningún trabajador coincide} one {1 trabajador coincide} other {# trabajadores coinciden}}",
       "match_label": "coinciden",
       "view": "Ver perfil",
       "invite": "Invitar a aplicar",
@@ -2186,7 +2267,43 @@
       "crew_leaders": "Capataces",
       "size": "Tamaño",
       "rating": "Calificación",
-      "message_foreman": "Mensaje a {firstName}"
+      "message_foreman": "Mensaje a {firstName}",
+      "new_crew_label": "Nueva cuadrilla",
+      "new_crew": {
+        "title": "Nueva cuadrilla",
+        "name_label": "Nombre de la cuadrilla",
+        "name_placeholder": "Cuadrilla A · Cosecha de uva",
+        "name_help": "Combina la letra con el tipo de trabajo — ej. \"Cuadrilla B · Línea de selección\".",
+        "color_label": "Color",
+        "color": {
+          "primary": "Verde",
+          "accent": "Ámbar",
+          "info": "Azul",
+          "success": "Salvia",
+          "warning": "Arena"
+        },
+        "notes_label": "Notas (opcional)",
+        "cancel": "Cancelar",
+        "confirm": "Crear cuadrilla",
+        "error": "No se pudo crear la cuadrilla."
+      },
+      "new_shift_form": {
+        "back": "Volver a cuadrillas",
+        "title": "Nuevo turno",
+        "subtitle": "Programa un solo turno. Opcionalmente atado a una cuadrilla para que aparezca en la cuadrícula semanal.",
+        "crew_label": "Cuadrilla (opcional)",
+        "crew_none": "Sin cuadrilla — turno ad-hoc",
+        "crew_help": "Si lo dejas en blanco, el turno no aparecerá en la fila de cuadrilla del horario.",
+        "date_label": "Fecha",
+        "start_time_label": "Hora de inicio",
+        "end_time_label": "Hora de fin (opcional)",
+        "location_label": "Ubicación",
+        "location_placeholder": "Block 7-Norte",
+        "notes_label": "Notas (opcional)",
+        "cancel": "Cancelar",
+        "confirm": "Crear turno",
+        "error": "No se pudo crear el turno."
+      }
     },
     "payroll": {
       "title": "Nómina",
@@ -2222,6 +2339,21 @@
         "col_actions": "Acciones",
         "edit": "Editar",
         "approve": "Aprobar"
+      },
+      "generate_from_shifts": "Generar desde turnos",
+      "new_period": "Nuevo periodo",
+      "status_approved": "Aprobado",
+      "status_paid": "Pagado",
+      "error_generate": "No se pudieron generar las líneas.",
+      "error_approve": "No se pudo aprobar el periodo.",
+      "new_period_modal": {
+        "title": "Nuevo periodo de pago",
+        "start_date": "Inicio (Lun)",
+        "end_date": "Fin (Dom)",
+        "pay_date": "Fecha de pago (Vie)",
+        "cancel": "Cancelar",
+        "confirm": "Crear periodo",
+        "error": "No se pudo crear el periodo."
       }
     },
     "compliance": {
@@ -2236,6 +2368,49 @@
       "severity": {
         "urgent": "URGENTE",
         "soon": "PRÓXIMA"
+      },
+      "new_item": {
+        "cta": "Nuevo ítem",
+        "title": "Nuevo ítem de cumplimiento",
+        "category_label": "Categoría",
+        "category": {
+          "documentation": "Documentación del trabajador",
+          "safety": "Seguridad (Cal/OSHA)",
+          "wage_hour": "Salario y horas",
+          "pesticide": "Registros de pesticidas",
+          "h2a": "Programa H-2A",
+          "custom": "Otro"
+        },
+        "label_label": "¿Qué debe rastrearse?",
+        "label_placeholder": "ej. Vencimientos del Form I-9",
+        "status_label": "Estado actual",
+        "status": {
+          "ok": "OK",
+          "warn": "Requiere atención",
+          "fail": "Acción requerida"
+        },
+        "details_label": "Detalles (opcional)",
+        "due_label": "Fecha límite (opcional)",
+        "cancel": "Cancelar",
+        "confirm": "Agregar ítem",
+        "error": "No se pudo crear el ítem."
+      },
+      "edit_item": {
+        "cta": "Editar ítem",
+        "title": "Actualizar ítem",
+        "status_label": "Estado",
+        "status": {
+          "ok": "OK",
+          "warn": "Requiere atención",
+          "fail": "Acción requerida"
+        },
+        "details_label": "Detalles",
+        "evidence_label": "URL de evidencia (opcional)",
+        "due_label": "Fecha límite",
+        "resolved_label": "Marcar como resuelto (establece resolved_at a ahora)",
+        "cancel": "Cancelar",
+        "confirm": "Guardar",
+        "error": "No se pudo actualizar el ítem."
       }
     },
     "messages": {
@@ -2260,6 +2435,27 @@
         "heat": "Aviso de calor"
       },
       "search_placeholder": "Buscar mensajes…",
+      "new_conversation": {
+        "cta_thread": "Nuevo hilo",
+        "cta_broadcast": "Nuevo broadcast",
+        "title_thread": "Iniciar un hilo",
+        "title_broadcast": "Iniciar un broadcast",
+        "subject_label": "Asunto",
+        "subject_placeholder": "¿De qué se trata?",
+        "channel_label": "Canal",
+        "channel": {
+          "app": "En la app",
+          "sms": "SMS",
+          "whatsapp": "WhatsApp"
+        },
+        "participants_label": "Participantes",
+        "participants_placeholder": "user_abc123, user_def456",
+        "participants_help": "IDs de usuario trabajador, separados por comas o saltos de línea.",
+        "cancel": "Cancelar",
+        "confirm": "Crear",
+        "error": "No se pudo iniciar la conversación.",
+        "error_no_participants": "Agrega al menos un participante."
+      },
       "channel": {
         "app": "APP",
         "sms": "SMS",
@@ -2298,7 +2494,11 @@
     },
     "billing": {
       "title": "Facturación",
+      "title_a": "Facturación",
+      "title_b": "y plan",
+      "eyebrow": "Cuenta",
       "current_plan": "Plan actual",
+      "current": "Actual",
       "free": "Gratis",
       "pro": "Pro",
       "enterprise": "Enterprise",
@@ -2306,12 +2506,18 @@
       "yearly": "anual",
       "renews_on": "Se renueva el {date}",
       "ends_on": "Termina el {date}",
+      "payment_saved": "método de pago guardado",
       "manage_billing": "Gestionar facturación",
       "history": "Historial de facturación",
       "stripe_unavailable": "La facturación aún no está disponible — contacta a soporte.",
       "upgrade_pro": "Mejorar a Pro",
       "upgrade_enterprise": "Mejorar a Enterprise",
       "interval_toggle": "Pagar anualmente (ahorra 2 meses)",
+      "pitch": {
+        "free": "Empieza — publica hasta 2 trabajos, sin tarjeta.",
+        "pro": "Contrata activamente — publicaciones ilimitadas, búsqueda de trabajadores, listado prioritario.",
+        "enterprise": "Escala — multi-usuario, condados personalizados, reportes con marca."
+      },
       "feature": {
         "active_postings": "Publicaciones activas",
         "active_postings_unlimited": "Ilimitadas",
@@ -2330,8 +2536,28 @@
     "profile": {
       "title": "Perfil del negocio",
       "subtitle": "Actualiza los datos de tu negocio. Los cambios de licencia activan una nueva verificación.",
+      "title_a": "Perfil",
+      "title_b": "del negocio",
+      "eyebrow": "Cuenta",
       "save": "Guardar cambios",
-      "saved": "Guardado"
+      "saved": "Guardado",
+      "sidebar": {
+        "status_label": "Estado de verificación",
+        "status": {
+          "verified": "Verificado",
+          "pending": "En revisión",
+          "rejected": "Requiere acción"
+        },
+        "verified_at": "Verificado el {date}",
+        "rejection_reason": "Motivo: {reason}",
+        "business_id": "Identidad del negocio",
+        "legal_name": "Razón social",
+        "dba_name": "Nombre comercial",
+        "license_type": "Tipo",
+        "flc_license": "Licencia FLC #",
+        "ein": "EIN",
+        "county": "Condado principal"
+      }
     }
   },
   "admin": {

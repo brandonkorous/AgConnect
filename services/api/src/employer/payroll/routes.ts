@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { PayrollPeriodStatus } from '@agconn/db';
+import { PayrollPeriodStatus, ShiftAssignmentStatus } from '@agconn/db';
 import {
   CreatePayrollPeriodBody,
   PatchPayrollPeriodBody,
@@ -226,6 +226,115 @@ employerPayrollRoutes.patch(
     });
   },
 );
+
+// Generates one payroll line per worker who had completed shift assignments
+// inside the period window. Hours rolled up from shift_assignments.hoursWorked
+// (or estimated from the shift duration when null), OT computed >40h/week,
+// gross from a default rate (or piece-rate when present), bonus from piece
+// totals, taxes a flat 14.2% (federal+CA approximate), net = gross + bonus
+// - taxes. Existing lines for the same (period, worker) are upserted.
+employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+
+  const period = await c.var.db.payrollPeriod.findFirst({
+    where: { id, tenantId, employerId: userId },
+  });
+  if (!period) return err(c, 404, 'not_found');
+  if (period.status !== PayrollPeriodStatus.draft) return err(c, 422, 'period_locked');
+
+  const assignments = await c.var.db.shiftAssignment.findMany({
+    where: {
+      tenantId,
+      shift: {
+        employerId: userId,
+        shiftDate: { gte: period.startDate, lte: period.endDate },
+      },
+      status: { in: [ShiftAssignmentStatus.completed, ShiftAssignmentStatus.confirmed] },
+    },
+    include: {
+      shift: { select: { startTime: true, endTime: true, shiftDate: true } },
+      worker: { include: { workerProfile: true } },
+    },
+  });
+
+  const byWorker = new Map<
+    string,
+    { hours: number; pieces: number; pieceCents: number; firstName: string; lastName: string }
+  >();
+
+  for (const a of assignments) {
+    const acc = byWorker.get(a.workerUserId) ?? {
+      hours: 0,
+      pieces: 0,
+      pieceCents: 0,
+      firstName: a.worker.workerProfile?.firstName ?? '',
+      lastName: a.worker.workerProfile?.lastName ?? '',
+    };
+    let hrs = a.hoursWorked ? Number(a.hoursWorked.toString()) : 0;
+    if (hrs === 0) {
+      // estimate from shift block
+      const [sh = 0, sm = 0] = a.shift.startTime.split(':').map(Number);
+      const eh = a.shift.endTime ? Number(a.shift.endTime.split(':')[0] ?? 0) : sh + 8;
+      const em = a.shift.endTime ? Number(a.shift.endTime.split(':')[1] ?? 0) : 0;
+      hrs = Math.max(0, eh + em / 60 - (sh + sm / 60));
+    }
+    acc.hours += hrs;
+    if (a.piecesCount && a.pieceRateCents) {
+      acc.pieces += a.piecesCount;
+      acc.pieceCents += a.piecesCount * a.pieceRateCents;
+    }
+    byWorker.set(a.workerUserId, acc);
+  }
+
+  const DEFAULT_HOURLY_CENTS = 2000; // $20/hr
+  const TAX_RATE = 0.142;
+  let writes = 0;
+
+  for (const [workerUserId, agg] of byWorker.entries()) {
+    const ot = Math.max(0, agg.hours - 40);
+    const reg = Math.min(40, agg.hours);
+    const grossCents = Math.round(reg * DEFAULT_HOURLY_CENTS + ot * DEFAULT_HOURLY_CENTS * 1.5);
+    const bonusCents = agg.pieceCents;
+    const taxesCents = Math.round((grossCents + bonusCents) * TAX_RATE);
+    const netCents = grossCents + bonusCents - taxesCents;
+    const role = `${agg.firstName} ${agg.lastName}`.trim() || null;
+
+    await c.var.db.payrollLine.upsert({
+      where: { periodId_workerUserId: { periodId: id, workerUserId } },
+      create: {
+        tenantId,
+        periodId: id,
+        workerUserId,
+        role,
+        hours: agg.hours,
+        overtimeHours: ot,
+        grossCents,
+        bonusCents,
+        taxesCents,
+        netCents,
+      },
+      update: {
+        hours: agg.hours,
+        overtimeHours: ot,
+        grossCents,
+        bonusCents,
+        taxesCents,
+        netCents,
+      },
+    });
+    writes += 1;
+  }
+
+  await c.var.audit.log({
+    action: 'employer.payroll.line.updated',
+    resourceId: id,
+    metadata: { lineId: id, periodId: id, fields: ['generated', `count=${writes}`] },
+  });
+
+  return ok(c, { generated: writes });
+});
 
 function zeroTotals() {
   return { workers: 0, hours: 0, grossCents: 0, bonusCents: 0, taxesCents: 0, netCents: 0 };

@@ -222,33 +222,104 @@ export type PayrollLineView = {
   netCents: number;
 };
 
+const MOCK_PAYROLL_PERIOD: PayrollPeriodView = {
+  id: 'pp-current',
+  startDate: '2026-04-27',
+  endDate: '2026-05-03',
+  payDate: '2026-05-08',
+  status: 'draft',
+  totals: {
+    workers: 26,
+    hours: 1187,
+    grossCents: 3_321_040,
+    bonusCents: 184_000,
+    taxesCents: 471_760,
+    netCents: 2_849_240,
+  },
+};
+
+const MOCK_PAYROLL_LINES: PayrollLineView[] = [
+  { id: 'pl-1', workerUserId: 'usr-6', workerName: 'Miguel Reyes',     workerInitials: 'MR', role: 'Crew A · Lead',     hours: 52, overtimeHours: 12, grossCents: 132_550, bonusCents: 18_000, netCents: 118_420 },
+  { id: 'pl-2', workerUserId: 'usr-7', workerName: 'Carmen Rojas',     workerInitials: 'CR', role: 'Crew A · Picker',   hours: 48, overtimeHours:  8, grossCents: 111_600, bonusCents:  9_200, netCents:  99_430 },
+  { id: 'pl-3', workerUserId: 'usr-2', workerName: 'Soledad Saavedra', workerInitials: 'SS', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820 },
+  { id: 'pl-4', workerUserId: 'usr-3', workerName: 'Beto Villalobos',  workerInitials: 'BV', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820 },
+  { id: 'pl-5', workerUserId: 'usr-foreman-c', workerName: 'Tomás Ríos', workerInitials: 'TR', role: 'Crew C · Foreman',  hours: 48, overtimeHours:  8, grossCents: 129_600, bonusCents: 22_000, netCents: 116_240 },
+  { id: 'pl-6', workerUserId: 'usr-5', workerName: 'Rosa Aguilar',     workerInitials: 'RA', role: 'Crew C · Setup',    hours: 40, overtimeHours:  0, grossCents:  80_000, bonusCents:  4_000, netCents:  71_250 },
+];
+
+type ApiPayrollPeriod = {
+  id: string;
+  startDate: string;
+  endDate: string;
+  payDate: string;
+  status: 'draft' | 'approved' | 'paid';
+  approvedAt: string | null;
+  paidAt: string | null;
+  totals: PayrollPeriodView['totals'];
+};
+
+type ApiPayrollLine = {
+  id: string;
+  periodId: string;
+  workerUserId: string;
+  workerName: string;
+  workerInitials: string;
+  role: string | null;
+  hours: number;
+  overtimeHours: number;
+  grossCents: number;
+  bonusCents: number;
+  netCents: number;
+};
+
 export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
-  return {
-    id: 'pp-current',
-    startDate: '2026-04-27',
-    endDate: '2026-05-03',
-    payDate: '2026-05-08',
-    status: 'draft',
-    totals: {
-      workers: 26,
-      hours: 1187,
-      grossCents: 3_321_040,
-      bonusCents: 184_000,
-      taxesCents: 471_760,
-      netCents: 2_849_240,
-    },
-  };
+  if (!apiConfigured()) return MOCK_PAYROLL_PERIOD;
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ periods: ApiPayrollPeriod[] }>(
+      '/v1/employer/payroll/periods',
+      { handleErrorInline: true },
+    );
+    if (!isOk(res) || res.data.periods.length === 0) return MOCK_PAYROLL_PERIOD;
+    const draft = res.data.periods.find((p) => p.status === 'draft');
+    const p = draft ?? res.data.periods[0]!;
+    return {
+      id: p.id,
+      startDate: p.startDate,
+      endDate: p.endDate,
+      payDate: p.payDate,
+      status: p.status,
+      totals: p.totals,
+    };
+  } catch {
+    return MOCK_PAYROLL_PERIOD;
+  }
 }
 
-export async function listPayrollLines(): Promise<PayrollLineView[]> {
-  return [
-    { id: 'pl-1', workerUserId: 'usr-6', workerName: 'Miguel Reyes',     workerInitials: 'MR', role: 'Crew A · Lead',     hours: 52, overtimeHours: 12, grossCents: 132_550, bonusCents: 18_000, netCents: 118_420 },
-    { id: 'pl-2', workerUserId: 'usr-7', workerName: 'Carmen Rojas',     workerInitials: 'CR', role: 'Crew A · Picker',   hours: 48, overtimeHours:  8, grossCents: 111_600, bonusCents:  9_200, netCents:  99_430 },
-    { id: 'pl-3', workerUserId: 'usr-2', workerName: 'Soledad Saavedra', workerInitials: 'SS', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820 },
-    { id: 'pl-4', workerUserId: 'usr-3', workerName: 'Beto Villalobos',  workerInitials: 'BV', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820 },
-    { id: 'pl-5', workerUserId: 'usr-foreman-c', workerName: 'Tomás Ríos', workerInitials: 'TR', role: 'Crew C · Foreman',  hours: 48, overtimeHours:  8, grossCents: 129_600, bonusCents: 22_000, netCents: 116_240 },
-    { id: 'pl-6', workerUserId: 'usr-5', workerName: 'Rosa Aguilar',     workerInitials: 'RA', role: 'Crew C · Setup',    hours: 40, overtimeHours:  0, grossCents:  80_000, bonusCents:  4_000, netCents:  71_250 },
-  ];
+export async function listPayrollLines(periodId?: string): Promise<PayrollLineView[]> {
+  if (!apiConfigured() || !periodId) return MOCK_PAYROLL_LINES;
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ lines: ApiPayrollLine[] }>(
+      `/v1/employer/payroll/periods/${periodId}/lines`,
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return MOCK_PAYROLL_LINES;
+    return res.data.lines.map((l) => ({
+      id: l.id,
+      workerUserId: l.workerUserId,
+      workerName: l.workerName || '—',
+      workerInitials: l.workerInitials || '??',
+      role: l.role ?? '',
+      hours: l.hours,
+      overtimeHours: l.overtimeHours,
+      grossCents: l.grossCents,
+      bonusCents: l.bonusCents,
+      netCents: l.netCents,
+    }));
+  } catch {
+    return MOCK_PAYROLL_LINES;
+  }
 }
 
 // ───────────────────────────────────────────────── Compliance
@@ -261,65 +332,120 @@ export type ComplianceCategoryView = {
 };
 
 export type ComplianceItemView = {
+  id?: string;
   key: string;
   label: string;
   status: 'ok' | 'warn' | 'fail';
   details: string;
   dueAt: string | null;
+  evidenceUrl?: string | null;
+};
+
+const MOCK_COMPLIANCE_CATEGORIES: ComplianceCategoryView[] = [
+  {
+    key: 'documentation',
+    label: 'Worker documentation',
+    score: 94,
+    items: [
+      { key: 'i9_on_file', label: 'I-9 forms on file', status: 'ok', details: '24 of 26', dueAt: null },
+      { key: 'i9_expiring', label: '2 I-9s expiring within 30 days', status: 'fail', details: 'Pedro E., Tomás R.', dueAt: '2026-05-29' },
+      { key: 'w4_collected', label: 'W-4s collected', status: 'ok', details: 'All workers', dueAt: null },
+    ],
+  },
+  {
+    key: 'safety',
+    label: 'Worker safety (Cal/OSHA)',
+    score: 100,
+    items: [
+      { key: 'heat_plan',     label: 'Heat illness prevention plan', status: 'ok', details: 'Posted · trained 26/26', dueAt: null },
+      { key: 'wps_training',  label: 'Pesticide handler training (WPS)', status: 'ok', details: 'Current · expires Mar 2027', dueAt: '2027-03-31' },
+      { key: 'covid_plan',    label: 'COVID-19 prevention plan', status: 'ok', details: 'Updated July 12', dueAt: null },
+    ],
+  },
+  {
+    key: 'wage_hour',
+    label: 'Wage & hour',
+    score: 96,
+    items: [
+      { key: 'piece_breaks',  label: 'Piece-rate paid breaks tracked', status: 'ok', details: 'AB 1513 compliant', dueAt: null },
+      { key: 'overtime',      label: 'Overtime calculations',          status: 'ok', details: 'Phase-in 2025: 8h/40h', dueAt: null },
+      { key: 'wage_stmts',    label: 'Itemized wage statements',       status: 'ok', details: 'Auto-generated', dueAt: null },
+    ],
+  },
+  {
+    key: 'pesticide',
+    label: 'Pesticide records',
+    score: 100,
+    items: [
+      { key: 'pur_records',   label: 'Application records (PUR)', status: 'ok', details: 'Filed monthly', dueAt: null },
+      { key: 'noi_filing',    label: 'Notice of Intent (NOI)',    status: 'ok', details: 'CDPR submitted', dueAt: null },
+    ],
+  },
+  {
+    key: 'h2a',
+    label: 'H-2A program',
+    score: 88,
+    items: [
+      { key: 'aewr_rate',     label: 'AEWR rate compliance',     status: 'ok',   details: '$19.97/hr applied', dueAt: null },
+      { key: 'housing_insp',  label: 'Housing inspection',        status: 'warn', details: 'Due Aug 22',          dueAt: '2026-08-22' },
+      { key: 'three_quarter', label: '3/4 guarantee tracking',    status: 'ok',   details: 'Auto-tracked',         dueAt: null },
+    ],
+  },
+];
+
+type ApiComplianceItem = {
+  id: string;
+  category: string;
+  itemKey: string;
+  label: string;
+  status: 'ok' | 'warn' | 'fail';
+  details: string | null;
+  evidenceUrl: string | null;
+  dueAt: string | null;
+  resolvedAt: string | null;
+};
+
+type ApiComplianceCategory = {
+  category: string;
+  score: number;
+  items: ApiComplianceItem[];
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  documentation: 'Worker documentation',
+  safety: 'Worker safety (Cal/OSHA)',
+  wage_hour: 'Wage & hour',
+  pesticide: 'Pesticide records',
+  h2a: 'H-2A program',
+  custom: 'Other',
 };
 
 export async function listComplianceCategories(): Promise<ComplianceCategoryView[]> {
-  return [
-    {
-      key: 'documentation',
-      label: 'Worker documentation',
-      score: 94,
-      items: [
-        { key: 'i9_on_file', label: 'I-9 forms on file', status: 'ok', details: '24 of 26', dueAt: null },
-        { key: 'i9_expiring', label: '2 I-9s expiring within 30 days', status: 'fail', details: 'Pedro E., Tomás R.', dueAt: '2026-05-29' },
-        { key: 'w4_collected', label: 'W-4s collected', status: 'ok', details: 'All workers', dueAt: null },
-      ],
-    },
-    {
-      key: 'safety',
-      label: 'Worker safety (Cal/OSHA)',
-      score: 100,
-      items: [
-        { key: 'heat_plan',     label: 'Heat illness prevention plan', status: 'ok', details: 'Posted · trained 26/26', dueAt: null },
-        { key: 'wps_training',  label: 'Pesticide handler training (WPS)', status: 'ok', details: 'Current · expires Mar 2027', dueAt: '2027-03-31' },
-        { key: 'covid_plan',    label: 'COVID-19 prevention plan', status: 'ok', details: 'Updated July 12', dueAt: null },
-      ],
-    },
-    {
-      key: 'wage_hour',
-      label: 'Wage & hour',
-      score: 96,
-      items: [
-        { key: 'piece_breaks',  label: 'Piece-rate paid breaks tracked', status: 'ok', details: 'AB 1513 compliant', dueAt: null },
-        { key: 'overtime',      label: 'Overtime calculations',          status: 'ok', details: 'Phase-in 2025: 8h/40h', dueAt: null },
-        { key: 'wage_stmts',    label: 'Itemized wage statements',       status: 'ok', details: 'Auto-generated', dueAt: null },
-      ],
-    },
-    {
-      key: 'pesticide',
-      label: 'Pesticide records',
-      score: 100,
-      items: [
-        { key: 'pur_records',   label: 'Application records (PUR)', status: 'ok', details: 'Filed monthly', dueAt: null },
-        { key: 'noi_filing',    label: 'Notice of Intent (NOI)',    status: 'ok', details: 'CDPR submitted', dueAt: null },
-      ],
-    },
-    {
-      key: 'h2a',
-      label: 'H-2A program',
-      score: 88,
-      items: [
-        { key: 'aewr_rate',     label: 'AEWR rate compliance',     status: 'ok',   details: '$19.97/hr applied', dueAt: null },
-        { key: 'housing_insp',  label: 'Housing inspection',        status: 'warn', details: 'Due Aug 22',          dueAt: '2026-08-22' },
-        { key: 'three_quarter', label: '3/4 guarantee tracking',    status: 'ok',   details: 'Auto-tracked',         dueAt: null },
-      ],
-    },
-  ];
+  if (!apiConfigured()) return MOCK_COMPLIANCE_CATEGORIES;
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{
+      categories: ApiComplianceCategory[];
+      actions: { severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
+    }>('/v1/employer/compliance/items', { handleErrorInline: true });
+    if (!isOk(res) || res.data.categories.length === 0) return MOCK_COMPLIANCE_CATEGORIES;
+    return res.data.categories.map((c) => ({
+      key: c.category,
+      label: CATEGORY_LABELS[c.category] ?? c.category,
+      score: c.score,
+      items: c.items.map((i) => ({
+        id: i.id,
+        key: i.itemKey,
+        label: i.label,
+        status: i.status,
+        details: i.details ?? '',
+        dueAt: i.dueAt,
+        evidenceUrl: i.evidenceUrl,
+      })),
+    }));
+  } catch {
+    return MOCK_COMPLIANCE_CATEGORIES;
+  }
 }
 
 export type ComplianceActionView = {
@@ -329,21 +455,39 @@ export type ComplianceActionView = {
   cta: string;
 };
 
+const MOCK_COMPLIANCE_ACTIONS: ComplianceActionView[] = [
+  {
+    severity: 'urgent',
+    title: 'Two I-9s expiring within 30 days',
+    detail: 'Pedro Estrella (May 29) · Tomás Ríos (Jun 1) — re-verify with current ID.',
+    cta: 'Re-verify',
+  },
+  {
+    severity: 'soon',
+    title: 'H-2A housing inspection due Aug 22',
+    detail: 'Annual housing inspection per 20 CFR 655.122 — schedule with CDPH 14 days in advance.',
+    cta: 'Schedule',
+  },
+];
+
 export async function listComplianceActions(): Promise<ComplianceActionView[]> {
-  return [
-    {
-      severity: 'urgent',
-      title: 'Two I-9s expiring within 30 days',
-      detail: 'Pedro Estrella (May 29) · Tomás Ríos (Jun 1) — re-verify with current ID.',
-      cta: 'Re-verify',
-    },
-    {
-      severity: 'soon',
-      title: 'H-2A housing inspection due Aug 22',
-      detail: 'Annual housing inspection per 20 CFR 655.122 — schedule with CDPH 14 days in advance.',
-      cta: 'Schedule',
-    },
-  ];
+  if (!apiConfigured()) return MOCK_COMPLIANCE_ACTIONS;
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{
+      categories: ApiComplianceCategory[];
+      actions: { severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
+    }>('/v1/employer/compliance/items', { handleErrorInline: true });
+    if (!isOk(res) || res.data.actions.length === 0) return MOCK_COMPLIANCE_ACTIONS;
+    return res.data.actions.map((a) => ({
+      severity: a.severity,
+      title: a.label,
+      detail: a.details,
+      cta: a.severity === 'urgent' ? 'Resolve' : 'Schedule',
+    }));
+  } catch {
+    return MOCK_COMPLIANCE_ACTIONS;
+  }
 }
 
 // ───────────────────────────────────────────────── Messages
@@ -367,33 +511,124 @@ export type MessageView = {
   whenLabel: string;
 };
 
+const MOCK_THREADS: MessageThreadView[] = [
+  { id: 't-1', name: 'Crew A — Grape Harvest', initials: 'A', preview: 'M. Vargas: Pickup at 5:30 AM, Hwy 99…', whenLabel: '8m', unread: 2, channel: 'app',       group: true },
+  { id: 't-2', name: 'Pedro Estrella',         initials: 'PE', preview: 'You: Can you do Thu 9 AM interview?',     whenLabel: '32m', unread: 0, channel: 'sms',       group: false },
+  { id: 't-3', name: 'Soledad Saavedra',       initials: 'SS', preview: 'Soledad: Yes, I have forklift cert…',      whenLabel: '2h',  unread: 1, channel: 'sms',       group: false },
+  { id: 't-4', name: 'Manuel Vargas (Foreman)', initials: 'MV', preview: 'Manuel: Need 1 more for tomorrow',         whenLabel: '3h',  unread: 0, channel: 'whatsapp',  group: false },
+  { id: 't-5', name: 'Almond Pre-shake applicants', initials: 'AP', preview: 'You: Job is still open — pay $21/hr…', whenLabel: '5h',  unread: 0, channel: 'broadcast', group: true },
+  { id: 't-6', name: 'Joaquín Núñez',          initials: 'JN', preview: 'Joaquín: Available Mon-Sat',               whenLabel: 'Yest', unread: 0, channel: 'sms',       group: false },
+  { id: 't-7', name: 'Rosa Aguilar',           initials: 'RA', preview: 'You: Welcome to the crew!',                 whenLabel: 'Yest', unread: 0, channel: 'app',       group: false },
+];
+
+type ApiConversation = {
+  id: string;
+  title: string;
+  isGroup: boolean;
+  channel: 'app' | 'sms' | 'whatsapp' | 'broadcast';
+  lastMessageAt: string | null;
+  unreadCount: number;
+  preview: string;
+};
+
+type ApiMessage = {
+  id: string;
+  conversationId: string;
+  senderUserId: string;
+  body: string;
+  channel: 'app' | 'sms' | 'whatsapp' | 'broadcast';
+  direction: 'inbound' | 'outbound';
+  createdAt: string;
+};
+
 export async function listThreads(): Promise<MessageThreadView[]> {
-  return [
-    { id: 't-1', name: 'Crew A — Grape Harvest', initials: 'A', preview: 'M. Vargas: Pickup at 5:30 AM, Hwy 99…', whenLabel: '8m', unread: 2, channel: 'app',       group: true },
-    { id: 't-2', name: 'Pedro Estrella',         initials: 'PE', preview: 'You: Can you do Thu 9 AM interview?',     whenLabel: '32m', unread: 0, channel: 'sms',       group: false },
-    { id: 't-3', name: 'Soledad Saavedra',       initials: 'SS', preview: 'Soledad: Yes, I have forklift cert…',      whenLabel: '2h',  unread: 1, channel: 'sms',       group: false },
-    { id: 't-4', name: 'Manuel Vargas (Foreman)', initials: 'MV', preview: 'Manuel: Need 1 more for tomorrow',         whenLabel: '3h',  unread: 0, channel: 'whatsapp',  group: false },
-    { id: 't-5', name: 'Almond Pre-shake applicants', initials: 'AP', preview: 'You: Job is still open — pay $21/hr…', whenLabel: '5h',  unread: 0, channel: 'broadcast', group: true },
-    { id: 't-6', name: 'Joaquín Núñez',          initials: 'JN', preview: 'Joaquín: Available Mon-Sat',               whenLabel: 'Yest', unread: 0, channel: 'sms',       group: false },
-    { id: 't-7', name: 'Rosa Aguilar',           initials: 'RA', preview: 'You: Welcome to the crew!',                 whenLabel: 'Yest', unread: 0, channel: 'app',       group: false },
-  ];
+  if (!apiConfigured()) return MOCK_THREADS;
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ conversations: ApiConversation[] }>('/v1/employer/messages', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res) || res.data.conversations.length === 0) return MOCK_THREADS;
+    return res.data.conversations.map((co) => ({
+      id: co.id,
+      name: co.title,
+      initials: deriveInitials(co.title),
+      preview: co.preview || '—',
+      whenLabel: relTimeShort(co.lastMessageAt),
+      unread: co.unreadCount,
+      channel: co.channel,
+      group: co.isGroup,
+    }));
+  } catch {
+    return MOCK_THREADS;
+  }
 }
 
-export async function listMessages(threadId: string): Promise<MessageView[]> {
-  if (threadId !== 't-1') {
-    return [
-      { id: 'm-x', threadId, senderRole: 'them', body: 'Hi Elena — just confirming for tomorrow\'s shift.',                whenLabel: '8:02 AM' },
-      { id: 'm-y', threadId, senderRole: 'me',   body: 'Confirmed. See you at 6 AM.',                                       whenLabel: '8:05 AM' },
-    ];
+const MOCK_THREAD_T1: MessageView[] = [
+  { id: 'm-1', threadId: 't-1', senderRole: 'them', body: 'Buenos días Elena. Listo para mañana. Tengo 13 confirmados y uno me dijo que no puede.',                          whenLabel: '7:42 AM' },
+  { id: 'm-2', threadId: 't-1', senderRole: 'me',   body: 'Got it Manuel. Posting the 1 spot publicly now — should fill within an hour given how many applicants we have.', whenLabel: '7:44 AM' },
+  { id: 'm-3', threadId: 't-1', senderRole: 'them', body: 'Perfect. Pickup en Hwy 99 a las 5:30 AM, regresamos al campo Block 7-Norte. Llevo agua + carpa de sombra.',       whenLabel: '7:46 AM' },
+  { id: 'm-4', threadId: 't-1', senderRole: 'me',   body: 'Heat advisory says 102°F by 1 PM tomorrow. Push lunch to 11:30 and add a 10-min shade break at 9 AM and 1 PM.',  whenLabel: '7:48 AM' },
+  { id: 'm-5', threadId: 't-1', senderRole: 'them', body: '✓ Voy a avisar al equipo por WhatsApp. ¿Pago piezas hoy o se junta con el viernes?',                              whenLabel: '7:51 AM' },
+  { id: 'm-6', threadId: 't-1', senderRole: 'me',   body: 'Friday with payroll. Bonus rate is $0.18/lb — already loaded. See you at 5:30.',                                  whenLabel: '7:53 AM' },
+];
+
+export async function listMessages(threadId: string, employerUserId?: string): Promise<MessageView[]> {
+  if (!apiConfigured()) {
+    if (threadId !== 't-1') {
+      return [
+        { id: 'm-x', threadId, senderRole: 'them', body: 'Hi Elena — just confirming for tomorrow\'s shift.', whenLabel: '8:02 AM' },
+        { id: 'm-y', threadId, senderRole: 'me',   body: 'Confirmed. See you at 6 AM.',                       whenLabel: '8:05 AM' },
+      ];
+    }
+    return MOCK_THREAD_T1;
   }
-  return [
-    { id: 'm-1', threadId, senderRole: 'them', body: 'Buenos días Elena. Listo para mañana. Tengo 13 confirmados y uno me dijo que no puede.',                          whenLabel: '7:42 AM' },
-    { id: 'm-2', threadId, senderRole: 'me',   body: 'Got it Manuel. Posting the 1 spot publicly now — should fill within an hour given how many applicants we have.', whenLabel: '7:44 AM' },
-    { id: 'm-3', threadId, senderRole: 'them', body: 'Perfect. Pickup en Hwy 99 a las 5:30 AM, regresamos al campo Block 7-Norte. Llevo agua + carpa de sombra.',       whenLabel: '7:46 AM' },
-    { id: 'm-4', threadId, senderRole: 'me',   body: 'Heat advisory says 102°F by 1 PM tomorrow. Push lunch to 11:30 and add a 10-min shade break at 9 AM and 1 PM.',  whenLabel: '7:48 AM' },
-    { id: 'm-5', threadId, senderRole: 'them', body: '✓ Voy a avisar al equipo por WhatsApp. ¿Pago piezas hoy o se junta con el viernes?',                              whenLabel: '7:51 AM' },
-    { id: 'm-6', threadId, senderRole: 'me',   body: 'Friday with payroll. Bonus rate is $0.18/lb — already loaded. See you at 5:30.',                                  whenLabel: '7:53 AM' },
-  ];
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ messages: ApiMessage[] }>(
+      `/v1/employer/messages/${threadId}/messages`,
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return [];
+    return res.data.messages.map((m) => ({
+      id: m.id,
+      threadId: m.conversationId,
+      senderRole: employerUserId && m.senderUserId === employerUserId ? 'me' : 'them',
+      body: m.body,
+      whenLabel: shortTime(m.createdAt),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function deriveInitials(name: string): string {
+  const parts = name
+    .replace(/[—–-]+/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  if (parts.length === 0) return '??';
+  if (parts.length === 1) return (parts[0]?.slice(0, 2) ?? '??').toUpperCase();
+  return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase();
+}
+
+function relTimeShort(iso: string | null): string {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60_000);
+  if (m < 1) return 'now';
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d`;
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(iso));
+}
+
+function shortTime(iso: string): string {
+  return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(
+    new Date(iso),
+  );
 }
 
 // ───────────────────────────────────────────────── Reports
@@ -423,38 +658,83 @@ export type ReportsTopWorkerView = {
 
 export type ReportsSeasonFlowPoint = { week: number; applied: number; hired: number };
 
+type ReportsOverviewResponse = {
+  kpis: { key: string; value: string; delta: string; sub: string }[];
+  byJobType: ReportsByJobTypeView[];
+  topWorkers: { rank: number; workerUserId: string; name: string; initials: string; role: string; metric: string; delta: string }[];
+  seasonFlow: ReportsSeasonFlowPoint[];
+};
+
+const KPI_LABELS: Record<string, string> = {
+  hires: 'Hires this season',
+  time_to_fill: 'Avg time-to-fill',
+  cost_per_hire: 'Cost per hire',
+  retention_30d: 'Retention · 30 d',
+};
+
+const MOCK_REPORTS = {
+  kpis: [
+    { label: 'Hires this season', value: '83',     delta: '+18 YoY',  sub: '14 active crews' },
+    { label: 'Avg time-to-fill',  value: '2.4 d',  delta: '-1.7 d YoY', sub: 'County avg 6.1 d' },
+    { label: 'Cost per hire',     value: '$42',    delta: '-$28 YoY', sub: 'incl. SMS, broadcast' },
+    { label: 'Retention · 30 d',  value: '88%',    delta: '+12 pts YoY', sub: '5 of 41 left early' },
+  ],
+  byJobType: [
+    { label: 'Grape Harvest',    applied: 142, hired: 38, fillPct: 100 },
+    { label: 'Almond Pre-shake', applied: 86,  hired: 21, fillPct: 87 },
+    { label: 'Vineyard Setup',   applied: 64,  hired: 14, fillPct: 92 },
+    { label: 'Sort Line',        applied: 58,  hired: 16, fillPct: 100 },
+    { label: 'Almond Sweep',     applied: 28,  hired: 0,  fillPct: 0 },
+  ],
+  topWorkers: [
+    { rank: 1, name: 'Miguel Reyes',     initials: 'MR', role: 'Crew A · Lead',    metric: '4,820 lb/day', delta: '+18%' },
+    { rank: 2, name: 'Carmen Rojas',     initials: 'CR', role: 'Crew A · Picker',  metric: '4,210 lb/day', delta: '+12%' },
+    { rank: 3, name: 'Tomás Ríos',       initials: 'TR', role: 'Crew C · Foreman', metric: '3,980 lb/day', delta: '+9%' },
+    { rank: 4, name: 'Ana Castillo',     initials: 'AC', role: 'Crew C · Setup',   metric: '3,640 lb/day', delta: '+7%' },
+    { rank: 5, name: 'Joaquín Núñez',    initials: 'JN', role: 'Crew B · Sort',    metric: '3,520 lb/day', delta: '+5%' },
+  ],
+  seasonFlow: [40, 56, 78, 92, 110, 128, 142, 156, 168, 152, 138, 120, 102, 88, 72, 84, 110, 138, 168, 184, 172, 158]
+    .map((applied, i) => ({
+      week: i + 1,
+      applied,
+      hired: Math.round(applied * 0.43),
+    })),
+};
+
 export async function getReportsOverview(): Promise<{
   kpis: ReportsKpiView[];
   byJobType: ReportsByJobTypeView[];
   topWorkers: ReportsTopWorkerView[];
   seasonFlow: ReportsSeasonFlowPoint[];
 }> {
-  return {
-    kpis: [
-      { label: 'Hires this season', value: '83',     delta: '+18 YoY',  sub: '14 active crews' },
-      { label: 'Avg time-to-fill',  value: '2.4 d',  delta: '-1.7 d YoY', sub: 'County avg 6.1 d' },
-      { label: 'Cost per hire',     value: '$42',    delta: '-$28 YoY', sub: 'incl. SMS, broadcast' },
-      { label: 'Retention · 30 d',  value: '88%',    delta: '+12 pts YoY', sub: '5 of 41 left early' },
-    ],
-    byJobType: [
-      { label: 'Grape Harvest',    applied: 142, hired: 38, fillPct: 100 },
-      { label: 'Almond Pre-shake', applied: 86,  hired: 21, fillPct: 87 },
-      { label: 'Vineyard Setup',   applied: 64,  hired: 14, fillPct: 92 },
-      { label: 'Sort Line',        applied: 58,  hired: 16, fillPct: 100 },
-      { label: 'Almond Sweep',     applied: 28,  hired: 0,  fillPct: 0 },
-    ],
-    topWorkers: [
-      { rank: 1, name: 'Miguel Reyes',     initials: 'MR', role: 'Crew A · Lead',    metric: '4,820 lb/day', delta: '+18%' },
-      { rank: 2, name: 'Carmen Rojas',     initials: 'CR', role: 'Crew A · Picker',  metric: '4,210 lb/day', delta: '+12%' },
-      { rank: 3, name: 'Tomás Ríos',       initials: 'TR', role: 'Crew C · Foreman', metric: '3,980 lb/day', delta: '+9%' },
-      { rank: 4, name: 'Ana Castillo',     initials: 'AC', role: 'Crew C · Setup',   metric: '3,640 lb/day', delta: '+7%' },
-      { rank: 5, name: 'Joaquín Núñez',    initials: 'JN', role: 'Crew B · Sort',    metric: '3,520 lb/day', delta: '+5%' },
-    ],
-    seasonFlow: [40, 56, 78, 92, 110, 128, 142, 156, 168, 152, 138, 120, 102, 88, 72, 84, 110, 138, 168, 184, 172, 158]
-      .map((applied, i) => ({
-        week: i + 1,
-        applied,
-        hired: Math.round(applied * 0.43),
+  if (!apiConfigured()) return MOCK_REPORTS;
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<ReportsOverviewResponse>('/v1/employer/reports/overview', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return MOCK_REPORTS;
+    const hasData = res.data.kpis.some((k) => k.value !== '—' && k.value !== '0');
+    if (!hasData) return MOCK_REPORTS;
+    return {
+      kpis: res.data.kpis.map((k) => ({
+        label: KPI_LABELS[k.key] ?? k.key,
+        value: k.value,
+        delta: k.delta,
+        sub: k.sub,
       })),
-  };
+      byJobType: res.data.byJobType,
+      topWorkers: res.data.topWorkers.map((w) => ({
+        rank: w.rank,
+        name: w.name,
+        initials: w.initials,
+        role: w.role,
+        metric: w.metric,
+        delta: w.delta,
+      })),
+      seasonFlow: res.data.seasonFlow,
+    };
+  } catch {
+    return MOCK_REPORTS;
+  }
 }

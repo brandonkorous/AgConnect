@@ -3,7 +3,6 @@ import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMagnifyingGlass,
-  faPaperPlane,
   faPhone,
   faComments,
   faUsers,
@@ -18,6 +17,8 @@ import {
   type MessageThreadView,
   type MessageView,
 } from '@/lib/api/employer-ops';
+import { MessageComposer } from '@/components/employer/messages/MessageComposer';
+import { NewConversationButton } from '@/components/employer/messages/NewConversationButton';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -51,10 +52,10 @@ export default async function MessagesPage({ params }: Props) {
           </h1>
           <div className="text-base-content/70 mt-2 text-sm">{t('summary')}</div>
         </div>
-        <button type="button" className="btn btn-sm btn-primary rounded-full">
-          <FontAwesomeIcon icon={faBolt} className="h-3 w-3" />
-          {t('new_broadcast')}
-        </button>
+        <div className="flex gap-2">
+          <NewConversationButton variant="thread" />
+          <NewConversationButton variant="broadcast" />
+        </div>
       </div>
 
       <div className="bg-base-100 border-base-300 grid h-[720px] grid-cols-[220px_340px_1fr] overflow-hidden rounded-2xl border">
@@ -300,42 +301,7 @@ function Conversation({
         ))}
       </div>
 
-      <div className="bg-base-100 border-base-300 border-t p-3.5">
-        <div className="mb-2 flex gap-1.5">
-          <button
-            type="button"
-            className="bg-primary/15 text-primary border-primary rounded-full border px-3 py-1 text-[11px] font-bold"
-          >
-            {t('composer.channel_app')}
-          </button>
-          <button
-            type="button"
-            className="bg-base-100 border-base-300 rounded-full border px-3 py-1 text-[11px] font-semibold"
-          >
-            {t('composer.channel_sms', { n: 14 })}
-          </button>
-          <button
-            type="button"
-            className="bg-base-100 border-base-300 rounded-full border px-3 py-1 text-[11px] font-semibold"
-          >
-            {t('composer.channel_whatsapp')}
-          </button>
-        </div>
-        <div className="border-base-300 flex items-center gap-2.5 rounded-xl border p-2.5">
-          <input
-            type="text"
-            placeholder={t('composer.placeholder')}
-            className="flex-1 border-0 bg-transparent text-sm outline-none"
-          />
-          <button
-            type="button"
-            className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold"
-          >
-            {t('composer.send')}
-            <FontAwesomeIcon icon={faPaperPlane} className="h-3 w-3" />
-          </button>
-        </div>
-      </div>
+      <MessageComposer conversationId={thread.id} initialChannel="app" smsCount={14} />
     </div>
   );
 }
