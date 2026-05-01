@@ -4,7 +4,7 @@
 
 ```ts
 // apps/api/src/index.ts
-import { clerkMiddleware } from '@hono/clerk-auth';
+import { clerkMiddleware } from '@clerk/hono';
 import { tenantMiddleware } from './middleware/tenant';
 import { adminMiddleware } from './middleware/admin';
 

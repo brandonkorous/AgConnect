@@ -18,7 +18,7 @@
     "@agconn/schemas": "workspace:*",
     "@agconn/sms": "workspace:*",
     "@clerk/backend": "^3.4.3",
-    "@hono/clerk-auth": "^3.1.1",
+    "@clerk/hono": "^0.1.22",
     "@hono/node-server": "^1.13.0",
     "@sentry/node": "10.51.0",
     "hono": "4.12.15",

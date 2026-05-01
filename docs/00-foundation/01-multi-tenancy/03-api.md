@@ -8,7 +8,7 @@ Every authenticated request resolves the tenant once at the gateway and stores i
 // apps/api/src/middleware/tenant.ts
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
-import { getAuth } from '@hono/clerk-auth';
+import { getAuth } from '@clerk/hono';
 import { db } from '@agconn/db';
 
 type Vars = { tenantId: string; userRole: 'worker' | 'employer' | 'training_org' | 'admin' };

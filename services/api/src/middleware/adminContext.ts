@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory';
-import { getAuth } from '@hono/clerk-auth';
+import { getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
 import { prisma, type Tx } from '@agconn/db';
 

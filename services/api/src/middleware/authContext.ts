@@ -1,6 +1,6 @@
 import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { clerkMiddleware, getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
 import { Lang, prisma, UserRole, type Tx } from '@agconn/db';
 import { hasPermission, type Permission } from '@agconn/schemas';
@@ -19,7 +19,7 @@ export type AuthVars = {
     role: 'authenticated';
 };
 
-// @hono/clerk-auth defaults to reading CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY
+// @clerk/hono defaults to reading CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY
 // from env, but our project standardizes on NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 // (so the same value can be reused by apps/web). Pass the keys in explicitly so
 // the middleware works regardless of which name is set.

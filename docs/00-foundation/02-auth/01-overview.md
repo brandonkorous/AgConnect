@@ -26,7 +26,7 @@ All authentication for AgConn runs through Clerk. The choice is recorded in kick
 | Preferred language                                     | Clerk `publicMetadata.preferred_lang` (mirrored to `users.preferredLang`) |
 | Tenant binding                                         | Clerk Organization (employers) or `users.tenant_id` (workers)             |
 | Profile data (skills, county, etc.)                    | Our DB only — never Clerk                                                 |
-| Session JWT validation                                 | Hono middleware via `@hono/clerk-auth`                                    |
+| Session JWT validation                                 | Hono middleware via `@clerk/hono`                                         |
 
 > **Inferred:** Mirror Clerk metadata into our DB rather than reading Clerk in every request. Clerk has rate limits and the round trip costs latency. The mirror is updated by webhook on every Clerk change. Drift is a known risk — see [08-edge-cases.md](08-edge-cases.md).
 
