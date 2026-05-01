@@ -1,24 +1,69 @@
+'use client';
+
+import { useRef, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faLeaf, faIdBadge, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { Pill } from '@/components/worker/primitives/Pill';
-import { CropGlyph } from '@/components/jobs/CropGlyph';
-import { MESSAGES } from './messagesMockData';
+import { sendMessageAction } from '@/lib/api/me-actions';
+import type { ThreadDetail } from '@/lib/api/me';
 
-export function ThreadView() {
+type Props = { detail: ThreadDetail; locale: string };
+
+export function ThreadView({ detail, locale }: Props) {
   const t = useTranslations('worker.messages.thread');
   const tQuick = useTranslations('worker.messages.quick');
+  const router = useRouter();
+  const [body, setBody] = useState('');
+  const [pending, startTransition] = useTransition();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function send() {
+    const value = body.trim();
+    if (!value) return;
+    setBody('');
+    startTransition(async () => {
+      await sendMessageAction(detail.conversation.id, value);
+      router.refresh();
+      inputRef.current?.focus();
+    });
+  }
+
+  function quick(text: string) {
+    startTransition(async () => {
+      await sendMessageAction(detail.conversation.id, text);
+      router.refresh();
+    });
+  }
+
+  const initials = detail.conversation.employer
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
+
+  const channelLabel =
+    detail.conversation.channel === 'whatsapp'
+      ? 'WhatsApp'
+      : detail.conversation.channel === 'sms'
+        ? 'SMS'
+        : 'In-app';
+
   return (
     <div className="flex min-h-[640px] flex-col">
       <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
         <div className="flex items-center gap-3">
           <div className="bg-primary grid h-10 w-10 place-items-center rounded-full font-mono text-[13px] font-bold text-white">
-            SV
+            {initials || 'AC'}
           </div>
           <div>
-            <div className="text-[14.5px] font-semibold">Sunridge Vineyards</div>
+            <div className="text-[14.5px] font-semibold">
+              {detail.conversation.employer}
+            </div>
             <div className="text-base-content/60 text-[11.5px]">
-              Marisol Vargas · {t('foreman')} · WhatsApp
+              {detail.conversation.title} · {channelLabel}
             </div>
           </div>
         </div>
@@ -38,60 +83,67 @@ export function ThreadView() {
         </div>
       </div>
 
-      <div className="bg-base-200 border-base-300 border-b p-4">
-        <div className="border-base-300 flex items-center gap-3 rounded-xl border bg-white p-3">
-          <div className="bg-base-200 grid h-9 w-9 place-items-center rounded-lg">
-            <CropGlyph crop="grape" size={22} />
-          </div>
-          <div className="flex-1">
-            <div className="text-[13px] font-semibold">{t('pinned.title')}</div>
-            <div className="text-base-content/60 text-[11.5px]">{t('pinned.meta')}</div>
-          </div>
-          <Pill tone="success">{t('pinned.status')}</Pill>
-        </div>
-      </div>
-
       <div
         className="flex flex-1 flex-col gap-3 overflow-y-auto p-5"
         style={{ background: 'oklch(95% 0.01 70 / 0.5)' }}
       >
-        {MESSAGES.map((m, i) => (
-          <div
-            key={i}
-            className={[
-              'flex',
-              m.from === 'me' ? 'justify-end' : 'justify-start',
-            ].join(' ')}
-          >
-            <div className="max-w-[78%]">
-              <div
-                className={[
-                  'px-3.5 py-2.5 text-[13.5px] leading-relaxed',
-                  m.from === 'me'
-                    ? 'bg-primary text-primary-content rounded-[14px_14px_4px_14px] shadow-md'
-                    : 'border-base-300 bg-base-100 text-base-content rounded-[14px_14px_14px_4px] border shadow-sm',
-                ].join(' ')}
-              >
-                {m.body}
-              </div>
-              <div
-                className={[
-                  'text-base-content/60 mt-1 font-mono text-[10.5px]',
-                  m.from === 'me' ? 'text-right' : 'text-left',
-                ].join(' ')}
-              >
-                {m.time}
+        {detail.messages.length === 0 ? (
+          <p className="text-base-content/60 text-center text-[13px]">
+            {locale === 'es'
+              ? 'Empieza la conversación abajo.'
+              : 'Start the conversation below.'}
+          </p>
+        ) : (
+          detail.messages.map((m) => (
+            <div
+              key={m.id}
+              className={['flex', m.isMe ? 'justify-end' : 'justify-start'].join(' ')}
+            >
+              <div className="max-w-[78%]">
+                <div
+                  className={[
+                    'px-3.5 py-2.5 text-[13.5px] leading-relaxed',
+                    m.isMe
+                      ? 'bg-primary text-primary-content rounded-[14px_14px_4px_14px] shadow-md'
+                      : 'border-base-300 bg-base-100 text-base-content rounded-[14px_14px_14px_4px] border shadow-sm',
+                  ].join(' ')}
+                >
+                  {m.body}
+                </div>
+                <div
+                  className={[
+                    'text-base-content/60 mt-1 font-mono text-[10.5px]',
+                    m.isMe ? 'text-right' : 'text-left',
+                  ].join(' ')}
+                >
+                  {new Date(m.createdAt).toLocaleString(locale, {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <div className="border-base-300 border-t p-4">
-        <div className="border-base-300 flex items-center gap-2.5 rounded-full border bg-white py-1 pl-3.5 pr-1">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            send();
+          }}
+          className="border-base-300 flex items-center gap-2.5 rounded-full border bg-white py-1 pl-3.5 pr-1"
+        >
           <input
+            ref={inputRef}
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
             placeholder={t('reply_placeholder')}
             className="text-base-content flex-1 bg-transparent text-[13.5px] outline-none"
+            disabled={pending}
           />
           <button
             type="button"
@@ -101,18 +153,21 @@ export function ThreadView() {
             <FontAwesomeIcon icon={faIdBadge} className="h-3.5 w-3.5" />
           </button>
           <button
-            type="button"
-            className="bg-primary text-primary-content inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-semibold"
+            type="submit"
+            disabled={pending || body.trim().length === 0}
+            className="bg-primary text-primary-content inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-semibold disabled:opacity-50"
           >
             {t('send')}
             <FontAwesomeIcon icon={faArrowRight} className="h-3 w-3" />
           </button>
-        </div>
+        </form>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {(['got_it', 'on_my_way', 'address', 'question'] as const).map((q) => (
             <button
               key={q}
               type="button"
+              disabled={pending}
+              onClick={() => quick(tQuick(q))}
               className="border-base-300 text-base-content/80 rounded-full border bg-white px-3 py-1.5 text-[11.5px] font-medium"
             >
               {tQuick(q)}

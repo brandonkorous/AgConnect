@@ -22,6 +22,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export type { Prisma } from '@prisma/client';
+// Re-export the Prisma namespace value too so callers can use `Prisma.sql` /
+// `Prisma.empty` / etc. without depending on @prisma/client directly.
+export { Prisma as PrismaNamespace } from '@prisma/client';
 export {
   Lang,
   WaitlistAudience,

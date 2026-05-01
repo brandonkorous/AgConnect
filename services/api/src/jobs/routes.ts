@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
-import { Prisma } from '@prisma/client';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { County, JobStatus, type Tx } from '@agconn/db';
+import { County, JobStatus, PrismaNamespace as Prisma, type Tx } from '@agconn/db';
 import {
   CreateSavedSearchBody,
   JobsQuery,

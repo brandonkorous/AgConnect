@@ -35,9 +35,9 @@ export default async function WorkerDashboardPage({ params }: Props) {
         </div>
         <div className="grid gap-3.5">
           <PaycheckCard />
-          <AvailabilityCard />
+          <AvailabilityCard locale={locale} />
           <TrainingNudge />
-          <MessagesCard />
+          <MessagesCard locale={locale} />
         </div>
       </div>
     </div>
