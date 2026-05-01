@@ -74,10 +74,12 @@ The kickoff (§16) defines six phases. This plan reorganizes them slightly to ma
 **Builds:**
 
 - [00-foundation/01-multi-tenancy](00-foundation/01-multi-tenancy/) — `tenants` table, RLS policy template, tenant-resolution middleware
-- [00-foundation/03-database](00-foundation/03-database/) — Prisma schema for `tenants`, `users`, `auth_events`, `migration_log`; seeds; CI checks (`check-tenant-id`, `check-rls`)
+- [00-foundation/03-database](00-foundation/03-database/) — Prisma schema for `tenants`, `users`, `auth_events`, `audit_events`, `migration_log`; seeds; CI checks (`check-tenant-id`, `check-rls`)
 - [00-foundation/02-auth](00-foundation/02-auth/) — Clerk SMS OTP (workers) + magic link (employers, training orgs, admin); webhook → `users` sync
 - [00-foundation/04-i18n](00-foundation/04-i18n/) — next-intl, `packages/i18n` with `en.json` / `es.json`, locale toggle, CI parity check
 - [00-foundation/10-infra-cicd](00-foundation/10-infra-cicd/) — AKS namespace, GHCR push, `deploy.yml`, preview environments, Key Vault + CSI
+- [00-foundation/11-app-shell](00-foundation/11-app-shell/) — `packages/ui` primitives (toast, modal, form, skeleton, empty-state, error boundary), `packages/api-client` with error envelope, PWA wrapper on **serwist** (manifest, SW, install prompt, offline fallback). Mutations are write-through for MVP; queue-and-replay is a post-launch upgrade path.
+- [00-foundation/12-audit-log](00-foundation/12-audit-log/) — `audit_events` table with append-only RLS + monthly partitioning + per-row HMAC tamper-evidence, `packages/audit` with action registry + ESLint rule, audit middleware with default-on circuit breaker, retention worker, nightly HMAC verifier, bilingual-by-design admin viewer (English-rendered for MVP, ES key shape mirrored)
 
 **Parallel track (starts mid-week):**
 
@@ -86,11 +88,17 @@ The kickoff (§16) defines six phases. This plan reorganizes them slightly to ma
 
 **Definition of done:**
 
-- Clerk SMS OTP and magic-link auth round-trip in dev + preview env.
-- Every Prisma model conforms to convention checks.
-- `/v1/me/tenant` returns the resolving tenant; cross-tenant request rejected.
+- Clerk SMS OTP and magic-link auth round-trip in dev + preview env, with `auth.login` / `auth.logout` audit events recorded.
+- Every Prisma model conforms to convention checks (`check-tenant-id`, `check-rls`, audit-required ESLint rule).
+- `/v1/me/tenant` returns the resolving tenant; cross-tenant request rejected; the rejection itself is audited.
 - A2P 10DLC application submitted (approval expected during Phase 1–2).
 - DNS records for `agconn.com` and `mail.agconn.com` verified.
+- Worker dashboard route passes Lighthouse PWA category (installable, offline fallback, manifest valid) on a Pixel-class device over throttled 4G, served via serwist.
+- Every API endpoint emits the error envelope; an integration test asserts the contract.
+- Admin viewer at `/admin/audit` lists seeded events with working filters; every visible string reads from `messages/{en,es}.json` with the parity-check allowlist permitting empty ES values during MVP.
+- HMAC tamper-evidence proven end to end: forge a row in dev → `?verify=true` returns `verified: false`; nightly verifier emits `system.audit.tamper_detected` and pages.
+- Audit circuit breaker proven end to end: forced consecutive write failures open the breaker; business requests succeed; recovery drains the queue and emits `system.audit.breaker.recovered`.
+- Azure Key Vault holds `audit-hmac-key/v1`; app boot fails loudly without it.
 
 ### Phase 1 — Worker Core (Weeks 2–3)
 

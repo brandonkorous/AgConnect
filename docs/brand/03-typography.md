@@ -1,6 +1,6 @@
 # 03 — Tierra: Typography
 
-Typography does most of the emotional work in the Tierra brand. The palette is restrained on purpose so that type — its scale, its italics, its tabular numerals — can carry weight, warmth, and credibility.
+Tierra's audience is farmworkers, farm operators, FLCs, training organizations, and grant officers. Typography here is utilitarian first and warm second. The palette is restrained so that type can do clear, calm, civic work — not so it can carry an editorial performance. The Tierra type voice should sit closer to a public-service tool with craft (CDFA, EDD, LA County) than to a B2B brand magazine.
 
 ## Typefaces
 
@@ -8,13 +8,13 @@ Three families. Adding a fourth is a brand-level decision.
 
 | family | role | source |
 |---|---|---|
-| **Fraunces** | display, editorial headlines, brand voice, marketing | Google Fonts (variable; SOFT, WONK, opsz, wght axes) |
+| **Fraunces** | display headlines, section openers, marketing | Google Fonts (variable; SOFT, WONK, opsz, wght axes) |
 | **Inter** | UI body, labels, forms, tables of words | Google Fonts (variable; opsz, wght) |
-| **DM Mono** | tabular figures, money, time, timestamps, code, identifiers | Google Fonts |
+| **DM Mono** | tabular figures, money, time, timestamps, code, identifiers, civic stats | Google Fonts |
 
-### Fraunces — the brand voice
+### Fraunces — the headline serif
 
-Fraunces is a contemporary serif with optical-size and personality axes (SOFT, WONK). It is the typeface that makes Tierra feel like a publication and not a SaaS product. Treat it as the brand's body language.
+Fraunces is a contemporary serif with optical-size and personality axes (SOFT, WONK). It gives Tierra warmth and craft at headline sizes without slipping into preciousness. Treat it as a serious display face, not a brand-magazine fingerprint.
 
 Variable axis defaults across the system:
 
@@ -24,14 +24,16 @@ Variable axis defaults across the system:
   font-variation-settings:
     'opsz' 144,   /* display optical size at large sizes */
     'SOFT' 50,    /* softened terminals — friendly but not cute */
-    'WONK' 0;     /* no swashes by default; 1 only for editorial accents */
+    'WONK' 0;     /* never enable swashes; WONK 1 is editorial decoration we do not use */
   font-feature-settings: 'ss01' on, 'ss03' on; /* alternate g, single-story a */
 }
 ```
 
 Display sizes ≥ 32px should set `opsz` to 144. UI sizes (rare — Fraunces should mostly be display) should set `opsz` to 14 or 28.
 
-**Italic is the brand's smile.** When Tierra wants to feel warm — a hero headline, a quote, a place name in a section opener — it goes to Fraunces italic, not bold. Bold Fraunces exists but is reserved for short capitalized labels or runs of two-or-three-word headlines where italic would feel sentimental.
+**Default to upright Fraunces, weight 500–600.** Italic is reserved — for the rare quoted phrase, a single emphasized word inside body text, or a place name in running prose. **Italic is not the default headline cut.** Light-weight italic display (the magazine cover treatment) is out of brand. Bold-italic word-art splits — italic line one over bold line two — are out of brand. Stack ES italic over EN bold (or vice versa) is out of brand.
+
+If a marketing headline reaches for italic to feel warm, rewrite the headline instead.
 
 ### Inter — the workhorse
 
@@ -49,7 +51,9 @@ Use Inter for: paragraphs, form labels, button text, table cells (except numeric
 
 ### DM Mono — the figures
 
-DM Mono is used wherever numbers must align in columns, where money is shown, where time is shown, and for anything that reads as a code or identifier (job IDs, certificate hashes). Tabular monospaced numbers are non-negotiable in reporting and pay tables.
+DM Mono is the **inline tabular face**: numbers that align in columns, money shown in lists or table cells (`$19.50/hr`), time, dates in metadata strips, and anything that reads as a code or identifier (job IDs, certificate hashes, `WIOA-1B`). Tabular monospaced numbers are non-negotiable in reporting and pay tables.
+
+DM Mono is **not a display face.** Display-size statistics (impact-tile numbers, dashboard hero counters, pricing) belong in upright Fraunces with `tabular-nums` — the slab-mono terminal feel takes over at large sizes and reads as code output rather than money or impact. Keep DM Mono at body sizes (≤ 18px in most surfaces, ≤ 24px in rare emphasis cases).
 
 ```css
 .dm-mono {
@@ -67,18 +71,19 @@ The scale is small. Tierra prefers fewer, more deliberate sizes over a long ramp
 
 | token | family | size | line-height | weight | use |
 |---|---|---|---|---|---|
-| `display-xl` | Fraunces italic | 88px / 5.5rem | 0.95 | 400 | hero on marketing only |
-| `display-l`  | Fraunces italic | 64px / 4rem   | 1.00 | 400 | section openers in marketing |
-| `display-m`  | Fraunces italic | 48px / 3rem   | 1.05 | 400 | secondary marketing headlines |
-| `headline`   | Fraunces        | 32px / 2rem   | 1.15 | 500 | product page H1 |
-| `title`      | Fraunces        | 24px / 1.5rem | 1.20 | 500 | card titles, dialog titles |
-| `subtitle`   | Inter           | 18px / 1.125rem | 1.45 | 500 | grouping above a list, intro paragraph |
-| `body`       | Inter           | 16px / 1rem   | 1.55 | 400 | default body |
-| `body-s`     | Inter           | 14px / 0.875rem | 1.50 | 400 | dense rows, secondary body |
-| `caption`    | Inter           | 13px / 0.8125rem | 1.45 | 400 | metadata, helper text |
-| `label`      | Inter           | 11px / 0.6875rem | 1.30 | 600 | UPPERCASE 0.18em — see below |
-| `mono`       | DM Mono         | 14px / 0.875rem | 1.50 | 400 | money, time, IDs |
-| `mono-s`     | DM Mono         | 12px / 0.75rem | 1.40 | 400 | dense numeric tables |
+| `display-xl` | Fraunces upright | 72px / 4.5rem | 1.05 | 600 | hero on marketing only |
+| `display-l`  | Fraunces upright | 56px / 3.5rem | 1.10 | 600 | section openers in marketing |
+| `display-m`  | Fraunces upright | 40px / 2.5rem | 1.15 | 500 | secondary marketing headlines |
+| `headline`   | Fraunces upright | 32px / 2rem   | 1.20 | 500 | product page H1 |
+| `title`      | Fraunces upright | 24px / 1.5rem | 1.20 | 500 | card titles, dialog titles |
+| `stat`       | Fraunces upright | 48px / 3rem   | 1.00 | 600 | display-size statistics (impact tiles, dashboard hero counters) — set with `tabular-nums` |
+| `subtitle`   | Inter            | 18px / 1.125rem | 1.45 | 500 | grouping above a list, intro paragraph |
+| `body`       | Inter            | 16px / 1rem   | 1.55 | 400 | default body |
+| `body-s`     | Inter            | 14px / 0.875rem | 1.50 | 400 | dense rows, secondary body |
+| `caption`    | Inter            | 13px / 0.8125rem | 1.45 | 400 | metadata, helper text |
+| `label`      | Inter            | 11px / 0.6875rem | 1.30 | 600 | UPPERCASE 0.18em — see below |
+| `mono`       | DM Mono          | 14px / 0.875rem | 1.50 | 400 | money, time, IDs |
+| `mono-s`     | DM Mono          | 12px / 0.75rem | 1.40 | 400 | dense numeric tables |
 
 > **Inferred:** Pixel sizes are the canonical brand scale; the `rem` equivalents assume `font-size: 16px` on `:root`. Production `rem` values may differ if a project sets a different root size. The scale was tuned on the Tierra landing page artboard; adjust the smallest sizes (`label`, `caption`, `mono-s`) cautiously — they are at the bottom of the readability cliff.
 
@@ -93,29 +98,25 @@ A signature Tierra gesture. Eyebrow labels appear above section titles, on cards
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: var(--tierra-soil); /* default; can shift to --tierra-moss for emphasis */
+  color: color-mix(in oklab, var(--color-base-content) 65%, transparent); /* default; shift to var(--color-primary) for emphasis */
   line-height: 1.3;
 }
 ```
 
 - Always uppercase.
 - Always 0.18em letter-spacing — this is the value verified across the landing page and brand kit. Do not improvise.
-- Default color is soil on bone. On dark surfaces, default to bone @ 64% opacity, never honey.
+- Default color is `base-content` at ~65% opacity on base surfaces. On `neutral` (dark) surfaces, use `neutral-content` at ~64% opacity, never `accent`.
 - Trailing punctuation is not used — labels do not take periods or colons.
 
 Examples: `FOR FARMWORKERS`, `ABOUT TIERRA`, `WORKER ROLE`, `STEP 02`, `EN ESPAÑOL`.
 
-## Italic for emphasis
+## Italic and bold
 
-Tierra emphasizes with **italic**, not bold. This is one of the brand's clearest fingerprints. In a paragraph of body Inter, an italic phrase reads as quietly emphasized; a bold phrase reads as loud and out of brand.
+Use italic sparingly: a quoted phrase, a place name in running prose, a single emphasized word. Italic is **not** a display device, **not** a section-opener treatment, and **not** the way bilingual text is differentiated. Languages are differentiated by the locale toggle, not by italicizing one of them.
 
-Acceptable bold uses:
+Use bold confidently: form labels, button text, headlines, the first word of a scannable list item, table headers, statistic numbers in civic data bands. Bold is a utilitarian tool, not a brand smell.
 
-- Form labels (`<label>` text in forms).
-- Short table headers.
-- The very first word of a list item, when the list is being scanned (a la documentation).
-
-If you find yourself reaching for bold to call attention to a phrase mid-paragraph, use italic instead.
+If you find yourself reaching for italic to make a marketing headline feel warm, rewrite the headline. If you find yourself reaching for bold-italic display word-art to make a hero "feel like Tierra," redesign the hero.
 
 ## Numbers and money
 

@@ -1,0 +1,619 @@
+// AgConn database schema.
+//
+// Production foundation: tenants + multi-tenant tables with RLS, waitlist
+// signup pipeline, email audit + suppression. RLS policies live alongside
+// the schema in prisma/migrations/*/migration.sql (Prisma can't model
+// policies natively yet — we hand-author them in dedicated migrations).
+
+generator client {
+  provider = "prisma-client-js"
+  // Default output keeps Prisma client inside this package's node_modules,
+  // so consumers import via @agconn/db rather than reaching into ../../.
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Lang {
+  en
+  es
+}
+
+enum WaitlistAudience {
+  worker
+  employer
+  training_org
+  other
+}
+
+enum WaitlistSource {
+  landing_final_cta
+  landing_coming_soon
+  landing_waitlist_form
+  landing_newsletter
+}
+
+enum EmailStatus {
+  queued
+  sending
+  sent
+  delivered
+  bounced
+  complained
+  failed
+  dropped
+}
+
+enum SuppressionReason {
+  unsubscribe
+  hard_bounce
+  soft_bounce_repeated
+  complaint
+  manual
+}
+
+enum ActorType {
+  worker
+  employer
+  training_org
+  admin
+  system
+}
+
+enum AuditOutcome {
+  success
+  failure
+}
+
+enum UserRole {
+  worker
+  employer
+  training_org
+  admin
+}
+
+enum AuthEventStatus {
+  received
+  processed
+  failed
+  skipped
+}
+
+enum SmsStatus {
+  queued
+  scheduled
+  sending
+  sent
+  delivered
+  failed
+  failed_exhausted
+  dropped
+}
+
+enum County {
+  Fresno
+  Kern
+  Kings
+  Madera
+  Tulare
+}
+
+enum AppStatus {
+  applied
+  reviewed
+  hired
+  rejected
+  withdrawn
+}
+
+enum AlertChannel {
+  sms
+  email
+  both
+}
+
+enum JobStatus {
+  draft
+  active
+  closed
+  filled
+}
+
+enum WageUnit {
+  hour
+  day
+  piece
+}
+
+enum Funder {
+  CDFA
+  F3
+  CalOSBA
+  EDD
+  other
+}
+
+enum ProgramStatus {
+  draft
+  active
+  full
+  closed
+  canceled
+}
+
+enum EnrollmentStatus {
+  enrolled
+  completed
+  dropped
+}
+
+model Tenant {
+  id        String       @id @default(uuid()) @db.Uuid
+  slug      String       @unique
+  name      String
+  isPublic  Boolean      @default(false)       @map("is_public")
+  settings  Json         @default("{}")
+  createdAt DateTime     @default(now())       @map("created_at")
+  updatedAt DateTime     @updatedAt            @map("updated_at")
+  deletedAt DateTime?                           @map("deleted_at")
+
+  waitlist          Waitlist[]
+  emailLogs         EmailLog[]
+  auditEvents       AuditEvent[]
+  users             User[]
+  employerProfiles  EmployerProfile[]
+  authEvents        AuthEvent[]
+  smsLogs           SmsLog[]
+  workerProfiles    WorkerProfile[]
+  jobPostings       JobPosting[]
+  applications      Application[]
+  applicationEvents ApplicationEvent[]
+  savedSearches     SavedSearch[]
+  searchViews       SearchView[]
+  trainingPrograms  TrainingProgram[]
+  enrollments       Enrollment[]
+
+  @@map("tenants")
+}
+
+model Waitlist {
+  id             String            @id @default(uuid()) @db.Uuid
+  tenantId       String            @db.Uuid                @map("tenant_id")
+  email          String?
+  phone          String?
+  county         String?
+  preferredLang  Lang              @default(es)            @map("preferred_lang")
+  audience       WaitlistAudience?
+  source         WaitlistSource    @default(landing_final_cta)
+  confirmedAt    DateTime?                                 @map("confirmed_at")
+  welcomedAt     DateTime?                                 @map("welcomed_at")
+  unsubscribedAt DateTime?                                 @map("unsubscribed_at")
+  createdAt      DateTime          @default(now())         @map("created_at")
+  updatedAt      DateTime          @updatedAt              @map("updated_at")
+
+  tenant         Tenant            @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, email], map: "waitlist_tenant_email_key")
+  @@index([tenantId])
+  @@index([phone])
+  @@index([county])
+  @@map("waitlist")
+}
+
+model EmailLog {
+  id           String      @id @default(uuid()) @db.Uuid
+  tenantId     String      @db.Uuid             @map("tenant_id")
+  template     String
+  locale       Lang
+  toEmail      String                            @map("to_email")
+  fromEmail    String                            @map("from_email")
+  subject      String
+  status       EmailStatus @default(queued)
+  providerId   String?     @unique               @map("provider_id")
+  errorMsg     String?                           @map("error_msg")
+  refType      String?                           @map("ref_type")
+  refId        String?                           @map("ref_id")
+  queuedAt     DateTime    @default(now())       @map("queued_at")
+  sentAt       DateTime?                         @map("sent_at")
+  deliveredAt  DateTime?                         @map("delivered_at")
+  bouncedAt    DateTime?                         @map("bounced_at")
+  complainedAt DateTime?                         @map("complained_at")
+  failedAt     DateTime?                         @map("failed_at")
+
+  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([toEmail])
+  @@index([template, queuedAt])
+  @@index([status])
+  @@index([refType, refId])
+  @@map("email_log")
+}
+
+model EmailSuppression {
+  email        String            @id
+  reason       SuppressionReason
+  suppressedAt DateTime          @default(now()) @map("suppressed_at")
+  source       String            @default("system")
+
+  @@map("email_suppression")
+}
+
+// Audit log — append-only, HMAC-tamper-evident, monthly partitioned. RLS,
+// roles, and the partitioning trigger live alongside the migration SQL since
+// Prisma doesn't model PARTITION BY or per-policy RLS natively.
+//
+// The id column is intentionally non-PK in the schema (the underlying table
+// is PARTITION BY RANGE on occurred_at, with a compound PK (id, occurred_at)).
+// Prisma needs a single-field id, so we annotate id with @id but the
+// migration replaces the PK with the compound version.
+model AuditEvent {
+  id              BigInt       @id @default(autoincrement())
+  tenantId        String       @db.Uuid                    @map("tenant_id")
+  occurredAt      DateTime     @default(now()) @db.Timestamptz @map("occurred_at")
+  actorType       ActorType                                  @map("actor_type")
+  actorId         String?                                    @map("actor_id")
+  actorRole       String?                                    @map("actor_role")
+  actorIp         String?      @db.Inet                       @map("actor_ip")
+  actorUserAgent  String?                                    @map("actor_user_agent")
+  action          String
+  resourceType    String?                                    @map("resource_type")
+  resourceId      String?                                    @map("resource_id")
+  outcome         AuditOutcome @default(success)
+  correlationId   String?      @db.Uuid                       @map("correlation_id")
+  metadata        Json         @default("{}")
+  eventHmac       Bytes                                      @map("event_hmac")
+  eventHmacV      Int          @default(1) @db.SmallInt        @map("event_hmac_v")
+
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, occurredAt(sort: Desc)])
+  @@index([tenantId, actorId, occurredAt(sort: Desc)])
+  @@index([tenantId, resourceType, resourceId])
+  @@index([tenantId, action, occurredAt(sort: Desc)])
+  @@index([correlationId])
+  @@map("audit_events")
+}
+
+// User mirror of Clerk identity. id == Clerk userId. Mirror fields are kept
+// in sync via webhooks (services/api/src/webhooks/clerk.ts). PII like phone
+// + email is stored here too for joins; Clerk remains the source of truth.
+model User {
+  id            String    @id                                 // matches Clerk userId
+  tenantId      String?   @db.Uuid                @map("tenant_id")
+  role          UserRole
+  preferredLang Lang      @default(es)            @map("preferred_lang")
+  email         String?
+  phone         String?
+  onboarded     Boolean   @default(false)
+  createdAt     DateTime  @default(now())         @map("created_at")
+  updatedAt     DateTime  @updatedAt              @map("updated_at")
+
+  tenant            Tenant?           @relation(fields: [tenantId], references: [id])
+  employerProfile   EmployerProfile?
+  workerProfile     WorkerProfile?
+  applications      Application[]
+  savedSearches     SavedSearch[]
+  enrollments       Enrollment[]
+  trainingPrograms  TrainingProgram[] @relation("TrainingProgramOrg")
+  jobPostings       JobPosting[]      @relation("JobPostingEmployer")
+
+  @@index([tenantId])
+  @@index([phone])
+  @@index([email])
+  @@map("users")
+}
+
+// One per Clerk Organization that maps to an employer (vs tenant orgs).
+// FLC verification + posting permissions live here in later specs.
+model EmployerProfile {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @unique                     @map("user_id")
+  tenantId     String   @db.Uuid                    @map("tenant_id")
+  clerkOrgId   String?  @unique                     @map("clerk_org_id")
+  legalName    String                                @map("legal_name")
+  contactEmail String?                               @map("contact_email")
+  createdAt    DateTime @default(now())              @map("created_at")
+  updatedAt    DateTime @updatedAt                   @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@map("employer_profiles")
+}
+
+// SMS log — append-only audit of every send attempt. RLS isolates by tenant
+// for worker self-views; admin sees all. See migration sql for policies.
+model SmsLog {
+  id          String     @id @default(uuid()) @db.Uuid
+  tenantId    String     @db.Uuid                     @map("tenant_id")
+  userId      String?                                   @map("user_id")
+  template    String
+  locale      Lang
+  toPhone     String                                    @map("to_phone")
+  body        String
+  vars        Json       @default("{}")
+  status      SmsStatus  @default(queued)
+  providerSid String?                                   @map("provider_sid")
+  errorCode   String?                                   @map("error_code")
+  optedOutAt  DateTime?                                 @map("opted_out_at")
+  queuedAt    DateTime   @default(now())                @map("queued_at")
+  sentAt      DateTime?                                 @map("sent_at")
+  deliveredAt DateTime?                                 @map("delivered_at")
+  failedAt    DateTime?                                 @map("failed_at")
+
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([toPhone])
+  @@index([template, queuedAt])
+  @@index([status])
+  @@map("sms_log")
+}
+
+// Phone-level opt-out cache (global, not tenant-scoped — STOP applies per
+// FCC guidance to the phone number, not the account).
+model SmsOptOut {
+  phone      String   @id
+  optedOutAt DateTime @default(now()) @map("opted_out_at")
+  source     String   @default("STOP")
+
+  @@map("sms_opt_out")
+}
+
+// Clerk webhook audit. Distinct from audit_events (which is the application
+// audit log). auth_events is replay-able + idempotent: webhook handler
+// upserts on (event_type, payload->>'id') to handle Svix retries.
+model AuthEvent {
+  id          String          @id @default(uuid()) @db.Uuid
+  tenantId    String?         @db.Uuid              @map("tenant_id")
+  userId      String?                                @map("user_id")
+  eventType   String                                 @map("event_type")
+  payload     Json
+  receivedAt  DateTime        @default(now())        @map("received_at")
+  processedAt DateTime?                              @map("processed_at")
+  status      AuthEventStatus @default(received)
+  errorMsg    String?                                @map("error_msg")
+
+  tenant      Tenant?         @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([eventType, receivedAt])
+  @@map("auth_events")
+}
+
+// Worker profile — extends User for the `worker` role. PK == User.id.
+// See docs/10-worker/01-onboarding/02-data-model.md.
+model WorkerProfile {
+  id              String    @id                                  // matches User.id (Clerk userId)
+  tenantId        String    @db.Uuid              @map("tenant_id")
+  firstName       String                                          @map("first_name")
+  lastName        String                                          @map("last_name")
+  zipCode         String?                                         @map("zip_code")
+  county          County?
+  skills          String[]                                        @default([])
+  certifications  Json      @default("[]")
+  availability    Json      @default("{}")
+  resume          Json?
+  resumeRawUrl    String?                                         @map("resume_raw_url")
+  phoneHash       String?                                         @map("phone_hash")
+  onboardedAt     DateTime?                                       @map("onboarded_at")
+  createdAt       DateTime  @default(now())                       @map("created_at")
+  updatedAt       DateTime  @updatedAt                            @map("updated_at")
+  deletedAt       DateTime?                                       @map("deleted_at")
+
+  user            User      @relation(fields: [id], references: [id], onDelete: Cascade)
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([county])
+  @@index([phoneHash])
+  @@map("worker_profiles")
+}
+
+// Job postings created by employers. SEO slug-routed for crawlable URLs.
+// See docs/20-employer/02-job-postings (referenced by 10-worker/03-job-discovery).
+model JobPosting {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid              @map("tenant_id")
+  employerId      String                          @map("employer_id")
+  titleEn         String                          @map("title_en")
+  titleEs         String                          @map("title_es")
+  descriptionEn   String                          @map("description_en")
+  descriptionEs   String                          @map("description_es")
+  county          County
+  city            String?
+  zipCode         String?                         @map("zip_code")
+  wageMin         Decimal   @db.Decimal(8, 2)    @map("wage_min")
+  wageMax         Decimal   @db.Decimal(8, 2)    @map("wage_max")
+  wageUnit        WageUnit  @default(hour)       @map("wage_unit")
+  startDate       DateTime  @db.Date              @map("start_date")
+  endDate         DateTime? @db.Date              @map("end_date")
+  applyBy         DateTime? @db.Date              @map("apply_by")
+  skills          String[]                        @default([])
+  housing         Boolean   @default(false)
+  transport       Boolean   @default(false)
+  status          JobStatus @default(draft)
+  seoSlug         String                          @unique @map("seo_slug")
+  publishedAt     DateTime?                       @map("published_at")
+  createdAt       DateTime  @default(now())       @map("created_at")
+  updatedAt       DateTime  @updatedAt            @map("updated_at")
+  deletedAt       DateTime?                       @map("deleted_at")
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  employer        User      @relation("JobPostingEmployer", fields: [employerId], references: [id])
+  applications    Application[]
+
+  @@index([tenantId])
+  @@index([tenantId, status, county])
+  @@index([status, startDate])
+  @@map("job_postings")
+}
+
+// Worker application to a job. UNIQUE(jobId, workerId) backstops dual-apply.
+// See docs/10-worker/04-application-tracker/02-data-model.md.
+model Application {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid              @map("tenant_id")
+  jobId           String    @db.Uuid              @map("job_id")
+  workerId        String                          @map("worker_id")
+  status          AppStatus @default(applied)
+  wageOffered     Decimal?  @db.Decimal(8, 2)    @map("wage_offered")
+  workerNote      String?   @db.VarChar(500)     @map("worker_note")
+  appliedAt       DateTime  @default(now())       @map("applied_at")
+  reviewedAt      DateTime?                       @map("reviewed_at")
+  hiredAt         DateTime?                       @map("hired_at")
+  rejectedAt      DateTime?                       @map("rejected_at")
+  withdrawnAt     DateTime?                       @map("withdrawn_at")
+  startDate       DateTime? @db.Date              @map("start_date")
+  countyAtApply   County?                         @map("county_at_apply")
+  skillsAtApply   String[]                        @default([]) @map("skills_at_apply")
+  createdAt       DateTime  @default(now())       @map("created_at")
+  updatedAt       DateTime  @updatedAt            @map("updated_at")
+  deletedAt       DateTime?                       @map("deleted_at")
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  job             JobPosting @relation(fields: [jobId], references: [id])
+  worker          User       @relation(fields: [workerId], references: [id])
+  events          ApplicationEvent[]
+
+  @@unique([jobId, workerId])
+  @@index([tenantId])
+  @@index([workerId, status])
+  @@index([jobId, status])
+  @@index([appliedAt])
+  @@map("applications")
+}
+
+model ApplicationEvent {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid              @map("tenant_id")
+  applicationId   String    @db.Uuid              @map("application_id")
+  fromStatus      AppStatus?                      @map("from_status")
+  toStatus        AppStatus                       @map("to_status")
+  actorUserId     String                          @map("actor_user_id")
+  actorRole       UserRole                        @map("actor_role")
+  metadata        Json      @default("{}")
+  createdAt       DateTime  @default(now())       @map("created_at")
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([applicationId, createdAt])
+  @@map("application_events")
+}
+
+// Saved searches with optional SMS / email alerts.
+// See docs/10-worker/03-job-discovery/02-data-model.md.
+model SavedSearch {
+  id              String       @id @default(uuid()) @db.Uuid
+  tenantId        String       @db.Uuid             @map("tenant_id")
+  workerId        String                              @map("worker_id")
+  name            String?
+  filters         Json
+  alertChannel    AlertChannel @default(sms)         @map("alert_channel")
+  alertActive     Boolean      @default(true)        @map("alert_active")
+  lastNotifiedAt  DateTime?                          @map("last_notified_at")
+  createdAt       DateTime     @default(now())       @map("created_at")
+  updatedAt       DateTime     @updatedAt            @map("updated_at")
+  deletedAt       DateTime?                          @map("deleted_at")
+
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  worker          User         @relation(fields: [workerId], references: [id])
+
+  @@index([tenantId])
+  @@index([workerId])
+  @@index([alertActive])
+  @@map("saved_searches")
+}
+
+// Lightweight per-search analytics for "what are workers searching for"
+// admin reports + zero-result detection.
+model SearchView {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @db.Uuid              @map("tenant_id")
+  workerId    String?                         @map("worker_id")
+  filters     Json
+  resultCount Int                             @map("result_count")
+  createdAt   DateTime @default(now())        @map("created_at")
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
+  @@map("search_views")
+}
+
+// Training programs run by training_org users. Bilingual fields.
+// See docs/10-worker/05-training-browser/02-data-model.md.
+model TrainingProgram {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @db.Uuid             @map("tenant_id")
+  orgId           String                              @map("org_id")
+  titleEn         String                              @map("title_en")
+  titleEs         String                              @map("title_es")
+  summaryEn       String?       @db.VarChar(280)    @map("summary_en")
+  summaryEs       String?       @db.VarChar(280)    @map("summary_es")
+  descriptionEn   String                              @map("description_en")
+  descriptionEs   String                              @map("description_es")
+  funder          Funder
+  county          County
+  locationName    String                              @map("location_name")
+  locationAddress String                              @map("location_address")
+  capacity        Int
+  enrolledCount   Int           @default(0)           @map("enrolled_count")
+  startDate       DateTime                            @map("start_date")
+  endDate         DateTime                            @map("end_date")
+  sessionTimes    Json          @default("[]")        @map("session_times")
+  topics          String[]                            @default([])
+  certName        String?                             @map("cert_name")
+  seoSlug         String        @unique               @map("seo_slug")
+  status          ProgramStatus @default(draft)
+  createdAt       DateTime      @default(now())       @map("created_at")
+  updatedAt       DateTime      @updatedAt            @map("updated_at")
+  deletedAt       DateTime?                           @map("deleted_at")
+
+  tenant          Tenant        @relation(fields: [tenantId], references: [id])
+  org             User          @relation("TrainingProgramOrg", fields: [orgId], references: [id])
+  enrollments     Enrollment[]
+
+  @@index([tenantId])
+  @@index([county])
+  @@index([funder])
+  @@index([status, startDate])
+  @@map("training_programs")
+}
+
+model Enrollment {
+  id              String           @id @default(uuid()) @db.Uuid
+  tenantId        String           @db.Uuid             @map("tenant_id")
+  programId       String           @db.Uuid             @map("program_id")
+  workerId        String                                  @map("worker_id")
+  status          EnrollmentStatus @default(enrolled)
+  enrolledAt      DateTime         @default(now())       @map("enrolled_at")
+  completedAt     DateTime?                              @map("completed_at")
+  droppedAt       DateTime?                              @map("dropped_at")
+  certUrl         String?                                @map("cert_url")
+  certGeneratedAt DateTime?                              @map("cert_generated_at")
+  certificateId   String?          @unique               @map("certificate_id")
+  noShow          Boolean          @default(false)       @map("no_show")
+  reminderSent48h Boolean          @default(false)       @map("reminder_sent_48h")
+  reminderSent2h  Boolean          @default(false)       @map("reminder_sent_2h")
+  createdAt       DateTime         @default(now())       @map("created_at")
+  updatedAt       DateTime         @updatedAt            @map("updated_at")
+  deletedAt       DateTime?                              @map("deleted_at")
+
+  tenant          Tenant           @relation(fields: [tenantId], references: [id])
+  program         TrainingProgram  @relation(fields: [programId], references: [id])
+  worker          User             @relation(fields: [workerId], references: [id])
+
+  @@unique([programId, workerId])
+  @@index([tenantId])
+  @@index([workerId, status])
+  @@index([programId, status])
+  @@map("enrollments")
+}

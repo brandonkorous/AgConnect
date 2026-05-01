@@ -2,104 +2,23 @@
 
 @plugin 'daisyui' {
   logs: false;
+  themes: tierra-light --default, tierra-dark;
 }
 
-@plugin 'daisyui/theme' {
-  name: 'tierra-light';
-  default: true;
-  prefersdark: false;
-  color-scheme: 'light';
+@import './themes/tierra-light.css';
+@import './themes/tierra-dark.css';
 
-  --color-base-100: #efe6d2;
-  --color-base-200: #d9cfb6;
-  --color-base-300: #b8a98c;
-  --color-base-content: #1f1b14;
-
-  --color-primary: #2d4030;
-  --color-primary-content: #efe6d2;
-  --color-secondary: #5c4326;
-  --color-secondary-content: #efe6d2;
-  --color-accent: #c8a24a;
-  --color-accent-content: #1f1b14;
-  --color-neutral: #1f1b14;
-  --color-neutral-content: #efe6d2;
-
-  --color-info: #4a6b7c;
-  --color-info-content: #efe6d2;
-  --color-success: #5a7842;
-  --color-success-content: #efe6d2;
-  --color-warning: #c8a24a;
-  --color-warning-content: #1f1b14;
-  --color-error: #8b3a2f;
-  --color-error-content: #efe6d2;
-
-  --radius-selector: 0;
-  --radius-field: 0;
-  --radius-box: 0;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
-}
-
-@plugin 'daisyui/theme' {
-  name: 'tierra-dark';
-  default: false;
-  prefersdark: true;
-  color-scheme: 'dark';
-
-  --color-base-100: #1f1b14;
-  --color-base-200: #2d4030;
-  --color-base-300: #3e5640;
-  --color-base-content: #efe6d2;
-
-  --color-primary: #a8c8a0;
-  --color-primary-content: #1f1b14;
-  --color-secondary: #b8956a;
-  --color-secondary-content: #1f1b14;
-  --color-accent: #d4b566;
-  --color-accent-content: #1f1b14;
-  --color-neutral: #efe6d2;
-  --color-neutral-content: #1f1b14;
-
-  --color-info: #7a9cb0;
-  --color-info-content: #1f1b14;
-  --color-success: #8aaa72;
-  --color-success-content: #1f1b14;
-  --color-warning: #d4b566;
-  --color-warning-content: #1f1b14;
-  --color-error: #c46550;
-  --color-error-content: #1f1b14;
-
-  --radius-selector: 0;
-  --radius-field: 0;
-  --radius-box: 0;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
-}
+/* Tie the `dark:` variant to our toggle (data-theme="tierra-dark") instead of
+   prefers-color-scheme — the toggle persists user choice and the variant should
+   follow it. Use `dark:` sparingly; prefer semantic daisyUI tokens that flip
+   automatically. */
+/*@custom-variant dark (&:where([data-theme="tierra-dark"], [data-theme="tierra-dark"] *));*/
 
 @theme {
-  /* Tierra named palette — bg-bone, text-ink, border-soil, etc. */
-  --color-bone: #efe6d2;
-  --color-bone-warm: #e7dbbe;
-  --color-moss: #2d4030;
-  --color-honey: #c8a24a;
-  --color-sage: #d9cfb6;
-  --color-ink: #1f1b14;
-  --color-ink-deep: #15110a;
-  --color-soil: #5c4326;
-  --color-soil-light: #7a6644;
-  --color-text-deep: #3a3326;
-  --color-hairline: #d4c8ab;
-  --color-hairline-warm: #c7bca0;
 
-  /* Font tokens — wired by next/font in layout.tsx */
+  /* Font tokens — wired by next/font in layout.tsx. */
   --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  --font-serif: var(--font-inter-tight), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: var(--font-dm-mono), 'JetBrains Mono', Menlo, monospace;
 }
 
@@ -117,4 +36,9 @@ body {
   font-family: var(--font-sans);
   font-feature-settings: 'cv11' on, 'ss01' on;
   font-variant-numeric: tabular-nums;
+}
+
+
+.badge {
+    @apply px-3 py-2;
 }

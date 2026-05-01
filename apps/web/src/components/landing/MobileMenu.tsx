@@ -5,84 +5,95 @@ import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { LocaleToggle } from './LocaleToggle';
+import { ThemeToggle } from '@/components/primitives/ThemeToggle';
 
 const links = [
-  { href: '#workers', key: 'for_workers' },
-  { href: '#employers', key: 'for_employers' },
-  { href: '#training-orgs', key: 'training_orgs' },
-  { href: '#how', key: 'how_it_works' },
-  { href: '#pricing', key: 'pricing' },
-  { href: '#faq', key: 'resources' },
+    { href: '#workers', key: 'for_workers' },
+    { href: '#employers', key: 'for_employers' },
+    { href: '#training-orgs', key: 'training_orgs' },
+    { href: '#how', key: 'how_it_works' },
+    { href: '#pricing', key: 'pricing' },
+    { href: '#faq', key: 'resources' },
 ] as const;
 
 export function MobileMenu() {
-  const t = useTranslations('landing.nav');
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
+    const t = useTranslations('landing.nav');
+    const tUtility = useTranslations('landing.utility');
+    const themeLabels = {
+        light: tUtility('theme.light'),
+        dark: tUtility('theme.dark'),
+        aria: tUtility('theme.label'),
     };
-  }, [open]);
+    const [open, setOpen] = useState(false);
 
-  return (
-    <>
-      <button
-        type="button"
-        aria-label={t('menu_open')}
-        aria-expanded={open}
-        onClick={() => setOpen(true)}
-        className="text-ink hover:text-moss flex h-11 w-11 items-center justify-center md:hidden"
-      >
-        <FontAwesomeIcon icon={faBars} className="h-5 w-5" />
-      </button>
-      {open && (
-        <div className="bg-bone fixed inset-0 z-50 flex flex-col">
-          <div className="flex items-center justify-between px-5 py-5">
-            <LocaleToggle />
+    useEffect(() => {
+        document.body.style.overflow = open ? 'hidden' : '';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [open]);
+
+    return (
+        <>
             <button
-              type="button"
-              aria-label={t('menu_close')}
-              onClick={() => setOpen(false)}
-              className="text-ink hover:text-moss flex h-11 w-11 items-center justify-center"
+                type="button"
+                aria-label={t('menu_open')}
+                aria-expanded={open}
+                onClick={() => setOpen(true)}
+                className="btn btn-ghost btn-square md:hidden"
             >
-              <FontAwesomeIcon icon={faXmark} className="h-6 w-6" />
+                <FontAwesomeIcon icon={faBars} className="h-5 w-5" />
             </button>
-          </div>
-          <nav className="flex flex-1 flex-col px-5 pt-8" aria-label="Main">
-            <ul className="flex flex-col gap-7">
-              {links.map((link) => (
-                <li key={link.key}>
-                  <a
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="text-ink hover:text-moss font-serif text-3xl font-medium"
-                  >
-                    {t(link.key)}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="flex flex-col gap-3 px-5 pb-10">
-            <a
-              href="#final-cta"
-              onClick={() => setOpen(false)}
-              className="bg-moss text-bone py-4 text-center font-sans text-base font-semibold"
-            >
-              {t('cta_primary')}
-            </a>
-            <a
-              href="#signin"
-              onClick={() => setOpen(false)}
-              className="border-moss text-moss border py-4 text-center font-sans text-base font-semibold"
-            >
-              {t('signin')}
-            </a>
-          </div>
-        </div>
-      )}
-    </>
-  );
+            {open && (
+                <div className="bg-base-100 fixed inset-0 z-50 flex flex-col">
+                    <div className="flex items-center justify-between px-5 py-5">
+                        <div className="flex items-center gap-3">
+                            <LocaleToggle />
+                            <span className="text-secondary/40 text-sm leading-4" aria-hidden>|</span>
+                            <ThemeToggle labels={themeLabels} />
+                        </div>
+                        <button
+                            type="button"
+                            aria-label={t('menu_close')}
+                            onClick={() => setOpen(false)}
+                            className="btn btn-ghost btn-square"
+                        >
+                            <FontAwesomeIcon icon={faXmark} className="h-6 w-6" />
+                        </button>
+                    </div>
+                    <nav className="flex flex-1 flex-col px-5 pt-8" aria-label="Main">
+                        <ul className="menu menu-vertical gap-3 p-0 text-3xl">
+                            {links.map((link) => (
+                                <li key={link.key}>
+                                    <a
+                                        href={link.href}
+                                        onClick={() => setOpen(false)}
+                                        className="text-base-content hover:text-primary hover:bg-transparent font-serif font-medium"
+                                    >
+                                        {t(link.key)}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                    <div className="flex flex-col gap-3 px-5 pb-10">
+                        <a
+                            href="#final-cta"
+                            onClick={() => setOpen(false)}
+                            className="btn btn-primary btn-lg btn-block"
+                        >
+                            {t('cta_primary')}
+                        </a>
+                        <a
+                            href="#signin"
+                            onClick={() => setOpen(false)}
+                            className="btn btn-outline btn-primary btn-lg btn-block"
+                        >
+                            {t('signin')}
+                        </a>
+                    </div>
+                </div>
+            )}
+        </>
+    );
 }

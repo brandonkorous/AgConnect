@@ -11,8 +11,8 @@ The brand promise is dignity. Accessibility is the operational version of that p
 
 ## Color & contrast
 
-- Primary body pairings (ink on bone, ink on sage, bone on moss, bone on ink) all clear AAA at 14px regular. See contrast table in [02-color.md](02-color.md).
-- **Honey is not a body-text color** on bone. Its contrast on bone is 2.4:1 (fails AA). Honey on moss clears AA only for large text (≥18px or ≥14px bold). Treat honey as a fill color and a large-display color, not a body color.
+- Primary body pairings (`base-content` on `base-100` / `base-200` / `base-300`, `primary-content` on `primary`, `neutral-content` on `neutral`) are the verified pairings — run any new combination through a checker before shipping. See [02-color.md](02-color.md).
+- **`accent` (gold) is not a body-text color** on base surfaces. Its contrast on light cream is too low for body — treat `accent` as a fill color and a large-display color, not a body color. On `neutral` (dark) it clears AA only for large text (≥18px or ≥14px bold).
 - **Never communicate state with color alone.** Errors take an icon and a text label, not red color alone. Success states take a check and the word "Saved" / "Guardado", not green alone.
 - Status colors (`info`, `success`, `warning`, `error`) must always be paired with their semantic icon: info circle, check, triangle, x-circle. Lucide names: `info`, `check`, `triangle-alert`, `circle-x`.
 - Charts use position, label, and pattern — not color alone — to distinguish series. See [07-imagery.md § Charts](07-imagery.md).
@@ -23,7 +23,7 @@ The brand promise is dignity. Accessibility is the operational version of that p
 - **No text below 16px on form inputs** — iOS auto-zooms inputs below 16px, which breaks the layout and the sense of control.
 - **Line length** for body paragraphs: 65–75 characters. Tierra's container widths in [04-spacing-layout.md](04-spacing-layout.md) yield this naturally; do not let long-form copy expand to the full container.
 - **Line height** at body sizes is 1.5+ (Inter body is 1.55). At display sizes Fraunces drops as low as 0.95 — that is a display-only allowance, not a license to crunch body type.
-- **Italic is the brand's emphasis** but it costs about 5% legibility. Use italic for short emphasis runs (1–4 words) in body, not for entire paragraphs. Long quotations may be set in italic display sizes (Fraunces ≥24px), where the italic glyphs are large enough to render cleanly.
+- **Italic is reserved for emphasis only.** It costs about 5% legibility, so use it for short emphasis runs (1–4 words) in body — a quoted phrase, a place name, a single emphasized word — never for entire paragraphs and never as a display-headline treatment. Display-size italic Fraunces is out of brand (see [03-typography.md](03-typography.md)).
 
 ## Focus
 
@@ -31,13 +31,13 @@ Focus indicators are visible, generous, and brand-aligned.
 
 ```css
 :focus-visible {
-    outline: 2px solid var(--tierra-honey);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
 }
 
-/* On honey backgrounds, swap to ink to maintain contrast. */
-.bg-honey :focus-visible {
-    outline-color: var(--tierra-ink);
+/* On accent backgrounds, swap to neutral to maintain contrast. */
+.bg-accent :focus-visible {
+    outline-color: var(--color-neutral);
 }
 ```
 
@@ -92,7 +92,7 @@ Focus indicators are visible, generous, and brand-aligned.
 - Set `lang` on `<html>` and update on every locale switch (`<html lang="en">` ↔ `<html lang="es">`).
 - For mixed-language passages within a page, mark the inline language with `<span lang="es">`. Screen readers will switch voices.
 - Never mark Spanish content with English `lang`. Affects screen reader pronunciation badly.
-- Language switcher: present both languages by name in their own script — `English · Español`. Active state in moss; inactive in soil. Click area ≥44×44.
+- Language switcher: present both languages by name in their own script — `English · Español`. Active state in `primary`; inactive in `base-content` @ 60%. Click area ≥44×44.
 
 ## Forms
 

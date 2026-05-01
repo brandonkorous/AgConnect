@@ -32,9 +32,9 @@ What Tierra is **not**: Hero, Outlaw, Magician, Jester. There is no "disruption"
 
 Implications:
 
-- Visuals lean editorial-agricultural — closer to _Modern Farmer_ magazine, a Patagonia field guide, or a UC Davis ag extension brochure than to any SaaS product.
+- Visuals lean civic-agricultural — closer to a UC Davis ag extension brochure, a CDFA program page, or a county-extension field guide than to a B2B brand magazine or any SaaS product.
 - The product surface is generous with whitespace and stingy with color. Color is information, not decoration.
-- Typography does most of the emotional work. Fraunces in italic is the brand's smile.
+- Typography does utilitarian work first and warm work second. Fraunces is the headline serif; italic is reserved, not signature.
 - Motion is minimal. Static layouts that breathe will always beat animated ones that hustle.
 
 ## Voice principles
@@ -62,11 +62,12 @@ A short list, because constraints are the brand:
 
 Recurring details that, taken together, are recognizably Tierra:
 
-- **Fraunces italic** at large sizes for editorial warmth.
+- **Fraunces upright** at headline sizes — calm, not theatrical. Italic only inside body text for the rare quoted phrase or place name.
 - **The middot delimiter** (`·`) between metadata fragments: `Fresno · $19.50/hr · today`.
-- **Eyebrow labels** — uppercase, 11px, 0.18em tracking — sitting above section titles.
-- **Bone backgrounds** with **sage cards** and **hairline rules** — never card shadows.
-- **Harvest honey** as the only loud color. Used for a single primary CTA per screen, the active step in a flow, or a notable statistic. If a screen has two honey elements, one of them is wrong.
+- **Eyebrow labels** — uppercase, 11px, 0.18em tracking — sitting above section titles. Used sparingly; not on every block.
+- **Fraunces upright with `tabular-nums`** for display-size statistics (impact tiles, dashboard hero counters, pricing) — calm, column-aligned, in the same family as headlines. DM Mono stays at body sizes for inline figures (`$19.50/hr`, dates, IDs).
+- **Layered base surfaces** (`base-100` cards on `base-300` page, `base-200` chrome) with **hairline rules** — never card shadows.
+- **`accent` (gold)** as the only loud color. Used for a single primary CTA per screen, the active step in a flow, or a notable statistic. If a screen has two accent elements, one of them is wrong.
 - **Tabular numbers** in DM Mono for money, hours, dates, and reporting figures.
 
 ## Source material

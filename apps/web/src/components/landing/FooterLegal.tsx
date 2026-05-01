@@ -14,22 +14,22 @@ export function FooterLegal() {
   const t = useTranslations('landing.legal');
 
   return (
-    <div className="bg-ink-deep w-full">
-      <div className="mx-auto flex max-w-[1280px] flex-col items-start gap-3 px-5 py-6 md:flex-row md:items-center md:justify-between md:gap-6 md:px-8 lg:px-20">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-soil-light text-xs">
+    <div className="bg-neutral text-neutral-content w-full">
+      <div className="mx-auto flex flex-col items-start gap-3 px-5 py-6 md:flex-row md:items-center md:justify-between md:gap-6 md:px-8 lg:px-20">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-neutral-content/60 text-xs">
           <span>{t('copyright')}</span>
-          <span aria-hidden className="opacity-40">|</span>
+          <span aria-hidden className="opacity-60">|</span>
           <span>{t('built_in')}</span>
-          <span aria-hidden className="opacity-40">|</span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 shrink-0 rounded-full bg-[#4F7440]" aria-hidden />
+          <span aria-hidden className="opacity-60">|</span>
+          <span className="badge badge-success badge-sm gap-1.5 border-0">
+            <span className="size-1.5 shrink-0 rounded-full bg-current" aria-hidden />
             <span>{t('status')}</span>
           </span>
         </div>
-        <ul className="text-soil-light flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+        <ul className="text-neutral-content/60 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
           {links.map((l) => (
             <li key={l.key}>
-              <a href={l.href} className="hover:text-bone">
+              <a href={l.href} className="hover:text-neutral-content">
                 {t(l.key)}
               </a>
             </li>

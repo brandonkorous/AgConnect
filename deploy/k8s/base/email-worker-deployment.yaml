@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-worker
+  namespace: agconn
+  labels: { app.kubernetes.io/name: email-worker, app.kubernetes.io/part-of: agconn }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app.kubernetes.io/name: email-worker } }
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: email-worker
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: agconn
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: worker
+          image: ghcr.io/REPLACE_OWNER/agconn-email-worker:REPLACE_TAG
+          envFrom:
+            - configMapRef: { name: agconn-config }
+            - secretRef: { name: agconn-env }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          volumeMounts:
+            - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes: { secretProviderClass: agconn-env }

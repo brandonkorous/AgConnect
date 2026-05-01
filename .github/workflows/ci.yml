@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.9.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/skip?schema=public
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Convention checks (tenant_id, RLS)
+        run: pnpm check:conventions
+
+      - name: i18n parity
+        run: pnpm --filter @agconn/web run i18n:check
+
+      - name: Build apps/web (smoke)
+        run: pnpm --filter @agconn/web build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          # Build needs Prisma generation success, but no runtime DB:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/skip?schema=public
+          # Disable Sentry source map upload during PR builds.
+          SENTRY_AUTH_TOKEN: ""

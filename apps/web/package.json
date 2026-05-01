@@ -8,29 +8,42 @@
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "i18n:check": "node scripts/check-i18n-parity.mjs"
   },
   "dependencies": {
+    "@agconn/api-client": "workspace:*",
+    "@agconn/db": "workspace:*",
+    "@agconn/schemas": "workspace:*",
+    "@agconn/ui": "workspace:*",
+    "@clerk/nextjs": "^7.2.9",
+    "@fortawesome/fontawesome-svg-core": "7.2.0",
+    "@fortawesome/free-brands-svg-icons": "7.2.0",
+    "@fortawesome/free-solid-svg-icons": "7.2.0",
+    "@fortawesome/react-fontawesome": "3.3.1",
+    "@hookform/resolvers": "5.0.1",
+    "@sentry/nextjs": "10.51.0",
+    "@serwist/next": "9.2.1",
     "next": "16.2.4",
+    "next-intl": "4.11.0",
+    "posthog-js": "1.372.5",
+    "posthog-node": "5.32.0",
     "react": "19.2.5",
     "react-dom": "19.2.5",
-    "next-intl": "4.11.0",
-    "@fortawesome/fontawesome-svg-core": "7.2.0",
-    "@fortawesome/free-solid-svg-icons": "7.2.0",
-    "@fortawesome/free-brands-svg-icons": "7.2.0",
-    "@fortawesome/react-fontawesome": "3.3.1",
+    "react-hook-form": "7.55.0",
+    "serwist": "9.2.1",
     "zod": "4.3.6"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "4.2.4",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "tailwindcss": "4.2.4",
-    "@tailwindcss/postcss": "4.2.4",
     "daisyui": "5.5.19",
-    "postcss": "^8.5.0",
-    "typescript": "6.0.3",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.2.4"
+    "eslint-config-next": "16.2.4",
+    "postcss": "^8.5.0",
+    "tailwindcss": "4.2.4",
+    "typescript": "6.0.3"
   }
 }

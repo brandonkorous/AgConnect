@@ -27,19 +27,19 @@ Base unit is **4px**. The scale is a deliberate subset — designers should not 
 
 ## Section rhythm
 
-The Tierra landing page alternates three surface treatments. This rhythm is part of the brand and should be preserved on long-form marketing pages.
+The Tierra landing page alternates surface treatments. This rhythm is part of the brand and should be preserved on long-form marketing pages.
 
-1. **Bone band** — `bg: bone`, default page surface. Most content sections.
-2. **Sage band** — `bg: sage`, used for content that should feel "set apart" — testimonials, audience splits, pricing.
-3. **Dark band** — `bg: ink` or `bg: moss`, used at most twice per page — the deep stop, used for a manifesto block or a footer-adjacent CTA. Bone text.
+1. **`base-100` band** — default page surface. Most content sections.
+2. **`base-200` band** — used for content that should feel "set apart" — testimonials, audience splits, pricing.
+3. **`base-300` band** — deeper set-apart, or product-shaped sections embedded in marketing.
+4. **Dark band** — `bg-neutral` or `bg-primary`, used at most twice per page — the deep stop, used for a manifesto block or a footer-adjacent CTA. Inverse text (`neutral-content` / `primary-content`).
 
-The rule of thumb: **never run two dark bands consecutively, and never end a page on a dark band before the footer.** Bone or sage transitions provide the breathing room between content shifts.
+The rule of thumb: **never run two dark bands consecutively, and never end a page on a dark band before the footer.** Light-tone transitions provide the breathing room between content shifts.
 
 Section vertical padding:
 
-- Bone-on-bone transition: `space-24` top/bottom (96px desktop)
-- Bone ↔ sage: `space-24` top/bottom — the color shift does the visual separation work
-- Bone/sage → dark: `space-24` top, `space-32` bottom on the dark side (dark bands need a little more interior breathing room)
+- Light-tone transition (`base-100` ↔ `base-100`, `base-100` ↔ `base-200`, etc.): `space-24` top/bottom (96px desktop) — the tone shift does the visual separation work
+- Light → dark: `space-24` top, `space-32` bottom on the dark side (dark bands need a little more interior breathing room)
 - Dark → next: `space-24` top on the next band
 
 ## Container widths
@@ -77,7 +77,7 @@ For repeated rows: use fixed-width slots for icons and trailing actions (`flex-s
 Forbidden:
 
 - `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-full` on buttons, cards, badges, inputs, modals.
-- Rounded avatar circles. Tierra avatars are square with a sage background; if no photo is available, use the person's initials in Fraunces italic over sage.
+- Rounded avatar circles. Tierra avatars are square with a `base-200` or `base-300` background; if no photo is available, use the person's initials in Fraunces upright over that surface.
 
 Permitted:
 
@@ -90,13 +90,13 @@ Tierra uses hairline rules in place of shadows.
 
 ```css
 :root {
-  --border-hairline: 1px solid color-mix(in oklab, var(--tierra-ink) 12%, transparent);
-  --border-strong:   1px solid color-mix(in oklab, var(--tierra-ink) 24%, transparent);
-  --border-on-dark:  1px solid color-mix(in oklab, var(--tierra-bone) 14%, transparent);
+  --border-hairline: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+  --border-strong:   1px solid color-mix(in oklab, var(--color-base-content) 24%, transparent);
+  --border-on-dark:  1px solid color-mix(in oklab, var(--color-neutral-content) 14%, transparent);
 }
 ```
 
-- **Card borders**: `--border-hairline` on bone or sage; `--border-on-dark` on ink/moss.
+- **Card borders**: `--border-hairline` on base surfaces; `--border-on-dark` on `neutral` / `primary` bands.
 - **Input bottom borders**: `--border-strong`. See [06-components.md](06-components.md).
 - **Section dividers**: `--border-hairline`, full width, no margin top/bottom — they sit flush at the section edge.
 - **Table rules**: `--border-hairline` between rows; no vertical rules.
@@ -111,7 +111,7 @@ Tierra is a flat brand. The z-axis exists only for:
 - Toasts (one layer above modal)
 - The header on scroll (one layer above content)
 
-There is no card-elevation system, no hover-lifts, no shadow ramps. If a UI demands separation, use color (sage on bone) or hairline border, not elevation.
+There is no card-elevation system, no hover-lifts, no shadow ramps. If a UI demands separation, use the base scale (e.g., `base-100` lifted off `base-300`) or a hairline border, not elevation.
 
 ## Motion
 

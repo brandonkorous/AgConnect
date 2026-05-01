@@ -1,0 +1,50 @@
+# Runs Prisma migrations during deploy. Wired as a kubectl-applied Job whose
+# name includes the image tag so each deploy creates a fresh Job and the
+# rollout waits on its completion before flipping web/api Deployments.
+#
+# Image is the API image — it already has Prisma + the migrations bundled.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate-REPLACE_TAG
+  namespace: agconn
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: db-migrate
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: agconn
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: migrate
+          image: ghcr.io/REPLACE_OWNER/agconn-api:REPLACE_TAG
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              # The api image bundles the prisma CLI + migrations under
+              # node_modules/@agconn/db. Run migrate deploy with the real
+              # DATABASE_URL injected from the agconn-env secret.
+              cd /app/node_modules/@agconn/db
+              npx --yes prisma migrate deploy --schema prisma/schema.prisma
+          envFrom:
+            - configMapRef: { name: agconn-config }
+            - secretRef: { name: agconn-env }
+          volumeMounts:
+            - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes: { secretProviderClass: agconn-env }

@@ -1,0 +1,99 @@
+# Nightly audit retention + HMAC verifier. Both run as CronJobs so a failure
+# is visible in `kubectl get cronjob` history without affecting the API.
+#
+# Times are UTC. Stagger so they don't compete for the DB:
+#   02:00 UTC — retention purge
+#   03:00 UTC — HMAC verifier (after retention so it doesn't verify rows
+#                that are about to be dropped)
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: audit-retention
+  namespace: agconn
+spec:
+  schedule: "0 2 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 7
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: audit-retention
+            azure.workload.identity/use: "true"
+        spec:
+          serviceAccountName: agconn
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: worker
+              image: ghcr.io/REPLACE_OWNER/agconn-audit-retention:REPLACE_TAG
+              envFrom:
+                - configMapRef: { name: agconn-config }
+                - secretRef: { name: agconn-env }
+              resources:
+                requests: { cpu: 100m, memory: 256Mi }
+                limits: { cpu: 1000m, memory: 1Gi }
+              volumeMounts:
+                - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
+          volumes:
+            - name: secrets-store
+              csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes: { secretProviderClass: agconn-env }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: audit-verifier
+  namespace: agconn
+spec:
+  schedule: "0 3 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 14
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: audit-verifier
+            azure.workload.identity/use: "true"
+        spec:
+          serviceAccountName: agconn
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: worker
+              image: ghcr.io/REPLACE_OWNER/agconn-audit-verifier:REPLACE_TAG
+              envFrom:
+                - configMapRef: { name: agconn-config }
+                - secretRef: { name: agconn-env }
+              resources:
+                requests: { cpu: 100m, memory: 256Mi }
+                limits: { cpu: 1000m, memory: 1Gi }
+              volumeMounts:
+                - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
+          volumes:
+            - name: secrets-store
+              csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes: { secretProviderClass: agconn-env }

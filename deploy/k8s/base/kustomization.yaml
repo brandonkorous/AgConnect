@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: agconn
+
+resources:
+  - namespace.yaml
+  - service-account.yaml
+  - configmap.yaml
+  - secret-provider.yaml
+  - web-deployment.yaml
+  - api-deployment.yaml
+  - email-worker-deployment.yaml
+  - sms-worker-deployment.yaml
+  - audit-cronjobs.yaml
+  - ingress.yaml

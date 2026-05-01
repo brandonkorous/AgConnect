@@ -28,6 +28,8 @@ This directory contains complete, implementation-ready specifications for every 
 - [08-certificate-generation](00-foundation/08-certificate-generation/) — React-PDF bilingual certs
 - [09-seo-aio](00-foundation/09-seo-aio/) — metadata, JSON-LD, sitemap, llms.txt
 - [10-infra-cicd](00-foundation/10-infra-cicd/) — AKS, GHCR, GitHub Actions, environments
+- [11-app-shell](00-foundation/11-app-shell/) — UX primitives (toast, modal, form, error boundary), API error envelope, PWA wrapper
+- [12-audit-log](00-foundation/12-audit-log/) — append-only event log, action taxonomy, retention, admin viewer
 
 ### 10 — Worker features
 
@@ -64,7 +66,7 @@ This directory contains complete, implementation-ready specifications for every 
 ## Index by phase (build order from kickoff §16 + landing-page parallel track)
 
 - **Phase A — Marketing v1 (Week 1, parallel with Phase 0):** [40-marketing/01-landing](40-marketing/01-landing/) — static bilingual landing page, waitlist capture, sitemap, llms.txt
-- **Phase 0 — Foundation (Week 1):** [01-multi-tenancy](00-foundation/01-multi-tenancy/), [02-auth](00-foundation/02-auth/), [03-database](00-foundation/03-database/), [04-i18n](00-foundation/04-i18n/), [10-infra-cicd](00-foundation/10-infra-cicd/)
+- **Phase 0 — Foundation (Week 1):** [01-multi-tenancy](00-foundation/01-multi-tenancy/), [02-auth](00-foundation/02-auth/), [03-database](00-foundation/03-database/), [04-i18n](00-foundation/04-i18n/), [10-infra-cicd](00-foundation/10-infra-cicd/), [11-app-shell](00-foundation/11-app-shell/), [12-audit-log](00-foundation/12-audit-log/)
 - **Phase 1 — Worker Core (Weeks 2–3):** [10-worker/01-onboarding](10-worker/01-onboarding/), [10-worker/02-resume-editor](10-worker/02-resume-editor/), [10-worker/03-job-discovery](10-worker/03-job-discovery/), [10-worker/04-application-tracker](10-worker/04-application-tracker/), [20-employer/02-job-postings](20-employer/02-job-postings/), [00-foundation/05-sms-pipeline](00-foundation/05-sms-pipeline/), [00-foundation/07-resume-parser](00-foundation/07-resume-parser/)
 - **Phase 2 — Employer Core (Week 4):** [20-employer/01-flc-verification](20-employer/01-flc-verification/), [20-employer/03-applicant-review](20-employer/03-applicant-review/), [20-employer/04-worker-search](20-employer/04-worker-search/), [20-employer/05-subscription-billing](20-employer/05-subscription-billing/), [00-foundation/06-email-pipeline](00-foundation/06-email-pipeline/)
 - **Phase 3 — Training & Certificates (Week 5):** [10-worker/05-training-browser](10-worker/05-training-browser/), [10-worker/06-skills-wallet](10-worker/06-skills-wallet/), [00-foundation/08-certificate-generation](00-foundation/08-certificate-generation/)

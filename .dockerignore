@@ -1,0 +1,38 @@
+# Build artifacts and editor noise excluded from all Docker build contexts.
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/build
+**/.cache
+**/coverage
+
+# Env / secrets — never bake into images, injected at runtime via K8s.
+.env
+.env.local
+.env.*.local
+.env.sentry-build-plugin
+**/.env
+**/.env.local
+
+# Git, OS, editor noise
+.git
+.github
+.vscode
+.idea
+**/.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+
+# Test + dev artifacts
+.playwright-mcp
+test-results
+playwright-report
+landing-*.png
+landing-*.jpeg
+
+# Documentation isn't needed in runtime images
+docs
+*.md

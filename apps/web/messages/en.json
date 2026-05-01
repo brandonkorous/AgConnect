@@ -4,7 +4,16 @@
   },
   "landing": {
     "utility": {
-      "lang": { "label": "Language", "en": "English", "es": "Spanish" },
+      "lang": {
+        "label": "Language",
+        "en": "English",
+        "es": "Spanish"
+      },
+      "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "dark": "Dark"
+      },
       "grant_aligned": "CDFA & F3 grant-aligned · Central Valley · 2026",
       "for_employers": "For employers · Post a job",
       "help": "Help · Ayuda",
@@ -24,10 +33,16 @@
     },
     "hero": {
       "now_serving": "Now serving · Fresno · Tulare · Kern · Kings · Madera",
-      "headline": { "line1": "From the field,", "line2": "to your future." },
+      "headline": "Find seasonal farm work in the Central Valley.",
       "subhead": "AgConn connects Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs — bilingual from day one, with a portable record of your skills that travels with you to the next harvest.",
-      "cta": { "primary": "Find work today", "secondary": "Hire a verified crew" },
-      "trust": { "rating": "4.9 / 5", "line": "Trusted by 2,400+ workers and 180+ verified employers across the Valley" },
+      "cta": {
+        "primary": "Find work today",
+        "secondary": "Hire a verified crew"
+      },
+      "trust": {
+        "rating": "4.9 / 5",
+        "line": "Trusted by 2,400+ workers and 180+ verified employers across the Valley"
+      },
       "phone": {
         "greeting": "Hola, María —",
         "jobs_near": "14 trabajos cerca de ti.",
@@ -42,29 +57,45 @@
         "training_title": "Manejo de pesticidas",
         "training_meta": "Fresno EOC · 16 hrs · Gratis",
         "lang_pill": "ES · EN"
-      },
-      "toast": { "hired": "Hired · $19.50/hr · today" }
+      }
     },
     "trust": {
       "eyebrow": "Built with",
       "subtitle": "Funders & partners across the Valley",
       "partners": {
-        "cdfa": { "name": "CDFA", "caption": "Cal. Dept. of Food & Ag." },
-        "f3": { "name": "F3", "caption": "Farms · Food · Future" },
-        "calosba": { "name": "CalOSBA", "caption": "Office of Small Biz" },
-        "edd": { "name": "EDD ▪︎ Local Area", "caption": "Workforce Boards" },
-        "eoc": { "name": "Fresno EOC", "caption": "Training partner" },
-        "crla": { "name": "CRLA", "caption": "Rural Legal Asst." }
+        "cdfa": {
+          "name": "CDFA",
+          "caption": "Cal. Dept. of Food & Ag."
+        },
+        "f3": {
+          "name": "F3",
+          "caption": "Farms · Food · Future"
+        },
+        "calosba": {
+          "name": "CalOSBA",
+          "caption": "Office of Small Biz"
+        },
+        "edd": {
+          "name": "EDD ▪︎ Local Area",
+          "caption": "Workforce Boards"
+        },
+        "eoc": {
+          "name": "Fresno EOC",
+          "caption": "Training partner"
+        },
+        "crla": {
+          "name": "CRLA",
+          "caption": "Rural Legal Asst."
+        }
       }
     },
     "audience": {
       "eyebrow": "One platform · three roles",
-      "headline": { "line1": "A platform that knows", "line2": "who's on the other side." },
+      "headline": "A platform that knows who's on the other side.",
       "intro": "Workers, employers, and training organizations each get a purpose-built experience — connected by a single record of work, in two languages, kept on file for as long as it matters.",
       "workers": {
         "eyebrow": "FOR WORKERS",
-        "subscript": "trabajadores",
-        "headline": { "line1": "Find work this week.", "line2": "Build a record that travels." },
+        "headline": "Find work this week. Build a record that travels.",
         "bullet1": "Real seasonal jobs, verified employers, wages on record",
         "bullet2": "Free CDFA & F3 training programs with bilingual certs",
         "bullet3": "SMS alerts in your language. No app store, no email needed.",
@@ -73,8 +104,7 @@
       },
       "employers": {
         "eyebrow": "FOR EMPLOYERS",
-        "subscript": "growers & FLCs",
-        "headline": { "line1": "Hire a verified crew.", "line2": "Skip the paperwork." },
+        "headline": "Hire a verified crew. Skip the paperwork.",
         "bullet1": "Bilingual job postings, ready in minutes — no rewrites",
         "bullet2": "Applicant kanban: applied → reviewed → hired, with wage capture",
         "bullet3": "DLSE/FLC license verification — admin-confirmed in 1 day",
@@ -83,8 +113,7 @@
       },
       "training": {
         "eyebrow": "FOR TRAINING ORGS",
-        "subscript": "capacitadores",
-        "headline": { "line1": "Issue credentials.", "line2": "Report on outcomes." },
+        "headline": "Issue credentials. Report on outcomes.",
         "bullet1": "Bilingual program listings, capacity, and waitlists",
         "bullet2": "React-PDF certificates, e-signed under UETA",
         "bullet3": "WIOA-aligned exports for CDFA, F3, CalJOBS reporting",
@@ -94,11 +123,7 @@
     },
     "how": {
       "eyebrow": "For workers · 4 steps · 6 minutes",
-      "headline": { "line1": "From \"hello\"", "line2": "to your first verified hire." },
-      "aside": {
-        "headline": "en español, también",
-        "body": "Every step in EN + ES, default to ES."
-      },
+      "headline": "From \"hello\" to your first verified hire.",
       "step": {
         "1": {
           "title": "Sign up with your phone",
@@ -126,53 +151,57 @@
       "eyebrow": "For employers",
       "headline": "A dashboard built for the way you actually hire.",
       "body": "Post a bilingual job in three minutes. Watch applicants land in a kanban that captures wage on hire. Move workers across the season without re-keying anything — and let your grant officer pull a clean WIOA-aligned report on Friday afternoon.",
-      "bullet1": { "title": "Bilingual postings, automatic.", "body": "Write once in either language; we generate the bilingual variant. Edit either side any time." },
-      "bullet2": { "title": "Hire-to-record kanban.", "body": "Drag from Applied → Reviewed → Hired. Each hire captures wage and creates a recordable placement." },
-      "bullet3": { "title": "FLC verified, before posting.", "body": "Submit your CA DIR/DLSE license at signup; admin confirms within 1 business day. The \"Verified FLC\" badge is the only signal we ask workers to trust." },
-      "cta": { "primary": "Post your first job — Free", "secondary": "Talk to sales" }
+      "bullet1": {
+        "title": "Bilingual postings, automatic.",
+        "body": "Write once in either language; we generate the bilingual variant. Edit either side any time."
+      },
+      "bullet2": {
+        "title": "Hire-to-record kanban.",
+        "body": "Drag from Applied → Reviewed → Hired. Each hire captures wage and creates a recordable placement."
+      },
+      "bullet3": {
+        "title": "FLC verified, before posting.",
+        "body": "Submit your CA DIR/DLSE license at signup; admin confirms within 1 business day. The \"Verified FLC\" badge is the only signal we ask workers to trust."
+      },
+      "cta": {
+        "primary": "Post your first job — Free",
+        "secondary": "Talk to sales"
+      }
     },
     "verification": {
       "eyebrow": "The trust differentiator",
-      "headline": { "line1": "Every employer here has been", "line2": "verified — by name." },
+      "headline": "Every employer here has been verified — by name.",
       "body": "Farm Labor Contractors must hold an active CA DIR/DLSE license and a federal MSPA registration. Growers are confirmed against the California Secretary of State business registry. We don't take applicants on their word — we check the record, then re-check it nightly.",
       "bullet1": "FLC: CA Labor Code §1682 license, verified manually within 1 day, then nightly via scraper",
       "bullet2": "Grower: business name + EIN against CA Secretary of State entity search",
       "bullet3": "License lapses or expirations are flagged automatically — workers and grant officers are notified"
     },
-    "bilingual": {
-      "eyebrow": "Bilingual · not translated",
-      "headline": { "line1": "Spanish and English,", "line2": "on the same page." },
-      "body": "Every UI string, every SMS, every email, every certificate exists in both languages from day one. Workers default to Spanish; employers default to English; either side can switch with one tap.",
-      "sms": {
-        "label": "SMS · Application sent · ES",
-        "body": "Hola María — tu solicitud para \"Recolector de fresa\" en Driscoll's Madera fue recibida. Te avisaremos en cuanto el empleador la revise. — AgConn",
-        "meta": "Twilio · queued in pg-boss · sent at 09:42 PT"
-      },
-      "email": {
-        "label": "Email · New applicant · EN",
-        "subject": "A new applicant for Recolector de fresa",
-        "body": "Maria E. Hernández — 5 yrs experience, EN/ES, Fresno County. Review the applicant in your dashboard.",
-        "meta": "Resend · React Email · noreply@agconn.com"
-      },
-      "cert": {
-        "label": "Certificate · Bilingual PDF",
-        "id": "CRED-AGC-04829",
-        "en": "Pesticide Handler Safety Training",
-        "es": "Capacitación de Manejo de Pesticidas",
-        "meta": "React-PDF · UETA e-signed · Azure Blob"
-      }
-    },
     "impact": {
       "eyebrow": "Impact · Q2 2026 · Central Valley",
-      "headline": { "line1": "Numbers worth", "line2": "reporting on." },
+      "headline": "Numbers worth reporting on.",
       "body": "Every metric here is grant-defensible: counted from records, exportable in WIOA-aligned formats, and audited against the source data nightly.",
       "tile": {
-        "workers": { "label": "Workers placed", "body": "Verified seasonal hires across Fresno, Tulare, Kern, Kings & Madera" },
-        "wage": { "label": "Avg. wage at hire", "body": "$3.40 above CA agricultural minimum — every hourly rate captured at hire" },
-        "retention": { "label": "Q2→Q4 retention", "body": "Of placed workers still employed at the second-quarter follow-up" },
-        "certs": { "label": "Bilingual certificates", "body": "Issued through CDFA & F3-funded training programs in 2026" }
+        "workers": {
+          "label": "Workers placed",
+          "body": "Verified seasonal hires across Fresno, Tulare, Kern, Kings & Madera"
+        },
+        "wage": {
+          "label": "Avg. wage at hire",
+          "body": "$3.40 above CA agricultural minimum — every hourly rate captured at hire"
+        },
+        "retention": {
+          "label": "Q2→Q4 retention",
+          "body": "Of placed workers still employed at the second-quarter follow-up"
+        },
+        "certs": {
+          "label": "Bilingual certificates",
+          "body": "Issued through CDFA & F3-funded training programs in 2026"
+        }
       },
-      "cta": { "dashboard": "Want to dig in? Our public dashboard updates nightly.", "link": "Open the impact dashboard" },
+      "cta": {
+        "dashboard": "Want to dig in? Our public dashboard updates nightly.",
+        "link": "Open the impact dashboard"
+      },
       "source": "SOURCE · WIOA-ALIGNED · NIGHTLY · TENANT=CV"
     },
     "featured_jobs": {
@@ -180,6 +209,7 @@
       "headline": "Real work, posted by name.",
       "view_all": "Browse all 142 jobs",
       "filter": {
+        "label": "Filter by county",
         "all": "All 142",
         "fresno": "Fresno · 48",
         "tulare": "Tulare · 31",
@@ -195,45 +225,161 @@
         "apply": "Apply"
       },
       "jobs": {
-        "1": { "title_es": "Recolector de fresa", "title_en": "Strawberry harvest picker", "employer": "Driscoll's Madera Ranch", "location": "Madera · 2.4 mi", "wage": "$18.50–$22", "type": "flc", "tags": ["Strawberry", "Mon–Sat", "No exp. required"] },
-        "2": { "title_es": "Manejo de pesticidas", "title_en": "Pesticide handler", "employer": "Sun-Maid Growers · Visalia", "location": "Tulare · 8.1 mi", "wage": "$22.00", "type": "flc", "tags": ["Cert. required", "Year-round", "Bilingual req."] },
-        "3": { "title_es": "Operador de montacargas", "title_en": "Forklift operator", "employer": "Wonderful Citrus · Reedley", "location": "Fresno · 5.2 mi", "wage": "$24.00", "type": "grower", "tags": ["OSHA cert.", "Day shift", "Benefits"] },
-        "4": { "title_es": "Técnico de irrigación", "title_en": "Irrigation technician", "employer": "Grimmway Farms · Bakersfield", "location": "Kern · 3.7 mi", "wage": "$21.00", "type": "flc", "tags": ["2+ yrs exp.", "Year-round", "Truck provided"] }
+        "1": {
+          "title": "Strawberry harvest picker",
+          "employer": "Driscoll's Madera Ranch",
+          "location": "Madera · 2.4 mi",
+          "wage": "$18.50–$22",
+          "type": "flc",
+          "tags": [
+            "Strawberry",
+            "Mon–Sat",
+            "No exp. required"
+          ]
+        },
+        "2": {
+          "title": "Pesticide handler",
+          "employer": "Sun-Maid Growers · Visalia",
+          "location": "Tulare · 8.1 mi",
+          "wage": "$22.00",
+          "type": "flc",
+          "tags": [
+            "Cert. required",
+            "Year-round",
+            "Bilingual req."
+          ]
+        },
+        "3": {
+          "title": "Forklift operator",
+          "employer": "Wonderful Citrus · Reedley",
+          "location": "Fresno · 5.2 mi",
+          "wage": "$24.00",
+          "type": "grower",
+          "tags": [
+            "OSHA cert.",
+            "Day shift",
+            "Benefits"
+          ]
+        },
+        "4": {
+          "title": "Irrigation technician",
+          "employer": "Grimmway Farms · Bakersfield",
+          "location": "Kern · 3.7 mi",
+          "wage": "$21.00",
+          "type": "flc",
+          "tags": [
+            "2+ yrs exp.",
+            "Year-round",
+            "Truck provided"
+          ]
+        }
       }
     },
     "featured_training": {
       "eyebrow": "Free training · CDFA & F3 funded",
-      "headline": { "line1": "Skills you keep,", "line2": "in writing." },
+      "headline": "Skills you keep, in writing.",
       "body": "Programs run by Fresno EOC, CRLA, and other regional partners — funded by CDFA, F3, and CalOSBA. Every completion produces a bilingual, e-signed certificate that lives in your skills wallet.",
       "card": {
         "free": "Free",
-        "enroll": "Inscribirme"
+        "enroll": "Enroll"
       },
       "programs": {
-        "1": { "badge": "CDFA · 16 HRS", "schedule": "Starts 5/12 · Fresno", "title_es": "Manejo seguro de pesticidas", "title_en": "Pesticide Handler Safety Training", "body": "Learn how to handle, mix, and apply restricted-use pesticides safely. CDFA-required for licensed handlers.", "tags": ["Bilingual instructor", "Cert. on completion"], "price": "Free", "feature": false },
-        "2": { "badge": "F3 · 24 HRS", "schedule": "Starts 6/02 · Visalia", "title_es": "Operación de montacargas", "title_en": "OSHA Forklift Operator Certification", "body": "3-day OSHA-aligned course. Hands-on instruction at Fresno EOC's Visalia training yard. Test included.", "tags": ["Hands-on", "OSHA cert."], "price": "Free", "feature": false },
-        "3": { "badge": "CalOSBA · 8 HRS", "schedule": "Starts 5/20 · Bakersfield", "title_es": "Mantenimiento de tractores", "title_en": "Small Tractor Maintenance & Repair", "body": "One-day course at Bakersfield College's ag center. Engine basics, hydraulics, troubleshooting.", "tags": ["Saturday", "Equipment provided"], "price": "Free", "feature": false },
-        "4": { "badge": "CDFA · 12 HRS", "schedule": "Starts 6/15 · Madera", "title_es": "Riego eficiente", "title_en": "Drip Irrigation & Water Stewardship", "body": "2-day program on drip system installation, monitoring, and CA water-rights basics. Worker-focused.", "tags": ["High demand", "Stipend incl."], "price": "Free + $200 stipend", "feature": true }
+        "1": {
+          "badge": "CDFA · 16 HRS",
+          "schedule": "Starts 5/12 · Fresno",
+          "title": "Pesticide Handler Safety Training",
+          "body": "Learn how to handle, mix, and apply restricted-use pesticides safely. CDFA-required for licensed handlers.",
+          "tags": [
+            "Bilingual instructor",
+            "Cert. on completion"
+          ],
+          "price": "Free",
+          "feature": false
+        },
+        "2": {
+          "badge": "F3 · 24 HRS",
+          "schedule": "Starts 6/02 · Visalia",
+          "title": "OSHA Forklift Operator Certification",
+          "body": "3-day OSHA-aligned course. Hands-on instruction at Fresno EOC's Visalia training yard. Test included.",
+          "tags": [
+            "Hands-on",
+            "OSHA cert."
+          ],
+          "price": "Free",
+          "feature": false
+        },
+        "3": {
+          "badge": "CalOSBA · 8 HRS",
+          "schedule": "Starts 5/20 · Bakersfield",
+          "title": "Small Tractor Maintenance & Repair",
+          "body": "One-day course at Bakersfield College's ag center. Engine basics, hydraulics, troubleshooting.",
+          "tags": [
+            "Saturday",
+            "Equipment provided"
+          ],
+          "price": "Free",
+          "feature": false
+        },
+        "4": {
+          "badge": "CDFA · 12 HRS",
+          "schedule": "Starts 6/15 · Madera",
+          "title": "Drip Irrigation & Water Stewardship",
+          "body": "2-day program on drip system installation, monitoring, and CA water-rights basics. Worker-focused.",
+          "tags": [
+            "High demand",
+            "Stipend incl."
+          ],
+          "price": "Free + $200 stipend",
+          "feature": true
+        }
       }
     },
     "testimonials": {
+      "1": {
+        "surface": "moss",
+        "quote": "Antes pasaba dos semanas buscando trabajo cada cosecha. Ahora recibo un mensaje, aplico, y el lunes ya estoy en el campo. Y mi certificado de pesticidas vale en cualquier rancho.",
+        "name": "María Hernández",
+        "role": "Worker · Madera County · 8 yrs"
+      },
+      "2": {
+        "surface": "bone",
+        "quote": "The kanban replaced our paper applicant binder. Wage capture happens at hire, not weeks later. When my F3 grant officer asked for a Q1 report, I exported it in two minutes — same fields she submits to CalJOBS.",
+        "name": "Tomás Reyes",
+        "role": "FLC · Hernández Crews · Tulare"
+      },
+      "3": {
+        "surface": "sage",
+        "quote": "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AgConn generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.",
+        "name": "Janelle Park, MPA",
+        "role": "Workforce Director · Fresno EOC"
+      },
       "eyebrow": "Voices from the Valley",
-      "headline": { "line1": "From the people who", "line2": "use it every season." },
-      "1": { "surface": "moss", "quote": "Antes pasaba dos semanas buscando trabajo cada cosecha. Ahora recibo un mensaje, aplico, y el lunes ya estoy en el campo. Y mi certificado de pesticidas vale en cualquier rancho.", "name": "María Hernández", "role": "Worker · Madera County · 8 yrs" },
-      "2": { "surface": "bone", "quote": "The kanban replaced our paper applicant binder. Wage capture happens at hire, not weeks later. When my F3 grant officer asked for a Q1 report, I exported it in two minutes — same fields she submits to CalJOBS.", "name": "Tomás Reyes", "role": "FLC · Hernández Crews · Tulare" },
-      "3": { "surface": "sage", "quote": "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AgConn generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.", "name": "Janelle Park, MPA", "role": "Workforce Director · Fresno EOC" }
+      "headline": "From the people who use it every season."
     },
     "pricing": {
       "eyebrow": "Pricing · for employers",
-      "headline": { "line1": "Free for workers.", "line2": "Always." },
+      "headline": "Free for workers. Always.",
       "body": "Workers and training organizations never pay. Employers start free with up to two postings — upgrade only when you need more. Annual saves two months.",
-      "toggle": { "yearly": "Annual · save 2 mo", "monthly": "Monthly" },
+      "toggle": {
+        "yearly": "Annual · save 2 mo",
+        "monthly": "Monthly"
+      },
       "plan": {
         "free": {
-          "badge": "FREE · COMMUNITY", "name": "Free", "intro": "For small growers and seasonal hires. Onboard the long tail of the Valley.",
+          "badge": "FREE · COMMUNITY",
+          "name": "Free",
+          "intro": "For small growers and seasonal hires. Onboard the long tail of the Valley.",
           "price": {
-            "monthly": { "amount": "$0", "unit": "/ forever", "note": "" },
-            "yearly": { "amount": "$0", "unit": "/ forever", "note": "" }
+            "monthly": {
+              "amount": "$0",
+              "unit": "/ forever",
+              "note": ""
+            },
+            "yearly": {
+              "amount": "$0",
+              "unit": "/ forever",
+              "note": ""
+            }
           },
           "feature1": "2 active job postings",
           "feature2": "Applicant kanban",
@@ -241,13 +387,27 @@
           "feature4": "-Worker search",
           "feature5": "-Priority listing",
           "feature6": "-Custom grant exports",
-          "cta": { "label": "Start free", "href": "#final-cta" }
+          "cta": {
+            "label": "Start free",
+            "href": "#final-cta"
+          }
         },
         "pro": {
-          "badge": "PRO · GROWERS & FLCs", "name": "Pro", "ribbon": "Most popular", "intro": "For working FLCs and growers running multiple postings per season.",
+          "badge": "PRO · GROWERS & FLCs",
+          "name": "Pro",
+          "ribbon": "Most popular",
+          "intro": "For working FLCs and growers running multiple postings per season.",
           "price": {
-            "monthly": { "amount": "$99", "unit": "/ mo, billed monthly", "note": "" },
-            "yearly": { "amount": "$82.50", "unit": "/ mo, billed annually", "note": "$990/yr · vs $99/mo monthly" }
+            "monthly": {
+              "amount": "$99",
+              "unit": "/ mo, billed monthly",
+              "note": ""
+            },
+            "yearly": {
+              "amount": "$82.50",
+              "unit": "/ mo, billed annually",
+              "note": "$990/yr · vs $99/mo monthly"
+            }
           },
           "feature1": "Unlimited active postings",
           "feature2": "Worker search across the Valley pool",
@@ -255,13 +415,26 @@
           "feature4": "Self-serve Stripe billing portal",
           "feature5": "WIOA exports (CSV + XLSX)",
           "feature6": "-Multi-user, custom branding",
-          "cta": { "label": "Start a Pro trial", "href": "#final-cta" }
+          "cta": {
+            "label": "Start a Pro trial",
+            "href": "#final-cta"
+          }
         },
         "enterprise": {
-          "badge": "ENTERPRISE · MULTI-TENANT", "name": "Enterprise", "intro": "For workforce boards and multi-county operators with grant reporting needs.",
+          "badge": "ENTERPRISE · MULTI-TENANT",
+          "name": "Enterprise",
+          "intro": "For workforce boards and multi-county operators with grant reporting needs.",
           "price": {
-            "monthly": { "amount": "$299", "unit": "/ mo, billed monthly", "note": "" },
-            "yearly": { "amount": "$249.17", "unit": "/ mo, billed annually", "note": "$2,990/yr · vs $299/mo monthly" }
+            "monthly": {
+              "amount": "$299",
+              "unit": "/ mo, billed monthly",
+              "note": ""
+            },
+            "yearly": {
+              "amount": "$249.17",
+              "unit": "/ mo, billed annually",
+              "note": "$2,990/yr · vs $299/mo monthly"
+            }
           },
           "feature1": "Everything in Pro",
           "feature2": "Multi-user accounts & roles",
@@ -269,7 +442,10 @@
           "feature4": "Branded grant exports + cover sheets",
           "feature5": "Dedicated success contact + SLA",
           "feature6": "White-label tenant available",
-          "cta": { "label": "Talk to sales", "href": "mailto:sales@agconn.com" }
+          "cta": {
+            "label": "Talk to sales",
+            "href": "mailto:sales@agconn.com"
+          }
         }
       },
       "footnote": "All plans include FLC verification, bilingual postings, SMS notifications, and grant-aligned exports.",
@@ -285,22 +461,46 @@
         "body": "Email grants@agconn.com — we'll book it within 48h."
       },
       "items": {
-        "1": { "q": "Is AgConn really free for workers?", "a": "Yes. Workers never pay — not for signup, not for applications, not for certificates, not for SMS notifications. The platform is funded by employer subscriptions and grant partnerships. Es completamente gratuito para los trabajadores, en español también." },
-        "2": { "q": "How do you verify Farm Labor Contractors?", "a": "Every FLC must hold an active CA DIR/DLSE license and a federal MSPA registration. We confirm both manually at signup (within 1 business day) and re-check nightly via scraper. License lapses or revocations are flagged automatically and the employer's postings are paused until resolved." },
-        "3": { "q": "Are AgConn certificates legally valid?", "a": "Yes. Certificates are React-PDF documents e-signed under California UETA, with cryptographic verification embedded in the file. They include the issuing organization's identifier, the program funder, dates, and a unique credential ID that's verifiable from the public certificate page." },
-        "4": { "q": "¿Necesito una computadora para usar AgConn?", "a": "No. AgConn funciona en cualquier teléfono con SMS — no necesitas computadora, smartphone, app store, ni correo electrónico. Te registras con tu número de teléfono, recibes alertas de trabajos por mensaje de texto, y aplicas con un toque." },
-        "5": { "q": "What WIOA fields do AgConn exports include?", "a": "Exports include all required WIOA Title I fields plus CalJOBS-specific extensions: PIRL elements 100–1900, demographic data (where consented), placement details with employer + wage + start date, training program completions, credential IDs, and follow-up retention. Available as CSV and XLSX, with a custom field mapper for state-specific overlays." },
-        "6": { "q": "Can I export my data if I leave the platform?", "a": "Yes — at any time, in JSON or CSV, with no fee and no exit ramp. Workers can export their full profile + applications + certificates. Employers can export their postings + applicant pipeline + hires. Training orgs can export rosters + completions + certificate metadata." },
-        "7": { "q": "When will AgConn expand beyond the Central Valley?", "a": "Imperial County and the Salinas Valley are next on the roadmap (target Q4 2026), pending grant alignment with regional CDFA partners. Outside California will require state-by-state legal and licensing diligence — we're starting that work but won't commit a date until verification infrastructure is reliable." },
-        "8": { "q": "¿Mi información está protegida?", "a": "Sí. Los datos personales de los trabajadores nunca se comparten sin consentimiento explícito. Los empleadores solo ven los perfiles de quienes les aplican. Los reportes de subvención son agregados y anónimos. Cumplimos con CCPA, FERPA (para datos de capacitación), y la política federal de privacidad WIOA." }
+        "1": {
+          "q": "Is AgConn really free for workers?",
+          "a": "Yes. Workers never pay — not for signup, not for applications, not for certificates, not for SMS notifications. The platform is funded by employer subscriptions and grant partnerships."
+        },
+        "2": {
+          "q": "How do you verify Farm Labor Contractors?",
+          "a": "Every FLC must hold an active CA DIR/DLSE license and a federal MSPA registration. We confirm both manually at signup (within 1 business day) and re-check nightly via scraper. License lapses or revocations are flagged automatically and the employer's postings are paused until resolved."
+        },
+        "3": {
+          "q": "Are AgConn certificates legally valid?",
+          "a": "Yes. Certificates are React-PDF documents e-signed under California UETA, with cryptographic verification embedded in the file. They include the issuing organization's identifier, the program funder, dates, and a unique credential ID that's verifiable from the public certificate page."
+        },
+        "4": {
+          "q": "Do I need a computer to use AgConn?",
+          "a": "No. AgConn works on any phone that can receive SMS — no computer, no smartphone, no app store, no email. Sign up with your phone number, receive job alerts by text, and apply with one tap."
+        },
+        "5": {
+          "q": "What WIOA fields do AgConn exports include?",
+          "a": "Exports include all required WIOA Title I fields plus CalJOBS-specific extensions: PIRL elements 100–1900, demographic data (where consented), placement details with employer + wage + start date, training program completions, credential IDs, and follow-up retention. Available as CSV and XLSX, with a custom field mapper for state-specific overlays."
+        },
+        "6": {
+          "q": "Can I export my data if I leave the platform?",
+          "a": "Yes — at any time, in JSON or CSV, with no fee and no exit ramp. Workers can export their full profile + applications + certificates. Employers can export their postings + applicant pipeline + hires. Training orgs can export rosters + completions + certificate metadata."
+        },
+        "7": {
+          "q": "When will AgConn expand beyond the Central Valley?",
+          "a": "Imperial County and the Salinas Valley are next on the roadmap (target Q4 2026), pending grant alignment with regional CDFA partners. Outside California will require state-by-state legal and licensing diligence — we're starting that work but won't commit a date until verification infrastructure is reliable."
+        },
+        "8": {
+          "q": "Is my information protected?",
+          "a": "Yes. Worker personal data is never shared without explicit consent. Employers see only the profiles of applicants who apply to them. Grant reports are aggregated and anonymous. We comply with CCPA, FERPA (for training data), and federal WIOA privacy policy."
+        }
       }
     },
     "final": {
-      "eyebrow": "Two ways in · Dos caminos",
-      "headline": { "es": "Empieza hoy.", "en": "Start today." },
+      "eyebrow": "Two ways in",
+      "headline": "Start today.",
       "body": "No credit card. No app store. No long form. Workers sign up with a phone in under a minute. Employers post their first job free. Training organizations apply for an org account in a click.",
       "workers": {
-        "eyebrow": "FOR WORKERS · TRABAJADORES",
+        "eyebrow": "FOR WORKERS",
         "headline": "Sign up by phone — find work this week.",
         "label": "Mobile phone number",
         "placeholder": "(555) 555-1234",
@@ -309,7 +509,7 @@
         "success": "We just texted you. Open the message and tap the link."
       },
       "employers": {
-        "eyebrow": "FOR EMPLOYERS · GROWERS & FLCs",
+        "eyebrow": "FOR EMPLOYERS",
         "headline": "Post your first job — free, in 3 minutes.",
         "cta": "Create employer account",
         "help": "FLC verification typically completes within 1 business day."
@@ -370,7 +570,53 @@
         "label": "Email address",
         "placeholder": "you@example.com",
         "cta": "Subscribe",
-        "success": "Subscribed. Check your inbox."
+        "success": "Almost there — check your email to confirm."
+      }
+    },
+    "waitlist": {
+      "submitting": "Sending…",
+      "error": "Couldn't submit — please try again.",
+      "already_confirmed": "You're already on the list. We'll keep you posted."
+    },
+    "confirm": {
+      "cta_home": "Visit AgConn",
+      "confirmed": {
+        "eyebrow": "CONFIRMED",
+        "headline": "You're in.",
+        "body": "Thanks for confirming. We saved your spot on the AgConn list — we'll reach out the moment we open in your area, in the language you signed up with."
+      },
+      "already": {
+        "eyebrow": "ALREADY CONFIRMED",
+        "headline": "You're already in.",
+        "body": "This email is already on the AgConn list — no need to confirm again. We'll be in touch when we open in your area."
+      },
+      "expired": {
+        "eyebrow": "LINK EXPIRED",
+        "headline": "That link's a little old.",
+        "body": "Confirmation links expire after 7 days. Sign up again from the homepage and we'll send a fresh link."
+      },
+      "invalid": {
+        "eyebrow": "LINK NOT VALID",
+        "headline": "We couldn't read that link.",
+        "body": "The confirmation link looks incomplete or has already been used. Try signing up again from the homepage."
+      }
+    },
+    "unsubscribe": {
+      "cta_home": "Back to AgConn",
+      "unsubscribed": {
+        "eyebrow": "UNSUBSCRIBED",
+        "headline": "You're off the list.",
+        "body": "We removed you from the AgConn list — no more emails from us. If this was a mistake, you can sign up again from the homepage at any time."
+      },
+      "already": {
+        "eyebrow": "ALREADY UNSUBSCRIBED",
+        "headline": "You're already off the list.",
+        "body": "This email isn't on the AgConn list — nothing more to do. If you'd like to opt back in, sign up again from the homepage."
+      },
+      "invalid": {
+        "eyebrow": "LINK NOT VALID",
+        "headline": "We couldn't read that link.",
+        "body": "The unsubscribe link looks incomplete. If you're still receiving emails you don't want, reply to one and we'll remove you manually."
       }
     },
     "legal": {
@@ -384,6 +630,596 @@
       "terms_es": "Términos",
       "sitemap": "Sitemap",
       "llms_txt": "llms.txt"
+    }
+  },
+  "worker": {
+    "dashboard": {
+      "meta": {
+        "title": "Worker dashboard"
+      },
+      "sidebar": {
+        "dashboard": "Dashboard",
+        "browse_jobs": "Browse jobs",
+        "my_applications": "My applications",
+        "my_shifts": "My shifts",
+        "pay": "Pay & timesheets",
+        "training": "Training",
+        "documents": "Documents",
+        "messages": "Messages",
+        "profile_default_location": "Madera, CA",
+        "lang_en": "EN",
+        "lang_es": "ES"
+      },
+      "topbar": {
+        "search_placeholder": "Search jobs, employers, training…",
+        "search_kbd": "Ctrl K",
+        "sms_apply": "SMS apply: ON",
+        "help": "Help",
+        "set_availability": "Set availability"
+      },
+      "greeting": {
+        "context": "Sunday, August 3 · Madera, CA",
+        "salutation": "Good afternoon, {name}.",
+        "summary": "You've got 1 shift tomorrow and 8 new matches in your area.",
+        "earnings_eyebrow": "Earnings · 12 wk"
+      },
+      "kpi": {
+        "week_earned": {
+          "label": "This week earned",
+          "sub": "+12% vs last week"
+        },
+        "hours_logged": {
+          "label": "Hours logged",
+          "sub": "of 60 max"
+        },
+        "active_apps": {
+          "label": "Active applications",
+          "sub": "2 awaiting reply"
+        },
+        "avg_rate": {
+          "label": "Avg pay rate",
+          "sub": "ranks top 18% in county"
+        }
+      },
+      "up_next": {
+        "eyebrow": "Tomorrow · 6:00 AM",
+        "title": "Grape Harvest at Sunridge Vineyards",
+        "location": "Madera County",
+        "pay": "$22.50/hr + piece rate",
+        "pickup": "Pickup at Hwy 99 / Cleveland",
+        "crew": "Crew of 14",
+        "confirm": "Confirm shift",
+        "directions": "Directions",
+        "call_foreman": "Call foreman",
+        "map_distance": "12 min · 8.4 mi"
+      },
+      "matched": {
+        "title": "Matched for you",
+        "subtitle": "Based on your skills, location, and availability",
+        "filters": {
+          "all": "All",
+          "within_25": "Within 25 mi",
+          "this_week": "This week",
+          "pays_22": "Pays >$22"
+        },
+        "apply": "Apply",
+        "spots": "{count} spots",
+        "housing": "Housing",
+        "sms_apply": "SMS apply",
+        "starts": "Starts",
+        "verified": "Verified",
+        "hiring_fast": "Hiring fast",
+        "top_employer": "Top employer"
+      },
+      "apps": {
+        "title": "My applications",
+        "subtitle": "5 active · last sync 2m ago",
+        "view_all": "View all",
+        "cols": {
+          "job": "Job",
+          "employer": "Employer",
+          "start": "Start",
+          "rate": "Rate",
+          "status": "Status"
+        },
+        "stages": {
+          "accepted": "Accepted",
+          "interview": "Interview",
+          "reviewed": "Reviewed",
+          "applied": "Applied"
+        }
+      },
+      "paycheck": {
+        "eyebrow": "Next paycheck",
+        "weekday": "Friday",
+        "date": "Aug 8",
+        "amount_int": "$1,124",
+        "amount_dec": ".50",
+        "hours_logged_label": "Hours logged",
+        "hours_logged_value": "49.5h",
+        "piece_bonus_label": "Piece rate bonus",
+        "piece_bonus_value": "+$112",
+        "method_label": "Method",
+        "method_value": "Direct",
+        "view_timesheet": "View timesheet"
+      },
+      "availability": {
+        "eyebrow": "This week",
+        "title": "Availability",
+        "edit": "Edit",
+        "open": "OPEN",
+        "off": "OFF",
+        "footer": "5 days open · 1 conflict on {day} (training)",
+        "conflict_day": "Aug 7",
+        "days": [
+          "M",
+          "T",
+          "W",
+          "T",
+          "F",
+          "S",
+          "S"
+        ]
+      },
+      "training": {
+        "eyebrow": "Boost your earnings",
+        "headline_lead": "Free Forklift cert opens",
+        "headline_amount": "+$2.50/hr",
+        "headline_tail": "in your area",
+        "meta": "2 weeks · Reedley College · CDFA-funded",
+        "enroll": "Enroll free"
+      },
+      "messages": {
+        "title": "Messages",
+        "new_count": "{count} NEW",
+        "channels": {
+          "whatsapp": "WhatsApp",
+          "sms": "SMS",
+          "in_app": "In-app"
+        }
+      }
+    }
+  },
+  "shell": {
+    "error": {
+      "unauthenticated": {
+        "title": "Please sign in",
+        "description": "Your session expired."
+      },
+      "forbidden": {
+        "title": "You don't have access to that",
+        "description": ""
+      },
+      "no_tenant": {
+        "title": "Account not set up yet",
+        "description": "Contact your administrator to finish onboarding."
+      },
+      "tenant_disabled": {
+        "title": "This workspace is paused",
+        "description": "Reach out to AgConn support if this is unexpected."
+      },
+      "not_found": {
+        "title": "We couldn't find that",
+        "description": ""
+      },
+      "validation_failed": {
+        "title": "Please check the highlighted fields",
+        "description": ""
+      },
+      "rate_limited": {
+        "title": "Slow down a moment",
+        "description": "You're sending requests too quickly. Try again shortly."
+      },
+      "conflict": {
+        "title": "Something changed before you saved",
+        "description": "Reload to see the latest version."
+      },
+      "internal_error": {
+        "title": "Something went wrong on our end",
+        "description": "We've been notified. Try again in a minute."
+      },
+      "service_unavailable": {
+        "title": "A service is temporarily unavailable",
+        "description": "Try again in a few minutes."
+      },
+      "offline": {
+        "title": "You're offline",
+        "description": "We'll keep trying when your connection returns."
+      },
+      "aborted": {
+        "title": "",
+        "description": ""
+      },
+      "confirmation_required": {
+        "title": "Confirmation required",
+        "description": ""
+      },
+      "audit_write_failed": {
+        "title": "Action could not be recorded",
+        "description": ""
+      }
+    },
+    "validation": {
+      "invalid_type": "This field is required.",
+      "invalid_string": "Please enter a valid value.",
+      "too_small": "Too short.",
+      "too_big": "Too long.",
+      "invalid_email": "Enter a valid email address.",
+      "invalid_url": "Enter a valid web address.",
+      "invalid_date": "Enter a valid date.",
+      "custom": "Please review this field."
+    },
+    "toast": {
+      "region": "Notifications"
+    },
+    "modal": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "form": {
+      "required_indicator": "required",
+      "submit_default": "Save",
+      "submitting": "Saving…"
+    },
+    "page_error": {
+      "404": {
+        "title": "We couldn't find that page",
+        "description": "The link may be old or the page may have moved."
+      },
+      "500": {
+        "title": "Something went wrong",
+        "description": "We've been notified. Please try again."
+      },
+      "try_again": "Try again",
+      "go_home": "Back to home",
+      "error_id": "Error ID: {id}"
+    },
+    "install": {
+      "title": "Install AgConn on your phone",
+      "body": "Open jobs and applications faster, with one tap from your home screen.",
+      "cta": "Install",
+      "later": "Maybe later",
+      "ios": {
+        "title": "Add AgConn to your home screen",
+        "body": "Tap the share icon below, then choose \"Add to Home Screen.\"",
+        "share_step": "Tap the share icon",
+        "add_step": "Tap \"Add to Home Screen\""
+      }
+    },
+    "offline": {
+      "banner": "You're offline. Some features may not work.",
+      "page": {
+        "title": "You're offline",
+        "description": "Reconnect to load this page. Pages you've already visited stay available.",
+        "try_again": "Try again"
+      }
+    },
+    "update": {
+      "title": "A new version is ready",
+      "description": "Refresh to get the latest improvements.",
+      "cta": "Refresh"
+    },
+    "empty": {
+      "generic": {
+        "title": "Nothing here yet",
+        "description": ""
+      }
+    },
+    "consent": {
+      "title": "Cookie preferences",
+      "body": "We use essential cookies so AgConn works. With your consent, we also use analytics cookies to learn how the app is used and improve it. You can change this any time.",
+      "accept_all": "Accept all",
+      "reject_non_essential": "Only essentials",
+      "customize": "Customize",
+      "save": "Save preferences",
+      "privacy_link": "Privacy policy",
+      "category": {
+        "essential": {
+          "label": "Essential",
+          "description": "Sign-in, security, and the audit log. Always on."
+        },
+        "functional": {
+          "label": "Functional",
+          "description": "Remembers your language and theme."
+        },
+        "analytics": {
+          "label": "Analytics",
+          "description": "Helps us understand which features matter and where workers get stuck."
+        },
+        "marketing": {
+          "label": "Marketing",
+          "description": "Lets us measure the effect of partner outreach. Off by default."
+        }
+      }
+    }
+  },
+  "admin": {
+    "audit": {
+      "page": {
+        "title": "Audit log",
+        "subtitle": "Every consequential action across this tenant"
+      },
+      "filter": {
+        "tenant": {
+          "label": "Tenant",
+          "placeholder": "Select tenant"
+        },
+        "actor": {
+          "label": "Actor"
+        },
+        "action": {
+          "label": "Action",
+          "prefix_mode": "Match prefix"
+        },
+        "resource": {
+          "label": "Resource"
+        },
+        "outcome": {
+          "label": "Outcome",
+          "success": "Success",
+          "failure": "Failure",
+          "both": "All"
+        },
+        "date": {
+          "label": "Date range",
+          "preset": {
+            "1h": "Last hour",
+            "24h": "Last 24 hours",
+            "7d": "Last 7 days",
+            "30d": "Last 30 days",
+            "custom": "Custom"
+          }
+        },
+        "correlation_id": {
+          "label": "Correlation ID"
+        },
+        "reset": "Reset filters"
+      },
+      "table": {
+        "column": {
+          "time": "Time",
+          "action": "Action",
+          "actor": "Actor",
+          "resource": "Resource",
+          "outcome": "Outcome"
+        },
+        "empty": {
+          "title": "No events match your filters",
+          "description": "Try widening the date range or removing a filter."
+        }
+      },
+      "drawer": {
+        "section": {
+          "actor": "Actor",
+          "resource": "Resource",
+          "outcome": "Outcome",
+          "correlation": "Correlation",
+          "metadata": "Metadata"
+        },
+        "action": {
+          "view_correlation": "View correlation timeline",
+          "view_actor": "View actor timeline",
+          "copy_json": "Copy as JSON",
+          "verify": "Verify HMAC"
+        },
+        "verified": {
+          "true": "HMAC verified",
+          "false": "HMAC mismatch — possible tampering"
+        }
+      },
+      "action": {
+        "auth": {
+          "login": {
+            "label": "Logged in",
+            "description": "Successful sign-in"
+          },
+          "logout": {
+            "label": "Logged out",
+            "description": "Session ended"
+          },
+          "failed_login": {
+            "label": "Failed login",
+            "description": "Sign-in attempt was rejected"
+          },
+          "role_changed": {
+            "label": "Role changed",
+            "description": "A user role was modified"
+          }
+        },
+        "worker": {
+          "profile": {
+            "updated": {
+              "label": "Profile updated",
+              "description": "Worker edited their profile"
+            }
+          },
+          "resume": {
+            "uploaded": {
+              "label": "Resume uploaded",
+              "description": "Worker uploaded a resume"
+            }
+          },
+          "application": {
+            "submitted": {
+              "label": "Application submitted",
+              "description": "Worker applied to a job"
+            },
+            "withdrawn": {
+              "label": "Application withdrawn",
+              "description": "Worker withdrew an application"
+            }
+          }
+        },
+        "employer": {
+          "flc": {
+            "submitted": {
+              "label": "FLC license submitted",
+              "description": "Employer submitted an FLC license"
+            },
+            "verified": {
+              "label": "FLC license verified",
+              "description": "Admin verified an FLC license"
+            },
+            "rejected": {
+              "label": "FLC license rejected",
+              "description": "Admin rejected an FLC license"
+            }
+          }
+        },
+        "job": {
+          "posting": {
+            "created": {
+              "label": "Job posting created",
+              "description": "Employer created a job posting"
+            },
+            "published": {
+              "label": "Job posting published",
+              "description": "A draft posting went live"
+            },
+            "closed": {
+              "label": "Job posting closed",
+              "description": "A posting was closed"
+            }
+          }
+        },
+        "application": {
+          "status": {
+            "changed": {
+              "label": "Application status changed",
+              "description": "Application moved stage"
+            }
+          },
+          "hired": {
+            "label": "Worker hired",
+            "description": "Application reached hired status"
+          }
+        },
+        "billing": {
+          "subscription": {
+            "created": {
+              "label": "Subscription started",
+              "description": "Stripe subscription created"
+            },
+            "canceled": {
+              "label": "Subscription canceled",
+              "description": "Stripe subscription canceled"
+            }
+          },
+          "payment": {
+            "succeeded": {
+              "label": "Payment succeeded",
+              "description": "Stripe charged successfully"
+            },
+            "failed": {
+              "label": "Payment failed",
+              "description": "A Stripe charge failed"
+            }
+          }
+        },
+        "training": {
+          "enrollment": {
+            "created": {
+              "label": "Training enrollment",
+              "description": "Worker enrolled in a program"
+            }
+          },
+          "completion": {
+            "recorded": {
+              "label": "Training completed",
+              "description": "Worker completed a program"
+            }
+          }
+        },
+        "cert": {
+          "issued": {
+            "label": "Certificate issued",
+            "description": "AgConn issued a certificate"
+          },
+          "revoked": {
+            "label": "Certificate revoked",
+            "description": "A certificate was revoked"
+          }
+        },
+        "tenant": {
+          "created": {
+            "label": "Tenant created",
+            "description": "A new tenant was provisioned"
+          },
+          "updated": {
+            "label": "Tenant updated",
+            "description": "Tenant settings or metadata changed"
+          },
+          "disabled": {
+            "label": "Tenant disabled",
+            "description": "Tenant was soft-deleted"
+          },
+          "restored": {
+            "label": "Tenant restored",
+            "description": "A previously disabled tenant was restored"
+          }
+        },
+        "admin": {
+          "impersonation": {
+            "started": {
+              "label": "Impersonation started",
+              "description": "Admin began impersonating a user"
+            },
+            "ended": {
+              "label": "Impersonation ended",
+              "description": "Admin ended an impersonation"
+            }
+          },
+          "user": {
+            "deleted": {
+              "label": "User deleted",
+              "description": "Admin deleted a user account"
+            }
+          },
+          "data": {
+            "exported": {
+              "label": "Data exported",
+              "description": "Admin exported a CSV / report"
+            }
+          },
+          "audit": {
+            "redacted": {
+              "label": "Audit redacted",
+              "description": "PII redacted from audit events"
+            }
+          }
+        },
+        "system": {
+          "audit": {
+            "retention": {
+              "purged": {
+                "label": "Retention purge",
+                "description": "Nightly retention job removed expired events"
+              }
+            },
+            "verified": {
+              "label": "Audit verified",
+              "description": "HMAC verification completed"
+            },
+            "tamper_detected": {
+              "label": "Tamper detected",
+              "description": "HMAC mismatch found"
+            },
+            "breaker": {
+              "recovered": {
+                "label": "Breaker recovered",
+                "description": "Audit circuit breaker drained"
+              }
+            }
+          }
+        },
+        "error": {
+          "unhandled": {
+            "label": "Unhandled error",
+            "description": "A request failed with an unhandled exception"
+          }
+        }
+      }
     }
   }
 }
