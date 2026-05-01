@@ -3,6 +3,7 @@ import { PgBoss } from 'pg-boss';
 export const QUEUE_NAMES = {
   waitlistConfirm: 'email.waitlist.confirm',
   waitlistWelcome: 'email.waitlist.welcome',
+  employer: 'email.employer',
 } as const;
 
 export type WaitlistConfirmJob = {
@@ -17,6 +18,25 @@ export type WaitlistWelcomeJob = {
   tenantId: string;
   email: string;
   locale: 'en' | 'es';
+};
+
+export type EmployerEmailTemplate =
+  | 'employer.flc_pending'
+  | 'employer.flc_verified'
+  | 'employer.flc_rejected'
+  | 'employer.billing.subscription_started'
+  | 'employer.billing.subscription_canceled'
+  | 'employer.billing.payment_failed'
+  | 'employer.billing.invoice_paid';
+
+export type EmployerEmailJob = {
+  template: EmployerEmailTemplate;
+  employerId: string;
+  tenantId: string;
+  to: string | null;                           // null → resolved from employer_profiles.contactEmail at send time
+  locale: 'en' | 'es';
+  vars: Record<string, string | number | null>;
+  idempotencyKey: string;
 };
 
 let cachedBoss: PgBoss | null = null;
@@ -51,6 +71,7 @@ export async function getBoss(): Promise<PgBoss> {
     await Promise.all([
       boss.createQueue(QUEUE_NAMES.waitlistConfirm),
       boss.createQueue(QUEUE_NAMES.waitlistWelcome),
+      boss.createQueue(QUEUE_NAMES.employer),
     ]);
     cachedBoss = boss;
     return boss;
@@ -98,4 +119,13 @@ export async function enqueueWaitlistWelcome(payload: WaitlistWelcomeJob): Promi
       singletonSeconds: 24 * 60 * 60,
     },
   );
+}
+
+export async function enqueueEmployerEmail(payload: EmployerEmailJob): Promise<string | null> {
+  const boss = await getBoss();
+  return boss.send(QUEUE_NAMES.employer, payload, {
+    ...SEND_OPTS,
+    singletonKey: payload.idempotencyKey,
+    singletonSeconds: 24 * 60 * 60,
+  });
 }

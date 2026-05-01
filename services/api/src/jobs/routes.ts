@@ -235,7 +235,7 @@ savedSearchRoutes.delete('/:id', async (c) => {
 
 function shapeJobCard(j: {
   id: string;
-  seoSlug: string;
+  seoSlug: string | null;
   titleEn: string;
   titleEs: string;
   county: County;
@@ -250,13 +250,16 @@ function shapeJobCard(j: {
   transport: boolean;
   createdAt: Date;
   employer: {
-    employerProfile: { legalName: string } | null;
+    employerProfile: { legalName: string; dbaName?: string | null } | null;
     email: string | null;
   } | null;
 }) {
+  // Worker-facing routes only return active jobs, which always have a slug
+  // (enforced by the slug_when_active CHECK). Non-active rows shouldn't reach
+  // this shaper; if they do, surface as an empty slug rather than crashing.
   return {
     id: j.id,
-    seoSlug: j.seoSlug,
+    seoSlug: j.seoSlug ?? '',
     titleEn: j.titleEn,
     titleEs: j.titleEs,
     county: j.county,
@@ -266,7 +269,10 @@ function shapeJobCard(j: {
     wageUnit: j.wageUnit,
     startDate: j.startDate.toISOString().slice(0, 10),
     endDate: j.endDate ? j.endDate.toISOString().slice(0, 10) : null,
-    employerName: j.employer?.employerProfile?.legalName ?? 'AgConn employer',
+    employerName:
+      j.employer?.employerProfile?.dbaName ??
+      j.employer?.employerProfile?.legalName ??
+      'AgConn employer',
     employerVerified: Boolean(j.employer?.employerProfile),
     skills: j.skills,
     housing: j.housing,

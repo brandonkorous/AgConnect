@@ -148,6 +148,39 @@ enum EnrollmentStatus {
   dropped
 }
 
+enum LicenseType {
+  grower
+  flc
+  labor_contractor
+}
+
+enum EmployerPlanTier {
+  free
+  pro
+  enterprise
+}
+
+enum PlanInterval {
+  monthly
+  yearly
+}
+
+enum VerificationAction {
+  submitted
+  approved
+  rejected
+  re_verified
+  expired
+}
+
+enum RejectionReason {
+  not_qualified
+  too_far
+  position_filled
+  no_response
+  other
+}
+
 model Tenant {
   id        String       @id @default(uuid()) @db.Uuid
   slug      String       @unique
@@ -173,6 +206,10 @@ model Tenant {
   searchViews       SearchView[]
   trainingPrograms  TrainingProgram[]
   enrollments       Enrollment[]
+  verificationLogs  VerificationLog[]
+  workerInvitations WorkerInvitation[]
+  workerSearchLogs  WorkerSearchLog[]
+  billingEvents     BillingEvent[]
 
   @@map("tenants")
 }
@@ -283,6 +320,7 @@ model User {
   id            String    @id                                 // matches Clerk userId
   tenantId      String?   @db.Uuid                @map("tenant_id")
   role          UserRole
+  permissions   String[]  @default([])                          // fine-grained scopes within role; '*' = wildcard
   preferredLang Lang      @default(es)            @map("preferred_lang")
   email         String?
   phone         String?
@@ -290,14 +328,15 @@ model User {
   createdAt     DateTime  @default(now())         @map("created_at")
   updatedAt     DateTime  @updatedAt              @map("updated_at")
 
-  tenant            Tenant?           @relation(fields: [tenantId], references: [id])
-  employerProfile   EmployerProfile?
-  workerProfile     WorkerProfile?
-  applications      Application[]
-  savedSearches     SavedSearch[]
-  enrollments       Enrollment[]
-  trainingPrograms  TrainingProgram[] @relation("TrainingProgramOrg")
-  jobPostings       JobPosting[]      @relation("JobPostingEmployer")
+  tenant              Tenant?            @relation(fields: [tenantId], references: [id])
+  employerProfile     EmployerProfile?
+  workerProfile       WorkerProfile?
+  applications        Application[]
+  savedSearches       SavedSearch[]
+  enrollments         Enrollment[]
+  trainingPrograms    TrainingProgram[]  @relation("TrainingProgramOrg")
+  jobPostings         JobPosting[]       @relation("JobPostingEmployer")
+  workerInvitations   WorkerInvitation[] @relation("WorkerInvitationWorker")
 
   @@index([tenantId])
   @@index([phone])
@@ -306,22 +345,135 @@ model User {
 }
 
 // One per Clerk Organization that maps to an employer (vs tenant orgs).
-// FLC verification + posting permissions live here in later specs.
+// FLC verification, plan tier, and Stripe subscription state live here.
+// See docs/20-employer/01-flc-verification/02-data-model.md and 05-subscription-billing/02-data-model.md.
 model EmployerProfile {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String   @unique                     @map("user_id")
-  tenantId     String   @db.Uuid                    @map("tenant_id")
-  clerkOrgId   String?  @unique                     @map("clerk_org_id")
-  legalName    String                                @map("legal_name")
-  contactEmail String?                               @map("contact_email")
-  createdAt    DateTime @default(now())              @map("created_at")
-  updatedAt    DateTime @updatedAt                   @map("updated_at")
+  id                    String           @id @default(uuid()) @db.Uuid
+  userId                String           @unique                       @map("user_id")
+  tenantId              String           @db.Uuid                      @map("tenant_id")
+  clerkOrgId            String?          @unique                       @map("clerk_org_id")
+  legalName             String                                          @map("legal_name")
+  dbaName               String?                                         @map("dba_name")
+  contactEmail          String?                                         @map("contact_email")
+  contactPhone          String?                                         @map("contact_phone")
+  licenseType           LicenseType?                                    @map("license_type")
+  ein                   String?
+  flcLicenseNum         String?                                         @map("flc_license_num")
+  dolMspaNum            String?                                         @map("dol_mspa_num")
+  county                County?
+  flcVerifiedAt         DateTime?                                       @map("flc_verified_at")
+  verifiedBy            String?                                         @map("verified_by")
+  rejectedAt            DateTime?                                       @map("rejected_at")
+  rejectionReason       String?                                         @map("rejection_reason")
+  signatureName         String?                                         @map("signature_name")
+  signatureTitle        String?                                         @map("signature_title")
+  signatureImageUrl     String?                                         @map("signature_image_url")
+  stripeCustomer        String?          @unique                        @map("stripe_customer")
+  stripeSubId           String?                                         @map("stripe_sub_id")
+  plan                  EmployerPlanTier @default(free)
+  planInterval          PlanInterval?                                   @map("plan_interval")
+  planCurrentPeriodEnd  DateTime?                                       @map("plan_current_period_end")
+  planCancelAtPeriodEnd Boolean          @default(false)                @map("plan_cancel_at_period_end")
+  seoSlug               String?          @unique                        @map("seo_slug")
+  createdAt             DateTime         @default(now())                @map("created_at")
+  updatedAt             DateTime         @updatedAt                     @map("updated_at")
+  deletedAt             DateTime?                                       @map("deleted_at")
 
-  user   User   @relation(fields: [userId], references: [id])
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
+  tenant           Tenant            @relation(fields: [tenantId], references: [id])
+  verificationLogs VerificationLog[]
+  workerInvitations WorkerInvitation[]
+  workerSearchLogs WorkerSearchLog[]
+  billingEvents    BillingEvent[]
 
   @@index([tenantId])
+  @@index([flcVerifiedAt])
+  @@index([licenseType])
   @@map("employer_profiles")
+}
+
+// Audit log for FLC / grower verification state changes.
+// See docs/20-employer/01-flc-verification/02-data-model.md.
+model VerificationLog {
+  id           String             @id @default(uuid()) @db.Uuid
+  tenantId     String             @db.Uuid              @map("tenant_id")
+  employerId   String             @db.Uuid              @map("employer_id")
+  action       VerificationAction
+  actorUserId  String                                    @map("actor_user_id")
+  notes        String?
+  payload      Json               @default("{}")
+  createdAt    DateTime           @default(now())        @map("created_at")
+
+  tenant       Tenant             @relation(fields: [tenantId], references: [id])
+  employer     EmployerProfile    @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([employerId, createdAt])
+  @@map("verification_log")
+}
+
+// Per-search analytics + rate-limit basis for Pro+ employer worker search.
+// See docs/20-employer/04-worker-search/02-data-model.md.
+model WorkerSearchLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @db.Uuid              @map("tenant_id")
+  employerId  String   @db.Uuid              @map("employer_id")
+  filters     Json
+  resultCount Int                              @map("result_count")
+  createdAt   DateTime @default(now())        @map("created_at")
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([employerId, createdAt])
+  @@map("worker_search_log")
+}
+
+// Pro+ employer invites a specific worker to apply to one of their postings.
+// See docs/20-employer/04-worker-search/02-data-model.md.
+model WorkerInvitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @db.Uuid              @map("tenant_id")
+  employerId  String    @db.Uuid              @map("employer_id")
+  workerId    String                          @map("worker_id")
+  jobId       String    @db.Uuid              @map("job_id")
+  message     String?   @db.VarChar(500)
+  acceptedAt  DateTime?                       @map("accepted_at")
+  declinedAt  DateTime?                       @map("declined_at")
+  expiredAt   DateTime?                       @map("expired_at")
+  createdAt   DateTime  @default(now())       @map("created_at")
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  worker      User            @relation("WorkerInvitationWorker", fields: [workerId], references: [id])
+  job         JobPosting      @relation(fields: [jobId], references: [id])
+
+  @@unique([employerId, workerId, jobId])
+  @@index([tenantId])
+  @@index([workerId])
+  @@map("worker_invitations")
+}
+
+// Append-only Stripe webhook event log. Idempotent on stripe_event_id.
+// See docs/20-employer/05-subscription-billing/02-data-model.md.
+model BillingEvent {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenantId        String    @db.Uuid              @map("tenant_id")
+  employerId      String    @db.Uuid              @map("employer_id")
+  eventType       String                          @map("event_type")
+  stripeEventId   String    @unique               @map("stripe_event_id")
+  payload         Json
+  processedAt     DateTime?                       @map("processed_at")
+  errorMsg        String?                         @map("error_msg")
+  createdAt       DateTime  @default(now())       @map("created_at")
+
+  tenant          Tenant          @relation(fields: [tenantId], references: [id])
+  employer        EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([employerId, createdAt])
+  @@map("billing_events")
 }
 
 // SMS log — append-only audit of every send attempt. RLS isolates by tenant
@@ -437,49 +589,59 @@ model JobPosting {
   skills          String[]                        @default([])
   housing         Boolean   @default(false)
   transport       Boolean   @default(false)
+  positionsTotal  Int       @default(1)            @map("positions_total")
+  hireCount       Int       @default(0)            @map("hire_count")
   status          JobStatus @default(draft)
-  seoSlug         String                          @unique @map("seo_slug")
+  seoSlug         String?   @unique               @map("seo_slug")            // null for drafts; set at publish
   publishedAt     DateTime?                       @map("published_at")
+  filledAt        DateTime?                       @map("filled_at")
+  closedAt        DateTime?                       @map("closed_at")
   createdAt       DateTime  @default(now())       @map("created_at")
   updatedAt       DateTime  @updatedAt            @map("updated_at")
   deletedAt       DateTime?                       @map("deleted_at")
 
-  tenant          Tenant    @relation(fields: [tenantId], references: [id])
-  employer        User      @relation("JobPostingEmployer", fields: [employerId], references: [id])
-  applications    Application[]
+  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  employer          User               @relation("JobPostingEmployer", fields: [employerId], references: [id])
+  applications      Application[]
+  workerInvitations WorkerInvitation[]
 
   @@index([tenantId])
   @@index([tenantId, status, county])
   @@index([status, startDate])
+  @@index([employerId, status])
   @@map("job_postings")
 }
 
 // Worker application to a job. UNIQUE(jobId, workerId) backstops dual-apply.
-// See docs/10-worker/04-application-tracker/02-data-model.md.
+// See docs/10-worker/04-application-tracker/02-data-model.md and
+// docs/20-employer/03-applicant-review/02-data-model.md (employer-side fields).
 model Application {
-  id              String    @id @default(uuid()) @db.Uuid
-  tenantId        String    @db.Uuid              @map("tenant_id")
-  jobId           String    @db.Uuid              @map("job_id")
-  workerId        String                          @map("worker_id")
-  status          AppStatus @default(applied)
-  wageOffered     Decimal?  @db.Decimal(8, 2)    @map("wage_offered")
-  workerNote      String?   @db.VarChar(500)     @map("worker_note")
-  appliedAt       DateTime  @default(now())       @map("applied_at")
-  reviewedAt      DateTime?                       @map("reviewed_at")
-  hiredAt         DateTime?                       @map("hired_at")
-  rejectedAt      DateTime?                       @map("rejected_at")
-  withdrawnAt     DateTime?                       @map("withdrawn_at")
-  startDate       DateTime? @db.Date              @map("start_date")
-  countyAtApply   County?                         @map("county_at_apply")
-  skillsAtApply   String[]                        @default([]) @map("skills_at_apply")
-  createdAt       DateTime  @default(now())       @map("created_at")
-  updatedAt       DateTime  @updatedAt            @map("updated_at")
-  deletedAt       DateTime?                       @map("deleted_at")
+  id                  String           @id @default(uuid()) @db.Uuid
+  tenantId            String           @db.Uuid              @map("tenant_id")
+  jobId               String           @db.Uuid              @map("job_id")
+  workerId            String                                  @map("worker_id")
+  status              AppStatus        @default(applied)
+  wageOffered         Decimal?         @db.Decimal(8, 2)    @map("wage_offered")
+  workerNote          String?          @db.VarChar(500)     @map("worker_note")
+  employerNote        String?          @db.VarChar(2000)    @map("employer_note")        // private to employer
+  rejectionReason     RejectionReason?                       @map("rejection_reason")
+  rejectionReasonText String?          @db.VarChar(500)     @map("rejection_reason_text")
+  appliedAt           DateTime         @default(now())       @map("applied_at")
+  reviewedAt          DateTime?                              @map("reviewed_at")
+  hiredAt             DateTime?                              @map("hired_at")
+  rejectedAt          DateTime?                              @map("rejected_at")
+  withdrawnAt         DateTime?                              @map("withdrawn_at")
+  startDate           DateTime?        @db.Date              @map("start_date")
+  countyAtApply       County?                                 @map("county_at_apply")
+  skillsAtApply       String[]                                @default([]) @map("skills_at_apply")
+  createdAt           DateTime         @default(now())       @map("created_at")
+  updatedAt           DateTime         @updatedAt            @map("updated_at")
+  deletedAt           DateTime?                               @map("deleted_at")
 
-  tenant          Tenant    @relation(fields: [tenantId], references: [id])
-  job             JobPosting @relation(fields: [jobId], references: [id])
-  worker          User       @relation(fields: [workerId], references: [id])
-  events          ApplicationEvent[]
+  tenant              Tenant             @relation(fields: [tenantId], references: [id])
+  job                 JobPosting         @relation(fields: [jobId], references: [id])
+  worker              User               @relation(fields: [workerId], references: [id])
+  events              ApplicationEvent[]
 
   @@unique([jobId, workerId])
   @@index([tenantId])

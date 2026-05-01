@@ -778,6 +778,709 @@
           "in_app": "In-app"
         }
       }
+    },
+    "onboarding": {
+      "shell": {
+        "progress": "Step {step} of {total}"
+      },
+      "welcome": {
+        "tagline": "Find verified farm work near you.",
+        "choose_lang": "Pick the language you'd like to use.",
+        "cta": "Get started",
+        "lang": {
+          "en": "English",
+          "es": "Spanish"
+        }
+      },
+      "phone": {
+        "label": "Mobile phone number",
+        "help": "We'll text you a 6-digit code. Standard message rates apply.",
+        "invalid": "Please enter a valid 10-digit US phone number.",
+        "cta": "Send code",
+        "collision_other_tenant": "This number is registered in another region. Contact support to transfer your account."
+      },
+      "otp": {
+        "label": "Enter the 6-digit code",
+        "resend": "Resend code",
+        "resend_cooldown": "Resend in {seconds}s",
+        "invalid": "That code didn't match. Try again.",
+        "expired": "This code expired. Tap \"Resend\" for a new one.",
+        "locked": "Too many attempts. Wait 1 minute and try again."
+      },
+      "resume": {
+        "title": "Do you have a resume?",
+        "have": "I have a resume",
+        "dont": "I don't have one yet",
+        "upload": "Upload",
+        "uploading": "Uploading…",
+        "cancel": "Cancel",
+        "formats": "PDF or Word document, up to 10 MB",
+        "too_large": "This file is too large. Please choose a file under 10 MB.",
+        "unsupported": "Please upload a PDF or Word document.",
+        "parsing": {
+          "line1": "Reading your resume…",
+          "line2": "Pulling out your skills…",
+          "line3": "Almost done…",
+          "slow": "This is taking longer than usual.",
+          "keep_waiting": "Keep waiting",
+          "manual": "Fill in manually"
+        },
+        "parse_failed": "We couldn't read this file. You can fill in the details below."
+      },
+      "profile": {
+        "title": "Review your information",
+        "subtitle": "Tap any field to edit it.",
+        "contact": {
+          "first_name": "First name",
+          "last_name": "Last name"
+        },
+        "section": {
+          "experience": "Experience",
+          "education": "Education",
+          "skills": "Skills",
+          "certifications": "Certifications",
+          "languages": "Languages"
+        },
+        "add": "Add",
+        "remove": "Remove",
+        "save_status": {
+          "saving": "Saving…",
+          "saved": "Saved",
+          "error": "Couldn't save. Tap to retry."
+        },
+        "continue": "Continue",
+        "field": {
+          "email": {
+            "label": "Email (optional)",
+            "hint": "We use this for cert delivery only."
+          }
+        }
+      },
+      "county": {
+        "title": "Where do you live?",
+        "subtitle": "We'll match you to jobs nearby.",
+        "fresno": "Fresno",
+        "kern": "Kern",
+        "kings": "Kings",
+        "madera": "Madera",
+        "tulare": "Tulare",
+        "other": "I'm in another county"
+      },
+      "waitlist": {
+        "title": "We're expanding",
+        "subtitle": "AgConn serves the Central Valley today. Leave your contact info to be notified when we reach your area.",
+        "county": {
+          "label": "Which county are you in?"
+        },
+        "email": {
+          "label": "Email (optional)"
+        },
+        "phone": {
+          "label": "Phone (optional)"
+        },
+        "contact_required": "Please provide an email or phone.",
+        "cta": "Notify me",
+        "thanks": "Thanks! We'll be in touch."
+      },
+      "skill": {
+        "title": "What can you do?",
+        "subtitle": "Select all that apply.",
+        "harvesting": "Harvesting",
+        "pruning": "Pruning",
+        "irrigation": "Irrigation",
+        "tractor": "Tractor operation",
+        "forklift": "Forklift",
+        "crew_lead": "Crew lead",
+        "bilingual": "Bilingual communication",
+        "packing": "Packing",
+        "equipment_repair": "Equipment repair",
+        "pesticide": "Pesticide application",
+        "add_custom": "+ Add a skill",
+        "min_required": "Choose at least one skill."
+      },
+      "availability": {
+        "title": "When can you work?",
+        "subtitle": "Tap to mark days and times you're available.",
+        "am": "Morning",
+        "pm": "Afternoon",
+        "on": "On",
+        "off": "Off",
+        "day_label": "Day",
+        "day": {
+          "mon": "Mon",
+          "tue": "Tue",
+          "wed": "Wed",
+          "thu": "Thu",
+          "fri": "Fri",
+          "sat": "Sat",
+          "sun": "Sun"
+        },
+        "notes": {
+          "label": "Notes (optional)",
+          "placeholder": "e.g., No Sundays"
+        },
+        "mark_all": "Mark all",
+        "clear_all": "Clear all",
+        "min_required": "Mark at least one half-day."
+      },
+      "complete": {
+        "title": "You're all set!",
+        "subtitle": "Here are some jobs you might like.",
+        "cta_jobs": "See all jobs",
+        "cta_profile": "View my profile",
+        "empty_recommendations": "No job matches yet — we'll text you when new jobs appear."
+      },
+      "error": {
+        "generic": "Something went wrong. Try again.",
+        "network": "You're offline. We'll save your progress.",
+        "required": "This field is required."
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Tap any field to edit. Changes save automatically.",
+      "back": "Back",
+      "preview_as_employer": "Preview as employer",
+      "section": {
+        "contact": "Contact",
+        "experience": "Experience",
+        "education": "Education",
+        "skills": "Skills",
+        "certifications": "Certifications",
+        "languages": "Languages"
+      },
+      "contact": {
+        "first_name": "First name",
+        "last_name": "Last name"
+      },
+      "field": {
+        "email": {
+          "label": "Email (optional)",
+          "hint": "We use this for cert delivery only."
+        },
+        "zip": {
+          "label": "Zip code"
+        }
+      },
+      "skills": {
+        "add": "Add skill"
+      },
+      "add": {
+        "experience": "+ Add experience",
+        "education": "+ Add education",
+        "cert": "+ Add certification",
+        "bullet": "+ Add bullet",
+        "language": "+ Add language"
+      },
+      "empty": {
+        "experience": "No experience yet.",
+        "education": "No education yet.",
+        "cert": "No certifications yet."
+      },
+      "save": {
+        "idle": "All changes saved",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "error": "Couldn't save. Tap to retry.",
+        "offline": "You're offline. Changes will save when you reconnect."
+      },
+      "conflict": {
+        "title": "Updated in another tab",
+        "body": "This profile was updated somewhere else. Refresh to see the latest changes.",
+        "refresh": "Refresh"
+      },
+      "reupload": {
+        "cta": "Replace resume",
+        "confirm": {
+          "title": "Replace your resume?",
+          "body": "This will overwrite all sections of your profile. The original file will be saved as a backup.",
+          "cta": "Replace"
+        },
+        "cancel": "Cancel",
+        "success": "Resume updated. Review the parsed data.",
+        "failed": "Couldn't read this file. Your existing profile is unchanged."
+      },
+      "preview": {
+        "title": "What employers see",
+        "badge": "Preview",
+        "privacy": "Your phone and email are only shared after you apply to a job.",
+        "empty": "Your preview will fill in as you complete your profile."
+      }
+    },
+    "jobs": {
+      "title": "Jobs in Central Valley",
+      "search": {
+        "placeholder": "Search jobs (e.g., tractor, harvest)"
+      },
+      "filters": {
+        "cta": "Filters",
+        "apply": "Apply",
+        "clear": "Clear all",
+        "county": "County",
+        "skills": "Skills",
+        "wage": "Hourly wage",
+        "startDate": "Start date"
+      },
+      "save_search": {
+        "cta": "Save search"
+      },
+      "empty": "No jobs match right now.",
+      "empty_with_filters": "No jobs match these filters.",
+      "empty_save_for_alert": "We'll text you when new jobs appear.",
+      "load_more": "Load more",
+      "card": {
+        "verified": "Verified",
+        "start": "Starts {date}",
+        "start_label": "Starts",
+        "apply": "Apply",
+        "spots": "{n} spots",
+        "housing": "Housing",
+        "sms_apply": "SMS apply"
+      },
+      "browse": {
+        "eyebrow": "{count} open jobs · within 50 mi of {county}",
+        "headline": "Find your next <shift>shift</shift>.",
+        "sub": "We surface jobs that fit your skills, distance, and weekly availability first. Verified employers only.",
+        "map_view": "Map view",
+        "save_search": "Save this search",
+        "filters_label": "Filters",
+        "filter": {
+          "within_25": "Within 25 mi",
+          "this_week": "This week",
+          "pays_22": "Pays >$22",
+          "has_housing": "Has housing",
+          "pickup": "Pickup provided",
+          "no_experience": "No experience"
+        },
+        "sort_label": "Sort:",
+        "sort_default": "Best match",
+        "top_matches": "Top matches",
+        "updated": "Updated 4 minutes ago",
+        "showing": "Showing 1–8 of <strong>{total}</strong>",
+        "load_more": "Load {n} more →",
+        "crop": {
+          "grape": "Grapes",
+          "almond": "Almonds",
+          "tomato": "Tomatoes",
+          "citrus": "Citrus",
+          "strawberry": "Berries",
+          "lettuce": "Lettuce",
+          "open": "{n} open"
+        },
+        "aside": {
+          "sms": {
+            "eyebrow": "SMS apply",
+            "body": "Text <text>JOB</text> to <num>(559) 555-0142</num>",
+            "note": "You'll get the 3 best matches for your area sent right to your phone — no app, no signup."
+          },
+          "map": {
+            "eyebrow": "Map preview",
+            "label": "Madera Co.",
+            "cta": "Open full map →"
+          },
+          "saved": {
+            "eyebrow": "Saved searches",
+            "hits": "{hits} new this week"
+          }
+        }
+      },
+      "detail": {
+        "back": "Back to jobs",
+        "verified": "Verified employer",
+        "apply": "Apply now",
+        "about": "About this job",
+        "skills_needed": "Skills needed",
+        "share_title": "Share this job"
+      },
+      "saved": {
+        "title": "Your saved searches",
+        "back": "Jobs",
+        "empty": "You haven't saved any searches yet.",
+        "empty_help": "Save a search from the jobs page to get SMS alerts.",
+        "go_jobs": "Browse jobs"
+      }
+    },
+    "applications": {
+      "title": "Your applications",
+      "back": "Dashboard",
+      "tab": {
+        "active": "Active",
+        "hired": "Hired",
+        "closed": "Closed"
+      },
+      "empty": {
+        "active": "You haven't applied to any jobs yet.",
+        "active_cta": "Browse jobs",
+        "hired": "Once you're hired for a job, it'll appear here.",
+        "closed": "No closed applications."
+      },
+      "card": {
+        "applied_at": "Applied {date}",
+        "view": "View"
+      }
+    },
+    "application": {
+      "status": {
+        "applied": "Applied",
+        "reviewed": "Reviewed",
+        "hired": "Hired",
+        "rejected": "Not selected",
+        "withdrawn": "Withdrawn"
+      },
+      "apply": {
+        "title": "Apply for {jobTitle}",
+        "your_profile": "Your profile",
+        "edit_profile": "Edit profile",
+        "privacy": "By applying, the employer will see your name, skills, and contact info.",
+        "cta": "Apply",
+        "submitting": "Applying…",
+        "error": "Couldn't submit. Try again.",
+        "success": "You applied for {jobTitle}. We'll text you when the employer responds."
+      },
+      "detail": {
+        "title": "Application",
+        "placeholder_title": "Application detail",
+        "placeholder_body": "Status updates and the timeline will populate once the API is wired.",
+        "timeline": "Timeline",
+        "about_job": "About this job",
+        "withdraw": "Withdraw application",
+        "event": {
+          "applied": "You applied",
+          "reviewed": "Employer reviewed",
+          "hired": "Hired!",
+          "rejected": "Not selected this time",
+          "withdrawn": "You withdrew"
+        }
+      },
+      "error": {
+        "already_applied": "You already applied to this job.",
+        "job_not_active": "This job is no longer accepting applications.",
+        "cannot_withdraw": "This application can't be withdrawn anymore."
+      }
+    },
+    "training": {
+      "title": "Training programs",
+      "subtitle": "Free, funded training to grow your skills.",
+      "filters": {
+        "funder": "Funder",
+        "topics": "Topics",
+        "has_capacity": "Available spots only"
+      },
+      "empty": "No training programs scheduled right now.",
+      "empty_help": "Check back soon.",
+      "card": {
+        "spots_left": "{n} of {capacity} spots left",
+        "full": "Full",
+        "free": "Free"
+      },
+      "detail": {
+        "back": "Back to training",
+        "funded_by": "Funded by {funder}",
+        "free": "Free",
+        "spots_left": "{n} of {capacity} spots left",
+        "full": "Full",
+        "enroll": "Enroll",
+        "enroll_full": "Full",
+        "about": "About this training",
+        "topics": "Topics",
+        "you_will_receive": "You'll receive",
+        "cert": "A bilingual certificate",
+        "reminders": "Reminder texts before each session"
+      }
+    },
+    "enrollments": {
+      "title": "Your training",
+      "back": "Dashboard",
+      "tab": {
+        "upcoming": "Upcoming",
+        "completed": "Completed",
+        "dropped": "Dropped"
+      },
+      "empty": {
+        "upcoming": "You haven't enrolled in any training yet.",
+        "upcoming_cta": "Browse training",
+        "completed": "Once you complete a training, it'll appear here with your certificate."
+      },
+      "card": {
+        "cert": "Download certificate",
+        "completed_at": "Completed {date}"
+      }
+    },
+    "wallet": {
+      "title": "Skills Wallet",
+      "back": "Dashboard",
+      "count": "{count, plural, =0 {No certifications yet} =1 {# certification} other {# certifications}}",
+      "empty": {
+        "title": "No certifications yet",
+        "body": "Complete a training program to earn your first certificate.",
+        "cta": "Browse training"
+      },
+      "source": {
+        "agconn": "AgConn verified",
+        "self": "Self-reported"
+      },
+      "card": {
+        "download": "Download",
+        "share": "Share"
+      },
+      "cert": {
+        "title": "Certificate",
+        "placeholder": "Cert details + PDF preview will load here once cert generation ships.",
+        "download": "Download PDF"
+      }
+    },
+    "verify": {
+      "title": "Verify a certificate",
+      "coming_soon": "Verification page coming soon. Contact support@agconn.com to verify a certificate."
+    },
+    "shifts": {
+      "meta": { "title": "My shifts" },
+      "eyebrow": "August 2026 · Madera, CA",
+      "title": { "lead": "My", "em": "shifts" },
+      "sub": "Confirmed work, training sessions, and pending shifts in one calendar. Tap any day for details.",
+      "cta_sync": "Sync to phone",
+      "cta_availability": "Set availability",
+      "calendar": {
+        "month_label": "August 2026",
+        "prev": "Previous month",
+        "next": "Next month",
+        "view_month": "Month",
+        "view_week": "Week",
+        "view_agenda": "Agenda",
+        "today": "TODAY",
+        "weekday": {
+          "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu",
+          "fri": "Fri", "sat": "Sat", "sun": "Sun"
+        }
+      },
+      "summary": {
+        "eyebrow": "This month",
+        "shifts": "Shifts scheduled",
+        "hours": "Estimated hours",
+        "pay": "Projected pay",
+        "employers": "Employers"
+      },
+      "up_next": {
+        "title": "Up next",
+        "sub": "Tap to confirm or reschedule",
+        "status": {
+          "confirmed": "Confirmed",
+          "awaiting": "Awaiting confirm",
+          "enrolled": "Enrolled",
+          "pending": "Pending"
+        }
+      }
+    },
+    "pay": {
+      "meta": { "title": "Pay & timesheets" },
+      "eyebrow": "YTD · 2026",
+      "title": { "lead": "Pay &", "em": "timesheets" },
+      "sub": "Every hour, every shift, every paystub. Download timesheets for tax filing or the EDD.",
+      "cta_export": "Export 2026 W-2 packet",
+      "stat": {
+        "ytd_earnings": { "label": "YTD earnings", "sub": "across 4 employers" },
+        "hours": { "label": "Hours worked", "sub": "32 weeks logged" },
+        "avg_hourly": { "label": "Avg hourly", "sub": "incl. piece-rate bonus" },
+        "next_deposit": { "label": "Next deposit", "sub": "Friday Aug 8" }
+      },
+      "chart": {
+        "title": "Earnings trend",
+        "sub": "Gross pay by month, in thousands USD",
+        "tab": { "12mo": "12 mo", "6mo": "6 mo", "ytd": "YTD" }
+      },
+      "deposit": {
+        "eyebrow": "Next deposit · Friday Aug 8",
+        "gross": "Gross",
+        "hours": "Hours",
+        "tax": "FIT + FICA",
+        "method": "Method",
+        "download": "Download paystub"
+      },
+      "table": {
+        "title": "Weekly paystubs",
+        "sub": "32 weeks · last 12 months",
+        "all_employers": "All employers ▾",
+        "export_csv": "Export CSV",
+        "head": {
+          "period": "Pay period", "employer": "Employer", "hours": "Hours",
+          "gross": "Gross", "net": "Net", "status": "Status"
+        },
+        "status": { "paid": "Paid", "pending": "Pending" },
+        "pdf": "PDF →"
+      },
+      "direct_deposit": {
+        "eyebrow": "Direct deposit",
+        "account": "Checking ••3471",
+        "bank": "Bank of America · Verified",
+        "manage": "Manage payout method →"
+      },
+      "tax_docs": { "eyebrow": "Tax documents" },
+      "wage": {
+        "eyebrow": "Wage transparency",
+        "body": "Your average <rate>$22.14/hr</rate> ranks in the top 18% of pickers in Madera County for 2026.",
+        "cta": "See county wage data →"
+      }
+    },
+    "training_hub": {
+      "meta": { "title": "Training" },
+      "eyebrow": "14 free programs in your area",
+      "title": { "lead": "Earn more,", "em": "learn more" },
+      "sub": "Free certifications funded by California Department of Food & Agriculture and the F3 initiative. Most pay a stipend during training.",
+      "cta_browse": "Browse all programs",
+      "stat": {
+        "in_progress": { "label": "In progress", "sub": "Forklift cert" },
+        "hours": { "label": "Hours completed", "sub": "of 32 in current cert" },
+        "certs": { "label": "Total certs", "sub": "lifetime" },
+        "boost": { "label": "Avg pay boost", "sub": "per hour, post-cert" }
+      },
+      "in_progress": {
+        "eyebrow": "In progress · {funder}",
+        "sessions": "{done} of {total} sessions complete",
+        "progress": "{pct}% complete",
+        "next": "Next session: {when}",
+        "cta_continue": "Continue lesson",
+        "cta_schedule": "View schedule",
+        "badge_complete": "COMPLETE"
+      },
+      "recommended": {
+        "title": "Recommended for you",
+        "sub": "Funded by CDFA & F3 · Stipend during training",
+        "fund_label": "{fund}-funded",
+        "hours": "{n} hrs",
+        "enroll": "Enroll free",
+        "learn_more": "Learn more"
+      },
+      "certs": {
+        "title": "Your certifications",
+        "sub": "Show these to employers to qualify for higher-pay roles",
+        "verified": "Verified",
+        "hours": "{n} hrs",
+        "issued": "Issued {date}",
+        "download": "Download certificate →"
+      }
+    },
+    "documents": {
+      "meta": { "title": "Documents" },
+      "eyebrow": "Last verified Aug 1, 2026",
+      "title": { "lead": "Your", "em": "documents" },
+      "sub": "Stored securely and encrypted at rest. Share specific docs with employers without handing over your file.",
+      "cta_download": "Download all",
+      "cta_upload": "Upload document",
+      "completeness": {
+        "eyebrow": "Profile completeness",
+        "blurb": "You're <top>top 14%</top> of workers on AgConn. A complete profile gets <boost>3.4× more</boost> employer responses.",
+        "task": {
+          "identity": "Identity verified",
+          "banking": "Banking on file",
+          "references": "References uploaded",
+          "photo": "Profile photo"
+        },
+        "add": "Add →"
+      },
+      "group": {
+        "title": {
+          "identification": "Identification",
+          "work": "Work documents",
+          "certs": "Certifications"
+        },
+        "on_file": "{n} on file"
+      },
+      "status": {
+        "verified": "Verified",
+        "current": "Current",
+        "expiring": "Expiring soon",
+        "missing": "Missing"
+      },
+      "actions": { "view": "View", "share": "Share" },
+      "shares": {
+        "title": "Recent document shares",
+        "sub": "Audit trail of who saw which document",
+        "status": { "active": "Active", "revoked": "Revoked" },
+        "action": { "revoke": "Revoke", "view": "View" }
+      }
+    },
+    "messages": {
+      "meta": { "title": "Messages" },
+      "eyebrow": "3 unread · 18 active conversations",
+      "title": { "lead": "Your", "em": "messages" },
+      "sub": "One inbox for SMS, WhatsApp, and in-app messages from employers, foremen, and AgConn.",
+      "cta_mark_read": "Mark all read",
+      "cta_new": "New message",
+      "folders": {
+        "all": "All messages",
+        "employers": "Employers",
+        "foremen": "Foremen",
+        "agconn": "AgConn",
+        "channels_label": "Channels"
+      },
+      "channels": { "sms": "SMS", "whatsapp": "WhatsApp", "in_app": "In-app" },
+      "list": { "search": "Search messages…" },
+      "thread": {
+        "foreman": "Foreman",
+        "call": "Call",
+        "view_job": "View job",
+        "pinned": {
+          "title": "Grape Harvest · Tomorrow 6 AM",
+          "meta": "Hwy 99 / Cleveland Ave pickup · $22.50/hr",
+          "status": "Confirmed"
+        },
+        "reply_placeholder": "Reply to Marisol…",
+        "attach": "Attach",
+        "send": "Send"
+      },
+      "quick": {
+        "got_it": "Got it",
+        "on_my_way": "On my way",
+        "address": "Need address",
+        "question": "Question"
+      }
+    },
+    "applications_dense": {
+      "meta": { "title": "Applications" },
+      "eyebrow": "5 active · 2 awaiting reply · last sync 2m ago",
+      "title": { "lead": "My", "em": "applications" },
+      "sub": "Track every job you've applied for. We'll text you when an employer responds — usually within 24 hours.",
+      "cta_more": "Find more jobs",
+      "pipeline": {
+        "label": {
+          "applied": "Applied", "reviewed": "Reviewed",
+          "interview": "Interview", "accepted": "Accepted"
+        },
+        "hint": {
+          "applied": "In applied stage",
+          "reviewed": "In reviewed stage",
+          "interview": "Thu 9 AM Modesto",
+          "accepted": "Confirm by Aug 11"
+        }
+      },
+      "active": {
+        "title": "Active applications",
+        "sub": "Sorted by stage urgency",
+        "filter": {
+          "all": "All", "action": "Action needed",
+          "review": "In review", "withdrawn": "Withdrawn"
+        },
+        "head": {
+          "job": "Job", "employer": "Employer", "applied": "Applied",
+          "rate": "Rate", "stage": "Stage", "next": "Next step"
+        },
+        "starts": "Starts {date}",
+        "spots": "{n} spots"
+      },
+      "stage": {
+        "applied": "Applied", "reviewed": "Reviewed",
+        "interview": "Interview", "accepted": "Accepted"
+      },
+      "action": {
+        "confirm": "Confirm shift", "interview": "Join interview",
+        "note": "Send a note", "withdraw": "Withdraw"
+      },
+      "archive": {
+        "title": "Past applications",
+        "sub": "Past 90 days · 12 completed · 2 not selected",
+        "result": { "hired": "Hired & completed", "not_selected": "Not selected" },
+        "view": "View →"
+      }
     }
   },
   "shell": {
@@ -932,6 +1635,291 @@
           "description": "Lets us measure the effect of partner outreach. Off by default."
         }
       }
+    }
+  },
+  "employer": {
+    "shell": {
+      "nav": {
+        "dashboard": "Dashboard",
+        "jobs": "Job postings",
+        "inbox": "Applicants",
+        "workers": "Find workers",
+        "billing": "Billing",
+        "profile": "Business profile"
+      },
+      "topbar": {
+        "search_placeholder": "Search jobs, applicants…",
+        "search_kbd": "⌘K",
+        "help": "Help",
+        "post_job": "Post a job"
+      }
+    },
+    "onboarding": {
+      "title": "Set up your business",
+      "subtitle": "We'll verify your details within 1 business day. You can prepare drafts in the meantime.",
+      "legal_name": {
+        "label": "Legal business name",
+        "help": "Matches your tax filings (used for billing and verification)."
+      },
+      "dba_name": {
+        "label": "Doing business as (optional)",
+        "help": "Public-facing name if different from your legal name."
+      },
+      "type": {
+        "label": "Business type",
+        "grower": "Grower (direct farm)",
+        "flc": "Farm Labor Contractor"
+      },
+      "flc_license": {
+        "label": "CA DIR/DLSE License #",
+        "help": "Required for Farm Labor Contractors."
+      },
+      "dol_mspa": {
+        "label": "DOL MSPA # (optional)"
+      },
+      "ein": {
+        "label": "EIN (XX-XXXXXXX)",
+        "help": "Federal Employer ID Number. Required for grower verification."
+      },
+      "county": { "label": "Primary county" },
+      "contact_email": { "label": "Contact email (optional)" },
+      "contact_phone": { "label": "Contact phone (optional)" },
+      "submit": "Submit",
+      "success": {
+        "title": "Submitted",
+        "body": "We'll verify your business within 1 business day. We'll email you when you're ready to post jobs.",
+        "cta": "Go to dashboard"
+      }
+    },
+    "verification": {
+      "pending": {
+        "title": "Verification pending",
+        "body": "We're reviewing your business details. You can prepare job drafts but can't publish them yet.",
+        "edit": "Edit business info"
+      },
+      "verified": {
+        "badge": "Verified",
+        "tooltip": "AgConn verified employer",
+        "legal_entity": "Legal entity: {legalName}"
+      },
+      "rejected": {
+        "title": "Verification needs follow-up",
+        "reason": "Reason: {reason}",
+        "cta": "Update business info"
+      },
+      "publish_blocked": {
+        "title": "You're not verified yet",
+        "body": "Wait for verification before publishing jobs. We'll email you when ready."
+      }
+    },
+    "errors": {
+      "flc_license_required": "License number is required for Farm Labor Contractors.",
+      "grower_fields_required": "Growers must provide an EIN and county.",
+      "ein_format": "EIN must be in the format XX-XXXXXXX.",
+      "flc_license_format": "License number must be 4–20 letters and digits.",
+      "validation_failed": "Please fix the highlighted fields.",
+      "internal": "Something went wrong. Please try again."
+    },
+    "dashboard": {
+      "greeting_morning": "Good morning",
+      "greeting_afternoon": "Good afternoon",
+      "greeting_evening": "Good evening",
+      "kpi": {
+        "active_postings": "Active postings",
+        "applicants_week": "Applicants this week",
+        "open_seats": "Open seats",
+        "hired_season": "Hired this season"
+      },
+      "recent_postings": "Recent postings",
+      "recent_applicants": "Recent applicants",
+      "view_all": "View all"
+    },
+    "jobs": {
+      "list": {
+        "title": "Job postings",
+        "new_posting": "New posting",
+        "tabs": {
+          "all": "All",
+          "active": "Active",
+          "drafts": "Drafts",
+          "filled": "Filled",
+          "closed": "Closed"
+        },
+        "empty": "You haven't created any postings yet.",
+        "applicants": "{count} applicants",
+        "review": "Review",
+        "edit": "Edit",
+        "publish": "Publish",
+        "close": "Close",
+        "duplicate": "Duplicate"
+      },
+      "form": {
+        "section_title": "Title",
+        "section_description": "Description",
+        "section_location": "Location",
+        "section_pay_dates": "Pay & dates",
+        "section_skills": "Skills",
+        "english": "English",
+        "spanish": "Spanish",
+        "translate_from_en": "Translate from English",
+        "translate_from_es": "Translate from Spanish",
+        "translating": "Translating…",
+        "translation_failed": "Translation failed. Please enter text manually.",
+        "wage_label": "Hourly wage",
+        "wage_min": "Min",
+        "wage_max": "Max",
+        "wage_unit": "Unit",
+        "start_date": "Start date",
+        "end_date": "End date (optional)",
+        "apply_by": "Apply by (optional)",
+        "positions": "Positions",
+        "skills_placeholder": "Add a skill",
+        "preview": "Preview",
+        "save_draft": "Save draft",
+        "publish": "Publish",
+        "saved": "Saved",
+        "saving": "Saving…",
+        "back": "Back to jobs"
+      },
+      "publish_modal": {
+        "title": "Publish posting?",
+        "body": "This makes the posting visible to workers. You can close it any time.",
+        "confirm": "Publish",
+        "cancel": "Cancel"
+      },
+      "plan_limit": {
+        "title": "Free plan limit reached",
+        "body": "Upgrade to Pro for unlimited postings.",
+        "upgrade": "Upgrade"
+      }
+    },
+    "inbox": {
+      "title": "Applicants",
+      "all_postings": "All postings",
+      "empty": "No applicants yet. Share your posting to start receiving applications.",
+      "view": "View",
+      "new": "New",
+      "filter_status": "Status",
+      "applied": "Applied",
+      "reviewed": "Reviewed",
+      "hired": "Hired",
+      "rejected": "Rejected"
+    },
+    "kanban": {
+      "applied": "Applied",
+      "reviewed": "Reviewed",
+      "hired": "Hired",
+      "show_rejected": "Show rejected ({count})",
+      "bulk_selected": "{count} selected",
+      "bulk_review": "Mark Reviewed",
+      "bulk_reject": "Reject",
+      "cancel": "Cancel"
+    },
+    "applicant_detail": {
+      "back": "Back",
+      "skills_match": "{count} match",
+      "experience": "Experience",
+      "education": "Education",
+      "certifications": "Certifications",
+      "agconn_verified": "AgConn-verified",
+      "self_reported": "Self-reported",
+      "application_meta": "Applied {when}",
+      "mark_reviewed": "Mark Reviewed",
+      "hire": "Hire",
+      "reject": "Reject",
+      "private_notes": "Private notes (only you see)"
+    },
+    "hire_modal": {
+      "title": "Hire {name}",
+      "wage_label": "Hourly wage",
+      "wage_help": "Must match or beat your posting wage range.",
+      "start_date": "Start date",
+      "note": "Note to yourself (optional)",
+      "notify": "We'll text and email {name}.",
+      "confirm": "Confirm hire",
+      "cancel": "Cancel"
+    },
+    "reject_modal": {
+      "title": "Reject {name}",
+      "reason_label": "Why? (private — not shared)",
+      "reason": {
+        "not_qualified": "Not qualified",
+        "too_far": "Too far from worksite",
+        "position_filled": "Position filled",
+        "no_response": "No response",
+        "other": "Other"
+      },
+      "details": "Optional details (private)",
+      "preview": "{name} will receive an SMS: \"{employer} chose another candidate for {jobTitle}.\"",
+      "confirm": "Reject",
+      "cancel": "Cancel"
+    },
+    "workers": {
+      "title": "Find workers",
+      "subtitle": "Search verified workers by skill, county, certification, and availability.",
+      "filters": "Filters",
+      "all_counties": "All counties",
+      "results": "{count} workers",
+      "match_label": "match",
+      "view": "View profile",
+      "invite": "Invite to apply",
+      "preview": {
+        "skills": "Skills",
+        "experience": "Experience",
+        "education": "Education",
+        "certifications": "Certifications",
+        "languages": "Languages"
+      },
+      "plan_gate": {
+        "title": "Worker search is a Pro feature",
+        "body": "Upgrade to Pro to proactively reach verified workers and invite them to apply.",
+        "upgrade": "Upgrade to Pro"
+      },
+      "invite_modal": {
+        "title": "Invite to apply",
+        "job_label": "For posting",
+        "message_label": "Message (optional)",
+        "message_placeholder": "Tell {firstName} why they'd be a good fit",
+        "confirm": "Send invite",
+        "cancel": "Cancel"
+      }
+    },
+    "billing": {
+      "title": "Billing",
+      "current_plan": "Current plan",
+      "free": "Free",
+      "pro": "Pro",
+      "enterprise": "Enterprise",
+      "monthly": "monthly",
+      "yearly": "yearly",
+      "renews_on": "Renews on {date}",
+      "ends_on": "Ends on {date}",
+      "manage_billing": "Manage billing",
+      "history": "Billing history",
+      "stripe_unavailable": "Billing is not available yet — please contact support.",
+      "upgrade_pro": "Upgrade to Pro",
+      "upgrade_enterprise": "Upgrade to Enterprise",
+      "interval_toggle": "Pay yearly (save 2 months)",
+      "feature": {
+        "active_postings": "Active postings",
+        "active_postings_unlimited": "Unlimited",
+        "worker_search": "Worker search",
+        "priority_listing": "Priority listing",
+        "multi_user": "Multi-user account",
+        "custom_counties": "Custom county coverage",
+        "branded_reports": "Branded grant reports"
+      },
+      "success": {
+        "title": "You're subscribed",
+        "body": "Welcome to {plan}. Receipt sent to your email.",
+        "cta": "Go to dashboard"
+      }
+    },
+    "profile": {
+      "title": "Business profile",
+      "subtitle": "Update your business details. License changes trigger re-verification.",
+      "save": "Save changes",
+      "saved": "Saved"
     }
   },
   "admin": {

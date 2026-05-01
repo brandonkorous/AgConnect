@@ -15,9 +15,15 @@ export {
   QUEUE_NAMES,
   enqueueWaitlistConfirm,
   enqueueWaitlistWelcome,
+  enqueueEmployerEmail,
   getBoss,
   stopBoss,
 } from './queue';
-export type { WaitlistConfirmJob, WaitlistWelcomeJob } from './queue';
+export type {
+  WaitlistConfirmJob,
+  WaitlistWelcomeJob,
+  EmployerEmailJob,
+  EmployerEmailTemplate,
+} from './queue';
 export { runEmailWorker } from './worker';
 export type { EmailWorkerHandle } from './worker';

@@ -4,42 +4,55 @@
 
 ```prisma
 model EmployerProfile {
-  id                  String      @id @db.Uuid                            // FK == User.id
-  tenantId            String      @db.Uuid              @map("tenant_id")
-  businessName        String                                              @map("business_name")
-  licenseType         LicenseType                                         @map("license_type")
-  ein                 String?                                              // employer ID number for grower verification
-  flcLicenseNum       String?                                              @map("flc_license_num")
-  dolMspaNum          String?                                              @map("dol_mspa_num")    // federal DOL MSPA registration number; optional
-  county              County?                                              // primary county for grower verification
-  flcVerifiedAt       DateTime?                                            @map("flc_verified_at")
-  verifiedBy          String?     @db.Uuid                                @map("verified_by")     // admin user id
-  rejectedAt          DateTime?                                            @map("rejected_at")
-  rejectionReason     String?                                              @map("rejection_reason")
-  signatureName       String?                                              @map("signature_name")  // for cert signing (training orgs share table)
-  signatureTitle      String?                                              @map("signature_title")
-  signatureImageUrl   String?                                              @map("signature_image_url")
-  stripeCustomer      String?                                              @map("stripe_customer")
-  stripeSubId         String?                                              @map("stripe_sub_id")
-  plan                EmployerPlan @default(free)
-  seoSlug             String      @unique                                 @map("seo_slug")
-  createdAt           DateTime    @default(now())                          @map("created_at")
-  updatedAt           DateTime    @updatedAt                               @map("updated_at")
-  deletedAt           DateTime?                                            @map("deleted_at")
+  id                    String           @id @default(uuid()) @db.Uuid
+  userId                String           @unique                       @map("user_id")        // FK → User.id (Clerk userId)
+  tenantId              String           @db.Uuid                      @map("tenant_id")
+  clerkOrgId            String?          @unique                       @map("clerk_org_id")
+  legalName             String                                          @map("legal_name")    // legal entity — Stripe customer, 1099, MSA
+  dbaName               String?                                         @map("dba_name")      // doing-business-as / public-facing if different from legal
+  contactEmail          String?                                         @map("contact_email")
+  licenseType           LicenseType                                     @map("license_type")
+  ein                   String?                                                                // employer ID number for grower verification
+  flcLicenseNum         String?                                         @map("flc_license_num")
+  dolMspaNum            String?                                         @map("dol_mspa_num")  // federal DOL MSPA registration number; optional
+  county                County?                                                                // primary county for grower verification
+  flcVerifiedAt         DateTime?                                       @map("flc_verified_at")
+  verifiedBy            String?          @db.Uuid                       @map("verified_by")   // admin user id
+  rejectedAt            DateTime?                                       @map("rejected_at")
+  rejectionReason       String?                                         @map("rejection_reason")
+  signatureName         String?                                         @map("signature_name")  // for cert signing (training orgs share table)
+  signatureTitle        String?                                         @map("signature_title")
+  signatureImageUrl     String?                                         @map("signature_image_url")
+  stripeCustomer        String?                                         @map("stripe_customer")
+  stripeSubId           String?                                         @map("stripe_sub_id")
+  plan                  EmployerPlanTier @default(free)
+  planInterval          PlanInterval?                                   @map("plan_interval")
+  planCurrentPeriodEnd  DateTime?                                       @map("plan_current_period_end")
+  planCancelAtPeriodEnd Boolean          @default(false)                @map("plan_cancel_at_period_end")
+  seoSlug               String           @unique                        @map("seo_slug")
+  createdAt             DateTime         @default(now())                @map("created_at")
+  updatedAt             DateTime         @updatedAt                     @map("updated_at")
+  deletedAt             DateTime?                                       @map("deleted_at")
 
-  user                User        @relation(fields: [id], references: [id])
+  user                  User             @relation(fields: [userId], references: [id])
 
   @@index([tenantId])
   @@index([flcVerifiedAt])
   @@index([licenseType])
+  @@index([stripeCustomer])
   @@map("employer_profiles")
 }
 
-enum LicenseType { grower flc labor_contractor }
-enum EmployerPlan { free monthly annual }
+enum LicenseType      { grower flc labor_contractor }
+enum EmployerPlanTier { free pro enterprise }
+enum PlanInterval    { monthly yearly }
 ```
 
+**Display rule:** the public-facing employer name is `dbaName ?? legalName`. The legal name is used for Stripe customer creation, 1099/tax docs, and the DLSE comparison during FLC verification. Verified-badge tooltip surfaces both: `"AgConn verified — legal entity: {legalName}"`.
+
 `flcVerifiedAt` doubles as the verification timestamp for both growers and FLCs (poorly named — could rename to `verifiedAt` post-MVP).
+
+> **Inferred:** Plan tier as enum + env-resolved Stripe price IDs is intentional for MVP. The feature matrix lives in `packages/schemas/src/plans.ts` (compile-time type-safe). Extract to a `plans` table when custom Enterprise contracts, per-tenant pricing, or live A/B price tests arrive — billing event payloads in `billing_events` already let us reconstruct any plan transition history.
 
 ## verification_log (audit)
 
@@ -103,11 +116,10 @@ CREATE POLICY ep_public_read ON employer_profiles
 CREATE POLICY ep_self ON employer_profiles
   FOR ALL
   USING (
-    id = current_setting('app.user_id', true)::uuid
-    OR EXISTS (
-      SELECT 1 FROM users u
-      WHERE u.id = current_setting('app.user_id', true)::uuid
-      AND u.clerk_org_id = employer_profiles.id::text     -- members of the org
+    user_id = current_setting('app.user_id', true)
+    OR (
+      clerk_org_id IS NOT NULL
+      AND clerk_org_id = current_setting('app.org_id', true)
     )
   );
 
@@ -121,4 +133,5 @@ CREATE POLICY ep_admin ON employer_profiles
 
 - `employer_profiles(flcVerifiedAt)` — list verified employers
 - `employer_profiles(seoSlug)` unique — public profile URL
+- `employer_profiles(stripeCustomer)` — webhook lookup (created when first checkout starts)
 - `verification_log(employerId, createdAt)` — audit lookup

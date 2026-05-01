@@ -61,6 +61,11 @@ export const smsTemplates = {
     es: '¡Felicidades! Completaste {programTitle}. Descarga tu certificado: {certUrl}',
     vars: ['programTitle', 'certUrl'] as const,
   }),
+  'worker.invitation': def({
+    en: '{employer} invited you to apply for {jobTitle} (${wageMin}-${wageMax}/hr in {county}). View: agconn.com/invitations/{id}',
+    es: '{employer} te invitó a aplicar para {jobTitle} (${wageMin}-${wageMax}/hr en {county}). Ver: agconn.com/invitations/{id}',
+    vars: ['employer', 'jobTitle', 'wageMin', 'wageMax', 'county', 'id'] as const,
+  }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;

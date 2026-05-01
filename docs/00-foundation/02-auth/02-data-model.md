@@ -2,7 +2,29 @@
 
 ## users (mirrored from Clerk)
 
-Defined in [10-worker/01-onboarding/02-data-model.md](../../10-worker/01-onboarding/02-data-model.md). The `id` column equals the Clerk `userId`. Mirror fields (`role`, `preferredLang`, `phone`, `email`) are kept in sync via webhook.
+Defined in [10-worker/01-onboarding/02-data-model.md](../../10-worker/01-onboarding/02-data-model.md). The `id` column equals the Clerk `userId`. Mirror fields (`preferredLang`, `phone`, `email`) are kept in sync via webhook.
+
+### Role and permissions live in our DB, not Clerk
+
+Authorization decisions are made by reading `users.role` and `users.permissions` from Postgres on every request — NOT by trusting Clerk's `publicMetadata`. Clerk is the **authentication** source (who is this session), our DB is the **authorization** source (what can they do).
+
+```prisma
+model User {
+  ...
+  role        UserRole                                  // worker | employer | training_org | admin
+  permissions String[] @default([])                     // fine-grained scopes within role; '*' = wildcard
+  ...
+}
+```
+
+- **`role`** drives RLS — set via `current_setting('app.role')` in the tenant-context middleware before any query.
+- **`permissions`** drives application-layer scope checks. Empty array = role's defaults are sufficient. `'*'` = full access for that role. Used only for admin sub-tiers in MVP (e.g., support admin can verify employers but not refund billing); workers/employers stay with empty arrays.
+- Canonical permission strings live in `packages/schemas/src/permissions.ts`. Examples: `employers.verify`, `employers.reject`, `billing.refund`, `reports.export`, `audit.read`.
+- Middleware factory: `requirePermission('employers.verify')` checks `permissions.includes(scope) || permissions.includes('*')`.
+
+Why not put permissions in RLS? RLS stays role-only — clean coarse cuts at the DB. App layer enforces scopes. This keeps RLS readable and lets us evolve the permissions model without DDL.
+
+> **Inferred:** Storing `permissions` as a `String[]` column is right-sized for 4 fixed roles plus a small handful of admin scopes. Promote to a `roles` / `role_permissions` M2M when (a) named role bundles are needed (`support_admin`, `billing_admin`), or (b) per-tenant role definitions arrive.
 
 ## auth_events (audit log)
 
@@ -33,19 +55,17 @@ enum AuthEventStatus { received processed failed skipped }
 
 ## clerk_publicMetadata schema (canonical)
 
-We store a strict shape in Clerk `publicMetadata`. Validated at every webhook + at write.
+`publicMetadata` is for **session-scoped UI hints only** (e.g., preferred language for first-paint i18n). It is NEVER trusted for authorization — auth decisions read `users.role` and `users.permissions` from our DB.
 
 ```ts
-// packages/shared-types/src/auth.ts
+// packages/schemas/src/auth.ts
 export const PublicMetadataSchema = z.object({
-  role: z.enum(['worker', 'employer', 'training_org', 'admin']),
   preferred_lang: z.enum(['en', 'es']).default('es'),
-  tenant_id: z.string().uuid().optional(),    // workers only
   onboarded: z.boolean().default(false),
 }).strict();
 ```
 
-`publicMetadata` is readable on the client (visible in JWT). Don't put secrets here. PII like phone/email lives in Clerk's primary fields, not `publicMetadata`.
+`publicMetadata` is readable on the client (visible in JWT). Don't put secrets or authorization state here. PII like phone/email lives in Clerk's primary fields. `role` lived here historically — it's been removed because the JWT can be stale (changing a role in Clerk doesn't invalidate live sessions) and putting it here invites client code to trust it.
 
 ## privateMetadata (server-side only)
 

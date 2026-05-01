@@ -35,7 +35,8 @@ const WorkerSearchResponse = z.object({
 const WorkerCardSchema = z.object({
     id: z.string().uuid(),
     firstName: z.string(),
-    lastInitial: z.string(), // "L" not "Lopez"
+    lastInitial: z.string(),                                      // "L" — full last name only when relationship exists
+    lastName: z.string().optional(),                              // present only when relationship exists
     county: CountyEnum,
     skills: z.array(z.string()),
     matchScore: z.number().int(),
@@ -46,9 +47,13 @@ const WorkerCardSchema = z.object({
             source: z.enum(['agconn', 'self']),
         }),
     ),
-    availability: AvailabilitySchema, // safe — no PII
+    availability: AvailabilitySchema,                             // safe — no PII
     experienceCount: z.number().int(),
-    // NO phone, NO email, NO zip, NO last name
+    // Contact info: present only when (employer, worker) have a relationship
+    // (hired application, accepted invitation, or any non-withdrawn application).
+    phone: z.string().optional(),
+    email: z.string().email().optional(),
+    relationship: z.enum(['hired', 'invited', 'applied']).optional(),  // why contact is visible
 });
 ```
 

@@ -4,7 +4,10 @@ import { Resend } from 'resend';
 import { EmailStatus, Lang, type EmailLog, type Tx } from '@agconn/db';
 import { WaitlistConfirm } from './templates/WaitlistConfirm';
 import { WaitlistWelcome } from './templates/WaitlistWelcome';
+import { EmployerNotice } from './templates/EmployerNotice';
 import { waitlistStrings, type Locale } from './strings/waitlist';
+import { getEmployerCopy } from './strings/employer';
+import type { EmployerEmailTemplate } from './queue';
 
 let cachedResend: Resend | null = null;
 function getResend(): Resend {
@@ -28,7 +31,7 @@ export type SendOutcome =
   | { skipped: true; reason: 'no_api_key' | 'suppressed'; logId?: string };
 
 type DispatchArgs = {
-  template: 'waitlist_confirm' | 'waitlist_welcome';
+  template: 'waitlist_confirm' | 'waitlist_welcome' | EmployerEmailTemplate;
   to: string;
   locale: Locale;
   subject: string;
@@ -217,6 +220,53 @@ export async function sendWaitlistWelcome(
     oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
     refType: 'waitlist',
     refId: input.waitlistId,
+    tenantId: input.tenantId,
+  });
+}
+
+type EmployerNoticeInput = {
+  template: EmployerEmailTemplate;
+  to: string;
+  locale: Locale;
+  vars: Record<string, string | number | null | undefined>;
+  webBaseUrl: string;
+  unsubscribeUrl: string;
+  oneClickUnsubscribeUrl: string;
+  employerId: string;
+  tenantId: string;
+};
+
+export async function sendEmployerNotice(
+  db: Tx,
+  input: EmployerNoticeInput,
+): Promise<SendOutcome> {
+  const copy = getEmployerCopy(input.template, input.locale, input.vars);
+  const ctaUrl = copy.cta
+    ? `${input.webBaseUrl.replace(/\/$/, '')}${copy.cta.pathByLocale[input.locale]}`
+    : undefined;
+
+  const element = React.createElement(EmployerNotice, {
+    locale: input.locale,
+    copy,
+    ctaUrl,
+    unsubscribeUrl: input.unsubscribeUrl,
+  });
+  const [html, text] = await Promise.all([
+    render(element),
+    render(element, { plainText: true }),
+  ]);
+
+  return dispatch(db, {
+    template: input.template,
+    to: input.to,
+    locale: input.locale,
+    subject: copy.subject,
+    html,
+    text,
+    unsubscribeUrl: input.unsubscribeUrl,
+    oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
+    refType: 'employer',
+    refId: input.employerId,
     tenantId: input.tenantId,
   });
 }

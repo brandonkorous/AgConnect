@@ -5,8 +5,9 @@ import {
   getBoss,
   type WaitlistConfirmJob,
   type WaitlistWelcomeJob,
+  type EmployerEmailJob,
 } from './queue';
-import { sendWaitlistConfirm, sendWaitlistWelcome } from './sender';
+import { sendWaitlistConfirm, sendWaitlistWelcome, sendEmployerNotice } from './sender';
 import { signConfirmToken, signUnsubscribeToken } from './tokens';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -80,6 +81,46 @@ async function handleWaitlistConfirm(job: Job<WaitlistConfirmJob>): Promise<void
   });
 }
 
+async function handleEmployerEmail(job: Job<EmployerEmailJob>): Promise<void> {
+  const { template, employerId, tenantId, to, locale, vars } = job.data;
+
+  await withTenantTx(tenantId, async (db) => {
+    const employer = await db.employerProfile.findUnique({ where: { id: employerId } });
+    if (!employer) return;
+    const recipient = to ?? employer.contactEmail;
+    if (!recipient) {
+      console.warn('[worker] employer email skipped — no recipient', {
+        template,
+        employerId,
+      });
+      return;
+    }
+
+    // Employers don't have signed unsubscribe tokens like waitlist; we use a
+    // generic transactional unsubscribe link. Resend's List-Unsubscribe is
+    // still set so they can opt out at the suppression level.
+    const unsubscribeUrl = `${publicWebUrl()}/${locale}/employer/billing`;
+    const oneClickUnsubscribeUrl = `${publicApiUrl()}/v1/landing/unsubscribe?employerId=${employerId}`;
+
+    await sendEmployerNotice(db, {
+      template,
+      to: recipient,
+      locale,
+      vars: Object.fromEntries(
+        Object.entries(vars).filter((entry): entry is [string, string | number] => {
+          const v = entry[1];
+          return v !== null && v !== undefined;
+        }),
+      ),
+      webBaseUrl: publicWebUrl(),
+      unsubscribeUrl,
+      oneClickUnsubscribeUrl,
+      employerId,
+      tenantId,
+    });
+  });
+}
+
 async function handleWaitlistWelcome(job: Job<WaitlistWelcomeJob>): Promise<void> {
   const { waitlistId, tenantId, email, locale } = job.data;
 
@@ -139,6 +180,25 @@ export async function runEmailWorker(): Promise<EmailWorkerHandle> {
           await handleWaitlistWelcome(job);
         } catch (err) {
           console.error('[worker] waitlist welcome failed', { jobId: job.id, err });
+          throw err;
+        }
+      }
+    },
+  );
+
+  await boss.work<EmployerEmailJob>(
+    QUEUE_NAMES.employer,
+    { batchSize: 5, pollingIntervalSeconds: 2 },
+    async (jobs) => {
+      for (const job of jobs) {
+        try {
+          await handleEmployerEmail(job);
+        } catch (err) {
+          console.error('[worker] employer email failed', {
+            jobId: job.id,
+            template: job.data.template,
+            err,
+          });
           throw err;
         }
       }

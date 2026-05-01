@@ -41,6 +41,11 @@ export {
   Funder,
   ProgramStatus,
   EnrollmentStatus,
+  LicenseType,
+  EmployerPlanTier,
+  PlanInterval,
+  VerificationAction,
+  RejectionReason,
 } from '@prisma/client';
 export type {
   Tenant,
@@ -61,6 +66,10 @@ export type {
   SearchView,
   TrainingProgram,
   Enrollment,
+  VerificationLog,
+  WorkerSearchLog,
+  WorkerInvitation,
+  BillingEvent,
 } from '@prisma/client';
 
 export type Db = PrismaClient;

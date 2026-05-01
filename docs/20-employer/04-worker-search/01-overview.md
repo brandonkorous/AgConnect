@@ -41,11 +41,14 @@ Out of scope:
 
 ## Privacy posture
 
-- Worker contact info (phone, email, exact address) NEVER appears in search results.
-- After "invite to apply" → worker accepts → application created → contact info exposed (same rules as normal apply flow).
+- Worker contact info (phone, email, exact address) is redacted from search results by default.
+- Contact info **is** revealed in search for workers this employer already has a relationship with:
+  - Worker has been **hired** by this employer for any of their postings (`applications.status = 'hired'`).
+  - Worker accepted an **invitation** from this employer.
+  - Worker has an **application** to one of this employer's postings (any status except `withdrawn`) — they'd see the phone in the applicant detail view anyway.
 - Workers can opt out of being searchable via a profile setting (Phase 2 — for MVP, all onboarded workers are searchable).
 
-> **Inferred:** Privacy default for MVP is "all onboarded workers searchable, but contact info never visible without an application." This is stricter than typical job boards (where employers see contact info on signup) and matches the platform's farmworker-trust positioning.
+> **Inferred:** Privacy default for MVP is "all onboarded workers searchable; contact info revealed only when a real working relationship exists." Hired workers are an obvious exception — once a hire happens there's an ongoing employment relationship and the employer needs to be able to reach them. Stricter than typical job boards but matches the farmworker-trust positioning.
 
 ## Success criteria
 

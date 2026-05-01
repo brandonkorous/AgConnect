@@ -778,6 +778,709 @@
           "in_app": "En la app"
         }
       }
+    },
+    "onboarding": {
+      "shell": {
+        "progress": "Paso {step} de {total}"
+      },
+      "welcome": {
+        "tagline": "Encuentra trabajo agrícola verificado cerca de ti.",
+        "choose_lang": "Elige el idioma que prefieras usar.",
+        "cta": "Empezar",
+        "lang": {
+          "en": "English",
+          "es": "Español"
+        }
+      },
+      "phone": {
+        "label": "Número de teléfono móvil",
+        "help": "Te enviaremos un código de 6 dígitos. Aplican tarifas estándar de mensajería.",
+        "invalid": "Por favor ingresa un número de teléfono válido de 10 dígitos.",
+        "cta": "Enviar código",
+        "collision_other_tenant": "Este número está registrado en otra región. Contacta a soporte para transferir tu cuenta."
+      },
+      "otp": {
+        "label": "Ingresa el código de 6 dígitos",
+        "resend": "Reenviar código",
+        "resend_cooldown": "Reenviar en {seconds}s",
+        "invalid": "El código no coincide. Intenta de nuevo.",
+        "expired": "Este código expiró. Toca \"Reenviar\" para uno nuevo.",
+        "locked": "Demasiados intentos. Espera 1 minuto e intenta de nuevo."
+      },
+      "resume": {
+        "title": "¿Tienes un currículum?",
+        "have": "Tengo un currículum",
+        "dont": "Todavía no tengo uno",
+        "upload": "Subir",
+        "uploading": "Subiendo…",
+        "cancel": "Cancelar",
+        "formats": "PDF o documento Word, hasta 10 MB",
+        "too_large": "Este archivo es demasiado grande. Elige uno de menos de 10 MB.",
+        "unsupported": "Por favor sube un PDF o documento Word.",
+        "parsing": {
+          "line1": "Leyendo tu currículum…",
+          "line2": "Identificando tus habilidades…",
+          "line3": "Casi listo…",
+          "slow": "Esto está tardando más de lo normal.",
+          "keep_waiting": "Seguir esperando",
+          "manual": "Llenar manualmente"
+        },
+        "parse_failed": "No pudimos leer este archivo. Puedes llenar los detalles abajo."
+      },
+      "profile": {
+        "title": "Revisa tu información",
+        "subtitle": "Toca cualquier campo para editarlo.",
+        "contact": {
+          "first_name": "Nombre",
+          "last_name": "Apellido"
+        },
+        "section": {
+          "experience": "Experiencia",
+          "education": "Educación",
+          "skills": "Habilidades",
+          "certifications": "Certificaciones",
+          "languages": "Idiomas"
+        },
+        "add": "Agregar",
+        "remove": "Quitar",
+        "save_status": {
+          "saving": "Guardando…",
+          "saved": "Guardado",
+          "error": "No se pudo guardar. Toca para reintentar."
+        },
+        "continue": "Continuar",
+        "field": {
+          "email": {
+            "label": "Correo electrónico (opcional)",
+            "hint": "Solo lo usamos para enviarte certificados."
+          }
+        }
+      },
+      "county": {
+        "title": "¿Dónde vives?",
+        "subtitle": "Encontraremos trabajos cerca de ti.",
+        "fresno": "Fresno",
+        "kern": "Kern",
+        "kings": "Kings",
+        "madera": "Madera",
+        "tulare": "Tulare",
+        "other": "Estoy en otro condado"
+      },
+      "waitlist": {
+        "title": "Estamos creciendo",
+        "subtitle": "AgConn sirve al Valle Central por ahora. Déjanos tus datos para avisarte cuando lleguemos a tu zona.",
+        "county": {
+          "label": "¿En qué condado estás?"
+        },
+        "email": {
+          "label": "Correo electrónico (opcional)"
+        },
+        "phone": {
+          "label": "Teléfono (opcional)"
+        },
+        "contact_required": "Por favor ingresa un correo o teléfono.",
+        "cta": "Avísame",
+        "thanks": "¡Gracias! Te contactaremos."
+      },
+      "skill": {
+        "title": "¿Qué sabes hacer?",
+        "subtitle": "Selecciona las que apliquen.",
+        "harvesting": "Cosecha",
+        "pruning": "Poda",
+        "irrigation": "Riego",
+        "tractor": "Operación de tractor",
+        "forklift": "Montacargas",
+        "crew_lead": "Líder de cuadrilla",
+        "bilingual": "Comunicación bilingüe",
+        "packing": "Empaque",
+        "equipment_repair": "Reparación de equipo",
+        "pesticide": "Aplicación de pesticidas",
+        "add_custom": "+ Agregar habilidad",
+        "min_required": "Elige al menos una habilidad."
+      },
+      "availability": {
+        "title": "¿Cuándo puedes trabajar?",
+        "subtitle": "Toca para marcar días y horarios disponibles.",
+        "am": "Mañana",
+        "pm": "Tarde",
+        "on": "Sí",
+        "off": "No",
+        "day_label": "Día",
+        "day": {
+          "mon": "Lun",
+          "tue": "Mar",
+          "wed": "Mié",
+          "thu": "Jue",
+          "fri": "Vie",
+          "sat": "Sáb",
+          "sun": "Dom"
+        },
+        "notes": {
+          "label": "Notas (opcional)",
+          "placeholder": "Ej.: No domingos"
+        },
+        "mark_all": "Marcar todo",
+        "clear_all": "Borrar todo",
+        "min_required": "Marca al menos medio día."
+      },
+      "complete": {
+        "title": "¡Listo!",
+        "subtitle": "Aquí hay trabajos que podrían interesarte.",
+        "cta_jobs": "Ver todos los trabajos",
+        "cta_profile": "Ver mi perfil",
+        "empty_recommendations": "Aún no hay trabajos para ti — te avisaremos por mensaje cuando aparezcan."
+      },
+      "error": {
+        "generic": "Algo salió mal. Intenta de nuevo.",
+        "network": "Estás sin conexión. Guardaremos tu progreso.",
+        "required": "Este campo es obligatorio."
+      }
+    },
+    "profile": {
+      "title": "Perfil",
+      "subtitle": "Toca cualquier campo para editar. Los cambios se guardan automáticamente.",
+      "back": "Volver",
+      "preview_as_employer": "Vista de empleador",
+      "section": {
+        "contact": "Contacto",
+        "experience": "Experiencia",
+        "education": "Educación",
+        "skills": "Habilidades",
+        "certifications": "Certificaciones",
+        "languages": "Idiomas"
+      },
+      "contact": {
+        "first_name": "Nombre",
+        "last_name": "Apellido"
+      },
+      "field": {
+        "email": {
+          "label": "Correo electrónico (opcional)",
+          "hint": "Solo lo usamos para enviarte certificados."
+        },
+        "zip": {
+          "label": "Código postal"
+        }
+      },
+      "skills": {
+        "add": "Agregar habilidad"
+      },
+      "add": {
+        "experience": "+ Agregar experiencia",
+        "education": "+ Agregar educación",
+        "cert": "+ Agregar certificación",
+        "bullet": "+ Agregar punto",
+        "language": "+ Agregar idioma"
+      },
+      "empty": {
+        "experience": "Aún sin experiencia.",
+        "education": "Aún sin educación.",
+        "cert": "Aún sin certificaciones."
+      },
+      "save": {
+        "idle": "Todos los cambios guardados",
+        "saving": "Guardando…",
+        "saved": "Guardado",
+        "error": "No se pudo guardar. Toca para reintentar.",
+        "offline": "Estás sin conexión. Los cambios se guardarán al reconectarte."
+      },
+      "conflict": {
+        "title": "Actualizado en otra pestaña",
+        "body": "Este perfil se actualizó en otro lugar. Actualiza para ver los últimos cambios.",
+        "refresh": "Actualizar"
+      },
+      "reupload": {
+        "cta": "Reemplazar currículum",
+        "confirm": {
+          "title": "¿Reemplazar tu currículum?",
+          "body": "Esto sobrescribirá todas las secciones de tu perfil. El archivo original se guardará como respaldo.",
+          "cta": "Reemplazar"
+        },
+        "cancel": "Cancelar",
+        "success": "Currículum actualizado. Revisa los datos identificados.",
+        "failed": "No pudimos leer este archivo. Tu perfil actual no cambió."
+      },
+      "preview": {
+        "title": "Lo que ven los empleadores",
+        "badge": "Vista previa",
+        "privacy": "Tu teléfono y correo solo se comparten después de aplicar a un trabajo.",
+        "empty": "Tu vista previa se llenará a medida que completes tu perfil."
+      }
+    },
+    "jobs": {
+      "title": "Trabajos en el Valle Central",
+      "search": {
+        "placeholder": "Busca trabajos (ej. tractor, cosecha)"
+      },
+      "filters": {
+        "cta": "Filtros",
+        "apply": "Aplicar",
+        "clear": "Borrar todo",
+        "county": "Condado",
+        "skills": "Habilidades",
+        "wage": "Salario por hora",
+        "startDate": "Fecha de inicio"
+      },
+      "save_search": {
+        "cta": "Guardar búsqueda"
+      },
+      "empty": "No hay trabajos que coincidan ahora.",
+      "empty_with_filters": "No hay trabajos con estos filtros.",
+      "empty_save_for_alert": "Te avisaremos por mensaje cuando aparezcan trabajos nuevos.",
+      "load_more": "Ver más",
+      "card": {
+        "verified": "Verificado",
+        "start": "Empieza el {date}",
+        "start_label": "Empieza",
+        "apply": "Aplicar",
+        "spots": "{n} cupos",
+        "housing": "Vivienda",
+        "sms_apply": "Aplicar por SMS"
+      },
+      "browse": {
+        "eyebrow": "{count} trabajos abiertos · a 80 km de {county}",
+        "headline": "Encuentra tu próximo <shift>turno</shift>.",
+        "sub": "Mostramos primero los trabajos que se ajustan a tus habilidades, distancia y disponibilidad semanal. Solo empleadores verificados.",
+        "map_view": "Ver mapa",
+        "save_search": "Guardar búsqueda",
+        "filters_label": "Filtros",
+        "filter": {
+          "within_25": "A menos de 40 km",
+          "this_week": "Esta semana",
+          "pays_22": "Paga >$22",
+          "has_housing": "Con vivienda",
+          "pickup": "Transporte incluido",
+          "no_experience": "Sin experiencia"
+        },
+        "sort_label": "Ordenar:",
+        "sort_default": "Mejor coincidencia",
+        "top_matches": "Mejores coincidencias",
+        "updated": "Actualizado hace 4 minutos",
+        "showing": "Mostrando 1–8 de <strong>{total}</strong>",
+        "load_more": "Ver {n} más →",
+        "crop": {
+          "grape": "Uvas",
+          "almond": "Almendras",
+          "tomato": "Tomates",
+          "citrus": "Cítricos",
+          "strawberry": "Fresas",
+          "lettuce": "Lechuga",
+          "open": "{n} abiertos"
+        },
+        "aside": {
+          "sms": {
+            "eyebrow": "Aplica por SMS",
+            "body": "Envía <text>TRABAJO</text> al <num>(559) 555-0142</num>",
+            "note": "Te enviaremos las 3 mejores coincidencias para tu zona directo al celular — sin app, sin registro."
+          },
+          "map": {
+            "eyebrow": "Vista del mapa",
+            "label": "Cdo. de Madera",
+            "cta": "Abrir mapa completo →"
+          },
+          "saved": {
+            "eyebrow": "Búsquedas guardadas",
+            "hits": "{hits} nuevos esta semana"
+          }
+        }
+      },
+      "detail": {
+        "back": "Volver a trabajos",
+        "verified": "Empleador verificado",
+        "apply": "Aplicar ahora",
+        "about": "Sobre este trabajo",
+        "skills_needed": "Habilidades requeridas",
+        "share_title": "Compartir este trabajo"
+      },
+      "saved": {
+        "title": "Tus búsquedas guardadas",
+        "back": "Trabajos",
+        "empty": "Aún no has guardado búsquedas.",
+        "empty_help": "Guarda una búsqueda desde la página de trabajos para recibir alertas por SMS.",
+        "go_jobs": "Ver trabajos"
+      }
+    },
+    "applications": {
+      "title": "Tus solicitudes",
+      "back": "Panel",
+      "tab": {
+        "active": "Activas",
+        "hired": "Contratado",
+        "closed": "Cerradas"
+      },
+      "empty": {
+        "active": "Aún no has aplicado a trabajos.",
+        "active_cta": "Ver trabajos",
+        "hired": "Cuando te contraten, el trabajo aparecerá aquí.",
+        "closed": "No tienes solicitudes cerradas."
+      },
+      "card": {
+        "applied_at": "Aplicaste el {date}",
+        "view": "Ver"
+      }
+    },
+    "application": {
+      "status": {
+        "applied": "Aplicada",
+        "reviewed": "Revisada",
+        "hired": "Contratado",
+        "rejected": "No seleccionado",
+        "withdrawn": "Retirada"
+      },
+      "apply": {
+        "title": "Aplicar a {jobTitle}",
+        "your_profile": "Tu perfil",
+        "edit_profile": "Editar perfil",
+        "privacy": "Al aplicar, el empleador verá tu nombre, habilidades e información de contacto.",
+        "cta": "Aplicar",
+        "submitting": "Enviando…",
+        "error": "No se pudo enviar. Intenta de nuevo.",
+        "success": "Aplicaste a {jobTitle}. Te avisaremos cuando el empleador responda."
+      },
+      "detail": {
+        "title": "Solicitud",
+        "placeholder_title": "Detalle de solicitud",
+        "placeholder_body": "Las actualizaciones de estado y la línea de tiempo aparecerán cuando el API esté conectado.",
+        "timeline": "Línea de tiempo",
+        "about_job": "Sobre este trabajo",
+        "withdraw": "Retirar solicitud",
+        "event": {
+          "applied": "Aplicaste",
+          "reviewed": "El empleador revisó",
+          "hired": "¡Contratado!",
+          "rejected": "No seleccionado esta vez",
+          "withdrawn": "Retiraste"
+        }
+      },
+      "error": {
+        "already_applied": "Ya aplicaste a este trabajo.",
+        "job_not_active": "Este trabajo ya no acepta solicitudes.",
+        "cannot_withdraw": "Esta solicitud ya no se puede retirar."
+      }
+    },
+    "training": {
+      "title": "Programas de capacitación",
+      "subtitle": "Capacitación gratuita y financiada para mejorar tus habilidades.",
+      "filters": {
+        "funder": "Financiador",
+        "topics": "Temas",
+        "has_capacity": "Solo con espacio disponible"
+      },
+      "empty": "No hay programas de capacitación programados.",
+      "empty_help": "Vuelve pronto.",
+      "card": {
+        "spots_left": "{n} de {capacity} espacios disponibles",
+        "full": "Lleno",
+        "free": "Gratuito"
+      },
+      "detail": {
+        "back": "Volver a capacitación",
+        "funded_by": "Financiado por {funder}",
+        "free": "Gratuito",
+        "spots_left": "{n} de {capacity} espacios disponibles",
+        "full": "Lleno",
+        "enroll": "Inscribirse",
+        "enroll_full": "Lleno",
+        "about": "Sobre esta capacitación",
+        "topics": "Temas",
+        "you_will_receive": "Recibirás",
+        "cert": "Un certificado bilingüe",
+        "reminders": "Mensajes de recordatorio antes de cada sesión"
+      }
+    },
+    "enrollments": {
+      "title": "Tu capacitación",
+      "back": "Panel",
+      "tab": {
+        "upcoming": "Próximas",
+        "completed": "Completadas",
+        "dropped": "Canceladas"
+      },
+      "empty": {
+        "upcoming": "Aún no te has inscrito en una capacitación.",
+        "upcoming_cta": "Ver capacitación",
+        "completed": "Cuando completes una capacitación, aparecerá aquí con tu certificado."
+      },
+      "card": {
+        "cert": "Descargar certificado",
+        "completed_at": "Completado el {date}"
+      }
+    },
+    "wallet": {
+      "title": "Cartera de habilidades",
+      "back": "Panel",
+      "count": "{count, plural, =0 {Aún sin certificaciones} =1 {# certificación} other {# certificaciones}}",
+      "empty": {
+        "title": "Aún sin certificaciones",
+        "body": "Completa una capacitación para ganar tu primer certificado.",
+        "cta": "Ver capacitación"
+      },
+      "source": {
+        "agconn": "Verificado por AgConn",
+        "self": "Auto-reportado"
+      },
+      "card": {
+        "download": "Descargar",
+        "share": "Compartir"
+      },
+      "cert": {
+        "title": "Certificado",
+        "placeholder": "Los detalles del certificado y la vista previa del PDF se cargarán cuando se publique la generación de certificados.",
+        "download": "Descargar PDF"
+      }
+    },
+    "verify": {
+      "title": "Verificar un certificado",
+      "coming_soon": "Próximamente. Contacta support@agconn.com para verificar un certificado."
+    },
+    "shifts": {
+      "meta": { "title": "Mis turnos" },
+      "eyebrow": "Agosto 2026 · Madera, CA",
+      "title": { "lead": "Mis", "em": "turnos" },
+      "sub": "Trabajo confirmado, sesiones de capacitación y turnos pendientes en un solo calendario. Toca cualquier día para ver detalles.",
+      "cta_sync": "Sincronizar al teléfono",
+      "cta_availability": "Marcar disponibilidad",
+      "calendar": {
+        "month_label": "Agosto 2026",
+        "prev": "Mes anterior",
+        "next": "Mes siguiente",
+        "view_month": "Mes",
+        "view_week": "Semana",
+        "view_agenda": "Agenda",
+        "today": "HOY",
+        "weekday": {
+          "mon": "Lun", "tue": "Mar", "wed": "Mié", "thu": "Jue",
+          "fri": "Vie", "sat": "Sáb", "sun": "Dom"
+        }
+      },
+      "summary": {
+        "eyebrow": "Este mes",
+        "shifts": "Turnos programados",
+        "hours": "Horas estimadas",
+        "pay": "Pago proyectado",
+        "employers": "Empleadores"
+      },
+      "up_next": {
+        "title": "Próximamente",
+        "sub": "Toca para confirmar o reprogramar",
+        "status": {
+          "confirmed": "Confirmado",
+          "awaiting": "Por confirmar",
+          "enrolled": "Inscrito",
+          "pending": "Pendiente"
+        }
+      }
+    },
+    "pay": {
+      "meta": { "title": "Pago y planillas" },
+      "eyebrow": "YTD · 2026",
+      "title": { "lead": "Pago y", "em": "planillas" },
+      "sub": "Cada hora, cada turno, cada talón de pago. Descarga planillas para impuestos o el EDD.",
+      "cta_export": "Exportar paquete W-2 2026",
+      "stat": {
+        "ytd_earnings": { "label": "Ganancias YTD", "sub": "en 4 empleadores" },
+        "hours": { "label": "Horas trabajadas", "sub": "32 semanas registradas" },
+        "avg_hourly": { "label": "Promedio por hora", "sub": "incluye bono por destajo" },
+        "next_deposit": { "label": "Próximo depósito", "sub": "Viernes 8 ago" }
+      },
+      "chart": {
+        "title": "Tendencia de ganancias",
+        "sub": "Pago bruto por mes, en miles USD",
+        "tab": { "12mo": "12 m", "6mo": "6 m", "ytd": "YTD" }
+      },
+      "deposit": {
+        "eyebrow": "Próximo depósito · Viernes 8 ago",
+        "gross": "Bruto",
+        "hours": "Horas",
+        "tax": "FIT + FICA",
+        "method": "Método",
+        "download": "Descargar talón"
+      },
+      "table": {
+        "title": "Talones semanales",
+        "sub": "32 semanas · últimos 12 meses",
+        "all_employers": "Todos los empleadores ▾",
+        "export_csv": "Exportar CSV",
+        "head": {
+          "period": "Periodo de pago", "employer": "Empleador", "hours": "Horas",
+          "gross": "Bruto", "net": "Neto", "status": "Estado"
+        },
+        "status": { "paid": "Pagado", "pending": "Pendiente" },
+        "pdf": "PDF →"
+      },
+      "direct_deposit": {
+        "eyebrow": "Depósito directo",
+        "account": "Cheques ••3471",
+        "bank": "Bank of America · Verificado",
+        "manage": "Administrar método de pago →"
+      },
+      "tax_docs": { "eyebrow": "Documentos fiscales" },
+      "wage": {
+        "eyebrow": "Transparencia de salario",
+        "body": "Tu promedio <rate>$22.14/hr</rate> está en el 18% más alto de pizcadores en el condado de Madera para 2026.",
+        "cta": "Ver datos de salario del condado →"
+      }
+    },
+    "training_hub": {
+      "meta": { "title": "Capacitación" },
+      "eyebrow": "14 programas gratis en tu zona",
+      "title": { "lead": "Gana más,", "em": "aprende más" },
+      "sub": "Certificaciones gratuitas financiadas por el Departamento de Alimentos y Agricultura de California y la iniciativa F3. La mayoría paga un estipendio durante la capacitación.",
+      "cta_browse": "Ver todos los programas",
+      "stat": {
+        "in_progress": { "label": "En progreso", "sub": "Cert. de montacargas" },
+        "hours": { "label": "Horas completadas", "sub": "de 32 en cert. actual" },
+        "certs": { "label": "Total certs.", "sub": "histórico" },
+        "boost": { "label": "Aumento promedio", "sub": "por hora, post-cert." }
+      },
+      "in_progress": {
+        "eyebrow": "En progreso · {funder}",
+        "sessions": "{done} de {total} sesiones completadas",
+        "progress": "{pct}% completado",
+        "next": "Próxima sesión: {when}",
+        "cta_continue": "Continuar lección",
+        "cta_schedule": "Ver horario",
+        "badge_complete": "COMPLETO"
+      },
+      "recommended": {
+        "title": "Recomendado para ti",
+        "sub": "Financiado por CDFA y F3 · Estipendio durante capacitación",
+        "fund_label": "Financiado por {fund}",
+        "hours": "{n} hrs",
+        "enroll": "Inscribirse gratis",
+        "learn_more": "Más info"
+      },
+      "certs": {
+        "title": "Tus certificaciones",
+        "sub": "Muéstralas a empleadores para calificar a roles mejor pagados",
+        "verified": "Verificado",
+        "hours": "{n} hrs",
+        "issued": "Emitido {date}",
+        "download": "Descargar certificado →"
+      }
+    },
+    "documents": {
+      "meta": { "title": "Documentos" },
+      "eyebrow": "Última verificación 1 ago 2026",
+      "title": { "lead": "Tus", "em": "documentos" },
+      "sub": "Almacenados de forma segura y cifrados. Comparte documentos específicos con empleadores sin entregar tu archivo completo.",
+      "cta_download": "Descargar todo",
+      "cta_upload": "Subir documento",
+      "completeness": {
+        "eyebrow": "Perfil completo",
+        "blurb": "Estás en el <top>14% más alto</top> de trabajadores en AgConn. Un perfil completo recibe <boost>3.4× más</boost> respuestas de empleadores.",
+        "task": {
+          "identity": "Identidad verificada",
+          "banking": "Cuenta bancaria registrada",
+          "references": "Referencias subidas",
+          "photo": "Foto de perfil"
+        },
+        "add": "Añadir →"
+      },
+      "group": {
+        "title": {
+          "identification": "Identificación",
+          "work": "Documentos laborales",
+          "certs": "Certificaciones"
+        },
+        "on_file": "{n} en archivo"
+      },
+      "status": {
+        "verified": "Verificado",
+        "current": "Vigente",
+        "expiring": "Por vencer",
+        "missing": "Falta"
+      },
+      "actions": { "view": "Ver", "share": "Compartir" },
+      "shares": {
+        "title": "Compartidos recientes",
+        "sub": "Registro de quién vio cada documento",
+        "status": { "active": "Activo", "revoked": "Revocado" },
+        "action": { "revoke": "Revocar", "view": "Ver" }
+      }
+    },
+    "messages": {
+      "meta": { "title": "Mensajes" },
+      "eyebrow": "3 sin leer · 18 conversaciones activas",
+      "title": { "lead": "Tus", "em": "mensajes" },
+      "sub": "Una sola bandeja para SMS, WhatsApp y mensajes en la app de empleadores, capataces y AgConn.",
+      "cta_mark_read": "Marcar todo leído",
+      "cta_new": "Nuevo mensaje",
+      "folders": {
+        "all": "Todos los mensajes",
+        "employers": "Empleadores",
+        "foremen": "Capataces",
+        "agconn": "AgConn",
+        "channels_label": "Canales"
+      },
+      "channels": { "sms": "SMS", "whatsapp": "WhatsApp", "in_app": "En la app" },
+      "list": { "search": "Buscar mensajes…" },
+      "thread": {
+        "foreman": "Capataz",
+        "call": "Llamar",
+        "view_job": "Ver trabajo",
+        "pinned": {
+          "title": "Cosecha de uva · Mañana 6 AM",
+          "meta": "Recogida en Hwy 99 / Cleveland Ave · $22.50/hr",
+          "status": "Confirmado"
+        },
+        "reply_placeholder": "Responder a Marisol…",
+        "attach": "Adjuntar",
+        "send": "Enviar"
+      },
+      "quick": {
+        "got_it": "Entendido",
+        "on_my_way": "En camino",
+        "address": "Dirección",
+        "question": "Pregunta"
+      }
+    },
+    "applications_dense": {
+      "meta": { "title": "Postulaciones" },
+      "eyebrow": "5 activas · 2 esperando respuesta · sincronizado hace 2m",
+      "title": { "lead": "Mis", "em": "postulaciones" },
+      "sub": "Sigue cada trabajo al que postulaste. Te enviaremos un texto cuando un empleador responda — usualmente en 24 horas.",
+      "cta_more": "Buscar más trabajos",
+      "pipeline": {
+        "label": {
+          "applied": "Aplicado", "reviewed": "Revisado",
+          "interview": "Entrevista", "accepted": "Aceptado"
+        },
+        "hint": {
+          "applied": "En etapa de postulación",
+          "reviewed": "En etapa de revisión",
+          "interview": "Jue 9 AM Modesto",
+          "accepted": "Confirma antes del 11 ago"
+        }
+      },
+      "active": {
+        "title": "Postulaciones activas",
+        "sub": "Ordenadas por urgencia de etapa",
+        "filter": {
+          "all": "Todas", "action": "Acción requerida",
+          "review": "En revisión", "withdrawn": "Retiradas"
+        },
+        "head": {
+          "job": "Trabajo", "employer": "Empleador", "applied": "Postulé",
+          "rate": "Pago", "stage": "Etapa", "next": "Próximo paso"
+        },
+        "starts": "Inicia {date}",
+        "spots": "{n} cupos"
+      },
+      "stage": {
+        "applied": "Aplicado", "reviewed": "Revisado",
+        "interview": "Entrevista", "accepted": "Aceptado"
+      },
+      "action": {
+        "confirm": "Confirmar turno", "interview": "Unirme a entrevista",
+        "note": "Enviar nota", "withdraw": "Retirar"
+      },
+      "archive": {
+        "title": "Postulaciones pasadas",
+        "sub": "Últimos 90 días · 12 completadas · 2 no seleccionadas",
+        "result": { "hired": "Contratado y completado", "not_selected": "No seleccionado" },
+        "view": "Ver →"
+      }
     }
   },
   "shell": {
@@ -932,6 +1635,289 @@
           "description": "Nos permite medir el efecto del trabajo con socios. Apagado por defecto."
         }
       }
+    }
+  },
+  "employer": {
+    "shell": {
+      "nav": {
+        "dashboard": "Panel",
+        "jobs": "Publicaciones",
+        "inbox": "Aplicantes",
+        "workers": "Buscar trabajadores",
+        "billing": "Facturación",
+        "profile": "Perfil del negocio"
+      },
+      "topbar": {
+        "search_placeholder": "Buscar trabajos, aplicantes…",
+        "search_kbd": "⌘K",
+        "help": "Ayuda",
+        "post_job": "Publicar trabajo"
+      }
+    },
+    "onboarding": {
+      "title": "Configura tu negocio",
+      "subtitle": "Verificaremos tus datos en 1 día hábil. Mientras tanto puedes preparar borradores.",
+      "legal_name": {
+        "label": "Nombre legal del negocio",
+        "help": "Coincide con tus declaraciones fiscales (se usa para facturación y verificación)."
+      },
+      "dba_name": {
+        "label": "Nombre comercial (opcional)",
+        "help": "Nombre público si es diferente del nombre legal."
+      },
+      "type": {
+        "label": "Tipo de negocio",
+        "grower": "Productor (granja directa)",
+        "flc": "Contratista de mano de obra agrícola"
+      },
+      "flc_license": {
+        "label": "Número de licencia CA DIR/DLSE",
+        "help": "Requerido para contratistas de mano de obra agrícola."
+      },
+      "dol_mspa": { "label": "Número DOL MSPA (opcional)" },
+      "ein": {
+        "label": "EIN (XX-XXXXXXX)",
+        "help": "Número de identificación de empleador federal. Requerido para verificación de productores."
+      },
+      "county": { "label": "Condado principal" },
+      "contact_email": { "label": "Correo de contacto (opcional)" },
+      "contact_phone": { "label": "Teléfono de contacto (opcional)" },
+      "submit": "Enviar",
+      "success": {
+        "title": "Enviado",
+        "body": "Verificaremos tu negocio en 1 día hábil. Te enviaremos un correo cuando puedas publicar trabajos.",
+        "cta": "Ir al panel"
+      }
+    },
+    "verification": {
+      "pending": {
+        "title": "Verificación pendiente",
+        "body": "Estamos revisando los datos de tu negocio. Puedes preparar borradores pero aún no puedes publicarlos.",
+        "edit": "Editar información del negocio"
+      },
+      "verified": {
+        "badge": "Verificado",
+        "tooltip": "Empleador verificado por AgConn",
+        "legal_entity": "Entidad legal: {legalName}"
+      },
+      "rejected": {
+        "title": "La verificación necesita seguimiento",
+        "reason": "Motivo: {reason}",
+        "cta": "Actualizar información"
+      },
+      "publish_blocked": {
+        "title": "Aún no estás verificado",
+        "body": "Espera la verificación antes de publicar trabajos. Te avisaremos por correo cuando esté listo."
+      }
+    },
+    "errors": {
+      "flc_license_required": "El número de licencia es obligatorio para contratistas.",
+      "grower_fields_required": "Los productores deben proporcionar un EIN y un condado.",
+      "ein_format": "El EIN debe tener el formato XX-XXXXXXX.",
+      "flc_license_format": "El número de licencia debe tener entre 4 y 20 letras y dígitos.",
+      "validation_failed": "Corrige los campos marcados.",
+      "internal": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "dashboard": {
+      "greeting_morning": "Buenos días",
+      "greeting_afternoon": "Buenas tardes",
+      "greeting_evening": "Buenas noches",
+      "kpi": {
+        "active_postings": "Publicaciones activas",
+        "applicants_week": "Aplicantes esta semana",
+        "open_seats": "Puestos abiertos",
+        "hired_season": "Contratados esta temporada"
+      },
+      "recent_postings": "Publicaciones recientes",
+      "recent_applicants": "Aplicantes recientes",
+      "view_all": "Ver todo"
+    },
+    "jobs": {
+      "list": {
+        "title": "Publicaciones",
+        "new_posting": "Nueva publicación",
+        "tabs": {
+          "all": "Todas",
+          "active": "Activas",
+          "drafts": "Borradores",
+          "filled": "Completas",
+          "closed": "Cerradas"
+        },
+        "empty": "Aún no has creado publicaciones.",
+        "applicants": "{count} aplicantes",
+        "review": "Revisar",
+        "edit": "Editar",
+        "publish": "Publicar",
+        "close": "Cerrar",
+        "duplicate": "Duplicar"
+      },
+      "form": {
+        "section_title": "Título",
+        "section_description": "Descripción",
+        "section_location": "Ubicación",
+        "section_pay_dates": "Pago y fechas",
+        "section_skills": "Habilidades",
+        "english": "Inglés",
+        "spanish": "Español",
+        "translate_from_en": "Traducir del inglés",
+        "translate_from_es": "Traducir del español",
+        "translating": "Traduciendo…",
+        "translation_failed": "La traducción falló. Por favor escribe el texto manualmente.",
+        "wage_label": "Sueldo por hora",
+        "wage_min": "Mín",
+        "wage_max": "Máx",
+        "wage_unit": "Unidad",
+        "start_date": "Fecha de inicio",
+        "end_date": "Fecha de fin (opcional)",
+        "apply_by": "Aplicar antes de (opcional)",
+        "positions": "Puestos",
+        "skills_placeholder": "Agregar habilidad",
+        "preview": "Vista previa",
+        "save_draft": "Guardar borrador",
+        "publish": "Publicar",
+        "saved": "Guardado",
+        "saving": "Guardando…",
+        "back": "Volver a publicaciones"
+      },
+      "publish_modal": {
+        "title": "¿Publicar?",
+        "body": "Esto hace que la publicación sea visible para los trabajadores. Puedes cerrarla en cualquier momento.",
+        "confirm": "Publicar",
+        "cancel": "Cancelar"
+      },
+      "plan_limit": {
+        "title": "Límite del plan Gratis alcanzado",
+        "body": "Mejora a Pro para publicaciones ilimitadas.",
+        "upgrade": "Mejorar"
+      }
+    },
+    "inbox": {
+      "title": "Aplicantes",
+      "all_postings": "Todas las publicaciones",
+      "empty": "Aún no hay aplicantes. Comparte tu publicación para empezar a recibir solicitudes.",
+      "view": "Ver",
+      "new": "Nuevo",
+      "filter_status": "Estado",
+      "applied": "Aplicado",
+      "reviewed": "Revisado",
+      "hired": "Contratado",
+      "rejected": "Rechazado"
+    },
+    "kanban": {
+      "applied": "Aplicados",
+      "reviewed": "Revisados",
+      "hired": "Contratados",
+      "show_rejected": "Mostrar rechazados ({count})",
+      "bulk_selected": "{count} seleccionados",
+      "bulk_review": "Marcar revisado",
+      "bulk_reject": "Rechazar",
+      "cancel": "Cancelar"
+    },
+    "applicant_detail": {
+      "back": "Volver",
+      "skills_match": "{count} coinciden",
+      "experience": "Experiencia",
+      "education": "Educación",
+      "certifications": "Certificaciones",
+      "agconn_verified": "Verificado por AgConn",
+      "self_reported": "Auto-reportado",
+      "application_meta": "Aplicó {when}",
+      "mark_reviewed": "Marcar revisado",
+      "hire": "Contratar",
+      "reject": "Rechazar",
+      "private_notes": "Notas privadas (solo tú las ves)"
+    },
+    "hire_modal": {
+      "title": "Contratar a {name}",
+      "wage_label": "Sueldo por hora",
+      "wage_help": "Debe coincidir o superar el rango de tu publicación.",
+      "start_date": "Fecha de inicio",
+      "note": "Nota para ti (opcional)",
+      "notify": "Enviaremos SMS y correo a {name}.",
+      "confirm": "Confirmar contratación",
+      "cancel": "Cancelar"
+    },
+    "reject_modal": {
+      "title": "Rechazar a {name}",
+      "reason_label": "¿Por qué? (privado — no se comparte)",
+      "reason": {
+        "not_qualified": "No cumple con los requisitos",
+        "too_far": "Demasiado lejos del lugar de trabajo",
+        "position_filled": "Puesto ocupado",
+        "no_response": "Sin respuesta",
+        "other": "Otro"
+      },
+      "details": "Detalles opcionales (privados)",
+      "preview": "{name} recibirá un SMS: \"{employer} eligió a otro candidato para {jobTitle}.\"",
+      "confirm": "Rechazar",
+      "cancel": "Cancelar"
+    },
+    "workers": {
+      "title": "Buscar trabajadores",
+      "subtitle": "Busca trabajadores verificados por habilidad, condado, certificación y disponibilidad.",
+      "filters": "Filtros",
+      "all_counties": "Todos los condados",
+      "results": "{count} trabajadores",
+      "match_label": "coinciden",
+      "view": "Ver perfil",
+      "invite": "Invitar a aplicar",
+      "preview": {
+        "skills": "Habilidades",
+        "experience": "Experiencia",
+        "education": "Educación",
+        "certifications": "Certificaciones",
+        "languages": "Idiomas"
+      },
+      "plan_gate": {
+        "title": "La búsqueda de trabajadores es una función Pro",
+        "body": "Mejora a Pro para llegar proactivamente a trabajadores verificados e invitarlos a aplicar.",
+        "upgrade": "Mejorar a Pro"
+      },
+      "invite_modal": {
+        "title": "Invitar a aplicar",
+        "job_label": "Para la publicación",
+        "message_label": "Mensaje (opcional)",
+        "message_placeholder": "Dile a {firstName} por qué encajaría bien",
+        "confirm": "Enviar invitación",
+        "cancel": "Cancelar"
+      }
+    },
+    "billing": {
+      "title": "Facturación",
+      "current_plan": "Plan actual",
+      "free": "Gratis",
+      "pro": "Pro",
+      "enterprise": "Enterprise",
+      "monthly": "mensual",
+      "yearly": "anual",
+      "renews_on": "Se renueva el {date}",
+      "ends_on": "Termina el {date}",
+      "manage_billing": "Gestionar facturación",
+      "history": "Historial de facturación",
+      "stripe_unavailable": "La facturación aún no está disponible — contacta a soporte.",
+      "upgrade_pro": "Mejorar a Pro",
+      "upgrade_enterprise": "Mejorar a Enterprise",
+      "interval_toggle": "Pagar anualmente (ahorra 2 meses)",
+      "feature": {
+        "active_postings": "Publicaciones activas",
+        "active_postings_unlimited": "Ilimitadas",
+        "worker_search": "Búsqueda de trabajadores",
+        "priority_listing": "Listado prioritario",
+        "multi_user": "Cuenta multi-usuario",
+        "custom_counties": "Cobertura de condados personalizada",
+        "branded_reports": "Reportes de subvenciones con marca"
+      },
+      "success": {
+        "title": "Te suscribiste",
+        "body": "Bienvenido a {plan}. Recibo enviado a tu correo.",
+        "cta": "Ir al panel"
+      }
+    },
+    "profile": {
+      "title": "Perfil del negocio",
+      "subtitle": "Actualiza los datos de tu negocio. Los cambios de licencia activan una nueva verificación.",
+      "save": "Guardar cambios",
+      "saved": "Guardado"
     }
   },
   "admin": {

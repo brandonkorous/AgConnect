@@ -8,12 +8,14 @@ Called after employer signs up via Clerk magic link. Creates `employer_profiles`
 
 ```ts
 const EmployerOnboardingBody = z.object({
-  businessName: z.string().min(2).max(120),
+  legalName: z.string().min(2).max(120),                              // legal entity name (Stripe, 1099, MSA, DLSE comparison)
+  dbaName: z.string().min(2).max(120).optional(),                     // public-facing name if different from legal
   licenseType: z.enum(['grower', 'flc', 'labor_contractor']),
-  ein: z.string().regex(/^\d{2}-\d{7}$/).optional(),       // grower
-  flcLicenseNum: z.string().regex(/^[A-Z0-9-]{4,20}$/).optional(),     // FLC
+  ein: z.string().regex(/^\d{2}-\d{7}$/).optional(),                  // grower
+  flcLicenseNum: z.string().regex(/^[A-Z0-9-]{4,20}$/).optional(),    // FLC
   dolMspaNum: z.string().optional(),
   county: CountyEnum.optional(),
+  contactEmail: z.string().email().optional(),
   contactPhone: z.string().optional(),
 }).strict()
   .refine((b) => b.licenseType !== 'flc' || b.flcLicenseNum, 'flc_license_required')

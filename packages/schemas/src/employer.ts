@@ -1,0 +1,116 @@
+import { z } from 'zod';
+import { CountyEnum } from './common';
+import { EmployerPlanTierEnum, PlanIntervalEnum } from './plans';
+
+export const LicenseTypeEnum = z.enum(['grower', 'flc', 'labor_contractor']);
+export type LicenseType = z.infer<typeof LicenseTypeEnum>;
+
+export const VerificationStatusEnum = z.enum(['pending', 'verified', 'rejected']);
+export type VerificationStatus = z.infer<typeof VerificationStatusEnum>;
+
+const flcLicenseRegex = /^[A-Z0-9-]{4,20}$/;
+const einRegex = /^\d{2}-\d{7}$/;
+
+export const EmployerOnboardingBody = z
+  .object({
+    legalName: z.string().min(2).max(120),
+    dbaName: z.string().min(2).max(120).optional(),
+    licenseType: LicenseTypeEnum,
+    ein: z.string().regex(einRegex, 'ein_format').optional(),
+    flcLicenseNum: z.string().regex(flcLicenseRegex, 'flc_license_format').optional(),
+    dolMspaNum: z.string().max(40).optional(),
+    county: CountyEnum.optional(),
+    contactEmail: z.string().email().max(255).optional(),
+    contactPhone: z.string().max(20).optional(),
+  })
+  .strict()
+  .refine(
+    (b) => b.licenseType !== 'flc' || Boolean(b.flcLicenseNum),
+    { message: 'flc_license_required', path: ['flcLicenseNum'] },
+  )
+  .refine(
+    (b) => b.licenseType !== 'grower' || (Boolean(b.ein) && Boolean(b.county)),
+    { message: 'grower_fields_required', path: ['ein'] },
+  );
+export type EmployerOnboardingBody = z.infer<typeof EmployerOnboardingBody>;
+
+export const PatchEmployerBody = z
+  .object({
+    legalName: z.string().min(2).max(120).optional(),
+    dbaName: z.string().min(2).max(120).nullable().optional(),
+    flcLicenseNum: z.string().regex(flcLicenseRegex, 'flc_license_format').optional(),
+    dolMspaNum: z.string().max(40).nullable().optional(),
+    ein: z.string().regex(einRegex, 'ein_format').optional(),
+    county: CountyEnum.optional(),
+    contactEmail: z.string().email().max(255).nullable().optional(),
+    contactPhone: z.string().max(20).nullable().optional(),
+  })
+  .strict();
+export type PatchEmployerBody = z.infer<typeof PatchEmployerBody>;
+
+export const EmployerProfileSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string(),
+  tenantId: z.string().uuid(),
+  legalName: z.string(),
+  dbaName: z.string().nullable(),
+  displayName: z.string(),                                // dbaName ?? legalName, computed by API
+  contactEmail: z.string().nullable(),
+  contactPhone: z.string().nullable(),
+  licenseType: LicenseTypeEnum.nullable(),
+  ein: z.string().nullable(),
+  flcLicenseNum: z.string().nullable(),
+  dolMspaNum: z.string().nullable(),
+  county: CountyEnum.nullable(),
+  flcVerifiedAt: z.string().datetime().nullable(),
+  rejectedAt: z.string().datetime().nullable(),
+  rejectionReason: z.string().nullable(),
+  plan: EmployerPlanTierEnum,
+  planInterval: PlanIntervalEnum.nullable(),
+  planCurrentPeriodEnd: z.string().datetime().nullable(),
+  planCancelAtPeriodEnd: z.boolean(),
+  seoSlug: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+export type EmployerProfile = z.infer<typeof EmployerProfileSchema>;
+
+export const EmployerMeResponse = z.object({
+  employer: EmployerProfileSchema,
+  verificationStatus: VerificationStatusEnum,
+  rejectionReason: z.string().nullable(),
+});
+
+// Admin endpoints --------------------------------------------------------
+
+export const VerifyEmployerBody = z
+  .object({
+    notes: z.string().max(2000).optional(),
+    payload: z
+      .object({
+        dlseLicenseStatus: z.enum(['active', 'expired', 'unknown']).optional(),
+        dlseLicenseNum: z.string().optional(),
+        dlseExpiresAt: z.string().date().optional(),
+        sosBusinessId: z.string().optional(),
+        sosStatus: z.string().optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
+export const RejectEmployerBody = z
+  .object({
+    reason: z.string().min(20).max(2000),
+    internalNotes: z.string().max(2000).optional(),
+  })
+  .strict();
+
+export const PendingEmployersResponse = z.object({
+  employers: z.array(
+    EmployerProfileSchema.extend({
+      submittedAt: z.string().datetime(),
+      daysWaiting: z.number().int(),
+    }),
+  ),
+});
