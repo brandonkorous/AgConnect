@@ -24,7 +24,7 @@ export function EarningsChart({ paystubs, locale }: Props) {
       .filter((p) => p.payDate.startsWith(key))
       .reduce((acc, p) => acc + p.grossCents, 0);
     months.push({
-      label: MONTH_KEYS[d.getUTCMonth()],
+      label: MONTH_KEYS[d.getUTCMonth()] ?? 'jan',
       value: sumCents / 100000,
       isCurrent: i === 0,
     });

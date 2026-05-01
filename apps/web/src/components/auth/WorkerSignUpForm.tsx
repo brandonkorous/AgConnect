@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useState } from 'react';
 import { useSignUp } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
@@ -32,7 +33,7 @@ export function WorkerSignUpForm({ locale }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const postAuthHref = `/${locale}/post-auth`;
+  const postAuthHref = `/${locale}/post-auth` as Route;
 
   async function startPhone() {
     if (!signUp) return;
@@ -44,15 +45,25 @@ export function WorkerSignUpForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      await signUp.create({
+      const createResult = await signUp.create({
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
         phoneNumber: phone,
         unsafeMetadata: { locale, role: 'worker' },
       });
-      await signUp.preparePhoneNumberVerification();
+      if (createResult.error) {
+        console.error('[worker-signup-phone] create error', createResult.error);
+        throw createResult.error;
+      }
+
+      const sendResult = await signUp.verifications.sendPhoneCode({});
+      if (sendResult.error) {
+        console.error('[worker-signup-phone] sendPhoneCode error', sendResult.error);
+        throw sendResult.error;
+      }
       setStep('verify');
     } catch (e) {
+      console.error('[worker-signup-phone] caught', e);
       setError(clerkErrorMessage(e, tErrors('generic')));
     } finally {
       setSubmitting(false);
@@ -72,16 +83,31 @@ export function WorkerSignUpForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      await signUp.create({
+      const createResult = await signUp.create({
+        emailAddress: identifier.trim(),
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
-        emailAddress: identifier.trim(),
-        password,
         unsafeMetadata: { locale, role: 'worker' },
       });
-      await signUp.prepareEmailAddressVerification();
+      if (createResult.error) {
+        console.error('[worker-signup-email] create error', createResult.error);
+        throw createResult.error;
+      }
+
+      const passwordResult = await signUp.password({ password });
+      if (passwordResult.error) {
+        console.error('[worker-signup-email] password error', passwordResult.error);
+        throw passwordResult.error;
+      }
+
+      const sendResult = await signUp.verifications.sendEmailCode();
+      if (sendResult.error) {
+        console.error('[worker-signup-email] sendEmailCode error', sendResult.error);
+        throw sendResult.error;
+      }
       setStep('verify');
     } catch (e) {
+      console.error('[worker-signup-email] caught', e);
       setError(clerkErrorMessage(e, tErrors('generic')));
     } finally {
       setSubmitting(false);
@@ -93,14 +119,17 @@ export function WorkerSignUpForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      const result =
+      const verifyResult =
         mode === 'phone'
-          ? await signUp.attemptPhoneNumberVerification({ code: code.trim() })
-          : await signUp.attemptEmailAddressVerification({ code: code.trim() });
-      if (result.status !== 'complete') {
+          ? await signUp.verifications.verifyPhoneCode({ code: code.trim() })
+          : await signUp.verifications.verifyEmailCode({ code: code.trim() });
+      if (verifyResult.error) throw verifyResult.error;
+      if (signUp.status !== 'complete') {
         setError(tErrors('generic'));
         return;
       }
+      const finalizeResult = await signUp.finalize();
+      if (finalizeResult.error) throw finalizeResult.error;
       router.replace(postAuthHref);
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('invalid_code')));
@@ -112,12 +141,13 @@ export function WorkerSignUpForm({ locale }: Props) {
   async function continueWithGoogle() {
     if (!signUp) return;
     try {
-      await signUp.authenticateWithRedirect({
+      const ssoResult = await signUp.sso({
         strategy: 'oauth_google',
-        redirectUrl: `/${locale}/sso-callback`,
-        redirectUrlComplete: postAuthHref,
+        redirectUrl: postAuthHref,
+        redirectCallbackUrl: `/${locale}/sso-callback`,
         unsafeMetadata: { locale, role: 'worker' },
       });
+      if (ssoResult.error) throw ssoResult.error;
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('generic')));
     }
@@ -297,7 +327,7 @@ export function WorkerSignUpForm({ locale }: Props) {
             {mode === 'phone' ? tShared('use_email') : tShared('use_phone')}
           </button>
           <Link
-            href={`/${locale}/sign-in`}
+            href={`/${locale}/sign-in` as Route}
             className="text-base-content/65 hover:text-base-content text-xs no-underline"
           >
             <span>{t('have_account')}</span>{' '}
@@ -308,11 +338,11 @@ export function WorkerSignUpForm({ locale }: Props) {
 
       <p className="text-base-content/45 mt-4 text-center text-[11px] leading-relaxed">
         {t('terms_prefix')}{' '}
-        <Link href={`/${locale}/terms`} className="hover:underline">
+        <Link href={`/${locale}/terms` as Route} className="hover:underline">
           {t('terms_link')}
         </Link>{' '}
         {t('and')}{' '}
-        <Link href={`/${locale}/privacy`} className="hover:underline">
+        <Link href={`/${locale}/privacy` as Route} className="hover:underline">
           {t('privacy_link')}
         </Link>
         .
@@ -321,7 +351,7 @@ export function WorkerSignUpForm({ locale }: Props) {
       <p className="text-base-content/55 mt-3 text-center text-[11px]">
         {t('hire_instead')}{' '}
         <Link
-          href={`/${locale}/employer/sign-up`}
+          href={`/${locale}/employer/sign-up` as Route}
           className="text-primary font-semibold no-underline hover:underline"
         >
           {t('employer_link')}

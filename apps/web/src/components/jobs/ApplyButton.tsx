@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { applyToJobAction } from '@/lib/api/applications-actions';
 
@@ -43,7 +44,7 @@ export function ApplyButton({ locale, jobId, alreadyAppliedStatus }: Props) {
       } else if (res.code === 'conflict') {
         setError(t('error_already_applied'));
       } else if (res.code === 'unauthenticated') {
-        router.push(`/${locale}/sign-in`);
+        router.push(`/${locale}/sign-in` as Route);
       } else {
         setError(t('error'));
       }

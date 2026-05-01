@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
+import type { Route } from 'next';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,7 +26,7 @@ export function WorkerTopBar() {
         const url = term
             ? `/${locale}/worker/jobs?q=${encodeURIComponent(term)}`
             : `/${locale}/worker/jobs`;
-        router.push(url);
+        router.push(url as Route);
     }
 
     return (

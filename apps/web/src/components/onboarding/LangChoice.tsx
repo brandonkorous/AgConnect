@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 
 type Props = { locale: string; nextHref: string };
@@ -14,7 +15,7 @@ export function LangChoice({ locale, nextHref }: Props) {
   function pick(target: 'en' | 'es') {
     startTransition(() => {
       const otherSegment = nextHref.replace(/^\/[a-z]{2}/, `/${target}`);
-      router.push(otherSegment);
+      router.push(otherSegment as Route);
     });
   }
 

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useState } from 'react';
 import { useSignUp } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
@@ -32,7 +33,7 @@ export function EmployerSignUpForm({ locale }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const postAuthHref = `/${locale}/post-auth`;
+  const postAuthHref = `/${locale}/post-auth` as Route;
 
   async function startEmail() {
     if (!signUp) return;
@@ -52,21 +53,36 @@ export function EmployerSignUpForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      await signUp.create({
+      const createResult = await signUp.create({
+        emailAddress: email.trim(),
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
-        emailAddress: email.trim(),
-        ...(normalizedPhone ? { phoneNumber: normalizedPhone } : {}),
-        password,
         unsafeMetadata: {
           locale,
           role: 'employer',
+          ...(normalizedPhone ? { pending_phone: normalizedPhone } : {}),
           ...(companyName.trim() ? { company_name: companyName.trim() } : {}),
         },
       });
-      await signUp.prepareEmailAddressVerification();
+      if (createResult.error) {
+        console.error('[employer-signup] create error', createResult.error);
+        throw createResult.error;
+      }
+
+      const passwordResult = await signUp.password({ password });
+      if (passwordResult.error) {
+        console.error('[employer-signup] password error', passwordResult.error);
+        throw passwordResult.error;
+      }
+
+      const sendResult = await signUp.verifications.sendEmailCode();
+      if (sendResult.error) {
+        console.error('[employer-signup] sendEmailCode error', sendResult.error);
+        throw sendResult.error;
+      }
       setStep('verify');
     } catch (e) {
+      console.error('[employer-signup] caught', e);
       setError(clerkErrorMessage(e, tErrors('generic')));
     } finally {
       setSubmitting(false);
@@ -78,13 +94,16 @@ export function EmployerSignUpForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await signUp.attemptEmailAddressVerification({
+      const verifyResult = await signUp.verifications.verifyEmailCode({
         code: code.trim(),
       });
-      if (result.status !== 'complete') {
+      if (verifyResult.error) throw verifyResult.error;
+      if (signUp.status !== 'complete') {
         setError(tErrors('generic'));
         return;
       }
+      const finalizeResult = await signUp.finalize();
+      if (finalizeResult.error) throw finalizeResult.error;
       router.replace(postAuthHref);
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('invalid_code')));
@@ -96,12 +115,13 @@ export function EmployerSignUpForm({ locale }: Props) {
   async function continueWithGoogle() {
     if (!signUp) return;
     try {
-      await signUp.authenticateWithRedirect({
+      const ssoResult = await signUp.sso({
         strategy: 'oauth_google',
-        redirectUrl: `/${locale}/sso-callback`,
-        redirectUrlComplete: postAuthHref,
+        redirectUrl: postAuthHref,
+        redirectCallbackUrl: `/${locale}/sso-callback`,
         unsafeMetadata: { locale, role: 'employer' },
       });
+      if (ssoResult.error) throw ssoResult.error;
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('generic')));
     }
@@ -276,13 +296,13 @@ export function EmployerSignUpForm({ locale }: Props) {
       {step === 'details' && (
         <div className="border-base-300 mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-sm">
           <Link
-            href={`/${locale}/worker/sign-up`}
+            href={`/${locale}/worker/sign-up` as Route}
             className="text-primary text-xs font-semibold no-underline hover:underline"
           >
             {t('worker_instead')}
           </Link>
           <Link
-            href={`/${locale}/sign-in`}
+            href={`/${locale}/sign-in` as Route}
             className="text-base-content/65 hover:text-base-content text-xs no-underline"
           >
             <span>{t('have_account')}</span>{' '}
@@ -293,11 +313,11 @@ export function EmployerSignUpForm({ locale }: Props) {
 
       <p className="text-base-content/45 mt-4 text-center text-[11px] leading-relaxed">
         {t('terms_prefix')}{' '}
-        <Link href={`/${locale}/terms`} className="hover:underline">
+        <Link href={`/${locale}/terms` as Route} className="hover:underline">
           {t('terms_link')}
         </Link>{' '}
         {t('and')}{' '}
-        <Link href={`/${locale}/privacy`} className="hover:underline">
+        <Link href={`/${locale}/privacy` as Route} className="hover:underline">
           {t('privacy_link')}
         </Link>
         .

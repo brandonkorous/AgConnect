@@ -33,37 +33,52 @@ meShiftsRoutes.get('/', async (c) => {
         include: {
           employer: { include: { employerProfile: true } },
           crew: true,
-          job: true,
         },
       },
     },
     orderBy: { shift: { shiftDate: 'asc' } },
   });
 
+  // Shift.jobId points at JobPosting but the schema doesn't declare the
+  // relation, so we resolve titles in a single follow-up query.
+  const jobIds = Array.from(
+    new Set(assignments.map((a) => a.shift.jobId).filter((id): id is string => Boolean(id))),
+  );
+  const jobs = jobIds.length
+    ? await c.var.db.jobPosting.findMany({
+        where: { id: { in: jobIds } },
+        select: { id: true, titleEn: true, titleEs: true },
+      })
+    : [];
+  const jobById = new Map(jobs.map((j) => [j.id, j]));
+
   return ok(c, {
-    shifts: assignments.map((a) => ({
-      id: a.id,
-      status: a.status,
-      hoursWorked: a.hoursWorked ? Number(a.hoursWorked.toString()) : null,
-      shift: {
-        id: a.shift.id,
-        date: a.shift.shiftDate.toISOString().slice(0, 10),
-        startTime: a.shift.startTime,
-        endTime: a.shift.endTime,
-        locationLabel: a.shift.locationLabel,
-        locationLat: a.shift.locationLat ? Number(a.shift.locationLat.toString()) : null,
-        locationLng: a.shift.locationLng ? Number(a.shift.locationLng.toString()) : null,
-        status: a.shift.status,
-        notes: a.shift.notes,
-        employer:
-          a.shift.employer?.employerProfile?.dbaName ??
-          a.shift.employer?.employerProfile?.legalName ??
-          'AgConn employer',
-        crewName: a.shift.crew?.name ?? null,
-        jobTitleEn: a.shift.job?.titleEn ?? null,
-        jobTitleEs: a.shift.job?.titleEs ?? null,
-      },
-    })),
+    shifts: assignments.map((a) => {
+      const job = a.shift.jobId ? jobById.get(a.shift.jobId) ?? null : null;
+      return {
+        id: a.id,
+        status: a.status,
+        hoursWorked: a.hoursWorked ? Number(a.hoursWorked.toString()) : null,
+        shift: {
+          id: a.shift.id,
+          date: a.shift.shiftDate.toISOString().slice(0, 10),
+          startTime: a.shift.startTime,
+          endTime: a.shift.endTime,
+          locationLabel: a.shift.locationLabel,
+          locationLat: a.shift.locationLat ? Number(a.shift.locationLat.toString()) : null,
+          locationLng: a.shift.locationLng ? Number(a.shift.locationLng.toString()) : null,
+          status: a.shift.status,
+          notes: a.shift.notes,
+          employer:
+            a.shift.employer?.employerProfile?.dbaName ??
+            a.shift.employer?.employerProfile?.legalName ??
+            'AgConn employer',
+          crewName: a.shift.crew?.name ?? null,
+          jobTitleEn: job?.titleEn ?? null,
+          jobTitleEs: job?.titleEs ?? null,
+        },
+      };
+    }),
   });
 });
 

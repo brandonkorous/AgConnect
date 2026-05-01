@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -94,7 +94,7 @@ export default async function ProgramDetailPage({ params }: Props) {
               : t('spots_left', { n: program.spotsLeft, capacity: program.capacity })}
           </div>
           <Link
-            href={`/${locale}/sign-up?redirect_url=${encodeURIComponent(`/${locale}/worker/training/${slug}`)}`}
+            href={`/${locale}/sign-up?redirect_url=${encodeURIComponent(`/${locale}/worker/training/${slug}`)}` as Route}
             className="btn btn-primary btn-lg mt-3 w-full no-underline"
           >
             {t('apply_cta')}

@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import type { Route } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { isOk } from '@agconn/api-client';
 import { getServerApiClient } from '@/lib/api/server-client';
@@ -15,7 +16,7 @@ export default async function PostAuthPage({ params }: Props) {
   const session = await auth().catch(() => null);
   const userId = session?.userId ?? null;
   if (!userId) {
-    redirect(`/${locale}/sign-in`);
+    redirect(`/${locale}/sign-in` as Route);
   }
 
   const role = await fetchRole();

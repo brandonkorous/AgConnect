@@ -1,3 +1,4 @@
+import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { err } from '@agconn/api-client/server';
@@ -28,7 +29,7 @@ export const clerkAuthMiddleware = clerkMiddleware({
     secretKey: process.env.CLERK_SECRET_KEY,
 });
 
-async function provisionFromClerk(c: Parameters<Parameters<typeof createMiddleware>[0]>[0], userId: string) {
+async function provisionFromClerk(c: Context, userId: string) {
     // The Clerk → DB sync normally lands via the user.created webhook, but in
     // dev (no public webhook URL) and on a brand-new Clerk session, the webhook
     // has not yet run. Hydrate a minimal User row from the Clerk session itself

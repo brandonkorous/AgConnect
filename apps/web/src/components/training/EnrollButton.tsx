@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import {
   enrollInProgramAction,
@@ -31,7 +32,7 @@ export function EnrollButton({ programId, spotsLeft, alreadyEnrolled, locale }: 
       } else if (res.code === 'conflict') {
         setError(tErr('already_enrolled'));
       } else if (res.code === 'unauthenticated') {
-        router.push(`/${locale}/sign-in`);
+        router.push(`/${locale}/sign-in` as Route);
       } else {
         setError(t('enroll_error'));
       }

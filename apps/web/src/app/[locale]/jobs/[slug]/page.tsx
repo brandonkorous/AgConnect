@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -167,7 +167,7 @@ export default async function PublicJobDetailPage({ params }: Props) {
         <aside className="grid gap-3.5 self-start">
           <div className="border-base-300 bg-base-100 grid gap-3 rounded-2xl border p-5">
             <Link
-              href={`/${locale}/sign-up?redirect_url=${encodeURIComponent(`/${locale}/worker/jobs/${slug}`)}`}
+              href={`/${locale}/sign-up?redirect_url=${encodeURIComponent(`/${locale}/worker/jobs/${slug}`)}` as Route}
               className="btn btn-primary btn-lg w-full no-underline"
             >
               {t('apply_cta')}

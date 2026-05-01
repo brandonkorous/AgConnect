@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 
 type Props = {
   href: string;
@@ -27,7 +28,7 @@ export function OnboardingNavButton({
     );
   }
   return (
-    <Link href={href} className={`${base} ${className ?? ''}`}>
+    <Link href={href as Route} className={`${base} ${className ?? ''}`}>
       {children}
     </Link>
   );

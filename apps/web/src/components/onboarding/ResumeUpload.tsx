@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -58,17 +59,17 @@ export function ResumeUpload({ locale, redirectTo }: Props) {
         return;
       }
       if (res.status === 'parsed') {
-        router.push(fallbackTo);
+        router.push(fallbackTo as Route);
         return;
       }
       if (res.status === 'failed') {
         setPhase('failed');
-        setTimeout(() => router.push(fallbackTo), 1200);
+        setTimeout(() => router.push(fallbackTo as Route), 1200);
         return;
       }
       await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
     }
-    router.push(fallbackTo);
+    router.push(fallbackTo as Route);
   }
 
   function upload() {

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
@@ -163,14 +164,14 @@ function LocaleToggle({ locale, variant }: { locale: string; variant: Variant })
   return (
     <div className="bg-base-100 border-base-300 inline-flex rounded-full border p-1 font-mono text-[11px] font-bold tracking-wider">
       <Link
-        href={enHref}
+        href={enHref as Route}
         prefetch={false}
         className={`rounded-full px-2.5 py-1 no-underline ${locale === 'en' ? 'bg-primary text-primary-content' : 'text-base-content/60'}`}
       >
         EN
       </Link>
       <Link
-        href={esHref}
+        href={esHref as Route}
         prefetch={false}
         className={`rounded-full px-2.5 py-1 no-underline ${locale === 'es' ? 'bg-primary text-primary-content' : 'text-base-content/60'}`}
       >

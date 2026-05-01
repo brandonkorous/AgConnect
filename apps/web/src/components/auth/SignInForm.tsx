@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useState } from 'react';
 import { useSignIn } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
@@ -28,7 +29,7 @@ export function SignInForm({ locale }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const postAuthHref = `/${locale}/post-auth`;
+  const postAuthHref = `/${locale}/post-auth` as Route;
 
   function classify(input: string) {
     if (isEmail(input)) return { kind: 'email' as const, value: input.trim() };
@@ -47,19 +48,12 @@ export function SignInForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      await signIn.create({ identifier: classified.value });
+      const createResult = await signIn.create({ identifier: classified.value });
+      if (createResult.error) throw createResult.error;
+
       if (classified.kind === 'phone') {
-        const phoneFactor = signIn.supportedFirstFactors?.find(
-          (f) => f.strategy === 'phone_code',
-        );
-        if (!phoneFactor || phoneFactor.strategy !== 'phone_code') {
-          setError(tErrors('generic'));
-          return;
-        }
-        await signIn.prepareFirstFactor({
-          strategy: 'phone_code',
-          phoneNumberId: phoneFactor.phoneNumberId,
-        });
+        const sendResult = await signIn.phoneCode.sendCode({});
+        if (sendResult.error) throw sendResult.error;
         setStep('verify');
       } else {
         setStep('password');
@@ -76,14 +70,14 @@ export function SignInForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await signIn.attemptFirstFactor({
-        strategy: 'password',
-        password,
-      });
-      if (result.status !== 'complete') {
+      const passwordResult = await signIn.password({ password });
+      if (passwordResult.error) throw passwordResult.error;
+      if (signIn.status !== 'complete') {
         setError(tErrors('generic'));
         return;
       }
+      const finalizeResult = await signIn.finalize();
+      if (finalizeResult.error) throw finalizeResult.error;
       router.replace(postAuthHref);
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('generic')));
@@ -97,14 +91,14 @@ export function SignInForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await signIn.attemptFirstFactor({
-        strategy: 'phone_code',
-        code: code.trim(),
-      });
-      if (result.status !== 'complete') {
+      const verifyResult = await signIn.phoneCode.verifyCode({ code: code.trim() });
+      if (verifyResult.error) throw verifyResult.error;
+      if (signIn.status !== 'complete') {
         setError(tErrors('generic'));
         return;
       }
+      const finalizeResult = await signIn.finalize();
+      if (finalizeResult.error) throw finalizeResult.error;
       router.replace(postAuthHref);
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('invalid_code')));
@@ -116,11 +110,12 @@ export function SignInForm({ locale }: Props) {
   async function continueWithGoogle() {
     if (!signIn) return;
     try {
-      await signIn.authenticateWithRedirect({
+      const ssoResult = await signIn.sso({
         strategy: 'oauth_google',
-        redirectUrl: `/${locale}/sso-callback`,
-        redirectUrlComplete: postAuthHref,
+        redirectUrl: postAuthHref,
+        redirectCallbackUrl: `/${locale}/sso-callback`,
       });
+      if (ssoResult.error) throw ssoResult.error;
     } catch (e) {
       setError(clerkErrorMessage(e, tErrors('generic')));
     }
@@ -249,14 +244,14 @@ export function SignInForm({ locale }: Props) {
       {step === 'identifier' && (
         <div className="border-base-300 mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-sm">
           <Link
-            href={`/${locale}/worker/sign-up`}
+            href={`/${locale}/worker/sign-up` as Route}
             className="text-base-content/65 hover:text-base-content text-xs no-underline"
           >
             <span>{t('no_account')}</span>{' '}
             <span className="text-primary font-semibold">{t('sign_up_worker')}</span>
           </Link>
           <Link
-            href={`/${locale}/employer/sign-up`}
+            href={`/${locale}/employer/sign-up` as Route}
             className="text-primary text-xs font-semibold no-underline hover:underline"
           >
             {t('sign_up_employer')}

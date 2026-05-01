@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import type { Route } from 'next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
@@ -140,7 +141,7 @@ export default async function EmployersPage({ params }: RouteProps) {
                             {t('pricing.body')}
                         </p>
                     </div>
-                    <Link href={`/${locale}/#pricing`} className="btn btn-accent shrink-0">
+                    <Link href={`/${locale}/#pricing` as Route} className="btn btn-accent shrink-0">
                         <span>{t('pricing.cta')}</span>
                         <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
                     </Link>
