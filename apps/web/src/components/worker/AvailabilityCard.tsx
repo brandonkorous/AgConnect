@@ -1,34 +1,24 @@
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { fetchProfile } from '@/lib/api/profile';
-
-type AvailabilitySchema = {
-  weekdays?: boolean;
-  weekends?: boolean;
-  // Optional explicit per-day map: { '2026-08-04': true, ... }
-  days?: Record<string, boolean>;
-};
 
 type Props = { locale: string };
 
 export async function AvailabilityCard({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: 'worker.dashboard.availability' });
   const profile = await fetchProfile();
-  // The schema fetcher returns the parsed snapshot but not the raw availability
-  // JSON. Treat it as best-effort weekday/weekend defaults until we expose it.
-  const availability: AvailabilitySchema = {};
+  const availability = profile.availability;
   const days = t.raw('days') as string[];
   const conflictDay = t('conflict_day');
 
-  // Build the next 7 days starting tomorrow.
+  // Build the next 7 days starting today.
   const today = new Date();
   const week = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
     d.setUTCDate(today.getUTCDate() + i);
-    const dow = d.getUTCDay(); // 0=Sun..6=Sat
+    const dow = d.getUTCDay();
     const isWeekend = dow === 0 || dow === 6;
-    const explicit = availability.days?.[d.toISOString().slice(0, 10)];
-    const open =
-      explicit ?? (isWeekend ? availability.weekends ?? false : availability.weekdays ?? true);
+    const open = isWeekend ? availability.weekends : availability.weekdays;
     return { date: d, open };
   });
 
@@ -43,12 +33,12 @@ export async function AvailabilityCard({ locale }: Props) {
             {t('title')}
           </h3>
         </div>
-        <button
-          type="button"
-          className="text-primary text-xs font-bold hover:underline"
+        <Link
+          href={`/${locale}/worker/profile#availability`}
+          className="text-primary text-xs font-bold no-underline hover:underline"
         >
           {t('edit')}
-        </button>
+        </Link>
       </header>
 
       <ol className="mt-3.5 grid grid-cols-7 gap-1">

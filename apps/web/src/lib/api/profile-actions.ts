@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { getServerApiClient } from './server-client';
+import { expandAvailability } from './profile';
 
 export type ProfilePatchInput = {
   firstName?: string;
@@ -10,6 +11,7 @@ export type ProfilePatchInput = {
   zipCode?: string | null;
   county?: string | null;
   skills?: string[];
+  availability?: { weekdays?: boolean; weekends?: boolean };
   expectedUpdatedAt?: string;
 };
 
@@ -19,7 +21,15 @@ export type ActionResult =
 
 export async function savePatchAction(input: ProfilePatchInput): Promise<ActionResult> {
   const api = await getServerApiClient();
-  const res = await api.patch('/v1/profile', input, { handleErrorInline: true });
+  const { availability, ...rest } = input;
+  const body: Record<string, unknown> = { ...rest };
+  if (availability) {
+    body.availability = expandAvailability({
+      weekdays: Boolean(availability.weekdays),
+      weekends: Boolean(availability.weekends),
+    });
+  }
+  const res = await api.patch('/v1/profile', body, { handleErrorInline: true });
   if (!res.ok) {
     return {
       ok: false,

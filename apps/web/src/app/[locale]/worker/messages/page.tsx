@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { WorkerPageHeader } from '@/components/worker/WorkerPageHeader';
 import { FoldersRail } from '@/components/worker/messages/FoldersRail';
 import { ThreadList } from '@/components/worker/messages/ThreadList';
 import { ThreadView } from '@/components/worker/messages/ThreadView';
-import { fetchMyMessageThreads, fetchMyMessageThread } from '@/lib/api/me';
+import { MessagesActions } from '@/components/worker/messages/MessagesActions';
+import {
+  fetchMyMessageThreads,
+  fetchMyMessageThread,
+  type Thread,
+} from '@/lib/api/me';
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ thread?: string }>;
+  searchParams: Promise<{ thread?: string; folder?: string; channel?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -19,12 +22,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t('meta.title') };
 }
 
+type FolderKey = 'all' | 'employers' | 'foremen' | 'agconn';
+
+function applyFilters(
+  threads: Thread[],
+  folder: FolderKey,
+  channel: string | undefined,
+): Thread[] {
+  let out = threads;
+  if (folder === 'employers') out = out.filter((th) => !th.employer.toLowerCase().includes('agconn'));
+  else if (folder === 'agconn') out = out.filter((th) => th.employer.toLowerCase().includes('agconn'));
+  else if (folder === 'foremen') out = out;
+  if (channel === 'sms' || channel === 'whatsapp' || channel === 'app') {
+    out = out.filter((th) => th.channel === channel);
+  }
+  return out;
+}
+
 export default async function MessagesPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const sp = await searchParams;
   const t = await getTranslations({ locale, namespace: 'worker.messages' });
   const { threads, totalUnread } = await fetchMyMessageThreads();
-  const activeThreadId = sp.thread ?? threads[0]?.id;
+
+  const folder = (sp.folder as FolderKey) ?? 'all';
+  const channel = sp.channel;
+  const visible = applyFilters(threads, folder, channel);
+  const activeThreadId = sp.thread ?? visible[0]?.id ?? threads[0]?.id;
   const detail = activeThreadId ? await fetchMyMessageThread(activeThreadId) : null;
 
   return (
@@ -43,21 +67,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
           </>
         }
         sub={t('sub')}
-        right={
-          <>
-            <button
-              type="button"
-              className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2 text-[13px] font-semibold"
-            >
-              <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
-              {t('cta_mark_read')}
-            </button>
-            <button type="button" className="btn btn-primary btn-sm rounded-full">
-              <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
-              {t('cta_new')}
-            </button>
-          </>
-        }
+        right={<MessagesActions locale={locale} totalUnread={totalUnread} />}
       />
 
       {threads.length === 0 ? (
@@ -70,8 +80,13 @@ export default async function MessagesPage({ params, searchParams }: Props) {
         </div>
       ) : (
         <div className="border-base-300 bg-base-100 grid min-h-[640px] overflow-hidden rounded-2xl border lg:grid-cols-[180px_1fr_1.4fr]">
-          <FoldersRail counts={folderCounts(threads)} />
-          <ThreadList threads={threads} activeId={activeThreadId} locale={locale} />
+          <FoldersRail
+            locale={locale}
+            counts={folderCounts(threads)}
+            folder={folder}
+            channel={channel}
+          />
+          <ThreadList threads={visible} activeId={activeThreadId} locale={locale} />
           {detail ? (
             <ThreadView detail={detail} locale={locale} />
           ) : (
@@ -87,9 +102,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
   );
 }
 
-function folderCounts(
-  threads: Awaited<ReturnType<typeof fetchMyMessageThreads>>['threads'],
-): Record<string, number> {
+function folderCounts(threads: Thread[]): Record<string, number> {
   const counts: Record<string, number> = {
     all: threads.length,
     employers: 0,
@@ -97,8 +110,8 @@ function folderCounts(
     agconn: 0,
   };
   for (const t of threads) {
-    if (t.employer.toLowerCase().includes('agconn')) counts.agconn++;
-    else counts.employers++;
+    if (t.employer.toLowerCase().includes('agconn')) counts.agconn = (counts.agconn ?? 0) + 1;
+    else counts.employers = (counts.employers ?? 0) + 1;
   }
   return counts;
 }

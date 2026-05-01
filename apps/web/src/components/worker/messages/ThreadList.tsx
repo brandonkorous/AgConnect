@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,15 +11,35 @@ type Props = { threads: Thread[]; activeId: string | undefined; locale: string }
 
 export function ThreadList({ threads, activeId, locale }: Props) {
   const t = useTranslations('worker.messages.list');
+  const [query, setQuery] = useState('');
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? threads.filter((th) => {
+        const hay = `${th.employer} ${th.title} ${th.lastMessage?.body ?? ''}`.toLowerCase();
+        return hay.includes(q);
+      })
+    : threads;
   return (
     <div className="border-base-300 overflow-y-auto border-r">
       <div className="border-base-300 border-b p-3">
-        <div className="bg-base-200 text-base-content/60 flex items-center gap-2 rounded-full px-3 py-2">
+        <label className="bg-base-200 text-base-content/60 flex items-center gap-2 rounded-full px-3 py-2">
           <FontAwesomeIcon icon={faMagnifyingGlass} className="h-3 w-3" />
-          <span className="text-[12px]">{t('search')}</span>
-        </div>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('search')}
+            aria-label={t('search')}
+            className="placeholder:text-base-content/60 text-base-content w-full bg-transparent text-[12px] outline-none"
+          />
+        </label>
       </div>
-      {threads.map((th, i) => {
+      {filtered.length === 0 && (
+        <div className="text-base-content/60 px-4 py-6 text-center text-[12.5px]">
+          {locale === 'es' ? 'Sin resultados' : 'No matches'}
+        </div>
+      )}
+      {filtered.map((th, i) => {
         const isActive = th.id === activeId;
         const isAgconn = th.employer.toLowerCase().includes('agconn');
         const initials = th.employer
@@ -41,7 +64,7 @@ export function ThreadList({ threads, activeId, locale }: Props) {
             href={`/${locale}/worker/messages?thread=${th.id}`}
             className={[
               'block cursor-pointer px-4 py-3.5 no-underline',
-              i < threads.length - 1 ? 'border-base-300 border-b' : '',
+              i < filtered.length - 1 ? 'border-base-300 border-b' : '',
               isActive
                 ? 'bg-base-200 border-l-primary border-l-[3px]'
                 : 'border-l-[3px] border-l-transparent',

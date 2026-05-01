@@ -1,14 +1,60 @@
+'use client';
+
+import { useState, useTransition } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faBookmark } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faBookmark, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { createSavedSearchAction } from '@/lib/api/saved-searches-actions';
 
 type Props = {
   totalCount: number;
   county: string;
+  locale: string;
 };
 
-export function BrowseJobsHeader({ totalCount, county }: Props) {
+function searchParamsToFilters(sp: URLSearchParams) {
+  const county = sp.get('county');
+  const skills = sp.get('skills');
+  const wageMin = sp.get('wageMin');
+  const startBefore = sp.get('startBefore');
+  return {
+    ...(county ? { county: [county] } : {}),
+    ...(skills
+      ? { skills: skills.split(',').map((s) => s.trim()).filter(Boolean) }
+      : {}),
+    ...(wageMin ? { wageMin: Number(wageMin) } : {}),
+    ...(startBefore ? { startBefore } : {}),
+  };
+}
+
+export function BrowseJobsHeader({ totalCount, county, locale }: Props) {
   const t = useTranslations('worker.jobs.browse');
+  const searchParams = useSearchParams();
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  function save() {
+    setError(null);
+    startTransition(async () => {
+      const filters = searchParamsToFilters(searchParams);
+      const res = await createSavedSearchAction({
+        name: null,
+        filters,
+        alertChannel: 'sms',
+        alertActive: true,
+      });
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        setError(res.code === 'unauthenticated' ? t('save_search_login') : t('save_search_error'));
+      }
+    });
+  }
+
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
@@ -25,21 +71,31 @@ export function BrowseJobsHeader({ totalCount, county }: Props) {
         <p className="text-base-content/70 mt-1.5 max-w-[640px] text-[14.5px]">
           {t('sub')}
         </p>
+        {error && (
+          <div className="text-error mt-2 text-[12px]" role="alert">
+            {error}
+          </div>
+        )}
       </div>
       <div className="flex gap-2">
-        <button
-          type="button"
-          className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2.5 text-[13px] font-semibold"
+        <Link
+          href={`/${locale}/worker/jobs#map`}
+          className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2.5 text-[13px] font-semibold no-underline"
         >
           <FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" />
           {t('map_view')}
-        </button>
+        </Link>
         <button
           type="button"
-          className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-[13px] font-medium"
+          onClick={save}
+          disabled={pending || saved}
+          className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-[13px] font-medium disabled:opacity-70"
         >
-          <FontAwesomeIcon icon={faBookmark} className="h-3.5 w-3.5" />
-          {t('save_search')}
+          <FontAwesomeIcon
+            icon={saved ? faCheck : faBookmark}
+            className="h-3.5 w-3.5"
+          />
+          {saved ? t('save_search_saved') : pending ? t('save_search_saving') : t('save_search')}
         </button>
       </div>
     </div>

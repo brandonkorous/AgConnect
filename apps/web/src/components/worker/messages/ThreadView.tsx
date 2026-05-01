@@ -1,14 +1,39 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faLeaf, faIdBadge, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faLeaf, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { sendMessageAction } from '@/lib/api/me-actions';
 import type { ThreadDetail } from '@/lib/api/me';
 
 type Props = { detail: ThreadDetail; locale: string };
+
+function ThreadHeaderActions({
+  detail,
+  locale,
+  t,
+}: {
+  detail: ThreadDetail;
+  locale: string;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const hasPinnedShift = Boolean(detail.conversation.pinnedShiftId);
+  return (
+    <div className="flex gap-2">
+      {hasPinnedShift && (
+        <Link
+          href={`/${locale}/worker/shifts`}
+          className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-[12px] font-semibold no-underline"
+        >
+          <FontAwesomeIcon icon={faLeaf} className="h-3 w-3" /> {t('view_job')}
+        </Link>
+      )}
+    </div>
+  );
+}
 
 export function ThreadView({ detail, locale }: Props) {
   const t = useTranslations('worker.messages.thread');
@@ -67,20 +92,7 @@ export function ThreadView({ detail, locale }: Props) {
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-[12px] font-semibold"
-          >
-            <FontAwesomeIcon icon={faPhone} className="h-3 w-3" /> {t('call')}
-          </button>
-          <button
-            type="button"
-            className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-[12px] font-semibold"
-          >
-            <FontAwesomeIcon icon={faLeaf} className="h-3 w-3" /> {t('view_job')}
-          </button>
-        </div>
+        <ThreadHeaderActions detail={detail} locale={locale} t={t} />
       </div>
 
       <div
@@ -145,13 +157,6 @@ export function ThreadView({ detail, locale }: Props) {
             className="text-base-content flex-1 bg-transparent text-[13.5px] outline-none"
             disabled={pending}
           />
-          <button
-            type="button"
-            aria-label={t('attach')}
-            className="text-base-content/60 p-1.5"
-          >
-            <FontAwesomeIcon icon={faIdBadge} className="h-3.5 w-3.5" />
-          </button>
           <button
             type="submit"
             disabled={pending || body.trim().length === 0}

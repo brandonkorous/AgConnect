@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -7,7 +8,10 @@ import { ShiftsCalendar } from '@/components/worker/shifts/ShiftsCalendar';
 import { UpNextList } from '@/components/worker/shifts/UpNextList';
 import { fetchMyShifts } from '@/lib/api/me';
 
-type Props = { params: Promise<{ locale: string }> };
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ month?: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -15,26 +19,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t('meta.title') };
 }
 
-export default async function ShiftsPage({ params }: Props) {
+function parseMonth(raw: string | undefined): { year: number; month: number } {
+  const now = new Date();
+  if (raw && /^\d{4}-\d{2}$/.test(raw)) {
+    const [y, m] = raw.split('-').map(Number);
+    return { year: y ?? now.getUTCFullYear(), month: (m ?? 1) - 1 };
+  }
+  return { year: now.getUTCFullYear(), month: now.getUTCMonth() };
+}
+
+export default async function ShiftsPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const sp = await searchParams;
   const t = await getTranslations({ locale, namespace: 'worker.shifts' });
 
-  const start = new Date();
-  start.setUTCDate(1);
-  const end = new Date(start);
-  end.setUTCMonth(end.getUTCMonth() + 1);
+  const { year, month } = parseMonth(sp.month);
+  const start = new Date(Date.UTC(year, month, 1));
+  const end = new Date(Date.UTC(year, month + 1, 1));
   const rows = await fetchMyShifts({
     from: start.toISOString().slice(0, 10),
     to: end.toISOString().slice(0, 10),
   });
 
-  const totalHours = rows.reduce(
-    (acc, r) => acc + (r.hoursWorked ?? 0),
-    0,
-  );
+  const totalHours = rows.reduce((acc, r) => acc + (r.hoursWorked ?? 0), 0);
   const employerCount = new Set(rows.map((r) => r.shift.employer)).size;
   const projectedPayCents = rows.reduce(
-    (acc, r) => acc + Math.round((r.hoursWorked ?? 0) * 22 * 100), // approx; real calc in pay endpoint
+    (acc, r) => acc + Math.round((r.hoursWorked ?? 0) * 22 * 100),
     0,
   );
 
@@ -52,22 +62,26 @@ export default async function ShiftsPage({ params }: Props) {
         sub={t('sub')}
         right={
           <>
-            <button
-              type="button"
-              className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2 text-[13px] font-semibold"
+            <a
+              href="/api/me/shifts/ics"
+              download="agconn-shifts.ics"
+              className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2 text-[13px] font-semibold no-underline"
             >
               <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
               {t('cta_sync')}
-            </button>
-            <button type="button" className="btn btn-primary btn-sm rounded-full">
+            </a>
+            <Link
+              href={`/${locale}/worker/profile#availability`}
+              className="btn btn-primary btn-sm rounded-full"
+            >
               <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
               {t('cta_availability')}
-            </button>
+            </Link>
           </>
         }
       />
       <div className="grid gap-5 lg:grid-cols-[1.7fr_1fr]">
-        <ShiftsCalendar shifts={rows} locale={locale} />
+        <ShiftsCalendar shifts={rows} locale={locale} year={year} month={month} />
         <div className="grid gap-3.5">
           <MonthSummary
             locale={locale}

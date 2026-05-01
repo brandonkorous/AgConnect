@@ -54,13 +54,13 @@ export function InProgressHero({ enrollment, locale }: Props) {
               {t('cta_continue')}
               <FontAwesomeIcon icon={faArrowRight} className="h-3 w-3" />
             </Link>
-            <button
-              type="button"
-              className="text-base-100 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-transparent px-4 py-2.5 text-[13.5px] font-semibold"
+            <Link
+              href={`/${locale}/worker/shifts`}
+              className="text-base-100 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-transparent px-4 py-2.5 text-[13.5px] font-semibold no-underline"
             >
               <FontAwesomeIcon icon={faCalendarDays} className="h-3 w-3" />
               {t('cta_schedule')}
-            </button>
+            </Link>
           </div>
         </div>
 

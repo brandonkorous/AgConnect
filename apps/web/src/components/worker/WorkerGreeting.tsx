@@ -43,8 +43,15 @@ function Spark({ width = 240, height = 56 }: { width?: number; height?: number }
     );
 }
 
-export function WorkerGreeting({ name }: { name: string }) {
+type GreetingProps = {
+    name: string;
+    upcomingShifts: number;
+    newMatches: number;
+};
+
+export function WorkerGreeting({ name, upcomingShifts, newMatches }: GreetingProps) {
     const t = useTranslations('worker.dashboard.greeting');
+    const isFresh = upcomingShifts === 0 && newMatches === 0;
 
     return (
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -55,7 +62,11 @@ export function WorkerGreeting({ name }: { name: string }) {
                 <h1 className="font-serif mt-2 text-4xl font-medium leading-[1.05] tracking-tight md:text-5xl">
                     {t('salutation', { name })}
                 </h1>
-                <p className="text-base-content/70 mt-1.5 text-base">{t('summary')}</p>
+                <p className="text-base-content/70 mt-1.5 text-base">
+                    {isFresh
+                        ? t('summary_empty')
+                        : t('summary', { shifts: upcomingShifts, matches: newMatches })}
+                </p>
             </div>
             <div className="bg-base-100 border-base-300 rounded-2xl border p-3.5">
                 <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/60">

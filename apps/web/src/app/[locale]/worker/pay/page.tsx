@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
@@ -73,10 +74,14 @@ export default async function PayPage({ params }: Props) {
         }
         sub={t('sub')}
         right={
-          <button type="button" className="btn btn-primary btn-sm rounded-full">
+          <a
+            href="/api/me/paystubs/csv"
+            download="agconn-paystubs.csv"
+            className="btn btn-primary btn-sm rounded-full no-underline"
+          >
             <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
             {t('cta_export')}
-          </button>
+          </a>
         }
       />
 
@@ -109,51 +114,32 @@ async function DirectDepositCard({ locale }: { locale: string }) {
       <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
         {t('eyebrow')}
       </div>
-      <div className="mt-3 flex items-center gap-3">
-        <div className="bg-base-200 grid h-11 w-11 place-items-center rounded-xl font-mono text-[11px] font-bold">
-          BOA
-        </div>
-        <div className="flex-1">
-          <div className="text-[13.5px] font-semibold">{t('account')}</div>
-          <div className="text-base-content/60 text-[11.5px]">{t('bank')}</div>
-        </div>
-      </div>
-      <button
-        type="button"
-        className="text-primary mt-3 bg-transparent text-[12px] font-bold"
+      <p className="text-base-content/70 mt-3 text-[13px]">{t('empty_body')}</p>
+      <Link
+        href={`/${locale}/worker/profile`}
+        className="text-primary mt-3 inline-block bg-transparent text-[12px] font-bold no-underline"
       >
         {t('manage')}
-      </button>
+      </Link>
     </div>
   );
 }
 
 async function TaxDocsCard({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'worker.pay.tax_docs' });
-  const docs = [
-    'W-2 · Westside Orchards',
-    'W-2 · Río Verde Farms',
-    '1099-MISC · Sunridge',
-  ];
   return (
     <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
       <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
         {t('eyebrow')}
       </div>
-      <div className="mt-3 grid gap-2">
-        {docs.map((d, i) => (
-          <div
-            key={d}
-            className={[
-              'flex items-center justify-between py-2',
-              i < docs.length - 1 ? 'border-base-300 border-b' : '',
-            ].join(' ')}
-          >
-            <div className="text-[12.5px]">{d}</div>
-            <FontAwesomeIcon icon={faDownload} className="text-base-content/50 h-3 w-3" />
-          </div>
-        ))}
-      </div>
+      <p className="text-base-content/70 mt-3 text-[13px]">{t('empty_body')}</p>
+      <a
+        href="/api/me/paystubs/csv"
+        download="agconn-paystubs.csv"
+        className="text-primary mt-3 inline-flex items-center gap-1.5 bg-transparent text-[12px] font-bold no-underline"
+      >
+        {t('export')}
+      </a>
     </div>
   );
 }
@@ -176,12 +162,12 @@ async function WageTransparencyCard({
           ? `Tu promedio de ${avgHourly} se compara con el rango del mercado en tu condado.`
           : `Your average of ${avgHourly} stacks up against the county's market range.`}
       </p>
-      <button
-        type="button"
-        className="text-primary mt-3 bg-transparent text-[12px] font-bold"
+      <Link
+        href={`/${locale}/worker/jobs?wageMin=22`}
+        className="text-primary mt-3 inline-block bg-transparent text-[12px] font-bold no-underline"
       >
         {t('cta')}
-      </button>
+      </Link>
     </div>
   );
 }

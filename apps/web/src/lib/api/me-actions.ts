@@ -50,3 +50,16 @@ export async function sendMessageAction(
   revalidatePath('/[locale]/worker/messages', 'page');
   return { ok: true, data: { id: res.data.id } };
 }
+
+export async function markAllMessagesReadAction(): Promise<ActionResult<{ marked: number }>> {
+  const api = await getServerApiClient();
+  const res = await api.post<{ marked: number }>(
+    '/v1/me/messages/read-all',
+    null,
+    { handleErrorInline: true },
+  );
+  if (!res.ok) return { ok: false, code: res.error.code, message: res.error.message };
+  revalidatePath('/[locale]/worker/messages', 'page');
+  revalidatePath('/[locale]/worker/dashboard', 'page');
+  return { ok: true, data: { marked: res.data.marked } };
+}

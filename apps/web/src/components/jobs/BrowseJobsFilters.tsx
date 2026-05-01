@@ -1,30 +1,94 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import type { Route } from 'next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-const FILTER_KEYS = [
+type FilterKey =
+  | 'within_25'
+  | 'this_week'
+  | 'pays_22'
+  | 'has_housing'
+  | 'pickup'
+  | 'no_experience';
+
+const FILTER_KEYS: FilterKey[] = [
   'within_25',
   'this_week',
   'pays_22',
   'has_housing',
   'pickup',
   'no_experience',
-] as const;
+];
+
+function isOn(sp: URLSearchParams, key: FilterKey): boolean {
+  switch (key) {
+    case 'within_25':
+      return sp.get('county') === 'Madera';
+    case 'this_week': {
+      const v = sp.get('startBefore');
+      return Boolean(v);
+    }
+    case 'pays_22':
+      return Number(sp.get('wageMin') ?? '0') >= 22;
+    case 'has_housing':
+      return sp.get('housing') === '1';
+    case 'pickup':
+      return sp.get('transport') === '1';
+    case 'no_experience':
+      return sp.get('noExperience') === '1';
+  }
+}
+
+function applyToggle(sp: URLSearchParams, key: FilterKey, on: boolean): URLSearchParams {
+  const next = new URLSearchParams(sp);
+  next.delete('cursor');
+  switch (key) {
+    case 'within_25':
+      if (on) next.set('county', 'Madera');
+      else next.delete('county');
+      break;
+    case 'this_week':
+      if (on) {
+        const d = new Date();
+        d.setUTCDate(d.getUTCDate() + 7);
+        next.set('startBefore', d.toISOString().slice(0, 10));
+      } else {
+        next.delete('startBefore');
+      }
+      break;
+    case 'pays_22':
+      if (on) next.set('wageMin', '22');
+      else next.delete('wageMin');
+      break;
+    case 'has_housing':
+      if (on) next.set('housing', '1');
+      else next.delete('housing');
+      break;
+    case 'pickup':
+      if (on) next.set('transport', '1');
+      else next.delete('transport');
+      break;
+    case 'no_experience':
+      if (on) next.set('noExperience', '1');
+      else next.delete('noExperience');
+      break;
+  }
+  return next;
+}
 
 export function BrowseJobsFilters() {
   const t = useTranslations('worker.jobs.browse');
-  const [active, setActive] = useState<Set<string>>(
-    new Set(['within_25', 'this_week']),
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  function toggle(k: string) {
-    const next = new Set(active);
-    if (next.has(k)) next.delete(k);
-    else next.add(k);
-    setActive(next);
+  function toggle(k: FilterKey) {
+    const next = applyToggle(searchParams, k, !isOn(searchParams, k));
+    const qs = next.toString();
+    router.push((qs ? `${pathname}?${qs}` : pathname) as Route);
   }
 
   return (
@@ -33,21 +97,21 @@ export function BrowseJobsFilters() {
         {t('filters_label')}
       </span>
       {FILTER_KEYS.map((k) => {
-        const isOn = active.has(k);
+        const on = isOn(searchParams, k);
         return (
           <button
             type="button"
             key={k}
-            aria-pressed={isOn}
+            aria-pressed={on}
             onClick={() => toggle(k)}
             className={[
               'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-colors',
-              isOn
+              on
                 ? 'bg-base-content text-base-100'
                 : 'bg-base-200 text-base-content/70 hover:bg-base-300',
             ].join(' ')}
           >
-            {isOn && <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />}
+            {on && <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />}
             {t(`filter.${k}` as 'filter.within_25')}
           </button>
         );

@@ -3,9 +3,16 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash, faBell, faBellSlash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPlus,
+  faTrash,
+  faBell,
+  faBellSlash,
+  faArrowRight,
+} from '@fortawesome/free-solid-svg-icons';
 import { Pill } from '@/components/worker/primitives/Pill';
 import {
   createSavedSearchAction,
@@ -106,6 +113,13 @@ export function SavedSearchesClient({ locale, initial }: Props) {
               )}
             </div>
             <div className="flex shrink-0 gap-1.5">
+              <Link
+                href={filtersToHref(s.filters, locale) as Route}
+                className="bg-primary text-primary-content inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11.5px] font-semibold no-underline"
+              >
+                {t('view_jobs')}
+                <FontAwesomeIcon icon={faArrowRight} className="h-3 w-3" />
+              </Link>
               <button
                 type="button"
                 onClick={() => toggleAlerts(s)}
@@ -274,4 +288,15 @@ function formatFiltersAsName(filters: SavedSearch['filters'], locale: string): s
   if (filters.wageMin !== undefined) parts.push(`$${filters.wageMin}+/hr`);
   if (filters.skills?.length) parts.push(filters.skills.slice(0, 2).join(', '));
   return parts.join(' · ') || (locale === 'es' ? 'Todos los trabajos' : 'All jobs');
+}
+
+function filtersToHref(filters: SavedSearch['filters'], locale: string): string {
+  const sp = new URLSearchParams();
+  const firstCounty = filters.county?.[0];
+  if (firstCounty) sp.set('county', firstCounty);
+  if (filters.skills?.length) sp.set('skills', filters.skills.join(','));
+  if (filters.wageMin !== undefined) sp.set('wageMin', String(filters.wageMin));
+  if (filters.startBefore) sp.set('startBefore', filters.startBefore);
+  const qs = sp.toString();
+  return `/${locale}/worker/jobs${qs ? `?${qs}` : ''}`;
 }

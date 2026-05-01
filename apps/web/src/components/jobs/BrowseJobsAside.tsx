@@ -1,18 +1,36 @@
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import type { Route } from 'next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import type { SavedSearch } from '@/lib/api/saved-searches';
 
-const SAVED = [
-  { name: 'Grape harvest · Madera', hits: 12 },
-  { name: 'Pays >$22 · Within 25 mi', hits: 28 },
-  { name: 'Has housing · Statewide', hits: 47 },
-];
+type Props = { locale: string; savedSearches: SavedSearch[] };
 
-export function BrowseJobsAside() {
-  const t = useTranslations('worker.jobs.browse.aside');
+function filtersToHref(filters: SavedSearch['filters'], locale: string): string {
+  const sp = new URLSearchParams();
+  const firstCounty = filters.county?.[0];
+  if (firstCounty) sp.set('county', firstCounty);
+  if (filters.skills?.length) sp.set('skills', filters.skills.join(','));
+  if (filters.wageMin !== undefined) sp.set('wageMin', String(filters.wageMin));
+  if (filters.startBefore) sp.set('startBefore', filters.startBefore);
+  const qs = sp.toString();
+  return `/${locale}/worker/jobs${qs ? `?${qs}` : ''}`;
+}
+
+function filtersToLabel(filters: SavedSearch['filters'], locale: string): string {
+  const parts: string[] = [];
+  if (filters.county?.length) parts.push(filters.county.join(', '));
+  if (filters.wageMin !== undefined) parts.push(`$${filters.wageMin}+/hr`);
+  if (filters.skills?.length) parts.push(filters.skills.slice(0, 2).join(', '));
+  return parts.join(' · ') || (locale === 'es' ? 'Todos los trabajos' : 'All jobs');
+}
+
+export async function BrowseJobsAside({ locale, savedSearches }: Props) {
+  const t = await getTranslations({ locale, namespace: 'worker.jobs.browse.aside' });
+  const visible = savedSearches.slice(0, 3);
   return (
-    <div className="grid content-start gap-3.5">
-      {/* SMS apply card — dark with gold accent */}
+    <div id="map" className="grid content-start gap-3.5">
       <div className="bg-base-content text-base-100 relative overflow-hidden rounded-2xl p-[18px]">
         <div
           aria-hidden
@@ -40,7 +58,6 @@ export function BrowseJobsAside() {
         </div>
       </div>
 
-      {/* Map preview card */}
       <div className="border-base-300 rounded-2xl border bg-white p-[18px]">
         <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
           {t('map.eyebrow')}
@@ -100,41 +117,57 @@ export function BrowseJobsAside() {
             {t('map.label')}
           </div>
         </div>
-        <button
-          type="button"
-          className="border-base-300 mt-3 w-full rounded-full border bg-transparent py-2.5 text-[12.5px] font-semibold"
+        <Link
+          href={`/${locale}/worker/shifts`}
+          className="border-base-300 mt-3 block w-full rounded-full border bg-transparent py-2.5 text-center text-[12.5px] font-semibold no-underline"
         >
           {t('map.cta')}
-        </button>
+        </Link>
       </div>
 
-      {/* Saved searches card */}
       <div className="border-base-300 rounded-2xl border bg-white p-[18px]">
-        <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
-          {t('saved.eyebrow')}
+        <div className="flex items-center justify-between">
+          <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
+            {t('saved.eyebrow')}
+          </div>
+          <Link
+            href={`/${locale}/worker/saved-searches`}
+            className="text-primary text-[11.5px] font-semibold no-underline"
+          >
+            {t('saved.manage')}
+          </Link>
         </div>
-        <div className="mt-2">
-          {SAVED.map((s, i) => (
-            <div
-              key={i}
-              className={[
-                'flex items-center justify-between py-2.5',
-                i < SAVED.length - 1 ? 'border-base-300 border-b' : '',
-              ].join(' ')}
-            >
-              <div>
-                <div className="text-[13px] font-semibold">{s.name}</div>
-                <div className="text-base-content/60 font-mono text-[11px]">
-                  {t('saved.hits', { hits: s.hits })}
+        {visible.length === 0 ? (
+          <p className="text-base-content/60 mt-3 text-[12.5px]">
+            {t('saved.empty')}
+          </p>
+        ) : (
+          <div className="mt-2">
+            {visible.map((s, i) => (
+              <Link
+                key={s.id}
+                href={filtersToHref(s.filters, locale) as Route}
+                className={[
+                  'flex items-center justify-between py-2.5 no-underline',
+                  i < visible.length - 1 ? 'border-base-300 border-b' : '',
+                ].join(' ')}
+              >
+                <div className="min-w-0">
+                  <div className="text-base-content truncate text-[13px] font-semibold">
+                    {s.name ?? filtersToLabel(s.filters, locale)}
+                  </div>
+                  <div className="text-base-content/60 font-mono text-[11px]">
+                    {filtersToLabel(s.filters, locale)}
+                  </div>
                 </div>
-              </div>
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                className="text-base-content/50 h-3.5 w-3.5"
-              />
-            </div>
-          ))}
-        </div>
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  className="text-base-content/50 h-3.5 w-3.5 shrink-0"
+                />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

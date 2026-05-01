@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { WorkerJobCard } from './WorkerJobCard';
 import { fetchRecommendedJobs } from '@/lib/api/jobs';
-
-const FILTER_KEYS = ['all', 'within_25', 'this_week', 'pays_22'] as const;
+import { MatchedJobsClient } from './MatchedJobsClient';
 
 type Props = { locale: string };
 
@@ -19,22 +17,6 @@ export async function MatchedJobs({ locale }: Props) {
             {t('title')}
           </h2>
           <p className="text-base-content/60 mt-0.5 text-sm">{t('subtitle')}</p>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {FILTER_KEYS.map((key, i) => (
-            <button
-              key={key}
-              type="button"
-              className={[
-                'rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
-                i === 0
-                  ? 'bg-neutral text-neutral-content'
-                  : 'bg-base-100 text-base-content/70 border-base-300 hover:bg-base-200 border',
-              ].join(' ')}
-            >
-              {t(`filters.${key}`)}
-            </button>
-          ))}
         </div>
       </header>
       {jobs.length === 0 ? (
@@ -52,11 +34,17 @@ export async function MatchedJobs({ locale }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-3.5 md:grid-cols-2">
-          {jobs.slice(0, 4).map((job) => (
-            <WorkerJobCard key={job.id} job={job} locale={locale} />
-          ))}
-        </div>
+        <MatchedJobsClient
+          jobs={jobs}
+          locale={locale}
+          labels={{
+            all: t('filters.all'),
+            within25: t('filters.within_25'),
+            thisWeek: t('filters.this_week'),
+            pays22: t('filters.pays_22'),
+            empty: locale === 'es' ? 'Sin resultados' : 'No matches',
+          }}
+        />
       )}
     </section>
   );

@@ -1,6 +1,6 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import type { Route } from 'next';
 import type { ShiftRow } from '@/lib/api/me';
 
 const TONE: Record<string, string> = {
@@ -11,18 +11,28 @@ const TONE: Record<string, string> = {
   no_show: 'bg-error/20 text-error',
 };
 
-type Props = { shifts: ShiftRow[]; locale: string };
+type Props = { shifts: ShiftRow[]; locale: string; year: number; month: number };
 
-export function ShiftsCalendar({ shifts, locale }: Props) {
-  const t = useTranslations('worker.shifts.calendar');
+function pad2(n: number): string {
+  return n < 10 ? `0${n}` : String(n);
+}
+
+function monthParam(year: number, month: number): string {
+  return `${year}-${pad2(month + 1)}`;
+}
+
+function shiftMonth(year: number, month: number, delta: number): { year: number; month: number } {
+  const date = new Date(Date.UTC(year, month + delta, 1));
+  return { year: date.getUTCFullYear(), month: date.getUTCMonth() };
+}
+
+export async function ShiftsCalendar({ shifts, locale, year, month }: Props) {
+  const t = await getTranslations({ locale, namespace: 'worker.shifts.calendar' });
   const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
   const today = new Date();
-  const monthStart = new Date(
-    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1),
-  );
-  // Layout: align week to Monday, then 35 cells (5 weeks).
-  const monthStartWeekday = (monthStart.getUTCDay() + 6) % 7; // 0=Mon..6=Sun
+  const monthStart = new Date(Date.UTC(year, month, 1));
+  const monthStartWeekday = (monthStart.getUTCDay() + 6) % 7;
   const cells = Array.from({ length: 35 }, (_, i) => {
     const day = i - monthStartWeekday + 1;
     const inMonth = day >= 1 && day <= daysInMonth(monthStart);
@@ -31,7 +41,6 @@ export function ShiftsCalendar({ shifts, locale }: Props) {
     return { day, inMonth, date };
   });
 
-  // Bucket shifts by date (yyyy-mm-dd).
   const byDate = new Map<string, ShiftRow[]>();
   for (const s of shifts) {
     const key = s.shift.date;
@@ -44,38 +53,36 @@ export function ShiftsCalendar({ shifts, locale }: Props) {
     month: 'long',
     year: 'numeric',
   });
+  const prev = shiftMonth(year, month, -1);
+  const next = shiftMonth(year, month, 1);
+  const prevHref = `?month=${monthParam(prev.year, prev.month)}`;
+  const nextHref = `?month=${monthParam(next.year, next.month)}`;
 
   return (
     <div className="border-base-300 bg-base-100 overflow-hidden rounded-2xl border">
       <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <Link
+            href={prevHref as Route}
             aria-label={t('prev')}
-            className="bg-base-200 grid h-8 w-8 place-items-center rounded-full text-base"
+            className="bg-base-200 grid h-8 w-8 place-items-center rounded-full text-base no-underline"
           >
             ‹
-          </button>
+          </Link>
           <div className="font-serif text-[22px] tracking-[-0.02em]">
             {monthLabel}
           </div>
-          <button
-            type="button"
+          <Link
+            href={nextHref as Route}
             aria-label={t('next')}
-            className="bg-base-200 grid h-8 w-8 place-items-center rounded-full text-base"
+            className="bg-base-200 grid h-8 w-8 place-items-center rounded-full text-base no-underline"
           >
             ›
-          </button>
+          </Link>
         </div>
         <div className="bg-base-200 inline-flex items-center rounded-full p-[2px] font-mono text-[11.5px]">
           <span className="bg-base-content text-base-100 rounded-full px-3 py-[5px] font-bold">
             {t('view_month')}
-          </span>
-          <span className="text-base-content/60 px-3 py-[5px] font-semibold">
-            {t('view_week')}
-          </span>
-          <span className="text-base-content/60 px-3 py-[5px] font-semibold">
-            {t('view_agenda')}
           </span>
         </div>
       </div>
@@ -141,7 +148,8 @@ export function ShiftsCalendar({ shifts, locale }: Props) {
                   ].join(' ')}
                 >
                   <span className="mr-1 font-mono opacity-75">{sh.shift.startTime}</span>
-                  {sh.shift.employer.split(' ')[0]} · {(sh.shift.jobTitleEn ?? sh.shift.crewName ?? '').slice(0, 12)}
+                  {sh.shift.employer.split(' ')[0]} ·{' '}
+                  {(sh.shift.jobTitleEn ?? sh.shift.crewName ?? '').slice(0, 12)}
                 </div>
               ))}
               {cellShifts.length > 2 && (

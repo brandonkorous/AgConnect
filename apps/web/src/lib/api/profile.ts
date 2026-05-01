@@ -1,6 +1,11 @@
 import 'server-only';
 import { getServerApiClient } from './server-client';
 
+export type AvailabilityFlags = {
+  weekdays: boolean;
+  weekends: boolean;
+};
+
 export type ProfileSnapshot = {
   firstName: string;
   lastName: string;
@@ -11,6 +16,7 @@ export type ProfileSnapshot = {
   experience: SectionItem[];
   education: SectionItem[];
   certifications: SectionItem[];
+  availability: AvailabilityFlags;
   updatedAt: string;
 };
 
@@ -59,8 +65,39 @@ const EMPTY_SNAPSHOT: ProfileSnapshot = {
   experience: [],
   education: [],
   certifications: [],
+  availability: { weekdays: true, weekends: false },
   updatedAt: new Date(0).toISOString(),
 };
+
+function dayOpen(day: unknown): boolean {
+  if (!day || typeof day !== 'object') return false;
+  const d = day as { am?: unknown; pm?: unknown };
+  return Boolean(d.am) || Boolean(d.pm);
+}
+
+function readAvailability(raw: unknown): AvailabilityFlags {
+  if (!raw || typeof raw !== 'object') {
+    return { weekdays: false, weekends: false };
+  }
+  const v = raw as Record<string, unknown>;
+  const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri'].some((k) => dayOpen(v[k]));
+  const weekends = ['sat', 'sun'].some((k) => dayOpen(v[k]));
+  return { weekdays, weekends };
+}
+
+export function expandAvailability(flags: AvailabilityFlags) {
+  const weekday = flags.weekdays ? { am: true, pm: true } : { am: false, pm: false };
+  const weekend = flags.weekends ? { am: true, pm: true } : { am: false, pm: false };
+  return {
+    mon: weekday,
+    tue: weekday,
+    wed: weekday,
+    thu: weekday,
+    fri: weekday,
+    sat: weekend,
+    sun: weekend,
+  };
+}
 
 export async function fetchProfile(): Promise<ProfileSnapshot> {
   const api = await getServerApiClient();
@@ -87,6 +124,7 @@ export async function fetchProfile(): Promise<ProfileSnapshot> {
     certifications: Array.isArray(resume.certifications)
       ? resume.certifications
       : [],
+    availability: readAvailability(workerProfile.availability),
     updatedAt: workerProfile.updatedAt,
   };
 }

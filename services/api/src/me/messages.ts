@@ -114,6 +114,15 @@ meMessagesRoutes.get('/:id', async (c) => {
   });
 });
 
+meMessagesRoutes.post('/read-all', async (c) => {
+  const workerId = c.var.userId;
+  const result = await c.var.db.conversationParticipant.updateMany({
+    where: { userId: workerId, leftAt: null, unreadCount: { gt: 0 } },
+    data: { unreadCount: 0, lastReadAt: new Date() },
+  });
+  return ok(c, { marked: result.count });
+});
+
 const SendBody = z.object({ body: z.string().min(1).max(2000) });
 
 meMessagesRoutes.post('/:id/send', validate('json', SendBody), async (c) => {

@@ -67,13 +67,14 @@ export function NextDepositCard({ nextDeposit }: Props) {
             <div className="mt-0.5 font-mono font-bold">Direct</div>
           </div>
         </div>
-        <button
-          type="button"
-          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-2.5 text-[13px] font-semibold"
+        <a
+          href="/api/me/paystubs/csv"
+          download="agconn-paystubs.csv"
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-2.5 text-[13px] font-semibold no-underline"
         >
           <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
           {t('download')}
-        </button>
+        </a>
       </div>
     </div>
   );

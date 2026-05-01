@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
   savePatchAction,
   addResumeItemAction,
@@ -19,6 +19,11 @@ type SectionItem = {
   meta?: string;
 };
 
+type AvailabilityFlags = {
+  weekdays: boolean;
+  weekends: boolean;
+};
+
 type ProfileSnapshot = {
   firstName: string;
   lastName: string;
@@ -29,6 +34,7 @@ type ProfileSnapshot = {
   experience: SectionItem[];
   education: SectionItem[];
   certifications: SectionItem[];
+  availability: AvailabilityFlags;
   updatedAt: string;
 };
 
@@ -127,6 +133,11 @@ export function ProfileEditor({ locale, initial }: Props) {
         </FieldRow>
       </div>
 
+      <AvailabilitySection
+        availability={snapshot.availability}
+        onChange={(next) => patch('availability', next)}
+      />
+
       <SkillsSection
         skills={snapshot.skills}
         onChange={(next) => patch('skills', next)}
@@ -181,6 +192,7 @@ const EDITABLE_KEYS = {
   zipCode: true,
   county: true,
   skills: true,
+  availability: true,
 } as const;
 
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
@@ -189,6 +201,55 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
       <legend className="fieldset-legend">{label}</legend>
       {children}
     </fieldset>
+  );
+}
+
+function AvailabilitySection({
+  availability,
+  onChange,
+}: {
+  availability: AvailabilityFlags;
+  onChange: (next: AvailabilityFlags) => void;
+}) {
+  const t = useTranslations('worker.profile.availability');
+  return (
+    <div
+      id="availability"
+      className="border-base-300 bg-base-100 grid gap-3 rounded-2xl border p-5 scroll-mt-24"
+    >
+      <h2 className="text-base-content/70 text-xs font-semibold uppercase tracking-wide">
+        {t('title')}
+      </h2>
+      <p className="text-base-content/70 text-sm">{t('hint')}</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          aria-pressed={availability.weekdays}
+          onClick={() => onChange({ ...availability, weekdays: !availability.weekdays })}
+          className={[
+            'rounded-full px-4 py-2 text-[13px] font-semibold transition-colors',
+            availability.weekdays
+              ? 'bg-primary text-primary-content'
+              : 'border-base-300 border bg-transparent text-base-content/80',
+          ].join(' ')}
+        >
+          {t('weekdays')}
+        </button>
+        <button
+          type="button"
+          aria-pressed={availability.weekends}
+          onClick={() => onChange({ ...availability, weekends: !availability.weekends })}
+          className={[
+            'rounded-full px-4 py-2 text-[13px] font-semibold transition-colors',
+            availability.weekends
+              ? 'bg-primary text-primary-content'
+              : 'border-base-300 border bg-transparent text-base-content/80',
+          ].join(' ')}
+        >
+          {t('weekends')}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -408,13 +469,6 @@ function ItemRow({ item, onRemove }: { item: SectionItem; onRemove?: () => void 
           <div className="text-base-content/60 text-xs">{item.meta}</div>
         )}
       </div>
-      <button
-        type="button"
-        className="text-base-content/50 hover:text-base-content"
-        aria-label="edit"
-      >
-        <FontAwesomeIcon icon={faPen} className="h-3 w-3" />
-      </button>
       <button
         type="button"
         onClick={onRemove}
