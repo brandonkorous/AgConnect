@@ -12,7 +12,7 @@
   "dependencies": {
     "@agconn/db": "workspace:*",
     "@agconn/sms": "workspace:*",
-    "pg-boss": "10.3.2"
+    "pg-boss": "12.18.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

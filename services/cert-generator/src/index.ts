@@ -1,4 +1,4 @@
-import PgBoss from 'pg-boss';
+import { PgBoss } from 'pg-boss';
 import { prisma, EnrollmentStatus } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 import { renderCertHtml } from './render.js';

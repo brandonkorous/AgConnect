@@ -1,4 +1,4 @@
-import PgBoss from 'pg-boss';
+import { PgBoss } from 'pg-boss';
 import { prisma } from '@agconn/db';
 import { isProviderConfigured } from '@agconn/llm';
 import { parseResume } from './parser.js';

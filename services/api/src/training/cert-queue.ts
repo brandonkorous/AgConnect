@@ -1,4 +1,4 @@
-import PgBoss from 'pg-boss';
+import { PgBoss } from 'pg-boss';
 
 // Producer-side wrapper for the cert generator queue. The consumer lives in
 // services/cert-generator and owns the queue contract; we just publish.
@@ -16,7 +16,7 @@ export async function getCertGeneratorBoss(): Promise<PgBoss> {
 
     starting = (async () => {
         const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
-        boss.on('error', (err) => console.error('[cert-generator-queue] error', err));
+        boss.on('error', (err: unknown) => console.error('[cert-generator-queue] error', err));
         await boss.start();
         await boss.createQueue(CERT_GENERATOR_QUEUE);
         cached = boss;
