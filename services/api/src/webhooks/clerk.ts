@@ -33,23 +33,49 @@ const getWebhook = (): Webhook => {
   return cachedWebhook;
 };
 
-const deriveRoleFromMetadata = (md: unknown): UserRole => {
+// Public metadata is server-only-writable, unsafe metadata is user-writable.
+// Workers/employers self-attest at the sign-up form (the URL is the role
+// declaration), which lands in unsafe_metadata.role. We accept it here only
+// because (a) admin role is never grantable this way (only the four enum
+// values are allowed, and admin is set via Clerk dashboard), and (b) employer
+// gets gated downstream by FLC verification — self-attesting is just a UX
+// hint, not a permission grant.
+const ROLE_VALUES = ['worker', 'employer', 'training_org', 'admin'] as const;
+
+const readRole = (md: unknown): UserRole | null => {
   if (md && typeof md === 'object' && 'role' in md) {
     const r = (md as { role?: unknown }).role;
-    if (r === 'worker' || r === 'employer' || r === 'training_org' || r === 'admin') {
-      return r;
+    if ((ROLE_VALUES as readonly string[]).includes(String(r))) {
+      return r as UserRole;
     }
   }
-  return UserRole.worker;
+  return null;
 };
 
-const deriveLang = (md: unknown): Lang => {
+const deriveRoleFromEvent = (data: Record<string, unknown>): UserRole => {
+  return (
+    readRole(data['public_metadata']) ?? readRole(data['unsafe_metadata']) ?? UserRole.worker
+  );
+};
+
+const readLang = (md: unknown): Lang | null => {
   if (md && typeof md === 'object' && 'preferred_lang' in md) {
     const l = (md as { preferred_lang?: unknown }).preferred_lang;
     if (l === 'en') return Lang.en;
     if (l === 'es') return Lang.es;
   }
-  return Lang.es;
+  if (md && typeof md === 'object' && 'locale' in md) {
+    const l = (md as { locale?: unknown }).locale;
+    if (l === 'en') return Lang.en;
+    if (l === 'es') return Lang.es;
+  }
+  return null;
+};
+
+const deriveLangFromEvent = (data: Record<string, unknown>): Lang => {
+  return (
+    readLang(data['public_metadata']) ?? readLang(data['unsafe_metadata']) ?? Lang.es
+  );
 };
 
 const primaryEmail = (data: Record<string, unknown>): string | null => {
@@ -80,8 +106,8 @@ async function applyEvent(db: Tx, event: ClerkEvent): Promise<void> {
     case 'user.created':
     case 'user.updated': {
       if (!userId) return;
-      const role = deriveRoleFromMetadata(data['public_metadata']);
-      const preferredLang = deriveLang(data['public_metadata']);
+      const role = deriveRoleFromEvent(data);
+      const preferredLang = deriveLangFromEvent(data);
       const tenantId =
         (data['public_metadata'] as { tenant_id?: string } | undefined)?.tenant_id ?? null;
       const email = primaryEmail(data);

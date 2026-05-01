@@ -35,7 +35,7 @@ export function AudienceSplit() {
                             t('workers.bullet4'),
                         ]}
                         ctaText={t('workers.cta')}
-                        ctaHref={`/${locale}/sign-up?role=worker`}
+                        ctaHref={`/${locale}/worker/sign-up`}
                     />
                     <AudienceCard
                         surface="bone"
@@ -48,7 +48,7 @@ export function AudienceSplit() {
                             t('employers.bullet4'),
                         ]}
                         ctaText={t('employers.cta')}
-                        ctaHref={`/${locale}/sign-up?role=employer`}
+                        ctaHref={`/${locale}/employer/sign-up`}
                     />
                     <AudienceCard
                         surface="sage"
@@ -61,7 +61,7 @@ export function AudienceSplit() {
                             t('training.bullet4'),
                         ]}
                         ctaText={t('training.cta')}
-                        ctaHref={`/${locale}/sign-up?role=training_org`}
+                        ctaHref={`/${locale}/employer/sign-up`}
                     />
                 </div>
             </div>

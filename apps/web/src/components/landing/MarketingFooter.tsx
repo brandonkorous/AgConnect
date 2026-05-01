@@ -1,19 +1,66 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { FooterNewsletter } from './FooterNewsletter';
 import { FooterLegal } from './FooterLegal';
 
 const counties = ['fresno', 'tulare', 'kern', 'kings', 'madera'] as const;
 
-const cols = [
-    { key: 'workers', items: ['browse', 'training', 'wallet', 'rights', 'promotora', 'signin'] },
-    { key: 'employers', items: ['post', 'search', 'flc', 'pricing', 'stories', 'sales'] },
-    { key: 'partners', items: ['training_orgs', 'workforce', 'wioa', 'impact', 'press', 'research'] },
-    { key: 'company', items: ['about', 'mission', 'careers', 'trust', 'status', 'contact'] },
-] as const;
+type ColumnItem = { key: string; href: string };
+type Column = { key: string; items: ColumnItem[] };
+
+function buildColumns(locale: string): Column[] {
+    return [
+        {
+            key: 'workers',
+            items: [
+                { key: 'browse', href: `/${locale}/jobs` },
+                { key: 'training', href: `/${locale}/training` },
+                { key: 'wallet', href: `/${locale}/skills-wallet` },
+                { key: 'rights', href: `/${locale}/worker-rights` },
+                { key: 'promotora', href: `/${locale}/promotora` },
+                { key: 'signin', href: `/${locale}/sign-in` },
+            ],
+        },
+        {
+            key: 'employers',
+            items: [
+                { key: 'post', href: `/${locale}/employer/sign-up` },
+                { key: 'search', href: `/${locale}/employers#worker-search` },
+                { key: 'flc', href: `/${locale}/employers#flc-verification` },
+                { key: 'pricing', href: `/${locale}/#pricing` },
+                { key: 'stories', href: `/${locale}/#testimonials` },
+                { key: 'sales', href: 'mailto:sales@agconn.com' },
+            ],
+        },
+        {
+            key: 'partners',
+            items: [
+                { key: 'training_orgs', href: `/${locale}/partners#training-orgs` },
+                { key: 'workforce', href: `/${locale}/partners#workforce-boards` },
+                { key: 'wioa', href: `/${locale}/partners#wioa-exports` },
+                { key: 'impact', href: `/${locale}/impact` },
+                { key: 'press', href: `/${locale}/press` },
+                { key: 'research', href: `/${locale}/impact#methodology` },
+            ],
+        },
+        {
+            key: 'company',
+            items: [
+                { key: 'about', href: `/${locale}/about` },
+                { key: 'mission', href: `/${locale}/about#mission` },
+                { key: 'careers', href: `/${locale}/careers` },
+                { key: 'trust', href: `/${locale}/trust` },
+                { key: 'status', href: 'https://status.agconn.com' },
+                { key: 'contact', href: `/${locale}/contact` },
+            ],
+        },
+    ];
+}
 
 export function MarketingFooter() {
     const t = useTranslations('landing.footer');
+    const locale = useLocale();
+    const cols = buildColumns(locale);
 
     return (
         <footer className="bg-neutral text-neutral-content w-full">
@@ -46,12 +93,12 @@ export function MarketingFooter() {
                             <h3 className="text-accent label">{t(`col.${col.key}.title`)}</h3>
                             <ul className="menu menu-sm gap-2 p-0">
                                 {col.items.map((item) => (
-                                    <li key={item}>
+                                    <li key={item.key}>
                                         <a
-                                            href={`#${item}`}
+                                            href={item.href}
                                             className="text-neutral-content hover:text-accent hover:bg-transparent p-0"
                                         >
-                                            {t(`col.${col.key}.${item}`)}
+                                            {t(`col.${col.key}.${item.key}`)}
                                         </a>
                                     </li>
                                 ))}

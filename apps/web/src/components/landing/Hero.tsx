@@ -27,11 +27,11 @@ export function Hero() {
                     </p>
 
                     <div className="flex flex-wrap gap-3.5 pt-2">
-                        <a href={`/${locale}/sign-up?role=worker`} className="btn btn-primary btn-lg">
+                        <a href={`/${locale}/worker/sign-up`} className="btn btn-primary btn-lg">
                             {t('cta.primary')}
                             <FontAwesomeIcon icon={faArrowRight} className="text-base" />
                         </a>
-                        <a href={`/${locale}/sign-up?role=employer`} className="btn btn-outline btn-primary btn-lg">
+                        <a href={`/${locale}/employer/sign-up`} className="btn btn-outline btn-primary btn-lg">
                             {t('cta.secondary')}
                         </a>
                     </div>

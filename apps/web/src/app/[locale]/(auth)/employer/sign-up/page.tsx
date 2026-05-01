@@ -1,0 +1,21 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { AuthSplitShell } from '@/components/auth/AuthSplitShell';
+import { EmployerSignUpForm } from '@/components/auth/EmployerSignUpForm';
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'auth.sign_up_employer' });
+  return { title: t('meta_title') };
+}
+
+export default async function EmployerSignUpPage({ params }: Props) {
+  const { locale } = await params;
+  return (
+    <AuthSplitShell locale={locale} variant="employer">
+      <EmployerSignUpForm locale={locale} />
+    </AuthSplitShell>
+  );
+}

@@ -50,7 +50,7 @@ function WorkerCard({ locale }: { locale: string }) {
                     successText={t('success')}
                 />
                 <a
-                    href={`/${locale}/sign-up?role=worker`}
+                    href={`/${locale}/worker/sign-up`}
                     className="link link-hover text-secondary text-sm"
                 >
                     {t('signup_direct')}
@@ -70,7 +70,7 @@ function EmployerCard({ locale }: { locale: string }) {
                     <p className="card-title text-neutral-content font-serif text-2xl font-semibold tracking-tight leading-tight">
                         {t('headline')}
                     </p>
-                    <a href={`/${locale}/sign-up?role=employer`} className="btn btn-accent">
+                    <a href={`/${locale}/employer/sign-up`} className="btn btn-accent">
                         <span>{t('cta')}</span>
                         <FontAwesomeIcon icon={faArrowRight} className="text-neutral" />
                     </a>
