@@ -42,7 +42,7 @@ Nginx Ingress (AKS)
 ─ workers  (pg-boss workers — sms, email, parser, certs — Deployment min=1)
 
 Azure Postgres Flexible Server (separate from cluster)
-Azure Blob Storage (separate)
+Supabase Storage (separate, S3-compatible signed URL access)
 Azure Key Vault (separate, mounted via CSI)
 ```
 

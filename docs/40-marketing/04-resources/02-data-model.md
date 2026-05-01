@@ -99,4 +99,4 @@ N/A.
 
 Article hero images and inline images live in `apps/web/public/images/resources/`. Optimized via `next/image` at render time. No CMS / no upload pipeline.
 
-> **Inferred:** Static assets in `public/` are deliberately simple. If image volume grows past ~50 per article, migrate to Azure Blob with `next/image` loader configured. v2 stays in `public/`.
+> **Inferred:** Static assets in `public/` are deliberately simple. If image volume grows past ~50 per article, migrate to Supabase Storage with `next/image` loader configured. v2 stays in `public/`.

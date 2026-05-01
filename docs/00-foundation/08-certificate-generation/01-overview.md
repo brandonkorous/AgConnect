@@ -15,7 +15,7 @@ worker loads enrollment + program + worker + org branding
   ↓
 React-PDF component renders bilingual cert
   ↓
-PDF uploaded to Azure Blob: certificates/{tenantId}/{enrollmentId}.pdf
+PDF uploaded to Supabase Storage: certificates/{tenantId}/{enrollmentId}.pdf
   ↓
 enrollments.cert_url updated
   ↓
@@ -25,9 +25,9 @@ SMS + email delivery to worker
 ## Stack
 
 - **`@react-pdf/renderer` 4.5.1** — declarative PDF rendering
-- **Azure Blob** — certificate storage
+- **Supabase Storage** — certificate storage
 - **pg-boss** — async generation
-- **Azure Blob signed URLs** — short-lived links (24h) for cert download
+- **Supabase Storage signed URLs** — short-lived links (24h) for cert download
 
 ## Legal basis
 
@@ -42,7 +42,7 @@ In scope:
 - React-PDF component for the canonical certificate
 - Per-tenant branding override (logo, colors)
 - Bilingual rendering (two-column or stacked, depending on field)
-- Storage in Azure Blob with signed URL access
+- Storage in Supabase Storage with signed URL access
 - pg-boss worker that generates on enrollment completion
 - Re-generation endpoint (admin only) if data changes
 
@@ -65,4 +65,4 @@ Out of scope:
 - [10-worker/06-skills-wallet](../../10-worker/06-skills-wallet/) — UI consumer
 - [05-sms-pipeline](../05-sms-pipeline/) — delivery
 - [06-email-pipeline](../06-email-pipeline/) — delivery
-- Azure Blob — storage
+- Supabase Storage — storage

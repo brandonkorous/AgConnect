@@ -71,7 +71,7 @@ model Enrollment {
   enrolledAt      DateTime  @default(now())       @map("enrolled_at")
   completedAt     DateTime?                       @map("completed_at")
   droppedAt       DateTime?                       @map("dropped_at")
-  certUrl         String?                         @map("cert_url")            // Azure Blob path
+  certUrl         String?                         @map("cert_url")            // Supabase Storage path
   certGeneratedAt DateTime?                       @map("cert_generated_at")
   certificateId   String?   @unique               @map("certificate_id")
   noShow          Boolean   @default(false)       @map("no_show")

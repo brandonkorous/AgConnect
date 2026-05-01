@@ -46,12 +46,12 @@ pgBoss.work<GenerateCertArgs>('generate-certificate', { teamSize: 2 }, async (jo
         certificateId,
     });
 
-    const blobPath = `certificates/${enrollment.tenantId}/${enrollment.id}.pdf`;
-    await azureBlob.upload(blobPath, pdfBuffer, { contentType: 'application/pdf' });
+    const objectPath = `certificates/${enrollment.tenantId}/${enrollment.id}.pdf`;
+    await supabaseStorage.upload(objectPath, pdfBuffer, { contentType: 'application/pdf' });
 
     await db.enrollment.update({
         where: { id: enrollmentId },
-        data: { certUrl: blobPath, certGeneratedAt: new Date(), certificateId },
+        data: { certUrl: objectPath, certGeneratedAt: new Date(), certificateId },
     });
 
     // Trigger delivery
@@ -59,7 +59,7 @@ pgBoss.work<GenerateCertArgs>('generate-certificate', { teamSize: 2 }, async (jo
         tenantId: enrollment.tenantId,
         userId: enrollment.workerId,
         template: 'training.completed',
-        vars: { programTitle: enrollment.program.titleEn, certUrl: await azureBlob.getSignedUrl(blobPath, '24h') },
+        vars: { programTitle: enrollment.program.titleEn, certUrl: await supabaseStorage.getSignedUrl(objectPath, '24h') },
         jobKey: `cert-sms-${enrollmentId}`,
     });
     if (enrollment.worker.email) {
@@ -165,7 +165,7 @@ export async function renderCertificatePdf(props: CertificateProps): Promise<Buf
 
 ### GET /v1/enrollments/:id/certificate
 
-Authenticated endpoint that returns a 302 redirect to a 24-hour-signed Azure Blob URL.
+Authenticated endpoint that returns a 302 redirect to a 24-hour-signed Supabase Storage URL.
 
 ```ts
 api.get('/v1/enrollments/:id/certificate', async (c) => {
@@ -174,7 +174,7 @@ api.get('/v1/enrollments/:id/certificate', async (c) => {
     if (!enrollment?.certUrl) throw new HTTPException(404);
 
     // RLS already filtered; we just need to generate the signed URL
-    const url = await azureBlob.getSignedUrl(enrollment.certUrl, '24h');
+    const url = await supabaseStorage.getSignedUrl(enrollment.certUrl, '24h');
     return c.redirect(url, 302);
 });
 ```

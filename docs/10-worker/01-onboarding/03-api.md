@@ -46,9 +46,9 @@ Upload a resume. Multipart form-data with field `file`. Accept PDF, DOCX. Max 10
 Server logic:
 
 1. Validate MIME type and size.
-2. Generate Blob path: `resumes/{tenantId}/{userId}/{ISO-timestamp}.{ext}`.
-3. Stream upload to Azure Blob (no full-buffer in memory).
-4. Enqueue pg-boss job `parse-resume` with `{ userId, blobPath }`.
+2. Generate object path: `resumes/{tenantId}/{userId}/{ISO-timestamp}.{ext}`.
+3. Stream upload to Supabase Storage (no full-buffer in memory).
+4. Enqueue pg-boss job `parse-resume` with `{ userId, objectPath }`.
 5. Return immediately with the poll URL.
 
 Response (202 Accepted):

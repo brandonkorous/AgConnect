@@ -9,7 +9,7 @@ The parser is invoked by the onboarding flow via `pg-boss` job `parse-resume`. T
 export interface ParseResumeArgs {
   tenantId: string;
   userId: string;
-  blobPath: string;     // Azure Blob path; must be in resumes/{tenantId}/{userId}/...
+  objectPath: string;   // Supabase Storage path; must be in resumes/{tenantId}/{userId}/...
 }
 
 export interface ParseResumeResult {
@@ -27,7 +27,7 @@ export async function parseResume(args: ParseResumeArgs): Promise<ParseResumeRes
 Callers always invoke via `pg-boss`:
 
 ```ts
-await pgBoss.send('parse-resume', { tenantId, userId, blobPath }, { retryLimit: 2, retryBackoff: true });
+await pgBoss.send('parse-resume', { tenantId, userId, objectPath }, { retryLimit: 2, retryBackoff: true });
 ```
 
 ## Worker
@@ -35,16 +35,16 @@ await pgBoss.send('parse-resume', { tenantId, userId, blobPath }, { retryLimit: 
 ```ts
 // apps/api/src/workers/parse-resume.ts
 pgBoss.work<ParseResumeArgs>('parse-resume', { teamSize: 3 }, async (job) => {
-  const { tenantId, userId, blobPath } = job.data;
+  const { tenantId, userId, objectPath } = job.data;
 
   const parseJob = await db.resumeParseJob.create({
-    data: { tenantId, userId, blobPath, status: 'running' },
+    data: { tenantId, userId, objectPath, status: 'running' },
   });
   const startedAt = Date.now();
 
   try {
-    const buffer = await azureBlob.download(blobPath);
-    const text = await extractText(buffer, blobPath);
+    const buffer = await supabaseStorage.download(objectPath);
+    const text = await extractText(buffer, objectPath);
     if (text.length < 50) throw new Error('parse_failed:too_little_text');
 
     const result = await callClaudeWithRetry(text);
@@ -53,7 +53,7 @@ pgBoss.work<ParseResumeArgs>('parse-resume', { teamSize: 3 }, async (job) => {
 
     await db.workerProfile.update({
       where: { id: userId },
-      data: { resume: normalized, resumeRawUrl: blobPath },
+      data: { resume: normalized, resumeRawUrl: objectPath },
     });
 
     await db.resumeParseJob.update({

@@ -8,7 +8,7 @@ This decision is from kickoff §6: workers should never need to re-upload to fix
 
 ## Inputs and outputs
 
-- **Input:** raw PDF or DOCX file in Azure Blob (`resumes/{tenantId}/{userId}/<timestamp>.<ext>`).
+- **Input:** raw PDF or DOCX file in Supabase Storage (`resumes/{tenantId}/{userId}/<timestamp>.<ext>`).
 - **Output:** `ResumeSchema` JSON saved to `worker_profiles.resume`.
 - **Confidence metadata:** per-field confidence (`low | medium | high`) returned alongside, used by UI to badge uncertain fields.
 
@@ -63,5 +63,5 @@ Out of scope:
 - [10-worker/01-onboarding](../../10-worker/01-onboarding/) — caller
 - [10-worker/02-resume-editor](../../10-worker/02-resume-editor/) — consumer of parsed JSON
 - [03-database](../03-database/) — `worker_profiles.resume` JSONB column
-- Azure Blob — file storage
+- Supabase Storage — file storage
 - Anthropic API — LLM

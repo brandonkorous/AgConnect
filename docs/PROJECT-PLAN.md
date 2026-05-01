@@ -150,7 +150,7 @@ The kickoff (§16) defines six phases. This plan reorganizes them slightly to ma
 **Builds:**
 
 - [10-worker/05-training-browser](10-worker/05-training-browser/) — program browse, enrollment, reminder cron, org dashboard, roster/marking
-- [00-foundation/08-certificate-generation](00-foundation/08-certificate-generation/) — React-PDF bilingual cert, Azure Blob, signed-URL delivery
+- [00-foundation/08-certificate-generation](00-foundation/08-certificate-generation/) — React-PDF bilingual cert, Supabase Storage, signed-URL delivery
 - [10-worker/06-skills-wallet](10-worker/06-skills-wallet/) — wallet view, share menu
 
 **Definition of done:**

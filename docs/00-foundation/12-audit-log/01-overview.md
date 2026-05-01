@@ -57,7 +57,7 @@ Out of scope (deferred):
 
 - Streaming export to a SIEM (Splunk, Datadog, AWS Security Hub) — Tier 2 (the data shape is designed to support this when needed).
 - Cryptographic signing / hash-chaining of events for tamper-evidence — Tier 2 (relies on Postgres + RLS + append-only constraints for now).
-- Audit log replication to immutable cold storage (S3 Object Lock / Azure Blob WORM) — Tier 2.
+- Audit log replication to immutable cold storage (S3 Object Lock or equivalent) — Tier 2.
 - A self-service "my activity" view for end users (workers/employers see their own audit trail) — not in MVP, may be a useful trust signal later.
 
 ## Roles & access

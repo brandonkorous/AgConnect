@@ -101,5 +101,5 @@ CREATE POLICY sms_log_admin ON sms_log
 
 ## Indexes & retention
 
-- `sms_log` retention: 13 months (covers grant-reporting cycles), then archived to Azure Blob and hard-deleted. Out of scope for MVP code; add to ops runbook.
+- `sms_log` retention: 13 months (covers grant-reporting cycles), then archived to Supabase Storage and hard-deleted. Out of scope for MVP code; add to ops runbook.
 - Partial index for monitoring: `CREATE INDEX ON sms_log (queuedAt) WHERE status IN ('queued', 'scheduled', 'sending');`

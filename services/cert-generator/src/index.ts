@@ -27,11 +27,11 @@ function assertEnv(): void {
     if (missing.length > 0) {
         throw new Error(`cert-generator: missing required env: ${missing.join(', ')}`);
     }
-    if (!process.env.AZURE_BLOB_CONNECTION_STRING) {
-        console.warn(
-            '[cert-generator] AZURE_BLOB_CONNECTION_STRING missing — using local fs writer (dev only)',
-        );
-    }
+    // Supabase Storage is the target backend but isn't wired yet — for now
+    // we always use the local fs writer.
+    console.warn(
+        '[cert-generator] Supabase Storage adapter not yet implemented — using local fs writer',
+    );
 }
 
 let boss: PgBoss | null = null;

@@ -45,11 +45,11 @@ If `programTitleEs` is missing (CHECK constraint should prevent this; but defens
 
 ## Storage cost
 
-Hundreds of thousands of certs in Azure Blob aren't free.
+Hundreds of thousands of certs in Supabase Storage aren't free.
 
-**Estimates:** at 500 KB / cert × 10,000 certs / month, that's 5 GB / month, ~$0.10 / month at Hot tier. Trivial.
+**Estimates:** at 500 KB / cert × 10,000 certs / month, that's 5 GB / month, well within Supabase's standard storage tier. Trivial.
 
-If volume grows: move to Cool tier after 90 days, archive after 1 year. Out of scope for MVP.
+If volume grows past Supabase's plan limits: lifecycle older PDFs to a separate cold-storage bucket (e.g. S3 Glacier) and rewrite `cert_url` on access. Out of scope for MVP.
 
 ## Cert tampering
 

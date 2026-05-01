@@ -136,8 +136,9 @@ onboardingRoutes.post('/complete', async (c) => {
 });
 
 // Resume upload — stub. The 07-resume-parser foundation work owns the actual
-// Anthropic-backed parser + Azure Blob upload. For now record audit + return
-// a friendly "manual entry" fallback so the UI can move forward.
+// Anthropic-backed parser + Supabase Storage upload (deferred). For now
+// record audit + return a friendly "manual entry" fallback so the UI can
+// move forward.
 onboardingRoutes.post('/resume', async (c) => {
   await c.var.audit.log({
     action: 'worker.resume.uploaded',

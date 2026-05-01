@@ -83,7 +83,7 @@ export const ParseResultSchema = z.object({
 ## Persistence
 
 - `worker_profiles.resume`: stores the validated `ResumeSchema` JSON.
-- `worker_profiles.resume_raw_url`: Azure Blob path to the original file.
+- `worker_profiles.resume_raw_url`: Supabase Storage path to the original file.
 - Confidence metadata is NOT persisted; it's transient and consumed only by the onboarding profile-review screen.
 
 ## Parser job record (optional, for debugging)

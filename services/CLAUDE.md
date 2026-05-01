@@ -9,7 +9,7 @@ Materialize as needed — don't pre-create empty services.
 - `sms-worker/` — pg-boss consumer for outbound SMS via Twilio. Honors quiet hours (9PM–7AM `America/Los_Angeles`). Idempotency by job key.
 - `email-worker/` — pg-boss consumer for transactional email via Resend. React Email templates from `packages/messaging`.
 - `resume-parser/` — Anthropic Claude consumer that converts uploaded resumes to `ResumeSchema` JSON. Prompt caching on the system prompt.
-- `cert-generator/` — React-PDF bilingual certificate renderer. Writes signed PDFs to Azure Blob, persists metadata via `packages/db`.
+- `cert-generator/` — React-PDF bilingual certificate renderer. Writes signed PDFs to Supabase Storage, persists metadata via `packages/db`.
 - `scheduler/` — pg-boss producer for time-based jobs (training reminders, application-status nudges, weekly KPI rollups).
 
 ## Conventions

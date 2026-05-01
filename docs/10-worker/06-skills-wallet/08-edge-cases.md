@@ -92,12 +92,12 @@ Phase 2: portable cert IDs at the AgConn level, regardless of tenant. Out of sco
 
 ## Cert PDF deletion
 
-If the underlying Blob is deleted (storage cleanup, accidental), the wallet shows the cert metadata but Download fails.
+If the underlying object is deleted (storage cleanup, accidental), the wallet shows the cert metadata but Download fails.
 
 **Mitigation:**
 
-- Azure Blob soft-delete (14 days) protects against accidents.
-- API checks Blob existence; if missing, surface "Cert PDF not available — contact support" instead of a broken download.
+- Supabase Storage object versioning protects against accidents (recover the prior version).
+- API checks object existence; if missing, surface "Cert PDF not available — contact support" instead of a broken download.
 
 ## Open questions
 

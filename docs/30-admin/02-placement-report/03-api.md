@@ -65,8 +65,8 @@ api.post('/admin/v1/reports/placement/export', async (c) => {
   });
 
   if (body.email) {
-    const blobPath = `reports/${c.get('userId')}/${nanoid()}.${body.format}`;
-    await azureBlob.upload(blobPath, buffer, { contentType: mimeFor(body.format) });
+    const objectPath = `reports/${c.get('userId')}/${nanoid()}.${body.format}`;
+    await supabaseStorage.upload(objectPath, buffer, { contentType: mimeFor(body.format) });
     await enqueueEmail({
       tenantId: '...',
       userId: c.get('userId'),

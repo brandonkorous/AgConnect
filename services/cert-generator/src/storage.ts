@@ -13,49 +13,16 @@ export type CertWriter = {
   write: (args: WriteArgs) => Promise<string>;
 };
 
-// Storage adapter: in production we use Azure Blob with signed-URL access.
-// In dev (no AZURE_BLOB_CONNECTION_STRING) we write to ./certs and serve via
-// PUBLIC_WEB_URL. Both return a stable URL persisted on the Enrollment row.
+// Storage adapter: production will use Supabase Storage with signed URL
+// access (target backend, not yet wired). In dev, write to ./certs and serve
+// via PUBLIC_WEB_URL. Both branches return a stable URL persisted on the
+// Enrollment row so the wallet can resolve it later.
 
-async function makeAzureWriter(): Promise<CertWriter | null> {
-  const connStr = process.env.AZURE_BLOB_CONNECTION_STRING;
-  const container = process.env.AZURE_BLOB_CERT_CONTAINER ?? 'certificates';
-  if (!connStr) return null;
-  // Lazy import so dev doesn't pay for Azure SDK boot when not configured.
-  const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } =
-    await import('@azure/storage-blob').catch(() => ({} as unknown as typeof import('@azure/storage-blob')));
-  if (!BlobServiceClient) {
-    console.warn('[cert-generator] @azure/storage-blob not installed; falling back to local writer');
-    return null;
-  }
-  const svc = BlobServiceClient.fromConnectionString(connStr);
-  const containerClient = svc.getContainerClient(container);
-  await containerClient.createIfNotExists();
-  return {
-    async write(args) {
-      const blobName = `${args.tenantId}/${args.enrollmentId}/${args.certificateId}.html`;
-      const blobClient = containerClient.getBlockBlobClient(blobName);
-      await blobClient.uploadData(args.body, {
-        blobHTTPHeaders: { blobContentType: args.contentType },
-      });
-      // Return a 24-hour SAS URL. The wallet refreshes on access; the row
-      // stores the long-lived blob URL so we can re-sign on demand.
-      const accountName = svc.accountName;
-      const accountKey = process.env.AZURE_BLOB_ACCOUNT_KEY ?? '';
-      if (!accountKey) return blobClient.url;
-      const sas = generateBlobSASQueryParameters(
-        {
-          containerName: container,
-          blobName,
-          permissions: BlobSASPermissions.parse('r'),
-          startsOn: new Date(),
-          expiresOn: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        },
-        new StorageSharedKeyCredential(accountName, accountKey),
-      ).toString();
-      return `${blobClient.url}?${sas}`;
-    },
-  };
+async function makeSupabaseWriter(): Promise<CertWriter | null> {
+  // TODO(supabase-storage): wire @supabase/storage-js once the bucket is
+  // provisioned. Until then we always fall through to the local fs writer
+  // so dev + preview environments keep working.
+  return null;
 }
 
 function makeLocalWriter(): CertWriter {
@@ -68,8 +35,8 @@ function makeLocalWriter(): CertWriter {
       await writeFile(file, args.body);
       const base = process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000';
       // Surfaced via apps/web/src/app/api/certs/[...path]/route.ts (a small
-      // dev-only static handler). In prod the Azure writer takes over and
-      // this branch is dead.
+      // dev-only static handler). When the Supabase writer lands this branch
+      // becomes the dev-only fallback.
       return `${base}/api/certs/${args.tenantId}/${args.enrollmentId}/${args.certificateId}.html`;
     },
   };
@@ -77,7 +44,7 @@ function makeLocalWriter(): CertWriter {
 
 export const writeCert = {
   async init(): Promise<CertWriter> {
-    const azure = await makeAzureWriter();
-    return azure ?? makeLocalWriter();
+    const supabase = await makeSupabaseWriter();
+    return supabase ?? makeLocalWriter();
   },
 };

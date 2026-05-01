@@ -172,10 +172,10 @@ If the migration fails, the pod doesn't start. Rolling deploy preserves the prev
 ## Backups
 
 - **Azure Postgres PITR** — 7-day retention, geo-redundant.
-- **Azure Blob** — soft-delete enabled with 14-day retention; geo-redundant LRS.
+- **Supabase Storage** — object versioning enabled; nightly snapshot of the bucket inventory exported to a separate S3-compatible cold-storage bucket for disaster recovery.
 - **Key Vault** — soft-delete + purge protection enabled.
 
-Backups are managed by Azure; no custom backup logic in app code.
+Postgres + Key Vault backups are managed by Azure; storage backups orchestrated by Supabase + a small nightly job.
 
 ## Cost estimate (rough, MVP)
 
@@ -183,7 +183,7 @@ Backups are managed by Azure; no custom backup logic in app code.
 | ------------------------------------- | --------- |
 | AKS (3 × Standard_DS2_v2 nodes)       | $230      |
 | Azure Postgres Flexible (2 vCPU, 8GB) | $130      |
-| Azure Blob (50 GB Hot)                | $1        |
+| Supabase Storage (50 GB)              | $2        |
 | Azure Key Vault                       | $5        |
 | Bandwidth                             | $20       |
 | **Total**                             | **~$390** |

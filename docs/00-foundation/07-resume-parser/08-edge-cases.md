@@ -92,11 +92,11 @@ Many resume templates use multi-column layouts that text extractors flatten badl
 
 ## Privacy: re-uploads after PII change
 
-If a worker re-uploads after correcting their phone, the old blob remains in Azure Blob (audit trail). The old `worker_profiles.resume` is overwritten.
+If a worker re-uploads after correcting their phone, the old object remains in Supabase Storage (audit trail). The old `worker_profiles.resume` is overwritten.
 
 **Risk:** if compelled by legal request, the audit trail must be readable.
 
-**Mitigation:** old blobs retained for 13 months; admin can hard-delete on data deletion request after that.
+**Mitigation:** old objects retained for 13 months; admin can hard-delete on data deletion request after that.
 
 ## Bilingual resumes
 

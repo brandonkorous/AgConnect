@@ -15,7 +15,7 @@ const WalletResponse = z.object({
 Server logic:
 
 1. Query `enrollments` where `workerId = me`, `status = 'completed'`, `cert_url IS NOT NULL`.
-2. For each, generate a 24h-signed Azure Blob URL for `cert_url`.
+2. For each, generate a 24h-signed Supabase Storage URL for `cert_url`.
 3. Read `worker_profiles.certifications` array.
 4. Merge into a single sorted list (newest first by `issuedAt`).
 
@@ -43,7 +43,7 @@ api.get('/v1/wallet/cert/:enrollmentId', async (c) => {
   const enrollment = await tx.enrollment.findUnique({ where: { id: c.req.param('enrollmentId') }, include: { program: { include: { org: { include: { employerProfile: true } } } } } });
   if (!enrollment?.certUrl) throw new HTTPException(404);
 
-  const signedUrl = await azureBlob.getSignedUrl(enrollment.certUrl, '24h');
+  const signedUrl = await supabaseStorage.getSignedUrl(enrollment.certUrl, '24h');
 
   if (c.req.header('accept')?.includes('application/pdf')) {
     return c.redirect(signedUrl, 302);

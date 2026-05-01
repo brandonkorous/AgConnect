@@ -12,7 +12,7 @@ Plus:
 
 ```prisma
 // extension fields on Enrollment
-certUrl              String?   @map("cert_url")           // Azure Blob path
+certUrl              String?   @map("cert_url")           // Supabase Storage path
 certGeneratedAt      DateTime? @map("cert_generated_at")
 certificateId        String?   @unique @map("certificate_id")    // human-readable cert ID for verification
 ```
@@ -54,7 +54,7 @@ CREATE POLICY enrollments_self ON enrollments
   );
 ```
 
-Cert downloads use signed Azure Blob URLs scoped per access; the URL is the auth boundary (24h expiry).
+Cert downloads use signed Supabase Storage URLs scoped per access; the URL is the auth boundary (24h expiry).
 
 ## Indexes
 
