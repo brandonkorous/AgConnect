@@ -1,17 +1,46 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
+import { getImpact, type Impact } from '@/lib/api/landing';
 
-const tiles = [
-    { id: 'workers', value: '2,400+' },
-    { id: 'wage', value: '$19.50' },
-    { id: 'retention', value: '87%' },
-    { id: 'certs', value: '1,180' },
-];
+type Tile = { id: 'workersPlaced' | 'medianWage' | 'trainingsCompleted' | 'verifiedEmployers'; value: string | null };
 
-export function ImpactNumbers() {
-    const t = useTranslations('landing.impact');
+function buildTiles(impact: Impact | null, locale: 'en' | 'es'): Tile[] {
+    const numberFmt = new Intl.NumberFormat(locale === 'es' ? 'es-MX' : 'en-US');
+    const wageFmt = new Intl.NumberFormat(locale === 'es' ? 'es-MX' : 'en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    });
+    return [
+        {
+            id: 'workersPlaced',
+            value: impact?.workersPlaced != null ? `${numberFmt.format(impact.workersPlaced)}+` : null,
+        },
+        {
+            id: 'medianWage',
+            value: impact?.medianWage != null ? wageFmt.format(impact.medianWage) : null,
+        },
+        {
+            id: 'trainingsCompleted',
+            value: impact?.trainingsCompleted != null ? numberFmt.format(impact.trainingsCompleted) : null,
+        },
+        {
+            id: 'verifiedEmployers',
+            value: impact?.verifiedEmployers != null ? numberFmt.format(impact.verifiedEmployers) : null,
+        },
+    ];
+}
+
+export async function ImpactNumbers() {
+    const [t, locale, impact] = await Promise.all([
+        getTranslations('landing.impact'),
+        getLocale(),
+        getImpact(),
+    ]);
+    const tiles = buildTiles(impact, locale as 'en' | 'es');
+    const allSuppressed = tiles.every((tile) => tile.value === null);
 
     return (
         <section className="bg-primary text-primary-content w-full">
@@ -30,32 +59,47 @@ export function ImpactNumbers() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                    {tiles.map((tile, i) => (
-                        <div
-                            key={tile.id}
-                            className={`flex flex-col gap-3 px-8 py-9 ${i < tiles.length - 1 ? 'border-secondary lg:border-r' : ''
-                                }`}
-                        >
-                            <p className="text-accent font-serif text-5xl font-semibold leading-none tabular-nums tracking-tight md:text-6xl">
-                                {tile.value}
-                            </p>
-                            <p className="text-primary-content font-sans text-base font-semibold">{t(`tile.${tile.id}.label`)}</p>
-                            <p className="text-primary-content/70 font-sans text-sm leading-relaxed">
-                                {t(`tile.${tile.id}.body`)}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                {allSuppressed ? (
+                    <div className="border-secondary border-y py-12 text-center">
+                        <p className="text-primary-content/80 font-serif text-2xl italic">
+                            {t('coming_soon')}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                        {tiles.map((tile, i) => (
+                            <div
+                                key={tile.id}
+                                className={`flex flex-col gap-3 px-8 py-9 ${i < tiles.length - 1 ? 'border-secondary lg:border-r' : ''}`}
+                            >
+                                {tile.value === null ? (
+                                    <p className="text-primary-content/60 font-serif text-3xl italic leading-none">
+                                        {t('tile_coming_soon')}
+                                    </p>
+                                ) : (
+                                    <p className="text-accent font-serif text-5xl font-semibold leading-none tabular-nums tracking-tight md:text-6xl">
+                                        {tile.value}
+                                    </p>
+                                )}
+                                <p className="text-primary-content font-sans text-base font-semibold">
+                                    {t(`tile.${tile.id}.label`)}
+                                </p>
+                                <p className="text-primary-content/70 font-sans text-sm leading-relaxed">
+                                    {t(`tile.${tile.id}.body`)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="border-secondary flex flex-col items-start gap-4 border-t pt-6 lg:flex-row lg:items-center lg:gap-6">
                     <p className="text-primary-content/70 font-sans text-sm">{t('cta.dashboard')}</p>
-                    <a href="/impact" className="btn btn-accent ">
+                    <a href={`/${locale}/impact`} className="btn btn-accent">
                         <span>{t('cta.link')}</span>
                         <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
                     </a>
                     <p className="text-accent font-mono text-xs tracking-wider lg:ml-auto">
-                        {t('source')}
+                        {impact?.source ?? t('source')}
                     </p>
                 </div>
             </div>

@@ -1,14 +1,20 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { FeaturedJobCard } from './FeaturedJobCard';
+import { getFeaturedJobs } from '@/lib/api/landing';
 
 const counties = ['all', 'fresno', 'tulare', 'kern', 'madera', 'kings'] as const;
-const jobIds = ['1', '2', '3', '4'] as const;
 
-export function FeaturedJobs() {
-    const t = useTranslations('landing.featured_jobs');
+export async function FeaturedJobs() {
+    const [t, locale, jobs] = await Promise.all([
+        getTranslations('landing.featured_jobs'),
+        getLocale(),
+        getFeaturedJobs(),
+    ]);
+
+    if (jobs.length === 0) return null;
 
     return (
         <section className="bg-base-300 w-full">
@@ -22,7 +28,7 @@ export function FeaturedJobs() {
                             {t('headline')}
                         </h2>
                     </div>
-                    <a href="/jobs" className="btn btn-link text-primary hover:text-base-content pb-4 whitespace-nowrap">
+                    <a href={`/${locale}/jobs`} className="btn btn-link text-primary hover:text-base-content pb-4 whitespace-nowrap">
                         <span>{t('view_all')}</span>
                         <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
                     </a>
@@ -45,8 +51,8 @@ export function FeaturedJobs() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {jobIds.map((id) => (
-                        <FeaturedJobCard key={id} id={id} />
+                    {jobs.map((job) => (
+                        <FeaturedJobCard key={job.id} job={job} locale={locale as 'en' | 'es'} />
                     ))}
                 </div>
             </div>

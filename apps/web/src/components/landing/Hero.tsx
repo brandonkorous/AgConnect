@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { HeroPhoneMockup } from './HeroPhoneMockup';
@@ -7,6 +7,7 @@ import { HeroTrustStrip } from './HeroTrustStrip';
 
 export function Hero() {
     const t = useTranslations('landing.hero');
+    const locale = useLocale();
 
     return (
         <section id="main" className="bg-base-100 w-full">
@@ -26,11 +27,11 @@ export function Hero() {
                     </p>
 
                     <div className="flex flex-wrap gap-3.5 pt-2">
-                        <a href="#final-cta" className="btn btn-primary btn-lg">
+                        <a href={`/${locale}/sign-up?role=worker`} className="btn btn-primary btn-lg">
                             {t('cta.primary')}
                             <FontAwesomeIcon icon={faArrowRight} className="text-base" />
                         </a>
-                        <a href="#employers" className="btn btn-outline btn-primary btn-lg">
+                        <a href={`/${locale}/sign-up?role=employer`} className="btn btn-outline btn-primary btn-lg">
                             {t('cta.secondary')}
                         </a>
                     </div>

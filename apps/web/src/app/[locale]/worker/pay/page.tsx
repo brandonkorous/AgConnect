@@ -7,6 +7,7 @@ import { StatTile } from '@/components/worker/primitives/StatTile';
 import { EarningsChart } from '@/components/worker/pay/EarningsChart';
 import { NextDepositCard } from '@/components/worker/pay/NextDepositCard';
 import { PaystubsTable } from '@/components/worker/pay/PaystubsTable';
+import { fetchMyPay } from '@/lib/api/me';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -19,11 +20,45 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PayPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'worker.pay' });
+  const { paystubs, summary } = await fetchMyPay();
+
+  const ytdDollars = (summary.ytdGrossCents / 100).toLocaleString(locale, {
+    maximumFractionDigits: 0,
+  });
+  const avgHourly = (summary.avgHourlyCents / 100).toFixed(2);
+  const nextDeposit = summary.nextDeposit;
+
   const stats = [
-    { label: t('stat.ytd_earnings.label'), value: '$28,420', sub: t('stat.ytd_earnings.sub'), accent: 'primary' as const },
-    { label: t('stat.hours.label'), value: '1,284', sub: t('stat.hours.sub') },
-    { label: t('stat.avg_hourly.label'), value: '$22.14', sub: t('stat.avg_hourly.sub') },
-    { label: t('stat.next_deposit.label'), value: '$982.16', sub: t('stat.next_deposit.sub'), accent: 'accent' as const },
+    {
+      label: t('stat.ytd_earnings.label'),
+      value: `$${ytdDollars}`,
+      sub: t('stat.ytd_earnings.sub'),
+      accent: 'primary' as const,
+    },
+    {
+      label: t('stat.hours.label'),
+      value: summary.ytdHours.toLocaleString(locale),
+      sub: t('stat.hours.sub'),
+    },
+    {
+      label: t('stat.avg_hourly.label'),
+      value: `$${avgHourly}`,
+      sub: t('stat.avg_hourly.sub'),
+    },
+    {
+      label: t('stat.next_deposit.label'),
+      value: nextDeposit
+        ? `$${(nextDeposit.netCents / 100).toFixed(2)}`
+        : '—',
+      sub: nextDeposit
+        ? new Date(nextDeposit.payDate).toLocaleDateString(locale, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          })
+        : t('stat.next_deposit.sub'),
+      accent: 'accent' as const,
+    },
   ];
   return (
     <div className="px-8 pb-16 pt-8">
@@ -52,16 +87,16 @@ export default async function PayPage({ params }: Props) {
       </div>
 
       <div className="mb-5 grid gap-5 lg:grid-cols-[1.55fr_1fr]">
-        <EarningsChart />
-        <NextDepositCard />
+        <EarningsChart paystubs={paystubs} locale={locale} />
+        <NextDepositCard nextDeposit={nextDeposit} />
       </div>
 
-      <PaystubsTable />
+      <PaystubsTable rows={paystubs} locale={locale} />
 
       <div className="mt-5 grid gap-3.5 lg:grid-cols-3">
         <DirectDepositCard locale={locale} />
         <TaxDocsCard locale={locale} />
-        <WageTransparencyCard locale={locale} />
+        <WageTransparencyCard locale={locale} avgHourly={`$${avgHourly}/hr`} />
       </div>
     </div>
   );
@@ -123,7 +158,13 @@ async function TaxDocsCard({ locale }: { locale: string }) {
   );
 }
 
-async function WageTransparencyCard({ locale }: { locale: string }) {
+async function WageTransparencyCard({
+  locale,
+  avgHourly,
+}: {
+  locale: string;
+  avgHourly: string;
+}) {
   const t = await getTranslations({ locale, namespace: 'worker.pay.wage' });
   return (
     <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
@@ -131,9 +172,9 @@ async function WageTransparencyCard({ locale }: { locale: string }) {
         {t('eyebrow')}
       </div>
       <p className="text-base-content/80 mt-3 text-[13px] leading-relaxed">
-        {t.rich('body', {
-          rate: (chunks) => <strong className="text-base-content">{chunks}</strong>,
-        })}
+        {locale === 'es'
+          ? `Tu promedio de ${avgHourly} se compara con el rango del mercado en tu condado.`
+          : `Your average of ${avgHourly} stacks up against the county's market range.`}
       </p>
       <button
         type="button"

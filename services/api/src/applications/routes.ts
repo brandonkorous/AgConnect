@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { AppStatus, JobStatus, UserRole, type Tx } from '@agconn/db';
 import { ApplicationsQuery } from '@agconn/schemas';
+import { enqueueSms } from '@agconn/sms';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext';
 import type { AuditCtxVars } from '../middleware/audit';
 
@@ -67,8 +68,25 @@ jobApplyRoute.post('/:jobId/apply', async (c) => {
     metadata: { jobId, employerId: job.employerId },
   });
 
-  // TODO: enqueue SMS to worker (`application.applied`) + email to employer
-  // once 05-sms-pipeline + 06-email-pipeline templates are registered.
+  try {
+    const employerProfile = await c.var.db.employerProfile.findUnique({
+      where: { userId: job.employerId },
+    });
+    await enqueueSms({
+      tenantId,
+      userId,
+      template: 'application.applied',
+      vars: {
+        jobTitle: job.titleEn,
+        employer: employerProfile?.legalName ?? 'AgConn employer',
+      },
+    });
+  } catch (e) {
+    console.error('[applications] application.applied SMS enqueue failed', {
+      applicationId: created.id,
+      err: e instanceof Error ? e.message : String(e),
+    });
+  }
 
   return ok(c, { application: shapeApplication(created) });
 });
@@ -205,7 +223,29 @@ applicationsRoutes.post('/:id/withdraw', async (c) => {
     metadata: { jobId: app.jobId, reason: 'worker_initiated' },
   });
 
-  // TODO: enqueue email to employer (`application.withdrawn`).
+  try {
+    const job = await c.var.db.jobPosting.findUnique({
+      where: { id: app.jobId },
+      include: { employer: { include: { employerProfile: true } } },
+    });
+    if (job) {
+      await enqueueSms({
+        tenantId: app.tenantId,
+        userId: c.var.userId,
+        template: 'application.withdrawn',
+        vars: {
+          jobTitle: job.titleEn,
+          employer: job.employer?.employerProfile?.legalName ?? 'AgConn employer',
+        },
+      });
+    }
+  } catch (e) {
+    console.error('[applications] application.withdrawn SMS enqueue failed', {
+      applicationId: app.id,
+      err: e instanceof Error ? e.message : String(e),
+    });
+  }
+
   return ok(c, { application: shapeApplication(updated) });
 });
 

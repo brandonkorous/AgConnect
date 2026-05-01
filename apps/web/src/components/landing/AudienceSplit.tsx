@@ -1,9 +1,10 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { AudienceCard } from './AudienceCard';
 
 export function AudienceSplit() {
     const t = useTranslations('landing.audience');
+    const locale = useLocale();
 
     return (
         <section id="workers" className="bg-base-100 w-full">
@@ -34,7 +35,7 @@ export function AudienceSplit() {
                             t('workers.bullet4'),
                         ]}
                         ctaText={t('workers.cta')}
-                        ctaHref="#final-cta"
+                        ctaHref={`/${locale}/sign-up?role=worker`}
                     />
                     <AudienceCard
                         surface="bone"
@@ -47,7 +48,7 @@ export function AudienceSplit() {
                             t('employers.bullet4'),
                         ]}
                         ctaText={t('employers.cta')}
-                        ctaHref="#employers"
+                        ctaHref={`/${locale}/sign-up?role=employer`}
                     />
                     <AudienceCard
                         surface="sage"
@@ -60,7 +61,7 @@ export function AudienceSplit() {
                             t('training.bullet4'),
                         ]}
                         ctaText={t('training.cta')}
-                        ctaHref="#training-orgs"
+                        ctaHref={`/${locale}/sign-up?role=training_org`}
                     />
                 </div>
             </div>

@@ -6,6 +6,9 @@ import {
   confirmWaitlist,
   unsubscribeWaitlist,
 } from './service';
+import { featuredJobsRoutes } from './featured-jobs';
+import { featuredTrainingRoutes } from './featured-training';
+import { impactRoutes } from './impact';
 import { rateLimit } from '../middleware/rateLimit';
 import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
 
@@ -13,6 +16,10 @@ const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
 export const landingRoutes = new Hono<{ Variables: TenantVars }>();
+
+landingRoutes.route('/featured-jobs', featuredJobsRoutes);
+landingRoutes.route('/featured-training', featuredTrainingRoutes);
+landingRoutes.route('/impact', impactRoutes);
 
 landingRoutes.use('*', publicTenantMiddleware);
 

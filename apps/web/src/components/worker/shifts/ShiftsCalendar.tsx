@@ -1,23 +1,48 @@
-import { useTranslations } from 'next-intl';
-import { SHIFTS_BY_DAY, type ShiftTone } from './shiftsMockData';
+'use client';
 
-const TONE: Record<ShiftTone, string> = {
-  primary: 'bg-primary/15 text-primary',
-  ink: 'bg-base-content text-base-100',
-  accent: 'bg-warning/25 text-warning-content',
-  ghost: 'bg-base-200 text-base-content/60',
+import { useTranslations } from 'next-intl';
+import type { ShiftRow } from '@/lib/api/me';
+
+const TONE: Record<string, string> = {
+  confirmed: 'bg-primary/15 text-primary',
+  attended: 'bg-base-content text-base-100',
+  assigned: 'bg-warning/25 text-warning-content',
+  declined: 'bg-base-200 text-base-content/60',
+  no_show: 'bg-error/20 text-error',
 };
 
-const MONTH_START_OFFSET = -2;
-const TODAY = 3;
+type Props = { shifts: ShiftRow[]; locale: string };
 
-export function ShiftsCalendar() {
+export function ShiftsCalendar({ shifts, locale }: Props) {
   const t = useTranslations('worker.shifts.calendar');
   const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+
+  const today = new Date();
+  const monthStart = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1),
+  );
+  // Layout: align week to Monday, then 35 cells (5 weeks).
+  const monthStartWeekday = (monthStart.getUTCDay() + 6) % 7; // 0=Mon..6=Sun
   const cells = Array.from({ length: 35 }, (_, i) => {
-    const day = i + MONTH_START_OFFSET + 1;
-    const inMonth = day >= 1 && day <= 31;
-    return { day, inMonth };
+    const day = i - monthStartWeekday + 1;
+    const inMonth = day >= 1 && day <= daysInMonth(monthStart);
+    const date = new Date(monthStart);
+    date.setUTCDate(day);
+    return { day, inMonth, date };
+  });
+
+  // Bucket shifts by date (yyyy-mm-dd).
+  const byDate = new Map<string, ShiftRow[]>();
+  for (const s of shifts) {
+    const key = s.shift.date;
+    const list = byDate.get(key) ?? [];
+    list.push(s);
+    byDate.set(key, list);
+  }
+
+  const monthLabel = monthStart.toLocaleDateString(locale, {
+    month: 'long',
+    year: 'numeric',
   });
 
   return (
@@ -32,7 +57,7 @@ export function ShiftsCalendar() {
             ‹
           </button>
           <div className="font-serif text-[22px] tracking-[-0.02em]">
-            {t('month_label')}
+            {monthLabel}
           </div>
           <button
             type="button"
@@ -68,13 +93,14 @@ export function ShiftsCalendar() {
 
       <div className="grid grid-cols-7">
         {cells.map((c, i) => {
-          const shifts = SHIFTS_BY_DAY[c.day] ?? [];
-          const isToday = c.inMonth && c.day === TODAY;
-          const display = c.inMonth
-            ? c.day
-            : c.day < 1
-              ? 30 + c.day
-              : c.day - 31;
+          const dateKey = c.date.toISOString().slice(0, 10);
+          const cellShifts = byDate.get(dateKey) ?? [];
+          const isToday =
+            c.inMonth &&
+            c.date.getUTCFullYear() === today.getUTCFullYear() &&
+            c.date.getUTCMonth() === today.getUTCMonth() &&
+            c.date.getUTCDate() === today.getUTCDate();
+
           return (
             <div
               key={i}
@@ -98,7 +124,7 @@ export function ShiftsCalendar() {
                       : 'text-base-content/80 font-medium',
                   ].join(' ')}
                 >
-                  {display}
+                  {c.inMonth ? c.date.getUTCDate() : ''}
                 </div>
                 {isToday && (
                   <span className="text-primary font-mono text-[9px] font-bold tracking-[0.1em]">
@@ -106,24 +132,33 @@ export function ShiftsCalendar() {
                   </span>
                 )}
               </div>
-              {shifts.map((sh, j) => (
+              {cellShifts.slice(0, 2).map((sh) => (
                 <div
-                  key={j}
+                  key={sh.id}
                   className={[
                     'mb-[3px] truncate rounded-[5px] px-[7px] py-1 text-[10.5px] font-semibold leading-tight',
-                    TONE[sh.tone],
+                    TONE[sh.status] ?? TONE.assigned,
                   ].join(' ')}
                 >
-                  {sh.time && (
-                    <span className="mr-1 font-mono opacity-75">{sh.time}</span>
-                  )}
-                  {sh.label}
+                  <span className="mr-1 font-mono opacity-75">{sh.shift.startTime}</span>
+                  {sh.shift.employer.split(' ')[0]} · {(sh.shift.jobTitleEn ?? sh.shift.crewName ?? '').slice(0, 12)}
                 </div>
               ))}
+              {cellShifts.length > 2 && (
+                <div className="bg-base-200 text-base-content/60 mb-[3px] truncate rounded-[5px] px-[7px] py-1 text-[10.5px] font-semibold">
+                  +{cellShifts.length - 2}
+                </div>
+              )}
             </div>
           );
         })}
       </div>
     </div>
   );
+}
+
+function daysInMonth(d: Date): number {
+  return new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0),
+  ).getUTCDate();
 }

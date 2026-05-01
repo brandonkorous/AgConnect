@@ -99,6 +99,12 @@ enum County {
   Tulare
 }
 
+enum ParserStatus {
+  parsing
+  parsed
+  failed
+}
+
 enum AppStatus {
   applied
   reviewed
@@ -618,6 +624,7 @@ model WorkerProfile {
   availability    Json      @default("{}")
   resume          Json?
   resumeRawUrl    String?                                         @map("resume_raw_url")
+  parserStatus    ParserStatus?                                   @map("parser_status")
   phoneHash       String?                                         @map("phone_hash")
   onboardedAt     DateTime?                                       @map("onboarded_at")
   createdAt       DateTime  @default(now())                       @map("created_at")

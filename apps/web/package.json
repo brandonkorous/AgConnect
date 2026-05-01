@@ -9,7 +9,9 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "i18n:check": "node scripts/check-i18n-parity.mjs"
+    "i18n:check": "node scripts/check-i18n-parity.mjs",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed"
   },
   "dependencies": {
     "@agconn/api-client": "workspace:*",
@@ -35,6 +37,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "1.49.0",
     "@tailwindcss/postcss": "4.2.4",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",

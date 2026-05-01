@@ -8,6 +8,7 @@ import {
   type Tx,
 } from '@agconn/db';
 import { CreateProgramBody, TrainingQuery, UpdateEnrollmentBody } from '@agconn/schemas';
+import { enqueueSms } from '@agconn/sms';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext';
 import type { AuditCtxVars } from '../middleware/audit';
 
@@ -170,7 +171,45 @@ trainingRoutes.post('/:id/enroll', requireRole('worker'), async (c) => {
     metadata: { programId, workerId: userId },
   });
 
-  // TODO: enqueue SMS + email (`training.enrolled`).
+  try {
+    await enqueueSms({
+      tenantId,
+      userId,
+      template: 'training.enrolled',
+      vars: {
+        programTitle: program.titleEn,
+        startDate: program.startDate.toISOString().slice(0, 10),
+        location: program.locationName ?? `${program.county} County`,
+      },
+    });
+    // Schedule the 48h reminder. The 2h reminder is fired by the scheduler
+    // cron, which scans enrollments and computes the trigger time off the
+    // program's session schedule rather than the bulk start date.
+    const reminder48h = new Date(program.startDate.getTime() - 48 * 60 * 60 * 1000);
+    if (reminder48h.getTime() > Date.now()) {
+      await enqueueSms({
+        tenantId,
+        userId,
+        template: 'training.reminder.48h',
+        vars: {
+          programTitle: program.titleEn,
+          startDate: program.startDate.toISOString().slice(0, 10),
+          startTime:
+            (Array.isArray(program.sessionTimes) && program.sessionTimes[0]
+              ? String((program.sessionTimes[0] as { startTime?: string }).startTime ?? '')
+              : '') || '9:00 AM',
+          location: program.locationName ?? `${program.county} County`,
+        },
+        scheduledFor: reminder48h.toISOString(),
+        jobKey: `training.reminder.48h-${enrollment.id}`,
+      });
+    }
+  } catch (e) {
+    console.error('[training] enroll SMS enqueue failed', {
+      enrollmentId: enrollment.id,
+      err: e instanceof Error ? e.message : String(e),
+    });
+  }
 
   const refreshed = await c.var.db.trainingProgram.findUnique({ where: { id: programId } });
   return ok(c, {
@@ -208,6 +247,24 @@ trainingRoutes.post('/:id/unenroll', requireRole('worker'), async (c) => {
     resourceId: enrollment.id,
     metadata: { programId, workerId: userId },
   });
+
+  try {
+    const program = await c.var.db.trainingProgram.findUnique({ where: { id: programId } });
+    const tenantId = c.var.tenantId;
+    if (program && tenantId) {
+      await enqueueSms({
+        tenantId,
+        userId,
+        template: 'training.unenrolled',
+        vars: { programTitle: program.titleEn },
+      });
+    }
+  } catch (e) {
+    console.error('[training] unenroll SMS enqueue failed', {
+      enrollmentId: enrollment.id,
+      err: e instanceof Error ? e.message : String(e),
+    });
+  }
 
   return ok(c, { ok: true });
 });
@@ -379,6 +436,29 @@ orgTrainingRoutes.patch(
           hoursCompleted: 0,
         },
       });
+
+      // Hand off to services/cert-generator. The placeholder certificateId
+      // stamped above is replaced when the cert PDF lands and the row gets
+      // certUrl + a freshly minted cert id.
+      try {
+        const { getCertGeneratorBoss, CERT_GENERATOR_QUEUE } = await import(
+          './cert-queue'
+        );
+        const boss = await getCertGeneratorBoss();
+        await boss.send(
+          CERT_GENERATOR_QUEUE,
+          { enrollmentId: updated.id, tenantId: enrollment.tenantId },
+          {
+            singletonKey: `enrollment.completed-${updated.id}`,
+            singletonSeconds: 60 * 60,
+          },
+        );
+      } catch (e) {
+        console.error('[training] cert generator enqueue failed', {
+          enrollmentId: updated.id,
+          err: e instanceof Error ? e.message : String(e),
+        });
+      }
     }
 
     return ok(c, shapeEnrollment(updated));

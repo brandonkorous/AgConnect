@@ -18,9 +18,13 @@
   --color-base-300:          oklch(30% 0.008 80);  /* #33332E border */
   --color-base-content:      oklch(94% 0.012 80);
   --color-info:              oklch(70% 0.10 260);
+  --color-info-content:        oklch(15% 0.02 120);
   --color-success:           oklch(76% 0.18 145);
+    --color-success-content:   oklch(15% 0.02 120);
   --color-warning:           oklch(82% 0.16 80);
+    --color-warning-content:   oklch(15% 0.02 120);
   --color-error:             oklch(70% 0.16 25);
+    --color-error-content:   oklch(15% 0.02 120);
 
   --radius-selector: 0.5rem;
   --radius-field:    9999px;

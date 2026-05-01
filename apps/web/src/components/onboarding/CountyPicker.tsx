@@ -1,29 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
+import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 
 export function CountyPicker({ locale }: { locale: string }) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
-  const [selected, setSelected] = useState<string | null>(null);
+  const { value, setValue, clear } = useOnboardingDraft<{ county: string | null }>(
+    'county',
+    { county: null },
+  );
+  const [submitting, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   function next() {
-    if (!selected) return;
-    if (typeof window !== 'undefined') {
-      const existing = JSON.parse(
-        window.localStorage.getItem('agconn:onboarding:profile') ?? '{}',
-      );
-      window.localStorage.setItem(
-        'agconn:onboarding:profile',
-        JSON.stringify({ ...existing, county: selected }),
-      );
-    }
-    router.push(`/${locale}/onboarding/skills`);
+    if (!value.county) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await patchOnboardingAction({ county: value.county });
+      if (!res.ok) {
+        setError(t('error.generic'));
+        return;
+      }
+      await clear();
+      router.push(`/${locale}/onboarding/skills`);
+    });
   }
 
   return (
@@ -33,11 +40,11 @@ export function CountyPicker({ locale }: { locale: string }) {
           <button
             type="button"
             key={c}
-            onClick={() => setSelected(c)}
-            aria-pressed={selected === c}
+            onClick={() => setValue({ county: c })}
+            aria-pressed={value.county === c}
             className={[
               'btn btn-lg justify-center',
-              selected === c ? 'btn-primary' : 'btn-outline',
+              value.county === c ? 'btn-primary' : 'btn-outline',
             ].join(' ')}
           >
             {t(`county.${c.toLowerCase()}` as 'county.fresno')}
@@ -50,10 +57,11 @@ export function CountyPicker({ locale }: { locale: string }) {
       >
         {t('county.other')}
       </Link>
+      {error && <div className="text-error text-[12px]">{error}</div>}
       <button
         type="button"
         onClick={next}
-        disabled={!selected}
+        disabled={!value.county || submitting}
         className="btn btn-primary btn-lg w-full"
       >
         {t('profile.continue')}

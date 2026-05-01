@@ -66,6 +66,21 @@ export const smsTemplates = {
     es: '{employer} te invitó a aplicar para {jobTitle} (${wageMin}-${wageMax}/hr en {county}). Ver: agconn.com/invitations/{id}',
     vars: ['employer', 'jobTitle', 'wageMin', 'wageMax', 'county', 'id'] as const,
   }),
+  'application.withdrawn': def({
+    en: 'Withdrew your application for {jobTitle} at {employer}. Browse more: agconn.com/jobs',
+    es: 'Retiraste tu solicitud para {jobTitle} con {employer}. Ver más: agconn.com/jobs',
+    vars: ['jobTitle', 'employer'] as const,
+  }),
+  'training.enrolled': def({
+    en: "You're enrolled in {programTitle}. Starts {startDate} at {location}. We'll remind you 2 days before.",
+    es: 'Estás inscrito en {programTitle}. Empieza el {startDate} en {location}. Te recordaremos 2 días antes.',
+    vars: ['programTitle', 'startDate', 'location'] as const,
+  }),
+  'training.unenrolled': def({
+    en: "You unenrolled from {programTitle}. Browse more programs: agconn.com/training",
+    es: 'Cancelaste {programTitle}. Ver más programas: agconn.com/training',
+    vars: ['programTitle'] as const,
+  }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;

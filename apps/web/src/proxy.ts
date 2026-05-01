@@ -27,6 +27,12 @@ const isPublicRoute = createRouteMatcher([
   '/:locale/terms',
   '/:locale/confirm',
   '/:locale/unsubscribe',
+  '/:locale/jobs(.*)',
+  '/:locale/training(.*)',
+  '/:locale/verify(.*)',
+  '/:locale/faq',
+  '/:locale/impact',
+  '/:locale/resources',
   '/api/(.*)',
   '/icons/(.*)',
   '/monitoring(.*)',
@@ -51,5 +57,5 @@ export default clerkConfigured
   : ((req: NextRequest): NextResponse | Promise<NextResponse> => intl(req));
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: ['/((?!api|_next|_vercel|og|.*\\..*).*)'],
 };

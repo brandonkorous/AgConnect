@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
@@ -6,6 +6,7 @@ import { WaitlistForm } from './WaitlistForm';
 
 export function FinalCta() {
     const t = useTranslations('landing.final');
+    const locale = useLocale();
 
     return (
         <section id="final-cta" className="bg-primary text-primary-content relative w-full overflow-clip">
@@ -22,15 +23,15 @@ export function FinalCta() {
                 </div>
 
                 <div className="flex flex-col gap-5">
-                    <WorkerCard />
-                    <EmployerCard />
+                    <WorkerCard locale={locale} />
+                    <EmployerCard locale={locale} />
                 </div>
             </div>
         </section>
     );
 }
 
-function WorkerCard() {
+function WorkerCard({ locale }: { locale: string }) {
     const t = useTranslations('landing.final.workers');
     return (
         <div className="card bg-base-100">
@@ -48,12 +49,18 @@ function WorkerCard() {
                     helpText={t('help')}
                     successText={t('success')}
                 />
+                <a
+                    href={`/${locale}/sign-up?role=worker`}
+                    className="link link-hover text-secondary text-sm"
+                >
+                    {t('signup_direct')}
+                </a>
             </div>
         </div>
     );
 }
 
-function EmployerCard() {
+function EmployerCard({ locale }: { locale: string }) {
     const t = useTranslations('landing.final.employers');
     return (
         <div className="card card-bordered bg-neutral text-neutral-content border-secondary">
@@ -63,7 +70,7 @@ function EmployerCard() {
                     <p className="card-title text-neutral-content font-serif text-2xl font-semibold tracking-tight leading-tight">
                         {t('headline')}
                     </p>
-                    <a href="#post-job" className="btn btn-accent">
+                    <a href={`/${locale}/sign-up?role=employer`} className="btn btn-accent">
                         <span>{t('cta')}</span>
                         <FontAwesomeIcon icon={faArrowRight} className="text-neutral" />
                     </a>

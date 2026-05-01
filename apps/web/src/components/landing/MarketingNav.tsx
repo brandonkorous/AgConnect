@@ -11,11 +11,12 @@ const links = [
 
 export function MarketingNav() {
     const t = useTranslations('landing.nav');
+    const brandT = useTranslations('brand');
 
     return (
         <header className="border-secondary/15 bg-base-100 w-full border-b">
             <div className="mx-auto flex h-16 items-center justify-between px-5 md:h-24 md:px-8 lg:px-20">
-                <a href="/" className="flex items-center" aria-label="AgConn home">
+                <a href="/" className="flex items-center" aria-label={`${brandT('product_name')} home`}>
                     <Wordmark size="lg" tone="ink" />
                 </a>
                 <nav className="hidden lg:block" aria-label="Main">

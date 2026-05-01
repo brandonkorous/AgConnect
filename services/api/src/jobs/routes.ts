@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { Prisma } from '@prisma/client';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { County, JobStatus, type Tx } from '@agconn/db';
 import {
@@ -27,44 +28,106 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
 
   const counties = q.county?.length ? (q.county as County[]) : null;
 
-  const where = {
-    tenantId,
-    status: JobStatus.active,
-    deletedAt: null,
-    ...(counties ? { county: { in: counties } } : {}),
-    ...(q.skills?.length ? { skills: { hasSome: q.skills } } : {}),
-    ...(q.wageMin !== undefined ? { wageMax: { gte: q.wageMin } } : {}),
-    ...(q.wageMax !== undefined ? { wageMin: { lte: q.wageMax } } : {}),
-    ...(q.startBefore ? { startDate: { lte: new Date(q.startBefore) } } : {}),
-    ...(q.startAfter ? { startDate: { gte: new Date(q.startAfter) } } : {}),
-    ...(q.q
-      ? {
-          OR: [
-            { titleEn: { contains: q.q, mode: 'insensitive' as const } },
-            { titleEs: { contains: q.q, mode: 'insensitive' as const } },
-            { descriptionEn: { contains: q.q, mode: 'insensitive' as const } },
-            { descriptionEs: { contains: q.q, mode: 'insensitive' as const } },
-          ],
-        }
-      : {}),
-    ...(cursor
-      ? {
-          OR: [
-            { createdAt: { lt: cursor.createdAt } },
-            { createdAt: cursor.createdAt, id: { lt: cursor.id } },
-          ],
-        }
-      : {}),
-  };
+  // For full-text searches we hit the `search_vector` GIN index directly
+  // via raw SQL — Prisma doesn't understand tsvector. For everything else
+  // we fall through to the standard query builder. This keeps the search
+  // query bilingual + sub-millisecond at scale.
+  let rows: Array<{
+    id: string;
+    seoSlug: string | null;
+    titleEn: string;
+    titleEs: string;
+    county: County;
+    city: string | null;
+    wageMin: { toString: () => string };
+    wageMax: { toString: () => string };
+    wageUnit: string;
+    startDate: Date;
+    endDate: Date | null;
+    skills: string[];
+    housing: boolean;
+    transport: boolean;
+    createdAt: Date;
+    employer: {
+      employerProfile: { legalName: string; dbaName?: string | null } | null;
+      email: string | null;
+    } | null;
+  }>;
 
-  const rows = await c.var.db.jobPosting.findMany({
-    where,
-    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-    take: limit + 1,
-    include: {
-      employer: { include: { employerProfile: true } },
-    },
-  });
+  if (q.q) {
+    const tsQuery = q.q
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((tok) => tok.replace(/[^\p{L}\p{N}_]/gu, '') + ':*')
+      .filter(Boolean)
+      .join(' & ');
+
+    const cursorClause = cursor
+      ? Prisma.sql`AND (created_at, id) < (${cursor.createdAt}, ${cursor.id}::uuid)`
+      : Prisma.empty;
+    const ids = await c.var.db.$queryRaw<{ id: string; created_at: Date }[]>(Prisma.sql`
+      SELECT id, created_at
+      FROM "job_postings"
+      WHERE tenant_id = ${tenantId}::uuid
+        AND status = 'active'::"JobStatus"
+        AND deleted_at IS NULL
+        AND search_vector @@ to_tsquery('simple', ${tsQuery})
+        ${cursorClause}
+      ORDER BY ts_rank(search_vector, to_tsquery('simple', ${tsQuery})) DESC,
+               created_at DESC, id DESC
+      LIMIT ${limit + 1}
+    `);
+    if (ids.length === 0) {
+      rows = [];
+    } else {
+      rows = await c.var.db.jobPosting.findMany({
+        where: {
+          id: { in: ids.map((r) => r.id) },
+          tenantId,
+          deletedAt: null,
+          ...(counties ? { county: { in: counties } } : {}),
+          ...(q.skills?.length ? { skills: { hasSome: q.skills } } : {}),
+          ...(q.wageMin !== undefined ? { wageMax: { gte: q.wageMin } } : {}),
+          ...(q.wageMax !== undefined ? { wageMin: { lte: q.wageMax } } : {}),
+          ...(q.startBefore ? { startDate: { lte: new Date(q.startBefore) } } : {}),
+          ...(q.startAfter ? { startDate: { gte: new Date(q.startAfter) } } : {}),
+        },
+        include: { employer: { include: { employerProfile: true } } },
+      });
+      // Preserve FTS rank ordering returned from the raw query.
+      const order = new Map(ids.map((r, i) => [r.id, i]));
+      rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+    }
+  } else {
+    const where = {
+      tenantId,
+      status: JobStatus.active,
+      deletedAt: null,
+      ...(counties ? { county: { in: counties } } : {}),
+      ...(q.skills?.length ? { skills: { hasSome: q.skills } } : {}),
+      ...(q.wageMin !== undefined ? { wageMax: { gte: q.wageMin } } : {}),
+      ...(q.wageMax !== undefined ? { wageMin: { lte: q.wageMax } } : {}),
+      ...(q.startBefore ? { startDate: { lte: new Date(q.startBefore) } } : {}),
+      ...(q.startAfter ? { startDate: { gte: new Date(q.startAfter) } } : {}),
+      ...(cursor
+        ? {
+            OR: [
+              { createdAt: { lt: cursor.createdAt } },
+              { createdAt: cursor.createdAt, id: { lt: cursor.id } },
+            ],
+          }
+        : {}),
+    };
+
+    rows = await c.var.db.jobPosting.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: limit + 1,
+      include: {
+        employer: { include: { employerProfile: true } },
+      },
+    });
+  }
 
   const slice = rows.slice(0, limit);
   const hasMore = rows.length > limit;

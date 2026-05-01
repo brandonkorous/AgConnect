@@ -1,11 +1,16 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { FeaturedProgramCard } from './FeaturedProgramCard';
+import { getFeaturedTraining } from '@/lib/api/landing';
 
-const programIds = ['1', '2', '3', '4'] as const;
+export async function FeaturedTraining() {
+    const [t, locale, programs] = await Promise.all([
+        getTranslations('landing.featured_training'),
+        getLocale(),
+        getFeaturedTraining(),
+    ]);
 
-export function FeaturedTraining() {
-    const t = useTranslations('landing.featured_training');
+    if (programs.length === 0) return null;
 
     return (
         <section className="bg-base-200 w-full">
@@ -19,14 +24,19 @@ export function FeaturedTraining() {
                             {t('headline')}
                         </h2>
                     </div>
-                    <p className="text-base-content  flex-1 font-sans text-lg leading-relaxed lg:pb-2">
+                    <p className="text-base-content flex-1 font-sans text-lg leading-relaxed lg:pb-2">
                         {t('body')}
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {programIds.map((id) => (
-                        <FeaturedProgramCard key={id} id={id} />
+                    {programs.map((program, i) => (
+                        <FeaturedProgramCard
+                            key={program.id}
+                            program={program}
+                            locale={locale as 'en' | 'es'}
+                            featured={i === 0}
+                        />
                     ))}
                 </div>
             </div>

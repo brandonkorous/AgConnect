@@ -1,14 +1,31 @@
 import { useTranslations } from 'next-intl';
-import { FOLDERS, CHANNEL_DOT, type Channel } from './messagesMockData';
 
-export function FoldersRail() {
+const CHANNEL_DOT: Record<string, string> = {
+  WhatsApp: '#22c55e',
+  SMS: 'oklch(50% 0.09 120)',
+  'In-app': 'oklch(83% 0.13 88)',
+};
+
+type Props = { counts: Record<string, number> };
+
+export function FoldersRail({ counts }: Props) {
   const t = useTranslations('worker.messages.folders');
   const tChan = useTranslations('worker.messages.channels');
-  const channels: Channel[] = ['SMS', 'WhatsApp', 'In-app'];
-  const chanKey: Record<Channel, string> = { SMS: 'sms', WhatsApp: 'whatsapp', 'In-app': 'in_app' };
+  const folders: { key: keyof typeof counts; label: string }[] = [
+    { key: 'all', label: t('all') },
+    { key: 'employers', label: t('employers') },
+    { key: 'foremen', label: t('foremen') },
+    { key: 'agconn', label: t('agconn') },
+  ];
+  const channels = ['SMS', 'WhatsApp', 'In-app'];
+  const chanKey: Record<string, string> = {
+    SMS: 'sms',
+    WhatsApp: 'whatsapp',
+    'In-app': 'in_app',
+  };
   return (
     <div className="border-base-300 flex flex-col gap-0.5 border-r p-2.5">
-      {FOLDERS.map((f, i) => (
+      {folders.map((f, i) => (
         <a
           key={f.key}
           href="#"
@@ -19,9 +36,9 @@ export function FoldersRail() {
               : 'text-base-content/80 font-medium',
           ].join(' ')}
         >
-          <span>{t(f.key)}</span>
+          <span>{f.label}</span>
           <span className="text-base-content/60 font-mono text-[10.5px] font-bold">
-            {f.count}
+            {counts[f.key] ?? 0}
           </span>
         </a>
       ))}

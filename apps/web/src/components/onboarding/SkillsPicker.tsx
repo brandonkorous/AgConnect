@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
+import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
 
 const DEFAULT_SKILLS = [
   'harvesting',
@@ -17,44 +19,51 @@ const DEFAULT_SKILLS = [
   'pesticide',
 ] as const;
 
-type Props = { locale: string };
-
 const MAX_SKILLS = 20;
+
+type Props = { locale: string };
 
 export function SkillsPicker({ locale }: Props) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { value, setValue, clear } = useOnboardingDraft<{ skills: string[] }>(
+    'skills',
+    { skills: [] },
+  );
   const [custom, setCustom] = useState('');
+  const [submitting, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
-  function toggle(key: string) {
+  const selected = new Set(value.skills);
+
+  function toggle(label: string) {
     const next = new Set(selected);
-    if (next.has(key)) next.delete(key);
-    else if (next.size < MAX_SKILLS) next.add(key);
-    setSelected(next);
+    if (next.has(label)) next.delete(label);
+    else if (next.size < MAX_SKILLS) next.add(label);
+    setValue({ skills: Array.from(next) });
   }
 
   function addCustom() {
     const v = custom.trim();
     if (!v || v.length > 60 || selected.size >= MAX_SKILLS) return;
-    const next = new Set(selected);
-    next.add(v);
-    setSelected(next);
+    if (!selected.has(v)) {
+      setValue({ skills: [...value.skills, v] });
+    }
     setCustom('');
   }
 
   function next() {
-    if (selected.size === 0) return;
-    if (typeof window !== 'undefined') {
-      const existing = JSON.parse(
-        window.localStorage.getItem('agconn:onboarding:profile') ?? '{}',
-      );
-      window.localStorage.setItem(
-        'agconn:onboarding:profile',
-        JSON.stringify({ ...existing, skills: Array.from(selected) }),
-      );
-    }
-    router.push(`/${locale}/onboarding/availability`);
+    if (value.skills.length === 0) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await patchOnboardingAction({ skills: value.skills });
+      if (!res.ok) {
+        setError(t('error.generic'));
+        return;
+      }
+      await clear();
+      router.push(`/${locale}/onboarding/availability`);
+    });
   }
 
   return (
@@ -80,7 +89,6 @@ export function SkillsPicker({ locale }: Props) {
             </button>
           );
         })}
-        {/* Custom chips that aren't in the default list */}
         {Array.from(selected)
           .filter(
             (label) =>
@@ -123,10 +131,11 @@ export function SkillsPicker({ locale }: Props) {
         {selected.size} / {MAX_SKILLS}
       </div>
 
+      {error && <div className="text-error text-[12px]">{error}</div>}
       <button
         type="button"
         onClick={next}
-        disabled={selected.size === 0}
+        disabled={selected.size === 0 || submitting}
         className="btn btn-primary btn-lg w-full"
       >
         {t('profile.continue')}

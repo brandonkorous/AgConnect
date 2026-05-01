@@ -6,6 +6,7 @@ import {
   WaitlistBody,
 } from '@agconn/schemas';
 import { Lang } from '@agconn/db';
+import { enqueueSms } from '@agconn/sms';
 import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext';
 import type { AuditCtxVars } from '../../middleware/audit';
 import {
@@ -108,6 +109,29 @@ onboardingRoutes.post('/complete', async (c) => {
     resourceId: c.var.userId,
     metadata: { fields: 'onboardedAt' },
   });
+
+  // Welcome SMS — best-effort. A queue failure must not block onboarding
+  // completion; the worker is already in the system.
+  try {
+    const profile = await c.var.db.workerProfile.findUnique({
+      where: { id: c.var.userId },
+    });
+    const tenantId = c.var.tenantId;
+    if (profile && tenantId) {
+      await enqueueSms({
+        tenantId,
+        userId: c.var.userId,
+        template: 'welcome',
+        vars: { firstName: profile.firstName || 'there' },
+      });
+    }
+  } catch (e) {
+    console.error('[onboarding] welcome SMS enqueue failed', {
+      userId: c.var.userId,
+      err: e instanceof Error ? e.message : String(e),
+    });
+  }
+
   return ok(c, { status: 'complete', redirect: '/jobs' });
 });
 

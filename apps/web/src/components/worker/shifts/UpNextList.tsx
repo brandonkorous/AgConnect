@@ -1,62 +1,115 @@
+'use client';
+
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Pill } from '@/components/worker/primitives/Pill';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
-import { UPCOMING, type UpcomingShift } from './shiftsMockData';
+import { confirmShiftAction } from '@/lib/api/me-actions';
+import type { ShiftRow } from '@/lib/api/me';
 
-const STATUS_TONE: Record<UpcomingShift['status'], 'success' | 'warning' | 'accent' | 'ghost'> = {
-  Confirmed: 'success',
-  'Awaiting confirm': 'warning',
-  Enrolled: 'accent',
-  Pending: 'ghost',
+const STATUS_TONE: Record<
+  ShiftRow['status'],
+  'success' | 'warning' | 'accent' | 'ghost'
+> = {
+  confirmed: 'success',
+  attended: 'success',
+  assigned: 'warning',
+  declined: 'ghost',
+  no_show: 'ghost',
 };
 
-const STATUS_KEY: Record<UpcomingShift['status'], string> = {
-  Confirmed: 'confirmed',
-  'Awaiting confirm': 'awaiting',
-  Enrolled: 'enrolled',
-  Pending: 'pending',
+const STATUS_KEY: Record<ShiftRow['status'], string> = {
+  confirmed: 'confirmed',
+  attended: 'confirmed',
+  assigned: 'awaiting',
+  declined: 'pending',
+  no_show: 'pending',
 };
 
-export function UpNextList() {
+type Props = { shifts: ShiftRow[]; locale: string };
+
+export function UpNextList({ shifts, locale }: Props) {
   const t = useTranslations('worker.shifts.up_next');
+  const tEmpty = useTranslations('worker.shifts');
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
+  function confirm(assignmentId: string) {
+    startTransition(async () => {
+      await confirmShiftAction(assignmentId);
+      router.refresh();
+    });
+  }
+
+  if (shifts.length === 0) {
+    return (
+      <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px] text-center">
+        <p className="text-base-content/70 text-[13px]">
+          {locale === 'es'
+            ? 'No tienes turnos próximos.'
+            : 'No upcoming shifts.'}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
       <SectionHeading sub={t('sub')}>{t('title')}</SectionHeading>
       <div className="grid gap-2.5">
-        {UPCOMING.map((s, i) => (
-          <div
-            key={i}
-            className={[
-              'rounded-xl p-3',
-              i === 0 ? 'bg-base-200 border-base-300 border' : '',
-            ].join(' ')}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <div className="text-base-content/60 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
-                  {s.date}
+        {shifts.map((s, i) => {
+          const title =
+            (locale === 'es' ? s.shift.jobTitleEs : s.shift.jobTitleEn) ??
+            s.shift.crewName ??
+            (locale === 'es' ? 'Turno' : 'Shift');
+          return (
+            <div
+              key={s.id}
+              className={[
+                'rounded-xl p-3',
+                i === 0 ? 'bg-base-200 border-base-300 border' : '',
+              ].join(' ')}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-base-content/60 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+                    {new Date(s.shift.date).toLocaleDateString(locale, {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </div>
+                  <div className="mt-0.5 text-[13.5px] font-semibold">{title}</div>
+                  <div className="text-base-content/60 mt-0.5 text-[11.5px]">
+                    {s.shift.employer} · {s.shift.locationLabel}
+                  </div>
                 </div>
-                <div className="mt-0.5 flex items-center gap-1.5 text-[13.5px] font-semibold">
-                  {s.training && (
-                    <span className="bg-warning inline-block h-1.5 w-1.5 rounded-full" />
-                  )}
-                  {s.title}
-                </div>
-                <div className="text-base-content/60 mt-0.5 text-[11.5px]">
-                  {s.employer} · {s.loc}
-                </div>
+                <Pill tone={STATUS_TONE[s.status]}>
+                  {t(`status.${STATUS_KEY[s.status]}`)}
+                </Pill>
               </div>
-              <Pill tone={STATUS_TONE[s.status]}>{t(`status.${STATUS_KEY[s.status]}`)}</Pill>
+              <div className="text-base-content/70 mt-2 flex items-center gap-3 font-mono text-[11.5px]">
+                <span>
+                  {s.shift.startTime}
+                  {s.shift.endTime ? `–${s.shift.endTime}` : ''}
+                </span>
+              </div>
+              {s.status === 'assigned' && (
+                <div className="mt-2.5 flex gap-2">
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => confirm(s.id)}
+                    className="btn btn-primary btn-xs rounded-full"
+                  >
+                    {locale === 'es' ? 'Confirmar' : 'Confirm'}
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="text-base-content/70 mt-2 flex items-center gap-3 font-mono text-[11.5px]">
-              <span>
-                {s.start}–{s.end}
-              </span>
-              <span>·</span>
-              <span>{s.pay}</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

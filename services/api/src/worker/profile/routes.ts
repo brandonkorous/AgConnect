@@ -143,11 +143,53 @@ profileRoutes.get('/preview-as-employer', async (c) => {
 });
 
 profileRoutes.post('/resume/reupload', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId;
+  if (!tenantId) return err(c, 403, 'no_tenant');
+
+  const profile = await c.var.db.workerProfile.findUnique({
+    where: { id: userId },
+    select: { resumeRawUrl: true },
+  });
+
+  await c.var.db.workerProfile.update({
+    where: { id: userId },
+    data: { parserStatus: 'parsing' as never },
+  }).catch(() => {
+    // parserStatus is added by a separate migration. Swallow if it doesn't
+    // exist yet so the route stays usable in mixed-version environments.
+  });
+
   await c.var.audit.log({
     action: 'worker.resume.uploaded',
-    resourceId: c.var.userId,
+    resourceId: userId,
     metadata: { fileBytes: 0, mimeType: 'unknown', parserVersion: 'pending' },
   });
+
+  // Enqueue the parse job. The dedicated services/resume-parser process picks
+  // this up and writes results back onto WorkerProfile.resume + parserStatus.
+  // If pg-boss isn't running locally, the catch keeps the API responsive —
+  // the polling endpoint will just keep returning 'parsing' until timeout,
+  // at which point the UI falls back to manual entry.
+  try {
+    const { getResumeParserBoss, RESUME_PARSE_QUEUE } = await import('./parser-queue');
+    const boss = await getResumeParserBoss();
+    await boss.send(
+      RESUME_PARSE_QUEUE,
+      {
+        tenantId,
+        userId,
+        resumeRawUrl: profile?.resumeRawUrl ?? '',
+      },
+      { singletonKey: `resume.parse-${userId}`, singletonSeconds: 60 * 60 },
+    );
+  } catch (e) {
+    console.error('[profile] resume.parse enqueue failed', {
+      userId,
+      err: e instanceof Error ? e.message : String(e),
+    });
+  }
+
   return ok(c, {
     status: 'parsing' as const,
     poll_url: '/v1/profile/resume/status',
@@ -155,11 +197,31 @@ profileRoutes.post('/resume/reupload', async (c) => {
 });
 
 profileRoutes.get('/resume/status', async (c) => {
-  return ok(c, {
-    status: 'failed' as const,
-    reason: 'parser_error' as const,
-    fallback: 'manual_entry' as const,
+  // Read parserStatus + resume off the worker profile. If the parser hasn't
+  // been added to the schema yet, fall back to checking whether resume has
+  // any populated array.
+  const profile = await c.var.db.workerProfile.findUnique({
+    where: { id: c.var.userId },
   });
+  const status = (profile as { parserStatus?: string } | null)?.parserStatus;
+  const resume = profile?.resume as Record<string, unknown> | null;
+  const hasResume =
+    resume &&
+    Array.isArray(resume.experience) &&
+    (resume.experience as unknown[]).length > 0;
+
+  if (status === 'parsed' || hasResume) {
+    return ok(c, { status: 'parsed' as const, resume });
+  }
+  if (status === 'failed') {
+    return ok(c, {
+      status: 'failed' as const,
+      reason: 'parser_error' as const,
+      fallback: 'manual_entry' as const,
+    });
+  }
+  // 'parsing' or unknown — keep the UI polling.
+  return ok(c, { status: 'parsing' as const });
 });
 
 function shapeUser(u: {

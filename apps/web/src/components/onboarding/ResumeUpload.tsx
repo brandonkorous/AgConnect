@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,19 +8,31 @@ import {
   faFileArrowUp,
   faFilePen,
   faTriangleExclamation,
+  faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  pollResumeStatusAction,
+  startResumeReuploadAction,
+} from '@/lib/api/resume-actions';
 
-type Props = { locale: string };
+type Props = { locale: string; redirectTo?: string };
 
 const MAX_BYTES = 10 * 1024 * 1024;
-const ACCEPTED = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+const ACCEPTED = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+const POLL_INTERVAL_MS = 1500;
+const POLL_MAX_ATTEMPTS = 20;
 
-export function ResumeUpload({ locale }: Props) {
+export function ResumeUpload({ locale, redirectTo }: Props) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [phase, setPhase] = useState<'pick' | 'parsing' | 'failed'>('pick');
+  const [, startTransition] = useTransition();
+  const fallbackTo = redirectTo ?? `/${locale}/onboarding/profile`;
 
   function pick(e: React.ChangeEvent<HTMLInputElement>) {
     setError(null);
@@ -37,20 +49,68 @@ export function ResumeUpload({ locale }: Props) {
     setFile(f);
   }
 
-  async function upload() {
-    if (!file) return;
-    setUploading(true);
-    setError(null);
-    try {
-      // The 07-resume-parser pipeline isn't online yet; the stub API responds
-      // immediately with `failed → manual_entry`. Skip the round-trip and go
-      // straight to the manual editor.
-      router.push(`/${locale}/onboarding/profile`);
-    } catch {
-      setError(t('error.generic'));
-    } finally {
-      setUploading(false);
+  async function pollUntilDone() {
+    for (let i = 0; i < POLL_MAX_ATTEMPTS; i++) {
+      const res = await pollResumeStatusAction();
+      if (!res.ok) {
+        setError(t('error.generic'));
+        setPhase('failed');
+        return;
+      }
+      if (res.status === 'parsed') {
+        router.push(fallbackTo);
+        return;
+      }
+      if (res.status === 'failed') {
+        setPhase('failed');
+        setTimeout(() => router.push(fallbackTo), 1200);
+        return;
+      }
+      await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
     }
+    router.push(fallbackTo);
+  }
+
+  function upload() {
+    if (!file) return;
+    setError(null);
+    setPhase('parsing');
+    startTransition(async () => {
+      const res = await startResumeReuploadAction();
+      if (!res.ok) {
+        setError(t('error.generic'));
+        setPhase('pick');
+        return;
+      }
+      void pollUntilDone();
+    });
+  }
+
+  if (phase === 'parsing') {
+    return (
+      <div className="border-base-300 bg-base-100 grid place-items-center gap-3 rounded-2xl border p-8 text-center">
+        <FontAwesomeIcon
+          icon={faSpinner}
+          className="text-primary h-6 w-6 animate-spin"
+        />
+        <p className="text-[14px] font-semibold">{t('resume.parsing.line1')}</p>
+        <p className="text-base-content/60 text-[12px]">
+          {t('resume.parsing.line2')}
+        </p>
+      </div>
+    );
+  }
+
+  if (phase === 'failed') {
+    return (
+      <div className="border-warning/40 bg-warning/10 grid gap-2 rounded-2xl border p-5">
+        <div className="flex items-center gap-2">
+          <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning h-4 w-4" />
+          <span className="text-[14px] font-semibold">{t('resume.parse_failed')}</span>
+        </div>
+        <p className="text-base-content/70 text-[13px]">{t('resume.parsing.manual')}</p>
+      </div>
+    );
   }
 
   return (
@@ -67,10 +127,7 @@ export function ResumeUpload({ locale }: Props) {
               onChange={pick}
             />
           </label>
-          <a
-            href={`/${locale}/onboarding/profile`}
-            className="btn btn-lg btn-outline justify-start"
-          >
+          <a href={fallbackTo} className="btn btn-lg btn-outline justify-start">
             <FontAwesomeIcon icon={faFilePen} className="h-4 w-4" />
             <span>{t('resume.dont')}</span>
           </a>
@@ -89,7 +146,6 @@ export function ResumeUpload({ locale }: Props) {
               type="button"
               onClick={() => setFile(null)}
               className="btn btn-ghost flex-1"
-              disabled={uploading}
             >
               {t('resume.cancel')}
             </button>
@@ -97,9 +153,8 @@ export function ResumeUpload({ locale }: Props) {
               type="button"
               onClick={upload}
               className="btn btn-primary flex-1"
-              disabled={uploading}
             >
-              {uploading ? t('resume.uploading') : t('resume.upload')}
+              {t('resume.upload')}
             </button>
           </div>
         </div>
