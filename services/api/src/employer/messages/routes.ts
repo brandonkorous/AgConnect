@@ -17,33 +17,75 @@ employerMessagesRoutes.use('*', requireTenant);
 employerMessagesRoutes.get('/', validate('query', ConversationListQuery), async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;
+  const q = c.var.body;
 
   const convs = await c.var.db.conversation.findMany({
     where: { tenantId, employerId: userId, deletedAt: null },
     orderBy: { lastMessageAt: 'desc' },
-    take: 50,
+    take: 100,
     include: {
       messages: { take: 1, orderBy: { createdAt: 'desc' } },
       participants: {
-        where: { userId, leftAt: null },
-        select: { unreadCount: true },
+        where: { leftAt: null },
+        include: { user: { select: { id: true, phone: true } } },
       },
     },
   });
 
-  return ok(c, {
-    conversations: convs.map((co) => ({
+  const shaped = convs.map((co) => {
+    const myParticipant = co.participants.find((p) => p.userId === userId);
+    const others = co.participants.filter((p) => p.userId !== userId);
+    const category = classifyConversation(co.channel, co.isGroup);
+    return {
       id: co.id,
       title: co.title,
       isGroup: co.isGroup,
       channel: co.channel,
       pinnedShiftId: co.pinnedShiftId,
       lastMessageAt: co.lastMessageAt?.toISOString() ?? null,
-      unreadCount: co.participants[0]?.unreadCount ?? 0,
+      unreadCount: myParticipant?.unreadCount ?? 0,
       preview: co.messages[0]?.body.slice(0, 200) ?? '',
-    })),
+      category,
+      foremanPhone: co.channel === 'whatsapp' && others[0]?.user.phone ? others[0].user.phone : null,
+      participantCount: co.participants.length,
+    };
+  });
+
+  const filtered =
+    q.folder === 'all' ? shaped : shaped.filter((co) => co.category === q.folder);
+
+  return ok(c, {
+    conversations: filtered.slice(0, q.limit),
+    counts: countByFolder(shaped),
   });
 });
+
+function classifyConversation(
+  channel: 'app' | 'sms' | 'whatsapp' | 'broadcast',
+  isGroup: boolean,
+): 'candidates' | 'crew' | 'foremen' | 'broadcasts' {
+  if (channel === 'broadcast') return 'broadcasts';
+  if (isGroup) return 'crew';
+  if (channel === 'whatsapp') return 'foremen';
+  return 'candidates';
+}
+
+function countByFolder(items: { category: string }[]): {
+  all: number;
+  candidates: number;
+  crew: number;
+  foremen: number;
+  broadcasts: number;
+} {
+  const counts = { all: items.length, candidates: 0, crew: 0, foremen: 0, broadcasts: 0 };
+  for (const it of items) {
+    if (it.category === 'candidates') counts.candidates += 1;
+    else if (it.category === 'crew') counts.crew += 1;
+    else if (it.category === 'foremen') counts.foremen += 1;
+    else if (it.category === 'broadcasts') counts.broadcasts += 1;
+  }
+  return counts;
+}
 
 employerMessagesRoutes.post('/', validate('json', CreateConversationBody), async (c) => {
   const userId = c.var.userId;

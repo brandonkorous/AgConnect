@@ -12,7 +12,13 @@
         "headline": "¿Más preguntas?",
         "body": "Respondemos cada correo en menos de dos días hábiles, en tu idioma.",
         "cta_email": "Escribir a support@agconn.com",
-        "cta_home": "Volver al inicio"
+        "cta_home": "Volver al inicio",
+        "next_label": "Sigue con"
+      },
+      "next_links": {
+        "impact": "Ver el panel de impacto público",
+        "resources": "Leer guías a profundidad",
+        "home": "Volver a la página principal"
       },
       "meta": {
         "title": "Preguntas frecuentes — AgConn",
@@ -49,16 +55,36 @@
       "eyebrow": "Panel de impacto público",
       "headline": "Cómo aparece el trabajo.",
       "intro": "Números en vivo sobre colocaciones, salarios, capacitaciones completadas y empleadores verificados — actualizados cada noche, alineados con WIOA y defendibles para subvenciones.",
-      "back_home": "Volver al inicio",
+      "live_label": "En vivo · últimos 12 meses",
+      "last_updated": "Última actualización {time}",
+      "back_home": "Volver a la página principal",
+      "back_home_label": "Eso es todo lo que publicamos aquí por hoy.",
       "meta": {
         "title": "Panel de impacto — AgConn",
         "description": "Panel de impacto en vivo de AgConn — colocaciones del Valle Central, salario mediano al contratar, capacitaciones completadas y empleadores verificados, actualizados cada noche."
+      },
+      "methodology": {
+        "eyebrow": "Cómo funcionan los números",
+        "headline": "Defendibles para subvenciones por diseño.",
+        "count": {
+          "title": "Qué contamos",
+          "body": "Contrataciones registradas contra ofertas verificadas, finalizaciones contra programas de CDFA / F3 / CalOSBA, empleadores con verificación de licencia FLC aprobada. Sin estimaciones."
+        },
+        "round": {
+          "title": "Cómo redondeamos",
+          "body": "Las colocaciones y capacitaciones se redondean a la decena más cercana. El salario mediano muestra dos decimales. Los empleadores verificados se muestran exactos — no hay riesgo de privacidad con un total público."
+        },
+        "suppress": {
+          "title": "Cuándo ocultamos",
+          "body": "Cualquier indicador con menos de 25 personas muestra \"Próximamente\" en vez del número. Esto previene la re-identificación mientras estamos en una fase temprana."
+        }
       }
     },
     "resources": {
       "eyebrow": "Recursos",
       "headline": "Guías a profundidad, próximamente.",
       "intro": "Artículos sobre derechos de trabajadores agrícolas, cumplimiento FLC y programas de capacitación están por publicarse. Suscríbete para recibirlos en tu correo.",
+      "cadence_label": "Primeros artículos · publicándose después de 2026-05-05",
       "form_label": "Correo electrónico",
       "form_placeholder": "tu@ejemplo.com",
       "form_cta": "Suscribirse",
@@ -68,7 +94,109 @@
       "meta": {
         "title": "Recursos — AgConn",
         "description": "Artículos bilingües a profundidad sobre derechos de trabajadores agrícolas, cumplimiento FLC y programas de capacitación del Valle Central."
+      },
+      "preview": {
+        "eyebrow": "Lo que viene",
+        "headline": "Tres temas, lenguaje claro.",
+        "intro": "Cada tema recibe artículos bilingües mensuales con una sola respuesta: qué es, para quién es y qué sigue.",
+        "coming_soon": "· Próximamente ·",
+        "categories": {
+          "workers_rights": {
+            "label": "Derechos del trabajador",
+            "title": "Pago, descansos, transporte y qué cuenta como represalia.",
+            "body": "Guías en lenguaje claro sobre las preguntas que más hacen los trabajadores agrícolas. Basadas en el código laboral de California y verificadas con CRLA."
+          },
+          "employer_guides": {
+            "label": "Guías para empleadores",
+            "title": "Verificación FLC, publicaciones que generan resultados, contratación sin papeleo.",
+            "body": "Escrito para productores y Contratistas de Mano de Obra Agrícola que quieren operaciones limpias y conformes sin la ansiedad regulatoria."
+          },
+          "training_explainers": {
+            "label": "Capacitaciones explicadas",
+            "title": "Qué cubren realmente CDFA, F3 y CalOSBA — y cuál es la indicada para ti.",
+            "body": "Nos sentamos en cada programa antes de escribir sobre él. Sin copia publicitaria, solo qué es y con qué te quedarás."
+          }
+        }
+      },
+      "subscribe": {
+        "eyebrow": "Recibe el primer artículo",
+        "headline": "Mensual. Bilingüe. Sin relleno.",
+        "body": "Un artículo al mes, en EN y ES. No compartimos tu correo. No rastreamos aperturas. Enviamos cuando hay algo que vale la pena leer.",
+        "unsubscribe": "Cancela cuando quieras · Sin correos publicitarios · Sin terceros"
+      },
+      "editorial": {
+        "label": "Editorial",
+        "body": "¿Quieres sugerir un tema? Leemos cada correo.",
+        "cta": "editorial@agconn.com",
+        "home": "Volver a la página principal"
       }
+    }
+  },
+  "auth": {
+    "shared": {
+      "brand": "AgConn",
+      "back_home": "Volver al inicio",
+      "powered_by": "Asegurado por Clerk",
+      "or": "o",
+      "google": "Continuar con Google",
+      "submit": "Continuar",
+      "submitting": "Un momento…",
+      "verifying": "Verificando…",
+      "resend": "Enviar un código nuevo",
+      "resend_in": "Reenviar en {seconds}s",
+      "use_email": "Usar correo en su lugar",
+      "use_phone": "Usar teléfono en su lugar",
+      "errors": {
+        "generic": "Algo falló. Inténtalo de nuevo.",
+        "invalid_phone": "Ingresa un número de 10 dígitos.",
+        "invalid_email": "Ingresa un correo válido.",
+        "invalid_code": "Ese código no coincide. Inténtalo de nuevo.",
+        "weak_password": "La contraseña debe tener al menos 8 caracteres.",
+        "no_account": "No encontramos una cuenta con esa información."
+      }
+    },
+    "sign_in": {
+      "title": "Inicia sesión en AgConn",
+      "subtitle": "Encuentra trabajo, da seguimiento a tus aplicaciones, cobra.",
+      "phone_label": "Número de celular",
+      "phone_placeholder": "(555) 123-4567",
+      "phone_help": "Te enviamos un código de 6 dígitos por SMS.",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "tu@ejemplo.com",
+      "password_label": "Contraseña",
+      "password_placeholder": "Tu contraseña",
+      "verify_title": "Ingresa tu código",
+      "verify_phone_subtitle": "Enviamos un código de 6 dígitos a {target}.",
+      "verify_email_subtitle": "Enviamos un código de 6 dígitos a {target}.",
+      "code_label": "Código de 6 dígitos",
+      "no_account": "¿No tienes cuenta?",
+      "sign_up_link": "Crear cuenta",
+      "forgot_password": "¿Olvidaste tu contraseña?"
+    },
+    "sign_up": {
+      "title": "Crea tu cuenta de AgConn",
+      "subtitle": "Gratis para trabajadores. Sin descargar app.",
+      "first_name_label": "Nombre",
+      "first_name_placeholder": "María",
+      "last_name_label": "Apellido",
+      "last_name_placeholder": "Hernández",
+      "phone_label": "Número de celular",
+      "phone_placeholder": "(555) 123-4567",
+      "phone_help": "Te enviamos un código de 6 dígitos por SMS para verificar.",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "tu@ejemplo.com",
+      "password_label": "Elige una contraseña",
+      "password_help": "Al menos 8 caracteres.",
+      "verify_title": "Verifica tu número",
+      "verify_phone_subtitle": "Enviamos un código de 6 dígitos a {target}.",
+      "verify_email_subtitle": "Enviamos un código de 6 dígitos a {target}.",
+      "code_label": "Código de 6 dígitos",
+      "have_account": "¿Ya tienes cuenta?",
+      "sign_in_link": "Inicia sesión",
+      "terms_prefix": "Al continuar aceptas nuestros",
+      "terms_link": "Términos",
+      "and": "y",
+      "privacy_link": "Política de privacidad"
     }
   },
   "landing": {
@@ -2135,6 +2263,7 @@
       "eyebrow": "Embudo",
       "summary": "{new} nuevos · {reviewed} revisados · {interview} en entrevista · {hired} contratados esta temporada",
       "filters": "Filtros",
+      "filters_help": "Filtra postulaciones por publicación en la página de Empleos.",
       "bulk_message": "Mensaje masivo",
       "empty": "Aún sin candidatos — comparte tu publicación para empezar a recibir solicitudes.",
       "tab": {
@@ -2158,6 +2287,19 @@
       "action": {
         "message": "Mensaje",
         "hire": "Contratar"
+      },
+      "row": {
+        "hire_title": "Contratar candidato",
+        "wage_label": "Salario por hora",
+        "start_label": "Fecha de inicio",
+        "confirm_hire": "Confirmar contratación",
+        "message_title": "Enviar mensaje",
+        "message_label": "Mensaje",
+        "message_placeholder": "Hola — una pregunta rápida sobre tu solicitud…",
+        "confirm_message": "Enviar",
+        "cancel": "Cancelar",
+        "error_hire": "No se pudo contratar — abre la página de detalles.",
+        "error_message": "No se pudo enviar el mensaje."
       }
     },
     "kanban": {
@@ -2242,10 +2384,24 @@
       "invite_modal": {
         "title": "Invitar a aplicar",
         "job_label": "Para la publicación",
+        "select_job": "Selecciona una publicación activa…",
         "message_label": "Mensaje (opcional)",
         "message_placeholder": "Dile a {firstName} por qué encajaría bien",
         "confirm": "Enviar invitación",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar",
+        "no_active_jobs": "Activa una publicación para enviar invitaciones.",
+        "error_no_job": "Elige una publicación primero.",
+        "error": "No se pudo enviar la invitación."
+      },
+      "invited_label": "Invitado",
+      "exp_years": "{n, plural, =0 {Nuevo en la plataforma} one {1 año de experiencia} other {# años de experiencia}}",
+      "empty": "Ningún trabajador coincide — prueba quitar el filtro.",
+      "agconn": "AgConn",
+      "self": "auto",
+      "relationship": {
+        "hired": "Contratado",
+        "invited": "Invitado",
+        "applied": "Aplicó"
       }
     },
     "crews": {
@@ -2354,6 +2510,18 @@
         "cancel": "Cancelar",
         "confirm": "Crear periodo",
         "error": "No se pudo crear el periodo."
+      },
+      "edit_line": {
+        "title": "Editar · {name}",
+        "hours_label": "Horas trabajadas",
+        "overtime_label": "Horas extras",
+        "bonus_label": "Bono ($)",
+        "bonus_help": "Bonos por destajo o ajustes únicos.",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "approved_label": "Aprobado",
+        "error_save": "No se pudieron guardar los cambios.",
+        "error_approve": "No se pudo aprobar la línea."
       }
     },
     "compliance": {
@@ -2411,6 +2579,33 @@
         "cancel": "Cancelar",
         "confirm": "Guardar",
         "error": "No se pudo actualizar el ítem."
+      },
+      "action_cta": {
+        "evidence_label": "URL de evidencia",
+        "evidence_help": "Liga al documento, foto o confirmación de la cita.",
+        "note_label": "Nota (opcional)",
+        "resolve_label": "Marcar ítem como resuelto",
+        "cancel": "Cancelar",
+        "confirm": "Guardar acción",
+        "error": "No se pudo guardar.",
+        "seeded_only": "Esta acción viene de datos iniciales — créala como ítem para poder actuar."
+      },
+      "audit": {
+        "title": "Carpeta de auditoría",
+        "eyebrow": "Instantánea lista para auditoría",
+        "back": "Volver a cumplimiento",
+        "print_button": "Imprimir / Guardar como PDF",
+        "employer": "Empleador",
+        "generated": "Generado",
+        "overall_score": "Puntuación general",
+        "actions_due": "Acciones abiertas",
+        "actions_heading": "Acciones abiertas",
+        "items_heading": "Todos los ítems",
+        "col_status": "Estado",
+        "col_item": "Ítem",
+        "col_details": "Detalles",
+        "col_due": "Vence",
+        "footer": "Generado por AgConn el {generated}. A prueba de manipulación — verifica contra el registro de auditoría."
       }
     },
     "messages": {
@@ -2463,15 +2658,36 @@
         "broadcast": "BROADCAST"
       },
       "thread_header_meta": "{members} miembros · {foreman} (Capataz) · auto-traducción ON",
+      "thread_meta_group": "{members} miembros · auto-traducción ON",
+      "thread_meta_dm": "Directo · {channel} · auto-traducción ON",
       "call_foreman": "Llamar capataz",
-      "pinned_eyebrow": "Fijado · Turno de mañana",
+      "pinned_eyebrow": "Fijado · hilo de cuadrilla",
+      "pinned_help": "Las respuestas llegan a toda la cuadrilla confirmada.",
       "pinned_confirmed": "{confirmed}/{total} confirmados",
+      "no_thread": "No hay hilo seleccionado.",
+      "no_messages": "Aún no hay mensajes — saluda.",
+      "empty": "Carpeta vacía.",
+      "templates_help": "Usa el ícono de rayo en el redactor para insertar una plantilla.",
+      "template_bodies": {
+        "interview": "Hola — ¿estás disponible para una entrevista mañana a las 9 AM en la oficina del rancho?",
+        "offer": "¡Buenas noticias! Queremos ofrecerte el puesto. Responde SÍ para confirmar; te enviamos el papeleo a continuación.",
+        "shift": "Recordatorio: tu turno empieza mañana a las 6 AM. Punto de encuentro en Hwy 99. Trae agua e identificación.",
+        "heat": "Aviso de calor: pronóstico de 102°F. Almuerzo a las 11:30 y descansos de 10 min con sombra a las 9 AM y 1 PM."
+      },
       "composer": {
         "placeholder": "Escribe un mensaje — se traduce al inglés automáticamente",
         "send": "Enviar",
         "channel_app": "App",
         "channel_sms": "SMS · todos {n}",
-        "channel_whatsapp": "WhatsApp · solo capataz"
+        "channel_whatsapp": "WhatsApp · solo capataz",
+        "templates": "Plantillas",
+        "template_label": {
+          "interview": "Invitación a entrevista",
+          "offer": "Oferta de contratación",
+          "shift": "Recordatorio de turno",
+          "heat": "Aviso de calor"
+        },
+        "error": "No se pudo enviar."
       }
     },
     "reports": {

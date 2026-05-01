@@ -9,7 +9,21 @@ import {
   RowCheckbox,
 } from '@/components/employer/candidates/RowActions';
 
-type Props = { params: Promise<{ locale: string }> };
+type TabKey = 'all' | 'new' | 'reviewed' | 'interview' | 'offer' | 'hired' | 'archived';
+
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ tab?: string; q?: string }>;
+};
+
+function matchTab(a: { status: string }, tab: TabKey): boolean {
+  if (tab === 'all') return true;
+  if (tab === 'new') return a.status === 'applied';
+  if (tab === 'reviewed') return a.status === 'reviewed';
+  if (tab === 'hired') return a.status === 'hired';
+  if (tab === 'archived') return a.status === 'rejected' || a.status === 'withdrawn';
+  return false;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -17,28 +31,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `AgConn — ${t('title')}` };
 }
 
-export default async function CandidatesPage({ params }: Props) {
+const VALID_TABS: ReadonlyArray<TabKey> = [
+  'all',
+  'new',
+  'reviewed',
+  'interview',
+  'offer',
+  'hired',
+  'archived',
+];
+
+export default async function CandidatesPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const sp = await searchParams;
+  const tab: TabKey =
+    sp.tab && (VALID_TABS as ReadonlyArray<string>).includes(sp.tab) ? (sp.tab as TabKey) : 'all';
   const t = await getTranslations({ locale, namespace: 'employer.candidates' });
   const tStatus = await getTranslations({ locale, namespace: 'employer.kanban' });
-  const apps = await listInbox();
+  const allApps = await listInbox();
+  const apps = allApps.filter((a) => matchTab(a, tab));
 
   const counts = {
-    all: apps.length,
-    new: apps.filter((a) => a.status === 'applied').length,
-    reviewed: apps.filter((a) => a.status === 'reviewed').length,
+    all: allApps.length,
+    new: allApps.filter((a) => a.status === 'applied').length,
+    reviewed: allApps.filter((a) => a.status === 'reviewed').length,
     interview: 0,
     offer: 0,
-    hired: apps.filter((a) => a.status === 'hired').length,
-    archived: apps.filter((a) => a.status === 'rejected' || a.status === 'withdrawn').length,
+    hired: allApps.filter((a) => a.status === 'hired').length,
+    archived: allApps.filter((a) => a.status === 'rejected' || a.status === 'withdrawn').length,
   };
 
-  const tabs: Array<{
-    key: 'all' | 'new' | 'reviewed' | 'interview' | 'offer' | 'hired' | 'archived';
-    n: number;
-    active?: boolean;
-  }> = [
-    { key: 'all', n: counts.all, active: true },
+  const tabs: Array<{ key: TabKey; n: number }> = [
+    { key: 'all', n: counts.all },
     { key: 'new', n: counts.new },
     { key: 'reviewed', n: counts.reviewed },
     { key: 'interview', n: counts.interview },
@@ -70,35 +94,54 @@ export default async function CandidatesPage({ params }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            type="button"
+          <Link
+            href={`/${locale}/employer/jobs`}
             className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
+            title={t('filters_help')}
           >
             <FontAwesomeIcon icon={faFilter} className="h-3 w-3" />
             {t('filters')}
-          </button>
-          <button type="button" className="btn btn-sm btn-primary rounded-full">
+          </Link>
+          <Link
+            href={`/${locale}/employer/messages?folder=broadcasts`}
+            className="btn btn-sm btn-primary rounded-full"
+          >
             <FontAwesomeIcon icon={faBolt} className="h-3 w-3" />
             {t('bulk_message')}
-          </button>
+          </Link>
         </div>
       </div>
 
       <div className="bg-base-100 border-base-300 mb-5 inline-flex w-fit gap-1 rounded-full border p-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            className={[
-              'rounded-full px-3.5 py-1.5 text-xs font-semibold',
-              tab.active
-                ? 'bg-base-content text-base-100'
-                : 'text-base-content/70',
-            ].join(' ')}
-          >
-            {t(`tab.${tab.key}`)} <span className="opacity-60 font-mono">{tab.n}</span>
-          </button>
-        ))}
+        {tabs.map((tabItem) => {
+          const isActive = tabItem.key === tab;
+          const className = [
+            'rounded-full px-3.5 py-1.5 text-xs font-semibold',
+            isActive ? 'bg-base-content text-base-100' : 'text-base-content/70',
+          ].join(' ');
+          if (tabItem.key === 'all') {
+            return (
+              <Link
+                key={tabItem.key}
+                href={`/${locale}/employer/inbox`}
+                className={className}
+              >
+                {t(`tab.${tabItem.key}`)}{' '}
+                <span className="opacity-60 font-mono">{tabItem.n}</span>
+              </Link>
+            );
+          }
+          return (
+            <a
+              key={tabItem.key}
+              href={`/${locale}/employer/inbox?tab=${tabItem.key}`}
+              className={className}
+            >
+              {t(`tab.${tabItem.key}`)}{' '}
+              <span className="opacity-60 font-mono">{tabItem.n}</span>
+            </a>
+          );
+        })}
       </div>
 
       {apps.length === 0 ? (

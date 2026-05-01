@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDownload, faComments, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { listCrews, listShifts, startOfWorkWeek, type ShiftView } from '@/lib/api/employer-ops';
 import { NewCrewButton } from '@/components/employer/crews/NewCrewButton';
+import { DownloadButton } from '@/components/employer/primitives/DownloadButton';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -57,13 +58,13 @@ export default async function CrewsPage({ params }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
-          >
-            <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
-            {t('export')}
-          </button>
+          <DownloadButton
+            path={`/v1/employer/shifts/schedule.csv?from=${weekStart.toISOString().slice(0, 10)}`}
+            label={t('export')}
+            icon={faDownload}
+            filename={`agconn-schedule-${weekStart.toISOString().slice(0, 10)}.csv`}
+            variant="pill"
+          />
           <NewCrewButton />
           <Link
             href={`/${locale}/employer/crews/new-shift`}

@@ -389,6 +389,84 @@ export async function getBilling(): Promise<BillingView | null> {
   }
 }
 
+// ───────────────────────────────────────────────── Worker search
+
+export type WorkerCardView = {
+  id: string;
+  firstName: string;
+  lastInitial: string;
+  lastName?: string;
+  county: string | null;
+  skills: string[];
+  matchScore: number;
+  certifications: { name: string; issuer: string | null; source: 'agconn' | 'self' }[];
+  experienceCount: number;
+  phone?: string;
+  email?: string;
+  relationship?: 'hired' | 'invited' | 'applied';
+};
+
+export type WorkerDetailView = WorkerCardView & {
+  experience: unknown[];
+  education: unknown[];
+  languages: string[];
+};
+
+const MOCK_WORKERS: WorkerCardView[] = [
+  { id: 'w1', firstName: 'Pedro',   lastInitial: 'E', county: 'Madera',     skills: ['Forklift', 'Bilingual', 'WPS'],    matchScore: 96, certifications: [{ name: 'WPS', issuer: null, source: 'agconn' }], experienceCount: 5 },
+  { id: 'w2', firstName: 'Soledad', lastInitial: 'S', county: 'Madera',     skills: ['Sort line', 'WPS', 'Bilingual'],   matchScore: 94, certifications: [{ name: 'Forklift', issuer: null, source: 'agconn' }], experienceCount: 3 },
+  { id: 'w3', firstName: 'Joaquín', lastInitial: 'N', county: 'Chowchilla', skills: ['CDL-A', 'Almond'],                  matchScore: 92, certifications: [{ name: 'CDL-A', issuer: null, source: 'self' }],     experienceCount: 8 },
+  { id: 'w4', firstName: 'Rosa',    lastInitial: 'A', county: 'Madera',     skills: ['Vineyard', 'Citrus', 'Bilingual'], matchScore: 88, certifications: [{ name: 'Bilingual', issuer: null, source: 'self' }], experienceCount: 4 },
+  { id: 'w5', firstName: 'Beto',    lastInitial: 'V', county: 'Madera',     skills: ['Forklift', 'WPS'],                  matchScore: 89, certifications: [{ name: 'Forklift', issuer: null, source: 'agconn' }], experienceCount: 6 },
+  { id: 'w6', firstName: 'Lupita',  lastInitial: 'P', county: 'Madera',     skills: ['WPS', 'Bilingual'],                 matchScore: 86, certifications: [{ name: 'WPS', issuer: null, source: 'agconn' }],   experienceCount: 2 },
+];
+
+export async function searchWorkers(opts?: {
+  county?: string;
+  q?: string;
+}): Promise<WorkerCardView[]> {
+  if (!apiConfigured()) return MOCK_WORKERS;
+  try {
+    const client = await getServerApiClient();
+    const params = new URLSearchParams();
+    if (opts?.county) params.append('county', opts.county);
+    if (opts?.q) params.append('q', opts.q);
+    const qs = params.toString();
+    const res = await client.get<{ workers: WorkerCardView[]; nextCursor: string | null }>(
+      `/v1/employer/workers${qs ? `?${qs}` : ''}`,
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return MOCK_WORKERS;
+    return res.data.workers;
+  } catch {
+    return MOCK_WORKERS;
+  }
+}
+
+export async function getWorkerDetail(id: string): Promise<WorkerDetailView | null> {
+  if (!apiConfigured()) {
+    const m = MOCK_WORKERS.find((w) => w.id === id);
+    if (!m) return null;
+    return {
+      ...m,
+      experience: [{ title: 'Almond Pre-shake', employer: 'Driscoll Madera Ranch', from: '2024', to: '2026' }],
+      education: [{ title: 'Madera HS · 2018' }],
+      languages: ['English', 'Spanish'],
+    };
+  }
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ worker: WorkerDetailView }>(
+      `/v1/employer/workers/${id}`,
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return null;
+    return res.data.worker;
+  } catch {
+    return null;
+  }
+}
+
 export type DashboardStats = {
   activePostings: number;
   applicantsThisWeek: number;

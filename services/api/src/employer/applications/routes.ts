@@ -6,6 +6,7 @@ import {
   TransitionBody,
   BulkTransitionBody,
   NoteBody,
+  SendMessageBody,
 } from '@agconn/schemas';
 import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
 import type { AuditCtxVars } from '../../middleware/audit';
@@ -341,6 +342,102 @@ employerApplicationsRoutes.post(
     }
 
     return ok(c, { succeeded, failed });
+  },
+);
+
+employerApplicationsRoutes.post(
+  '/:id/message',
+  validate('json', SendMessageBody),
+  async (c) => {
+    const userId = c.var.userId;
+    const tenantId = c.var.tenantId!;
+    const id = c.req.param('id');
+    const body = c.var.body;
+
+    const app = await c.var.db.application.findFirst({
+      where: { id, deletedAt: null, job: { employerId: userId } },
+      include: {
+        worker: { include: { workerProfile: { select: { firstName: true, lastName: true } } } },
+        job: { select: { titleEn: true } },
+      },
+    });
+    if (!app) return err(c, 404, 'not_found');
+
+    const result = await c.var.db.$transaction(async (tx) => {
+      const existing = await tx.conversation.findFirst({
+        where: {
+          tenantId,
+          employerId: userId,
+          isGroup: false,
+          deletedAt: null,
+          participants: { some: { userId: app.workerId, leftAt: null } },
+        },
+      });
+
+      const conversation =
+        existing ??
+        (await tx.conversation.create({
+          data: {
+            tenantId,
+            employerId: userId,
+            title:
+              `${app.worker.workerProfile?.firstName ?? ''} ${app.worker.workerProfile?.lastName ?? ''}`.trim() ||
+              app.job.titleEn,
+            isGroup: false,
+            channel: body.channel ?? 'app',
+          },
+        }));
+
+      if (!existing) {
+        await tx.conversationParticipant.createMany({
+          data: [
+            { tenantId, conversationId: conversation.id, userId },
+            { tenantId, conversationId: conversation.id, userId: app.workerId },
+          ],
+        });
+      }
+
+      const msg = await tx.message.create({
+        data: {
+          tenantId,
+          conversationId: conversation.id,
+          senderUserId: userId,
+          body: body.body,
+          channel: body.channel ?? conversation.channel,
+        },
+      });
+      await tx.conversation.update({
+        where: { id: conversation.id },
+        data: { lastMessageAt: msg.createdAt },
+      });
+      await tx.conversationParticipant.updateMany({
+        where: { conversationId: conversation.id, userId: { not: userId }, leftAt: null },
+        data: { unreadCount: { increment: 1 } },
+      });
+      return { conversation, msg };
+    });
+
+    await c.var.audit.log({
+      action: 'employer.message.sent',
+      resourceId: result.msg.id,
+      metadata: {
+        conversationId: result.conversation.id,
+        channel: result.msg.channel,
+        applicationId: id,
+      },
+    });
+
+    return ok(c, {
+      message: {
+        id: result.msg.id,
+        conversationId: result.conversation.id,
+        senderUserId: result.msg.senderUserId,
+        body: result.msg.body,
+        channel: result.msg.channel,
+        direction: result.msg.direction,
+        createdAt: result.msg.createdAt.toISOString(),
+      },
+    });
   },
 );
 

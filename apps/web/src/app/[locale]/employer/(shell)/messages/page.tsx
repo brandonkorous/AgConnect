@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -16,11 +17,16 @@ import {
   listMessages,
   type MessageThreadView,
   type MessageView,
+  type FolderKey,
+  type FolderCounts,
 } from '@/lib/api/employer-ops';
 import { MessageComposer } from '@/components/employer/messages/MessageComposer';
 import { NewConversationButton } from '@/components/employer/messages/NewConversationButton';
 
-type Props = { params: Promise<{ locale: string }> };
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ folder?: string; thread?: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -28,14 +34,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `AgConn — ${t('title')}` };
 }
 
-export default async function MessagesPage({ params }: Props) {
+const VALID_FOLDERS: ReadonlyArray<FolderKey> = [
+  'all',
+  'candidates',
+  'crew',
+  'foremen',
+  'broadcasts',
+];
+
+export default async function MessagesPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const sp = await searchParams;
+  const folder: FolderKey =
+    sp.folder && (VALID_FOLDERS as ReadonlyArray<string>).includes(sp.folder)
+      ? (sp.folder as FolderKey)
+      : 'all';
   const t = await getTranslations({ locale, namespace: 'employer.messages' });
 
-  const threads = await listThreads();
-  const activeThread = threads[0] ?? null;
+  const { threads, counts } = await listThreads(folder);
+  const requestedThread = sp.thread ? threads.find((th) => th.id === sp.thread) : null;
+  const activeThread = requestedThread ?? threads[0] ?? null;
   const messages = activeThread ? await listMessages(activeThread.id) : ([] as MessageView[]);
-  const unread = threads.reduce((sum, t) => sum + t.unread, 0);
+  const unread = counts.all > 0 ? threads.reduce((sum, t) => sum + t.unread, 0) : 0;
 
   return (
     <div className="px-8 pb-16 pt-8">
@@ -59,8 +79,14 @@ export default async function MessagesPage({ params }: Props) {
       </div>
 
       <div className="bg-base-100 border-base-300 grid h-[720px] grid-cols-[220px_340px_1fr] overflow-hidden rounded-2xl border">
-        <FoldersColumn t={t} unread={unread} />
-        <ThreadList threads={threads} activeId={activeThread?.id ?? null} t={t} />
+        <FoldersColumn locale={locale} folder={folder} counts={counts} t={t} />
+        <ThreadList
+          threads={threads}
+          activeId={activeThread?.id ?? null}
+          locale={locale}
+          folder={folder}
+          t={t}
+        />
         <Conversation thread={activeThread} messages={messages} t={t} />
       </div>
     </div>
@@ -68,74 +94,74 @@ export default async function MessagesPage({ params }: Props) {
 }
 
 function FoldersColumn({
+  locale,
+  folder,
+  counts,
   t,
-  unread,
 }: {
+  locale: string;
+  folder: FolderKey;
+  counts: FolderCounts;
   t: Awaited<ReturnType<typeof getTranslations>>;
-  unread: number;
 }) {
   const folders: Array<{
-    key: 'all' | 'candidates' | 'crew' | 'foremen' | 'broadcasts';
+    key: FolderKey;
     icon: typeof faComments;
-    count: number;
-    active?: boolean;
     dot?: boolean;
   }> = [
-    { key: 'all',         icon: faComments,     count: 47, active: true },
-    { key: 'candidates',  icon: faUsers,        count: 18 },
-    { key: 'crew',        icon: faIdBadge,      count: 26, dot: true },
-    { key: 'foremen',     icon: faShieldHalved, count: 4 },
-    { key: 'broadcasts',  icon: faBolt,         count: 0 },
+    { key: 'all',         icon: faComments },
+    { key: 'candidates',  icon: faUsers },
+    { key: 'crew',        icon: faIdBadge, dot: true },
+    { key: 'foremen',     icon: faShieldHalved },
+    { key: 'broadcasts',  icon: faBolt },
   ];
-
-  void unread;
 
   return (
     <div className="bg-base-200 border-base-300 border-r p-3">
-      {folders.map((f) => (
-        <div
-          key={f.key}
-          className={[
-            'mb-1 flex items-center gap-2.5 rounded-lg border px-2.5 py-2',
-            f.active
-              ? 'bg-base-100 border-base-300 font-semibold'
-              : 'border-transparent font-medium',
-          ].join(' ')}
-        >
-          <FontAwesomeIcon
-            icon={f.icon}
+      {folders.map((f) => {
+        const active = f.key === folder;
+        const count = counts[f.key];
+        return (
+          <Link
+            key={f.key}
+            href={`/${locale}/employer/messages?folder=${f.key}`}
             className={[
-              'h-3.5 w-3.5',
-              f.active ? 'text-primary' : 'text-base-content/70',
+              'mb-1 flex items-center gap-2.5 rounded-lg border px-2.5 py-2 transition-colors',
+              active
+                ? 'bg-base-100 border-base-300 font-semibold'
+                : 'border-transparent hover:bg-base-100/50 font-medium',
             ].join(' ')}
-          />
-          <span className="flex-1 text-xs">{t(`folders.${f.key}`)}</span>
-          {f.count > 0 && (
-            <span
+          >
+            <FontAwesomeIcon
+              icon={f.icon}
               className={[
-                'rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold',
-                f.dot
-                  ? 'bg-accent text-accent-content'
-                  : 'bg-base-100 text-base-content/60',
+                'h-3.5 w-3.5',
+                active ? 'text-primary' : 'text-base-content/70',
               ].join(' ')}
-            >
-              {f.count}
-            </span>
-          )}
-        </div>
-      ))}
+            />
+            <span className="flex-1 text-xs">{t(`folders.${f.key}`)}</span>
+            {count > 0 && (
+              <span
+                className={[
+                  'rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold',
+                  f.dot && f.key === 'crew'
+                    ? 'bg-accent text-accent-content'
+                    : 'bg-base-100 text-base-content/60',
+                ].join(' ')}
+              >
+                {count}
+              </span>
+            )}
+          </Link>
+        );
+      })}
       <div className="border-base-300 mt-4 border-t pt-3">
         <div className="text-base-content/60 mb-2 font-mono text-[10px] font-bold uppercase tracking-wider">
           {t('templates_label')}
         </div>
-        {(['interview', 'offer', 'shift', 'heat'] as const).map((k) => (
-          <div
-            key={k}
-            className="text-base-content/70 cursor-pointer rounded-md px-2.5 py-1.5 text-xs"
-          >
-            · {t(`templates.${k}`)}
-          </div>
-        ))}
+        <p className="text-base-content/50 text-[10px] leading-relaxed">
+          {t('templates_help')}
+        </p>
       </div>
     </div>
   );
@@ -144,10 +170,14 @@ function FoldersColumn({
 function ThreadList({
   threads,
   activeId,
+  locale,
+  folder,
   t,
 }: {
   threads: MessageThreadView[];
   activeId: string | null;
+  locale: string;
+  folder: FolderKey;
   t: Awaited<ReturnType<typeof getTranslations>>;
 }) {
   return (
@@ -158,12 +188,18 @@ function ThreadList({
           {t('search_placeholder')}
         </div>
       </div>
+      {threads.length === 0 && (
+        <div className="text-base-content/60 p-6 text-center text-xs">
+          {t('empty')}
+        </div>
+      )}
       {threads.map((th) => {
         const isActive = th.id === activeId;
         const ch = channelClass(th.channel);
         return (
-          <div
+          <Link
             key={th.id}
+            href={`/${locale}/employer/messages?folder=${folder}&thread=${th.id}`}
             className={[
               'border-base-300 flex cursor-pointer items-start gap-2.5 border-b p-3.5',
               isActive ? 'bg-primary/10' : 'bg-base-100 hover:bg-base-200',
@@ -208,7 +244,7 @@ function ThreadList({
                 )}
               </div>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>
@@ -226,9 +262,13 @@ function Conversation({
 }) {
   if (!thread) {
     return (
-      <div className="text-base-content/60 grid place-items-center text-sm">No thread selected.</div>
+      <div className="text-base-content/60 grid place-items-center text-sm">
+        {t('no_thread')}
+      </div>
     );
   }
+  const initialChannel: 'app' | 'sms' | 'whatsapp' =
+    thread.channel === 'broadcast' ? 'app' : thread.channel;
   return (
     <div className="flex flex-col">
       <div className="border-base-300 flex items-center gap-3 border-b px-5 py-3.5">
@@ -238,35 +278,42 @@ function Conversation({
         <div className="flex-1">
           <div className="text-sm font-semibold">{thread.name}</div>
           <div className="text-base-content/60 text-[11px]">
-            {t('thread_header_meta', { members: 14, foreman: 'Manuel Vargas' })}
+            {thread.group
+              ? t('thread_meta_group', { members: thread.participantCount })
+              : t('thread_meta_dm', { channel: t(`channel.${thread.channel}`) })}
           </div>
         </div>
-        <button
-          type="button"
-          className="bg-base-100 border-base-300 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
-        >
-          <FontAwesomeIcon icon={faPhone} className="h-3 w-3" />
-          {t('call_foreman')}
-        </button>
+        {thread.foremanPhone ? (
+          <a
+            href={`tel:${thread.foremanPhone}`}
+            className="bg-base-100 border-base-300 hover:bg-base-200 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
+          >
+            <FontAwesomeIcon icon={faPhone} className="h-3 w-3" />
+            {t('call_foreman')}
+          </a>
+        ) : null}
       </div>
 
       <div className="bg-base-200 flex-1 overflow-y-auto p-6">
-        <div className="bg-base-content text-base-100 mb-5 rounded-xl p-3.5">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-accent inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-wider">
-              <FontAwesomeIcon icon={faThumbtack} className="h-3 w-3" /> {t('pinned_eyebrow')}
-            </span>
-            <span className="text-base-100/60 font-mono text-[10px]">
-              {t('pinned_confirmed', { confirmed: 13, total: 14 })}
-            </span>
+        {thread.category === 'crew' && (
+          <div className="bg-base-content text-base-100 mb-5 rounded-xl p-3.5">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-accent inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-wider">
+                <FontAwesomeIcon icon={faThumbtack} className="h-3 w-3" /> {t('pinned_eyebrow')}
+              </span>
+            </div>
+            <div className="font-display mb-1.5 text-lg font-light tracking-tight">
+              {thread.name}
+            </div>
+            <div className="text-base-100/75 text-xs">{t('pinned_help')}</div>
           </div>
-          <div className="font-display mb-1.5 text-lg font-light tracking-tight">
-            Block 7-North · 6:00 AM · Pickup at Hwy 99
+        )}
+
+        {messages.length === 0 && (
+          <div className="text-base-content/60 grid place-items-center py-10 text-xs">
+            {t('no_messages')}
           </div>
-          <div className="text-base-100/75 text-xs">
-            Heat plan: 11:30 lunch · 10-min shade breaks 9 AM + 1 PM · 102°F forecast
-          </div>
-        </div>
+        )}
 
         {messages.map((m) => (
           <div
@@ -301,7 +348,11 @@ function Conversation({
         ))}
       </div>
 
-      <MessageComposer conversationId={thread.id} initialChannel="app" smsCount={14} />
+      <MessageComposer
+        conversationId={thread.id}
+        initialChannel={initialChannel}
+        smsCount={thread.participantCount}
+      />
     </div>
   );
 }

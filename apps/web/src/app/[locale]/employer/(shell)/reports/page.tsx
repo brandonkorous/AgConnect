@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { getReportsOverview } from '@/lib/api/employer-ops';
+import { DownloadButton } from '@/components/employer/primitives/DownloadButton';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -38,13 +38,12 @@ export default async function ReportsPage({ params }: Props) {
           >
             {t('this_season')}
           </button>
-          <button
-            type="button"
-            className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
-          >
-            <FontAwesomeIcon icon={faDownload} className="h-3.5 w-3.5" />
-            {t('export_csv')}
-          </button>
+          <DownloadButton
+            path="/v1/employer/reports/overview.csv"
+            label={t('export_csv')}
+            icon={faDownload}
+            filename={`agconn-reports-${year}.csv`}
+          />
         </div>
       </div>
 

@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 
@@ -16,14 +16,23 @@ type Props = {
   smsCount?: number;
 };
 
+const TEMPLATES: ReadonlyArray<'interview' | 'offer' | 'shift' | 'heat'> = [
+  'interview',
+  'offer',
+  'shift',
+  'heat',
+];
+
 export function MessageComposer({ conversationId, initialChannel = 'app', smsCount = 0 }: Props) {
   const t = useTranslations('employer.messages.composer');
+  const tBody = useTranslations('employer.messages.template_bodies');
   const locale = useLocale();
   const router = useRouter();
   const [channel, setChannel] = useState<Channel>(initialChannel);
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,19 +47,25 @@ export function MessageComposer({ conversationId, initialChannel = 'app', smsCou
         { handleErrorInline: true },
       );
       if (!isOk(res)) {
-        setError(res.error.message || 'Could not send.');
+        setError(res.error.message || t('error'));
         return;
       }
       setBody('');
+      setShowTemplates(false);
       router.refresh();
     } finally {
       setBusy(false);
     }
   }
 
+  function applyTemplate(key: 'interview' | 'offer' | 'shift' | 'heat') {
+    setBody(tBody(key));
+    setShowTemplates(false);
+  }
+
   return (
     <div className="bg-base-100 border-base-300 border-t p-3.5">
-      <div className="mb-2 flex gap-1.5">
+      <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <ChannelChip
           label={t('channel_app')}
           active={channel === 'app'}
@@ -66,7 +81,36 @@ export function MessageComposer({ conversationId, initialChannel = 'app', smsCou
           active={channel === 'whatsapp'}
           onClick={() => setChannel('whatsapp')}
         />
+        <div className="flex-1" />
+        <button
+          type="button"
+          onClick={() => setShowTemplates((v) => !v)}
+          className={[
+            'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold',
+            showTemplates
+              ? 'bg-accent text-accent-content border-accent'
+              : 'bg-base-100 border-base-300',
+          ].join(' ')}
+          title={t('templates')}
+        >
+          <FontAwesomeIcon icon={faBolt} className="h-3 w-3" />
+          {t('templates')}
+        </button>
       </div>
+      {showTemplates && (
+        <div className="border-base-300 mb-2 flex flex-wrap gap-1.5 rounded-lg border p-2">
+          {TEMPLATES.map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => applyTemplate(k)}
+              className="bg-base-200 hover:bg-base-300 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+            >
+              {t(`template_label.${k}`)}
+            </button>
+          ))}
+        </div>
+      )}
       <form
         onSubmit={onSubmit}
         className="border-base-300 flex items-center gap-2.5 rounded-xl border p-2.5"

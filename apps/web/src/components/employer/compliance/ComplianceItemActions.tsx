@@ -136,6 +136,113 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+type Action = {
+  id: string | null;
+  severity: 'urgent' | 'soon';
+  title: string;
+  detail: string;
+  cta: string;
+};
+
+export function ComplianceActionCta({ action }: { action: Action }) {
+  const t = useTranslations('employer.compliance.action_cta');
+  const locale = useLocale();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!action.id) {
+    return (
+      <button
+        type="button"
+        disabled
+        className="bg-base-200 text-base-content/50 shrink-0 cursor-not-allowed rounded-full px-3.5 py-2 text-xs font-bold"
+        title={t('seeded_only')}
+      >
+        {action.cta}
+      </button>
+    );
+  }
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const f = new FormData(e.currentTarget);
+    const evidenceUrl = String(f.get('evidenceUrl') ?? '').trim() || null;
+    const note = String(f.get('note') ?? '').trim();
+    const markResolved = f.get('resolve') === 'on';
+    try {
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const body: Record<string, unknown> = {
+        status: markResolved ? 'ok' : action.severity === 'urgent' ? 'warn' : 'warn',
+      };
+      if (evidenceUrl) body.evidenceUrl = evidenceUrl;
+      if (note) body.details = `${action.detail}\n\n${note}`;
+      if (markResolved) body.resolved = true;
+      const res = await client.patch(`/v1/employer/compliance/items/${action.id}`, body, {
+        handleErrorInline: true,
+      });
+      if (!isOk(res)) {
+        setError(res.error.message || t('error'));
+        return;
+      }
+      setOpen(false);
+      router.refresh();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="bg-base-content text-base-100 hover:opacity-90 shrink-0 rounded-full px-3.5 py-2 text-xs font-bold"
+      >
+        {action.cta}
+      </button>
+      {open && (
+        <Modal title={action.title} onClose={() => setOpen(false)} size="md">
+          <form onSubmit={onSubmit} className="flex flex-col gap-3">
+            {error && <div className="alert alert-error text-sm">{error}</div>}
+            <p className="text-base-content/70 text-xs">{action.detail}</p>
+            <fieldset className="fieldset">
+              <legend className="fieldset-legend">{t('evidence_label')}</legend>
+              <input
+                name="evidenceUrl"
+                type="url"
+                maxLength={2048}
+                placeholder="https://…"
+                className="input w-full"
+              />
+              <p className="label">{t('evidence_help')}</p>
+            </fieldset>
+            <fieldset className="fieldset">
+              <legend className="fieldset-legend">{t('note_label')}</legend>
+              <textarea name="note" rows={2} maxLength={500} className="textarea w-full" />
+            </fieldset>
+            <label className="label cursor-pointer justify-start gap-2 py-1">
+              <input type="checkbox" name="resolve" defaultChecked className="checkbox checkbox-sm" />
+              <span className="text-sm">{t('resolve_label')}</span>
+            </label>
+            <div className="mt-2 flex justify-end gap-2">
+              <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost btn-sm">
+                {t('cancel')}
+              </button>
+              <button type="submit" disabled={busy} className="btn btn-primary btn-sm">
+                {busy ? '…' : t('confirm')}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </>
+  );
+}
+
 export function EditComplianceItemButton({
   itemId,
   status,

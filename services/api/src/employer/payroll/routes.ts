@@ -336,6 +336,78 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
   return ok(c, { generated: writes });
 });
 
+// audit-required:exempt — CSV view of already-audited payroll lines.
+employerPayrollRoutes.get('/periods/:id/lines.csv', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+
+  const period = await c.var.db.payrollPeriod.findFirst({
+    where: { id, tenantId, employerId: userId },
+  });
+  if (!period) return new Response('not_found', { status: 404 });
+
+  const lines = await c.var.db.payrollLine.findMany({
+    where: { tenantId, periodId: id },
+    include: { worker: { include: { workerProfile: true } } },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  const rows: string[][] = [
+    [
+      'worker_id',
+      'first_name',
+      'last_name',
+      'role',
+      'hours',
+      'overtime_hours',
+      'gross_cents',
+      'bonus_cents',
+      'taxes_cents',
+      'net_cents',
+      'approved_at',
+    ],
+  ];
+  for (const l of lines) {
+    const wp = l.worker.workerProfile;
+    rows.push([
+      l.workerUserId,
+      wp?.firstName ?? '',
+      wp?.lastName ?? '',
+      l.role ?? '',
+      Number(l.hours.toString()).toFixed(2),
+      Number(l.overtimeHours.toString()).toFixed(2),
+      String(l.grossCents),
+      String(l.bonusCents),
+      String(l.taxesCents),
+      String(l.netCents),
+      l.approvedAt ? l.approvedAt.toISOString() : '',
+    ]);
+  }
+
+  const filename = `agconn-payroll-${period.startDate.toISOString().slice(0, 10)}.csv`;
+  return new Response(toCsv(rows), {
+    status: 200,
+    headers: {
+      'content-type': 'text/csv; charset=utf-8',
+      'content-disposition': `attachment; filename="${filename}"`,
+    },
+  });
+});
+
+function toCsv(rows: string[][]): string {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const s = String(cell ?? '');
+          return /[,"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+        })
+        .join(','),
+    )
+    .join('\r\n');
+}
+
 function zeroTotals() {
   return { workers: 0, hours: 0, grossCents: 0, bonusCents: 0, taxesCents: 0, netCents: 0 };
 }

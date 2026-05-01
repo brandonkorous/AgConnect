@@ -8,6 +8,7 @@ import { faCheck, faDownload, faPlus, faRotate } from '@fortawesome/free-solid-s
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
+import { DownloadButton } from '@/components/employer/primitives/DownloadButton';
 
 type Props = {
   periodId: string;
@@ -81,13 +82,13 @@ export function PayrollActions({ periodId, status }: Props) {
         <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
         {t('new_period')}
       </button>
-      <button
-        type="button"
-        className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
-      >
-        <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
-        {t('export_forms')}
-      </button>
+      <DownloadButton
+        path={`/v1/employer/payroll/periods/${periodId}/lines.csv`}
+        label={t('export_forms')}
+        icon={faDownload}
+        filename={`agconn-payroll-${periodId}.csv`}
+        variant="pill"
+      />
       {status === 'draft' && (
         <button
           type="button"

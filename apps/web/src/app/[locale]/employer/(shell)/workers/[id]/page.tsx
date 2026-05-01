@@ -1,5 +1,10 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { getWorkerDetail, listEmployerJobs } from '@/lib/api/employer';
+import { InviteWorkerButton } from '@/components/employer/workers/InviteWorkerButton';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -7,18 +12,11 @@ export default async function WorkerPreviewPage({ params }: Props) {
   const { locale, id } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.workers' });
 
-  // Mock for now — will fetch from /v1/employer/workers/:id later.
-  const worker = {
-    id,
-    firstName: 'Pedro',
-    lastInitial: 'E',
-    county: 'Madera',
-    skills: ['Forklift', 'Bilingual', 'Refs ✓'],
-    matchScore: 96,
-    experience: ['Almond Pre-shake — Driscoll Madera Ranch · 2024-2026'],
-    education: ['Madera HS · 2018'],
-    languages: ['English', 'Spanish'],
-  };
+  const [worker, jobs] = await Promise.all([getWorkerDetail(id), listEmployerJobs()]);
+  if (!worker) notFound();
+
+  const activeJobs = jobs.filter((j) => j.status === 'active');
+  const alreadyInvited = worker.relationship === 'invited' || worker.relationship === 'hired';
 
   return (
     <div className="px-8 pb-16 pt-8">
@@ -32,18 +30,27 @@ export default async function WorkerPreviewPage({ params }: Props) {
         <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
           <div className="flex items-start gap-4">
             <div className="bg-primary text-primary-content grid h-14 w-14 place-items-center rounded-full text-base font-bold">
-              {worker.firstName[0]}
-              {worker.lastInitial}
+              {(worker.firstName[0] ?? '').toUpperCase()}
+              {worker.lastInitial.toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="font-display text-3xl font-light">
                 {worker.firstName} {worker.lastInitial}.
               </h1>
-              <p className="text-base-content/70 text-sm">{worker.county}</p>
+              <p className="text-base-content/70 text-sm">{worker.county ?? '—'}</p>
+              {worker.relationship && (
+                <span className="bg-success/15 text-success mt-2 inline-block rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider">
+                  {t(`relationship.${worker.relationship}`)}
+                </span>
+              )}
             </div>
-            <button type="button" className="btn btn-primary btn-sm">
-              {t('invite')}
-            </button>
+            <InviteWorkerButton
+              workerId={worker.id}
+              workerFirstName={worker.firstName}
+              jobs={activeJobs.map((j) => ({ id: j.id, titleEn: j.titleEn, titleEs: j.titleEs }))}
+              variant="detail"
+              alreadyInvited={alreadyInvited}
+            />
           </div>
 
           <Section heading={t('preview.skills')}>
@@ -53,14 +60,20 @@ export default async function WorkerPreviewPage({ params }: Props) {
                   {s}
                 </span>
               ))}
+              {worker.skills.length === 0 && (
+                <span className="text-base-content/50 text-xs">—</span>
+              )}
             </div>
           </Section>
 
           <Section heading={t('preview.experience')}>
             <ul className="text-sm">
-              {worker.experience.map((e) => (
-                <li key={e} className="border-base-200 border-b py-2 last:border-0">
-                  {e}
+              {worker.experience.length === 0 && (
+                <li className="text-base-content/50 py-2 text-xs">—</li>
+              )}
+              {worker.experience.map((rawEntry, idx) => (
+                <li key={idx} className="border-base-200 border-b py-2 last:border-0">
+                  {formatExperience(rawEntry)}
                 </li>
               ))}
             </ul>
@@ -68,16 +81,47 @@ export default async function WorkerPreviewPage({ params }: Props) {
 
           <Section heading={t('preview.education')}>
             <ul className="text-sm">
-              {worker.education.map((e) => (
-                <li key={e} className="border-base-200 border-b py-2 last:border-0">
-                  {e}
+              {worker.education.length === 0 && (
+                <li className="text-base-content/50 py-2 text-xs">—</li>
+              )}
+              {worker.education.map((rawEntry, idx) => (
+                <li key={idx} className="border-base-200 border-b py-2 last:border-0">
+                  {formatEducation(rawEntry)}
                 </li>
               ))}
             </ul>
           </Section>
 
+          <Section heading={t('preview.certifications')}>
+            <div className="flex flex-wrap gap-2">
+              {worker.certifications.length === 0 && (
+                <span className="text-base-content/50 text-xs">—</span>
+              )}
+              {worker.certifications.map((c) => (
+                <span
+                  key={c.name}
+                  className={[
+                    'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold',
+                    c.source === 'agconn'
+                      ? 'bg-success/15 text-success'
+                      : 'bg-base-200 text-base-content/80',
+                  ].join(' ')}
+                >
+                  <FontAwesomeIcon icon={faCircleCheck} className="h-2.5 w-2.5" />
+                  {c.name}{' '}
+                  <span className="opacity-60 font-mono text-[10px]">
+                    {c.source === 'agconn' ? t('agconn') : t('self')}
+                  </span>
+                </span>
+              ))}
+            </div>
+          </Section>
+
           <Section heading={t('preview.languages')}>
             <div className="flex flex-wrap gap-2">
+              {worker.languages.length === 0 && (
+                <span className="text-base-content/50 text-xs">—</span>
+              )}
               {worker.languages.map((l) => (
                 <span key={l} className="bg-base-200 rounded-full px-3 py-1 text-xs">
                   {l}
@@ -100,4 +144,23 @@ function Section({ heading, children }: { heading: string; children: React.React
       <div className="mt-2">{children}</div>
     </div>
   );
+}
+
+function formatExperience(raw: unknown): string {
+  if (!raw || typeof raw !== 'object') return String(raw ?? '');
+  const o = raw as Record<string, unknown>;
+  const title = typeof o.title === 'string' ? o.title : '';
+  const employer = typeof o.employer === 'string' ? o.employer : '';
+  const from = typeof o.from === 'string' ? o.from : '';
+  const to = typeof o.to === 'string' ? o.to : '';
+  const range = from && to ? `${from}–${to}` : from || to;
+  return [title, employer, range].filter(Boolean).join(' · ');
+}
+
+function formatEducation(raw: unknown): string {
+  if (!raw || typeof raw !== 'object') return String(raw ?? '');
+  const o = raw as Record<string, unknown>;
+  const title = typeof o.title === 'string' ? o.title : '';
+  const year = typeof o.year === 'string' ? o.year : typeof o.year === 'number' ? String(o.year) : '';
+  return [title, year].filter(Boolean).join(' · ');
 }

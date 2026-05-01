@@ -60,6 +60,88 @@ employerShiftsRoutes.get('/', validate('query', ShiftQuery), async (c) => {
   });
 });
 
+// audit-required:exempt — CSV view of already-stored shift schedule.
+employerShiftsRoutes.get('/schedule.csv', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const fromQ = c.req.query('from');
+  const toQ = c.req.query('to');
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const fromDate = fromQ ? new Date(fromQ) : today;
+  const toDate = toQ
+    ? new Date(toQ)
+    : new Date(fromDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  const shifts = await c.var.db.shift.findMany({
+    where: {
+      employerId: userId,
+      tenantId,
+      shiftDate: { gte: fromDate, lte: toDate },
+    },
+    orderBy: [{ shiftDate: 'asc' }, { startTime: 'asc' }],
+    include: {
+      crew: { select: { name: true } },
+      assignments: { select: { status: true } },
+    },
+  });
+
+  const rows: string[][] = [
+    [
+      'date',
+      'crew',
+      'start_time',
+      'end_time',
+      'location',
+      'status',
+      'assigned',
+      'confirmed',
+      'notes',
+    ],
+  ];
+  for (const s of shifts) {
+    const assigned = s.assignments.length;
+    const confirmed = s.assignments.filter(
+      (a) =>
+        a.status === ShiftAssignmentStatus.confirmed ||
+        a.status === ShiftAssignmentStatus.completed,
+    ).length;
+    rows.push([
+      s.shiftDate.toISOString().slice(0, 10),
+      s.crew?.name ?? '',
+      s.startTime,
+      s.endTime ?? '',
+      s.locationLabel ?? '',
+      s.status,
+      String(assigned),
+      String(confirmed),
+      s.notes ?? '',
+    ]);
+  }
+
+  const filename = `agconn-schedule-${fromDate.toISOString().slice(0, 10)}.csv`;
+  return new Response(toCsv(rows), {
+    status: 200,
+    headers: {
+      'content-type': 'text/csv; charset=utf-8',
+      'content-disposition': `attachment; filename="${filename}"`,
+    },
+  });
+});
+
+function toCsv(rows: string[][]): string {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const s = String(cell ?? '');
+          return /[,"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+        })
+        .join(','),
+    )
+    .join('\r\n');
+}
+
 employerShiftsRoutes.post('/', validate('json', CreateShiftBody), async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;

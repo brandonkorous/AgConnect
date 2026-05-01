@@ -1,9 +1,11 @@
 // Server-only data accessors for employer operations surfaces:
 // crews & shifts, payroll, compliance, messages, reports.
 //
-// Currently mock-backed for compliance/payroll/messages/reports (those domains
-// don't have full backends yet); crews & shifts hit the real API when Clerk
-// is configured.
+// All endpoints have real backends. The mock fixtures are only used when:
+//   1. Clerk env keys are missing (no auth context — pure dev preview), or
+//   2. The API request errors out (network failure / API container down).
+// Empty data from a real authenticated request is treated as truth, not a
+// fallback signal — onboarding seeds compliance items and a payroll period.
 
 import 'server-only';
 import { isOk } from '@agconn/api-client';
@@ -220,6 +222,7 @@ export type PayrollLineView = {
   grossCents: number;
   bonusCents: number;
   netCents: number;
+  approvedAt: string | null;
 };
 
 const MOCK_PAYROLL_PERIOD: PayrollPeriodView = {
@@ -239,12 +242,12 @@ const MOCK_PAYROLL_PERIOD: PayrollPeriodView = {
 };
 
 const MOCK_PAYROLL_LINES: PayrollLineView[] = [
-  { id: 'pl-1', workerUserId: 'usr-6', workerName: 'Miguel Reyes',     workerInitials: 'MR', role: 'Crew A · Lead',     hours: 52, overtimeHours: 12, grossCents: 132_550, bonusCents: 18_000, netCents: 118_420 },
-  { id: 'pl-2', workerUserId: 'usr-7', workerName: 'Carmen Rojas',     workerInitials: 'CR', role: 'Crew A · Picker',   hours: 48, overtimeHours:  8, grossCents: 111_600, bonusCents:  9_200, netCents:  99_430 },
-  { id: 'pl-3', workerUserId: 'usr-2', workerName: 'Soledad Saavedra', workerInitials: 'SS', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820 },
-  { id: 'pl-4', workerUserId: 'usr-3', workerName: 'Beto Villalobos',  workerInitials: 'BV', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820 },
-  { id: 'pl-5', workerUserId: 'usr-foreman-c', workerName: 'Tomás Ríos', workerInitials: 'TR', role: 'Crew C · Foreman',  hours: 48, overtimeHours:  8, grossCents: 129_600, bonusCents: 22_000, netCents: 116_240 },
-  { id: 'pl-6', workerUserId: 'usr-5', workerName: 'Rosa Aguilar',     workerInitials: 'RA', role: 'Crew C · Setup',    hours: 40, overtimeHours:  0, grossCents:  80_000, bonusCents:  4_000, netCents:  71_250 },
+  { id: 'pl-1', workerUserId: 'usr-6', workerName: 'Miguel Reyes',     workerInitials: 'MR', role: 'Crew A · Lead',     hours: 52, overtimeHours: 12, grossCents: 132_550, bonusCents: 18_000, netCents: 118_420, approvedAt: null },
+  { id: 'pl-2', workerUserId: 'usr-7', workerName: 'Carmen Rojas',     workerInitials: 'CR', role: 'Crew A · Picker',   hours: 48, overtimeHours:  8, grossCents: 111_600, bonusCents:  9_200, netCents:  99_430, approvedAt: null },
+  { id: 'pl-3', workerUserId: 'usr-2', workerName: 'Soledad Saavedra', workerInitials: 'SS', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820, approvedAt: null },
+  { id: 'pl-4', workerUserId: 'usr-3', workerName: 'Beto Villalobos',  workerInitials: 'BV', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820, approvedAt: null },
+  { id: 'pl-5', workerUserId: 'usr-foreman-c', workerName: 'Tomás Ríos', workerInitials: 'TR', role: 'Crew C · Foreman',  hours: 48, overtimeHours:  8, grossCents: 129_600, bonusCents: 22_000, netCents: 116_240, approvedAt: null },
+  { id: 'pl-6', workerUserId: 'usr-5', workerName: 'Rosa Aguilar',     workerInitials: 'RA', role: 'Crew C · Setup',    hours: 40, overtimeHours:  0, grossCents:  80_000, bonusCents:  4_000, netCents:  71_250, approvedAt: null },
 ];
 
 type ApiPayrollPeriod = {
@@ -270,7 +273,28 @@ type ApiPayrollLine = {
   grossCents: number;
   bonusCents: number;
   netCents: number;
+  approvedAt: string | null;
 };
+
+function emptyPayrollPeriod(): PayrollPeriodView {
+  const now = new Date();
+  const dow = now.getUTCDay();
+  const offset = dow === 0 ? -6 : 1 - dow;
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  start.setUTCDate(start.getUTCDate() + offset);
+  const end = new Date(start);
+  end.setUTCDate(start.getUTCDate() + 6);
+  const pay = new Date(end);
+  pay.setUTCDate(end.getUTCDate() + 5);
+  return {
+    id: '',
+    startDate: start.toISOString().slice(0, 10),
+    endDate: end.toISOString().slice(0, 10),
+    payDate: pay.toISOString().slice(0, 10),
+    status: 'draft',
+    totals: { workers: 0, hours: 0, grossCents: 0, bonusCents: 0, taxesCents: 0, netCents: 0 },
+  };
+}
 
 export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
   if (!apiConfigured()) return MOCK_PAYROLL_PERIOD;
@@ -280,7 +304,12 @@ export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
       '/v1/employer/payroll/periods',
       { handleErrorInline: true },
     );
-    if (!isOk(res) || res.data.periods.length === 0) return MOCK_PAYROLL_PERIOD;
+    if (!isOk(res)) return MOCK_PAYROLL_PERIOD;
+    if (res.data.periods.length === 0) {
+      // Real authenticated employer with no periods yet — return a synthesized
+      // empty draft period so the UI renders cleanly without flashing fixtures.
+      return emptyPayrollPeriod();
+    }
     const draft = res.data.periods.find((p) => p.status === 'draft');
     const p = draft ?? res.data.periods[0]!;
     return {
@@ -297,7 +326,8 @@ export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
 }
 
 export async function listPayrollLines(periodId?: string): Promise<PayrollLineView[]> {
-  if (!apiConfigured() || !periodId) return MOCK_PAYROLL_LINES;
+  if (!apiConfigured()) return MOCK_PAYROLL_LINES;
+  if (!periodId) return [];
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ lines: ApiPayrollLine[] }>(
@@ -305,6 +335,7 @@ export async function listPayrollLines(periodId?: string): Promise<PayrollLineVi
       { handleErrorInline: true },
     );
     if (!isOk(res)) return MOCK_PAYROLL_LINES;
+    // Empty real data is truth — the period just hasn't been generated yet.
     return res.data.lines.map((l) => ({
       id: l.id,
       workerUserId: l.workerUserId,
@@ -316,6 +347,7 @@ export async function listPayrollLines(periodId?: string): Promise<PayrollLineVi
       grossCents: l.grossCents,
       bonusCents: l.bonusCents,
       netCents: l.netCents,
+      approvedAt: l.approvedAt,
     }));
   } catch {
     return MOCK_PAYROLL_LINES;
@@ -426,9 +458,10 @@ export async function listComplianceCategories(): Promise<ComplianceCategoryView
     const client = await getServerApiClient();
     const res = await client.get<{
       categories: ApiComplianceCategory[];
-      actions: { severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
+      actions: { id: string; severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
     }>('/v1/employer/compliance/items', { handleErrorInline: true });
-    if (!isOk(res) || res.data.categories.length === 0) return MOCK_COMPLIANCE_CATEGORIES;
+    if (!isOk(res)) return MOCK_COMPLIANCE_CATEGORIES;
+    if (res.data.categories.length === 0) return [];
     return res.data.categories.map((c) => ({
       key: c.category,
       label: CATEGORY_LABELS[c.category] ?? c.category,
@@ -449,6 +482,7 @@ export async function listComplianceCategories(): Promise<ComplianceCategoryView
 }
 
 export type ComplianceActionView = {
+  id: string | null;
   severity: 'urgent' | 'soon';
   title: string;
   detail: string;
@@ -457,12 +491,14 @@ export type ComplianceActionView = {
 
 const MOCK_COMPLIANCE_ACTIONS: ComplianceActionView[] = [
   {
+    id: null,
     severity: 'urgent',
     title: 'Two I-9s expiring within 30 days',
     detail: 'Pedro Estrella (May 29) · Tomás Ríos (Jun 1) — re-verify with current ID.',
     cta: 'Re-verify',
   },
   {
+    id: null,
     severity: 'soon',
     title: 'H-2A housing inspection due Aug 22',
     detail: 'Annual housing inspection per 20 CFR 655.122 — schedule with CDPH 14 days in advance.',
@@ -476,10 +512,12 @@ export async function listComplianceActions(): Promise<ComplianceActionView[]> {
     const client = await getServerApiClient();
     const res = await client.get<{
       categories: ApiComplianceCategory[];
-      actions: { severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
+      actions: { id: string; severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
     }>('/v1/employer/compliance/items', { handleErrorInline: true });
-    if (!isOk(res) || res.data.actions.length === 0) return MOCK_COMPLIANCE_ACTIONS;
+    if (!isOk(res)) return MOCK_COMPLIANCE_ACTIONS;
+    // Zero open actions is a real (good!) state — return an empty list.
     return res.data.actions.map((a) => ({
+      id: a.id,
       severity: a.severity,
       title: a.label,
       detail: a.details,
@@ -501,7 +539,14 @@ export type MessageThreadView = {
   unread: number;
   channel: 'app' | 'sms' | 'whatsapp' | 'broadcast';
   group: boolean;
+  category: 'candidates' | 'crew' | 'foremen' | 'broadcasts';
+  foremanPhone: string | null;
+  participantCount: number;
 };
+
+export type FolderKey = 'all' | 'candidates' | 'crew' | 'foremen' | 'broadcasts';
+
+export type FolderCounts = Record<FolderKey, number>;
 
 export type MessageView = {
   id: string;
@@ -512,13 +557,13 @@ export type MessageView = {
 };
 
 const MOCK_THREADS: MessageThreadView[] = [
-  { id: 't-1', name: 'Crew A — Grape Harvest', initials: 'A', preview: 'M. Vargas: Pickup at 5:30 AM, Hwy 99…', whenLabel: '8m', unread: 2, channel: 'app',       group: true },
-  { id: 't-2', name: 'Pedro Estrella',         initials: 'PE', preview: 'You: Can you do Thu 9 AM interview?',     whenLabel: '32m', unread: 0, channel: 'sms',       group: false },
-  { id: 't-3', name: 'Soledad Saavedra',       initials: 'SS', preview: 'Soledad: Yes, I have forklift cert…',      whenLabel: '2h',  unread: 1, channel: 'sms',       group: false },
-  { id: 't-4', name: 'Manuel Vargas (Foreman)', initials: 'MV', preview: 'Manuel: Need 1 more for tomorrow',         whenLabel: '3h',  unread: 0, channel: 'whatsapp',  group: false },
-  { id: 't-5', name: 'Almond Pre-shake applicants', initials: 'AP', preview: 'You: Job is still open — pay $21/hr…', whenLabel: '5h',  unread: 0, channel: 'broadcast', group: true },
-  { id: 't-6', name: 'Joaquín Núñez',          initials: 'JN', preview: 'Joaquín: Available Mon-Sat',               whenLabel: 'Yest', unread: 0, channel: 'sms',       group: false },
-  { id: 't-7', name: 'Rosa Aguilar',           initials: 'RA', preview: 'You: Welcome to the crew!',                 whenLabel: 'Yest', unread: 0, channel: 'app',       group: false },
+  { id: 't-1', name: 'Crew A — Grape Harvest',     initials: 'A',  preview: 'M. Vargas: Pickup at 5:30 AM, Hwy 99…', whenLabel: '8m',   unread: 2, channel: 'app',       group: true,  category: 'crew',       foremanPhone: null,           participantCount: 14 },
+  { id: 't-2', name: 'Pedro Estrella',             initials: 'PE', preview: 'You: Can you do Thu 9 AM interview?',     whenLabel: '32m',  unread: 0, channel: 'sms',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
+  { id: 't-3', name: 'Soledad Saavedra',           initials: 'SS', preview: 'Soledad: Yes, I have forklift cert…',     whenLabel: '2h',   unread: 1, channel: 'sms',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
+  { id: 't-4', name: 'Manuel Vargas (Foreman)',    initials: 'MV', preview: 'Manuel: Need 1 more for tomorrow',         whenLabel: '3h',   unread: 0, channel: 'whatsapp',  group: false, category: 'foremen',    foremanPhone: '+15595550144', participantCount: 2 },
+  { id: 't-5', name: 'Almond Pre-shake applicants',initials: 'AP', preview: 'You: Job is still open — pay $21/hr…',    whenLabel: '5h',   unread: 0, channel: 'broadcast', group: true,  category: 'broadcasts', foremanPhone: null,           participantCount: 12 },
+  { id: 't-6', name: 'Joaquín Núñez',              initials: 'JN', preview: 'Joaquín: Available Mon-Sat',               whenLabel: 'Yest', unread: 0, channel: 'sms',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
+  { id: 't-7', name: 'Rosa Aguilar',               initials: 'RA', preview: 'You: Welcome to the crew!',                 whenLabel: 'Yest', unread: 0, channel: 'app',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
 ];
 
 type ApiConversation = {
@@ -529,6 +574,9 @@ type ApiConversation = {
   lastMessageAt: string | null;
   unreadCount: number;
   preview: string;
+  category: 'candidates' | 'crew' | 'foremen' | 'broadcasts';
+  foremanPhone: string | null;
+  participantCount: number;
 };
 
 type ApiMessage = {
@@ -541,26 +589,46 @@ type ApiMessage = {
   createdAt: string;
 };
 
-export async function listThreads(): Promise<MessageThreadView[]> {
-  if (!apiConfigured()) return MOCK_THREADS;
+export async function listThreads(folder: FolderKey = 'all'): Promise<{
+  threads: MessageThreadView[];
+  counts: FolderCounts;
+}> {
+  const mockCounts: FolderCounts = {
+    all: MOCK_THREADS.length,
+    candidates: MOCK_THREADS.filter((t) => t.category === 'candidates').length,
+    crew: MOCK_THREADS.filter((t) => t.category === 'crew').length,
+    foremen: MOCK_THREADS.filter((t) => t.category === 'foremen').length,
+    broadcasts: MOCK_THREADS.filter((t) => t.category === 'broadcasts').length,
+  };
+  const filtered = folder === 'all' ? MOCK_THREADS : MOCK_THREADS.filter((t) => t.category === folder);
+  if (!apiConfigured()) return { threads: filtered, counts: mockCounts };
   try {
     const client = await getServerApiClient();
-    const res = await client.get<{ conversations: ApiConversation[] }>('/v1/employer/messages', {
-      handleErrorInline: true,
-    });
-    if (!isOk(res) || res.data.conversations.length === 0) return MOCK_THREADS;
-    return res.data.conversations.map((co) => ({
-      id: co.id,
-      name: co.title,
-      initials: deriveInitials(co.title),
-      preview: co.preview || '—',
-      whenLabel: relTimeShort(co.lastMessageAt),
-      unread: co.unreadCount,
-      channel: co.channel,
-      group: co.isGroup,
-    }));
+    const res = await client.get<{
+      conversations: ApiConversation[];
+      counts: FolderCounts;
+    }>(`/v1/employer/messages?folder=${folder}`, { handleErrorInline: true });
+    if (!isOk(res)) {
+      return { threads: filtered, counts: mockCounts };
+    }
+    return {
+      threads: res.data.conversations.map((co) => ({
+        id: co.id,
+        name: co.title,
+        initials: deriveInitials(co.title),
+        preview: co.preview || '—',
+        whenLabel: relTimeShort(co.lastMessageAt),
+        unread: co.unreadCount,
+        channel: co.channel,
+        group: co.isGroup,
+        category: co.category,
+        foremanPhone: co.foremanPhone,
+        participantCount: co.participantCount,
+      })),
+      counts: res.data.counts,
+    };
   } catch {
-    return MOCK_THREADS;
+    return { threads: filtered, counts: mockCounts };
   }
 }
 
@@ -714,8 +782,7 @@ export async function getReportsOverview(): Promise<{
       handleErrorInline: true,
     });
     if (!isOk(res)) return MOCK_REPORTS;
-    const hasData = res.data.kpis.some((k) => k.value !== '—' && k.value !== '0');
-    if (!hasData) return MOCK_REPORTS;
+    // Empty real metrics are truth — render zero cards instead of fake fixtures.
     return {
       kpis: res.data.kpis.map((k) => ({
         label: KPI_LABELS[k.key] ?? k.key,

@@ -9,9 +9,12 @@ import {
 import {
   NewComplianceItemButton,
   EditComplianceItemButton,
+  ComplianceActionCta,
 } from '@/components/employer/compliance/ComplianceItemActions';
 
 type Props = { params: Promise<{ locale: string }> };
+
+type ComplianceAction = Awaited<ReturnType<typeof listComplianceActions>>[number];
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -46,13 +49,15 @@ export default async function CompliancePage({ params }: Props) {
         </div>
         <div className="flex gap-2">
           <NewComplianceItemButton />
-          <button
-            type="button"
+          <a
+            href={`/${locale}/employer/compliance/audit`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
           >
             <FontAwesomeIcon icon={faDownload} className="h-3.5 w-3.5" />
             {t('audit_pdf')}
-          </button>
+          </a>
         </div>
       </div>
 
@@ -111,12 +116,7 @@ export default async function CompliancePage({ params }: Props) {
                     </div>
                     <div className="text-base-content/70 text-xs">{a.detail}</div>
                   </div>
-                  <button
-                    type="button"
-                    className="bg-base-content text-base-100 shrink-0 rounded-full px-3.5 py-2 text-xs font-bold"
-                  >
-                    {a.cta}
-                  </button>
+                  <ComplianceActionCta action={a as ComplianceAction} />
                 </div>
               );
             })}

@@ -10,6 +10,9 @@ import {
 } from '../../middleware/authContext';
 import type { AuditCtxVars } from '../../middleware/audit';
 
+// audit-required:exempt — CSV exports are read-only views over already-audited
+// payroll/application data; the underlying GETs are themselves not mutations.
+
 export const employerReportsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerReportsRoutes.use('*', requireAuth);
 employerReportsRoutes.use('*', requireRole('employer'));
@@ -155,6 +158,91 @@ employerReportsRoutes.get('/overview', validate('query', ReportsOverviewQuery), 
     seasonFlow,
   });
 });
+
+employerReportsRoutes.get('/overview.csv', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const seasonStart = new Date(Date.UTC(new Date().getUTCFullYear(), 0, 1));
+
+  const jobs = await c.var.db.jobPosting.findMany({
+    where: { tenantId, employerId: userId, deletedAt: null, createdAt: { gte: seasonStart } },
+    select: {
+      id: true,
+      titleEn: true,
+      county: true,
+      status: true,
+      positionsTotal: true,
+      hireCount: true,
+      publishedAt: true,
+      filledAt: true,
+    },
+  });
+
+  const apps = await c.var.db.application.findMany({
+    where: { tenantId, job: { employerId: userId }, appliedAt: { gte: seasonStart } },
+    select: { jobId: true, status: true },
+  });
+
+  const byJob = new Map<string, { applied: number; hired: number }>();
+  for (const a of apps) {
+    const acc = byJob.get(a.jobId) ?? { applied: 0, hired: 0 };
+    acc.applied += 1;
+    if (a.status === AppStatus.hired) acc.hired += 1;
+    byJob.set(a.jobId, acc);
+  }
+
+  const rows: string[][] = [
+    [
+      'job_id',
+      'title',
+      'county',
+      'status',
+      'positions_total',
+      'hires',
+      'applied',
+      'fill_pct',
+      'published_at',
+      'filled_at',
+    ],
+  ];
+  for (const j of jobs) {
+    const stats = byJob.get(j.id) ?? { applied: 0, hired: 0 };
+    rows.push([
+      j.id,
+      j.titleEn,
+      j.county ?? '',
+      j.status,
+      String(j.positionsTotal),
+      String(stats.hired),
+      String(stats.applied),
+      j.positionsTotal > 0 ? String(Math.round((j.hireCount / j.positionsTotal) * 100)) : '0',
+      j.publishedAt ? j.publishedAt.toISOString() : '',
+      j.filledAt ? j.filledAt.toISOString() : '',
+    ]);
+  }
+
+  const filename = `agconn-reports-${new Date().toISOString().slice(0, 10)}.csv`;
+  return new Response(toCsv(rows), {
+    status: 200,
+    headers: {
+      'content-type': 'text/csv; charset=utf-8',
+      'content-disposition': `attachment; filename="${filename}"`,
+    },
+  });
+});
+
+function toCsv(rows: string[][]): string {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const s = String(cell ?? '');
+          return /[,"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+        })
+        .join(','),
+    )
+    .join('\r\n');
+}
 
 function computeWeekly(
   apps: { appliedAt: Date; status: string; hiredAt: Date | null }[],

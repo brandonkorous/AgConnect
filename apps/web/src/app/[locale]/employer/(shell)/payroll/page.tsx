@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getCurrentPayrollPeriod, listPayrollLines } from '@/lib/api/employer-ops';
 import { PayrollActions } from '@/components/employer/payroll/PayrollActions';
+import { PayrollLineRow } from '@/components/employer/payroll/PayrollLineRow';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -137,54 +138,14 @@ export default async function PayrollPage({ params }: Props) {
           <span className="text-right">{t('table.col_actions')}</span>
         </div>
         {lines.map((r, i) => (
-          <div
+          <PayrollLineRow
             key={r.id}
-            className={[
-              'grid grid-cols-[2fr_1.4fr_0.8fr_0.7fr_1fr_0.9fr_1fr_100px] items-center gap-3 px-5 py-3 text-sm',
-              i < lines.length - 1 ? 'border-base-300 border-b' : '',
-            ].join(' ')}
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="bg-primary text-primary-content grid h-7 w-7 place-items-center rounded-full font-mono text-[10px] font-bold">
-                {r.workerInitials}
-              </div>
-              <span className="font-semibold">{r.workerName}</span>
-            </div>
-            <span className="text-base-content/70">{r.role}</span>
-            <span className="font-mono font-semibold">{r.hours}h</span>
-            <span
-              className={[
-                'font-mono font-semibold',
-                r.overtimeHours > 0 ? 'text-accent' : 'text-base-content/50',
-              ].join(' ')}
-            >
-              {r.overtimeHours}h
-            </span>
-            <span className="font-mono">{fmtCents(r.grossCents)}</span>
-            <span
-              className={[
-                'font-mono',
-                r.bonusCents > 0 ? 'text-primary font-bold' : 'text-base-content/50',
-              ].join(' ')}
-            >
-              {r.bonusCents > 0 ? `+${fmtCents(r.bonusCents)}` : '—'}
-            </span>
-            <span className="font-mono font-bold">{fmtCents(r.netCents)}</span>
-            <div className="flex justify-end gap-1.5">
-              <button
-                type="button"
-                className="border-base-300 rounded-md border bg-transparent px-2 py-1 text-[11px] font-medium"
-              >
-                {t('table.edit')}
-              </button>
-              <button
-                type="button"
-                className="bg-primary text-primary-content rounded-md px-2.5 py-1 text-[11px] font-bold"
-              >
-                ✓
-              </button>
-            </div>
-          </div>
+            periodId={period.id}
+            line={r}
+            border={i < lines.length - 1}
+            locked={period.status !== 'draft'}
+            approved={r.approvedAt !== null}
+          />
         ))}
       </section>
     </div>
