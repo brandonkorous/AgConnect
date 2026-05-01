@@ -8,6 +8,8 @@ import { ok, err, onErrorEnvelope } from '@agconn/api-client/server';
 import { auditMiddleware, emitSystemAudit, type AuditCtxVars } from './middleware/audit';
 import { clerkAuthMiddleware } from './middleware/authContext';
 import { landingRoutes } from './landing/routes';
+import { publicJobsRoutes } from './landing/jobs';
+import { publicTrainingRoutes } from './landing/training';
 import { resendWebhookRoutes } from './webhooks/resend';
 import { clerkWebhookRoutes } from './webhooks/clerk';
 import { twilioWebhookRoutes } from './webhooks/twilio';
@@ -38,6 +40,8 @@ import {
   employerInvitationsRoutes,
 } from './employer/workers/routes';
 import { employerBillingRoutes } from './employer/billing/routes';
+import { employerCrewsRoutes } from './employer/crews/routes';
+import { employerShiftsRoutes } from './employer/shifts/routes';
 
 const app = new Hono<{ Variables: AuditCtxVars }>();
 
@@ -46,9 +50,10 @@ app.use(
   '*',
   cors({
     origin: (origin) => origin ?? '*',
-    allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type'],
+    allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization', 'x-correlation-id'],
     exposeHeaders: ['x-correlation-id'],
+    credentials: true,
   }),
 );
 
@@ -125,6 +130,8 @@ app.route('/v1/employer/applications', employerApplicationsRoutes);
 app.route('/v1/employer/workers', employerWorkersRoutes);
 app.route('/v1/employer/invitations', employerInvitationsRoutes);
 app.route('/v1/employer/billing', employerBillingRoutes);
+app.route('/v1/employer/crews', employerCrewsRoutes);
+app.route('/v1/employer/shifts', employerShiftsRoutes);
 app.route('/v1/webhooks/resend', resendWebhookRoutes);
 app.route('/v1/webhooks/clerk', clerkWebhookRoutes);
 app.route('/v1/webhooks/twilio', twilioWebhookRoutes);

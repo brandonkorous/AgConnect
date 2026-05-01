@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -16,7 +19,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { SidebarLocaleToggle } from './SidebarLocaleToggle';
 
-type NavKey =
+export type WorkerNavKey =
     | 'dashboard'
     | 'browse_jobs'
     | 'my_applications'
@@ -27,28 +30,36 @@ type NavKey =
     | 'messages';
 
 type NavItem = {
-    key: NavKey;
+    key: WorkerNavKey;
     icon: IconDefinition;
-    href: string;
+    /** Path under /[locale] — used for both href and active-match. */
+    path: string;
     count?: number;
     accent?: boolean;
 };
 
 const ITEMS: NavItem[] = [
-    { key: 'dashboard', icon: faChartLine, href: '#' },
-    { key: 'browse_jobs', icon: faLeaf, href: '#', count: 142 },
-    { key: 'my_applications', icon: faClipboardCheck, href: '#', count: 5 },
-    { key: 'my_shifts', icon: faCalendarDays, href: '#' },
-    { key: 'pay', icon: faSackDollar, href: '#' },
-    { key: 'training', icon: faGraduationCap, href: '#' },
-    { key: 'documents', icon: faIdBadge, href: '#' },
-    { key: 'messages', icon: faComments, href: '#', count: 3, accent: true },
+    { key: 'dashboard',       icon: faChartLine,       path: '/worker/dashboard' },
+    { key: 'browse_jobs',     icon: faLeaf,            path: '/worker/jobs', count: 142 },
+    { key: 'my_applications', icon: faClipboardCheck,  path: '/worker/applications', count: 5 },
+    { key: 'my_shifts',       icon: faCalendarDays,    path: '/worker/shifts' },
+    { key: 'pay',             icon: faSackDollar,      path: '/worker/pay' },
+    { key: 'training',        icon: faGraduationCap,   path: '/worker/training' },
+    { key: 'documents',       icon: faIdBadge,         path: '/worker/documents' },
+    { key: 'messages',        icon: faComments,        path: '/worker/messages', count: 3, accent: true },
 ];
 
-type Props = { active?: NavKey; locale: string };
+type Props = {
+    /** Override the path-derived active item — kept for legacy callers. */
+    active?: WorkerNavKey;
+    locale: string;
+};
 
-export function WorkerSidebar({ active = 'dashboard', locale }: Props) {
+export function WorkerSidebar({ active, locale }: Props) {
     const t = useTranslations('worker.dashboard.sidebar');
+    const pathname = usePathname();
+    const derived = ITEMS.find((it) => pathname.startsWith(`/${locale}${it.path}`))?.key;
+    const current = active ?? derived ?? 'dashboard';
 
     return (
         <aside className="bg-base-100 border-base-300 sticky top-0 flex min-h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6">
@@ -61,11 +72,11 @@ export function WorkerSidebar({ active = 'dashboard', locale }: Props) {
 
             <nav className="flex flex-col gap-1">
                 {ITEMS.map((item) => {
-                    const isActive = item.key === active;
+                    const isActive = item.key === current;
                     return (
-                        <a
+                        <Link
                             key={item.key}
-                            href={item.href}
+                            href={`/${locale}${item.path}`}
                             className={[
                                 'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
                                 isActive
@@ -89,7 +100,7 @@ export function WorkerSidebar({ active = 'dashboard', locale }: Props) {
                                     {item.count}
                                 </span>
                             )}
-                        </a>
+                        </Link>
                     );
                 })}
             </nav>

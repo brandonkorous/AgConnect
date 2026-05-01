@@ -15,9 +15,6 @@ export function UtilityBar() {
     return (
         <div className="bg-neutral">
             <div className="mx-auto flex items-center justify-between gap-4 px-5 py-2.5 md:gap-6 md:px-8 lg:px-20">
-                <a href="#main" className="btn btn-accent  absolute -top-10 left-2 z-50 focus:top-2">
-                    {t('skip')}
-                </a>
                 <div className="hidden items-center gap-2 md:flex">
                     <span className="bg-accent size-1.5 shrink-0 rounded-full" aria-hidden />
                     <span className="text-neutral-content font-sans text-xs">{t('grant_aligned')}</span>

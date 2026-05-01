@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { isOk } from '@agconn/api-client';
+import { getApiClient } from '@/lib/api/client';
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 
@@ -20,6 +22,7 @@ type Props = { initial: Initial };
 
 export function ProfileEditor({ initial }: Props) {
   const t = useTranslations('employer');
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,14 +46,12 @@ export function ProfileEditor({ initial }: Props) {
       body.county = String(f.get('county') ?? '') || undefined;
     }
     try {
-      const res = await fetch('/api/v1/employer/onboarding', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const res = await client.patch('/v1/employer/onboarding', body, {
+        handleErrorInline: true,
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data?.error?.message ?? t('errors.internal'));
+      if (!isOk(res)) {
+        setError(res.error.message || t('errors.internal'));
         return;
       }
       setSaved(true);

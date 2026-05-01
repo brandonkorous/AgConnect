@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { isOk } from '@agconn/api-client';
+import { getApiClient } from '@/lib/api/client';
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 
@@ -47,19 +49,19 @@ export function JobForm({ locale, mode, initial }: Props) {
     const flag = field === 'title' ? (from === 'en' ? 'titleEs' : 'titleEn') : from === 'en' ? 'descEs' : 'descEn';
     setTranslating(flag);
     try {
-      const res = await fetch('/api/v1/employer/jobs/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const res = await client.post<{ translation: string }>(
+        '/v1/employer/jobs/translate',
+        {
           field,
           fromLocale: from,
           toLocale: from === 'en' ? 'es' : 'en',
           text,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      const translated = data?.data?.translation ?? '';
+        },
+        { handleErrorInline: true },
+      );
+      if (!isOk(res)) return;
+      const translated = res.data.translation ?? '';
       if (field === 'title') {
         if (from === 'en') setTitleEs(translated);
         else setTitleEn(translated);
@@ -67,8 +69,6 @@ export function JobForm({ locale, mode, initial }: Props) {
         if (from === 'en') setDescEs(translated);
         else setDescEn(translated);
       }
-    } catch {
-      // translation_failed handled inline by leaving the field as-is
     } finally {
       setTranslating(null);
     }
@@ -101,26 +101,29 @@ export function JobForm({ locale, mode, initial }: Props) {
       positionsTotal: Number(form.get('positionsTotal') ?? 1),
     };
     try {
-      const path = mode === 'create' ? '/api/v1/employer/jobs' : `/api/v1/employer/jobs/${initial?.id}`;
-      const method = mode === 'create' ? 'POST' : 'PATCH';
-      const res = await fetch(path, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data?.error?.message ?? 'Could not save.');
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const res =
+        mode === 'create'
+          ? await client.post<{ job: { id: string } }>('/v1/employer/jobs', body, {
+              handleErrorInline: true,
+            })
+          : await client.patch<{ job: { id: string } }>(
+              `/v1/employer/jobs/${initial?.id}`,
+              body,
+              { handleErrorInline: true },
+            );
+      if (!isOk(res)) {
+        setError(res.error.message || 'Could not save.');
         setSubmitting(false);
         return;
       }
-      const created = await res.json();
-      const id = created?.data?.job?.id ?? initial?.id;
+      const id = res.data.job.id ?? initial?.id;
       if (action === 'publish' && id) {
-        const pub = await fetch(`/api/v1/employer/jobs/${id}/publish`, { method: 'POST' });
-        if (!pub.ok) {
-          const data = await pub.json().catch(() => ({}));
-          setError(data?.error?.message ?? 'Could not publish.');
+        const pub = await client.post(`/v1/employer/jobs/${id}/publish`, undefined, {
+          handleErrorInline: true,
+        });
+        if (!isOk(pub)) {
+          setError(pub.error.message || 'Could not publish.');
           setSubmitting(false);
           return;
         }

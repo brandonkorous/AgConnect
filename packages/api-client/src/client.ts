@@ -7,10 +7,13 @@ export type ApiClientOptions = {
   onUnhandledError?: (err: ApiErr['error']) => void;
 };
 
+type QueryPrimitive = string | number | boolean;
+export type QueryValue = QueryPrimitive | QueryPrimitive[] | undefined;
+
 export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
-  query?: Record<string, string | number | boolean | undefined>;
+  query?: Record<string, QueryValue>;
   signal?: AbortSignal;
   headers?: Record<string, string>;
   handleErrorInline?: boolean;
@@ -25,7 +28,7 @@ const isAbortError = (e: unknown): boolean =>
 const buildUrl = (
   baseUrl: string,
   path: string,
-  query?: Record<string, string | number | boolean | undefined>,
+  query?: Record<string, QueryValue>,
 ): string => {
   const trimmed = baseUrl.replace(/\/$/, '');
   const url = `${trimmed}${path.startsWith('/') ? path : `/${path}`}`;
@@ -33,7 +36,11 @@ const buildUrl = (
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(query)) {
     if (v === undefined) continue;
-    params.append(k, String(v));
+    if (Array.isArray(v)) {
+      for (const item of v) params.append(k, String(item));
+    } else {
+      params.append(k, String(v));
+    }
   }
   const qs = params.toString();
   return qs ? `${url}?${qs}` : url;

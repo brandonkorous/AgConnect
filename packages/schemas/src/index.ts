@@ -11,4 +11,5 @@ export * from './employer';
 export * from './employer-jobs';
 export * from './employer-applications';
 export * from './employer-workers';
+export * from './employer-crews';
 export * from './billing';

@@ -12,12 +12,28 @@ import {
   faCreditCard,
   faIdBadge,
   faChevronRight,
+  faCalendarDays,
+  faCoins,
+  faShieldHalved,
+  faCommentDots,
+  faChartColumn,
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { SidebarLocaleToggle } from '@/components/worker/SidebarLocaleToggle';
 
-export type EmployerNavKey = 'dashboard' | 'jobs' | 'inbox' | 'workers' | 'billing' | 'profile';
+export type EmployerNavKey =
+  | 'dashboard'
+  | 'jobs'
+  | 'candidates'
+  | 'workers'
+  | 'crews'
+  | 'payroll'
+  | 'compliance'
+  | 'messages'
+  | 'reports'
+  | 'billing'
+  | 'profile';
 
 type NavItem = {
   key: EmployerNavKey;
@@ -32,8 +48,10 @@ type Props = {
   active?: EmployerNavKey;
   displayName: string;
   initials: string;
-  inboxCount?: number;
+  candidatesCount?: number;
   jobsCount?: number;
+  complianceCount?: number;
+  messagesCount?: number;
 };
 
 export function EmployerSidebar({
@@ -41,8 +59,10 @@ export function EmployerSidebar({
   active,
   displayName,
   initials,
-  inboxCount,
+  candidatesCount,
   jobsCount,
+  complianceCount,
+  messagesCount,
 }: Props) {
   const t = useTranslations('employer.shell.nav');
   const pathname = usePathname();
@@ -51,13 +71,18 @@ export function EmployerSidebar({
     { key: 'dashboard', icon: faChartLine, path: '/employer/dashboard' },
     { key: 'jobs', icon: faBriefcase, path: '/employer/jobs', count: jobsCount },
     {
-      key: 'inbox',
+      key: 'candidates',
       icon: faUsers,
       path: '/employer/inbox',
-      count: inboxCount,
-      accent: (inboxCount ?? 0) > 0,
+      count: candidatesCount,
+      accent: (candidatesCount ?? 0) > 0,
     },
     { key: 'workers', icon: faMagnifyingGlass, path: '/employer/workers' },
+    { key: 'crews', icon: faCalendarDays, path: '/employer/crews' },
+    { key: 'payroll', icon: faCoins, path: '/employer/payroll' },
+    { key: 'compliance', icon: faShieldHalved, path: '/employer/compliance', count: complianceCount },
+    { key: 'messages', icon: faCommentDots, path: '/employer/messages', count: messagesCount, accent: (messagesCount ?? 0) > 0 },
+    { key: 'reports', icon: faChartColumn, path: '/employer/reports' },
     { key: 'billing', icon: faCreditCard, path: '/employer/billing' },
     { key: 'profile', icon: faIdBadge, path: '/employer/profile' },
   ];

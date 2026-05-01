@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { isOk } from '@agconn/api-client';
+import { getApiClient } from '@/lib/api/client';
 
 type Status = 'applied' | 'reviewed' | 'hired' | 'rejected' | 'withdrawn';
 
@@ -28,14 +30,14 @@ export function ApplicantActions({ locale, applicationId, currentStatus, workerN
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`/api/v1/employer/applications/${applicationId}/transition`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data?.error?.message ?? 'Failed.');
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const res = await client.post(
+        `/v1/employer/applications/${applicationId}/transition`,
+        payload,
+        { handleErrorInline: true },
+      );
+      if (!isOk(res)) {
+        setError(res.error.message || 'Failed.');
         return;
       }
       setModal(null);

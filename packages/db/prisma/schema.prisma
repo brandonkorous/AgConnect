@@ -181,6 +181,26 @@ enum RejectionReason {
   other
 }
 
+enum CrewMemberRole {
+  member
+  lead
+}
+
+enum ShiftStatus {
+  scheduled
+  in_progress
+  completed
+  cancelled
+}
+
+enum ShiftAssignmentStatus {
+  assigned
+  confirmed
+  declined
+  no_show
+  completed
+}
+
 model Tenant {
   id        String       @id @default(uuid()) @db.Uuid
   slug      String       @unique
@@ -210,6 +230,10 @@ model Tenant {
   workerInvitations WorkerInvitation[]
   workerSearchLogs  WorkerSearchLog[]
   billingEvents     BillingEvent[]
+  crews             Crew[]
+  crewMembers       CrewMember[]
+  shifts            Shift[]
+  shiftAssignments  ShiftAssignment[]
 
   @@map("tenants")
 }
@@ -337,6 +361,11 @@ model User {
   trainingPrograms    TrainingProgram[]  @relation("TrainingProgramOrg")
   jobPostings         JobPosting[]       @relation("JobPostingEmployer")
   workerInvitations   WorkerInvitation[] @relation("WorkerInvitationWorker")
+  crewsOwned          Crew[]             @relation("CrewEmployer")
+  crewsLed            Crew[]             @relation("CrewForeman")
+  crewMemberships     CrewMember[]
+  shiftsOwned         Shift[]            @relation("ShiftEmployer")
+  shiftAssignments    ShiftAssignment[]
 
   @@index([tenantId])
   @@index([phone])
@@ -778,4 +807,104 @@ model Enrollment {
   @@index([workerId, status])
   @@index([programId, status])
   @@map("enrollments")
+}
+
+// Crew = stable group of workers that move together across shifts.
+// See docs/20-employer/06-crews-shifts/02-data-model.md.
+model Crew {
+  id              String       @id @default(uuid()) @db.Uuid
+  tenantId        String       @db.Uuid             @map("tenant_id")
+  employerId      String                              @map("employer_id")
+  foremanUserId   String?                             @map("foreman_user_id")
+  jobId           String?      @db.Uuid              @map("job_id")
+  name            String
+  color           String       @default("primary")
+  notes           String?
+  createdAt       DateTime     @default(now())       @map("created_at")
+  updatedAt       DateTime     @updatedAt            @map("updated_at")
+  deletedAt       DateTime?                          @map("deleted_at")
+
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  employer        User         @relation("CrewEmployer", fields: [employerId], references: [id])
+  foreman         User?        @relation("CrewForeman",  fields: [foremanUserId], references: [id])
+  members         CrewMember[]
+  shifts          Shift[]
+
+  @@index([tenantId])
+  @@index([employerId])
+  @@index([foremanUserId])
+  @@map("crews")
+}
+
+model CrewMember {
+  id              String         @id @default(uuid()) @db.Uuid
+  tenantId        String         @db.Uuid             @map("tenant_id")
+  crewId          String         @db.Uuid             @map("crew_id")
+  workerUserId    String                              @map("worker_user_id")
+  role            CrewMemberRole @default(member)
+  joinedAt        DateTime       @default(now())     @map("joined_at")
+  leftAt          DateTime?                          @map("left_at")
+
+  tenant          Tenant         @relation(fields: [tenantId], references: [id])
+  crew            Crew           @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  worker          User           @relation(fields: [workerUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([crewId])
+  @@index([workerUserId])
+  @@map("crew_members")
+}
+
+// Shift = single dated work block tied to a crew (or ad-hoc when crew is null).
+// See docs/20-employer/06-crews-shifts/02-data-model.md.
+model Shift {
+  id              String      @id @default(uuid()) @db.Uuid
+  tenantId        String      @db.Uuid             @map("tenant_id")
+  employerId      String                              @map("employer_id")
+  crewId          String?     @db.Uuid              @map("crew_id")
+  jobId           String?     @db.Uuid              @map("job_id")
+  shiftDate       DateTime    @db.Date              @map("shift_date")
+  startTime       String                              @map("start_time")          // 'HH:MM' local
+  endTime         String?                             @map("end_time")
+  locationLabel   String                              @map("location_label")
+  locationLat     Decimal?    @db.Decimal(9, 6)    @map("location_lat")
+  locationLng     Decimal?    @db.Decimal(9, 6)    @map("location_lng")
+  status          ShiftStatus @default(scheduled)
+  notes           String?
+  createdAt       DateTime    @default(now())       @map("created_at")
+  updatedAt       DateTime    @updatedAt            @map("updated_at")
+
+  tenant          Tenant            @relation(fields: [tenantId], references: [id])
+  employer        User              @relation("ShiftEmployer", fields: [employerId], references: [id])
+  crew            Crew?             @relation(fields: [crewId], references: [id])
+  assignments     ShiftAssignment[]
+
+  @@index([tenantId])
+  @@index([employerId, shiftDate])
+  @@index([crewId, shiftDate])
+  @@index([status])
+  @@map("shifts")
+}
+
+model ShiftAssignment {
+  id              String                @id @default(uuid()) @db.Uuid
+  tenantId        String                @db.Uuid             @map("tenant_id")
+  shiftId         String                @db.Uuid             @map("shift_id")
+  workerUserId    String                                      @map("worker_user_id")
+  status          ShiftAssignmentStatus @default(assigned)
+  hoursWorked     Decimal?              @db.Decimal(5, 2)   @map("hours_worked")
+  piecesCount     Int?                                        @map("pieces_count")
+  pieceRateCents  Int?                                        @map("piece_rate_cents")
+  createdAt       DateTime              @default(now())     @map("created_at")
+  updatedAt       DateTime              @updatedAt          @map("updated_at")
+
+  tenant          Tenant @relation(fields: [tenantId], references: [id])
+  shift           Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  worker          User   @relation(fields: [workerUserId], references: [id])
+
+  @@unique([shiftId, workerUserId])
+  @@index([tenantId])
+  @@index([workerUserId, shiftId])
+  @@index([status])
+  @@map("shift_assignments")
 }

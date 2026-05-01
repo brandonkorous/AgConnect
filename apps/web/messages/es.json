@@ -1135,6 +1135,11 @@
         "cta": "Aplicar",
         "submitting": "Enviando…",
         "error": "No se pudo enviar. Intenta de nuevo.",
+        "error_already_applied": "Ya aplicaste a este trabajo.",
+        "already_applied": "Aplicado",
+        "already_reviewed": "Empleador revisando",
+        "already_hired": "Contratado",
+        "view_application": "Ver postulación →",
         "success": "Aplicaste a {jobTitle}. Te avisaremos cuando el empleador responda."
       },
       "detail": {
@@ -1324,9 +1329,33 @@
     "training_hub": {
       "meta": { "title": "Capacitación" },
       "eyebrow": "14 programas gratis en tu zona",
+      "eyebrow_n": "{n} programas gratis en tu zona",
       "title": { "lead": "Gana más,", "em": "aprende más" },
       "sub": "Certificaciones gratuitas financiadas por el Departamento de Alimentos y Agricultura de California y la iniciativa F3. La mayoría paga un estipendio durante la capacitación.",
       "cta_browse": "Ver todos los programas",
+      "detail": {
+        "back": "Volver a capacitación",
+        "fund_label": "Financiado por {fund}",
+        "full": "Lleno",
+        "free": "Gratis",
+        "cost": "Costo",
+        "funded_by": "Financiado por {funder}",
+        "spots_left": "{n} de {capacity} cupos disponibles",
+        "about": "Sobre esta capacitación",
+        "topics": "Temas",
+        "you_will_receive": "Recibirás",
+        "cert": "Un certificado bilingüe",
+        "reminders": "Mensajes de recordatorio antes de cada sesión",
+        "enroll": "Inscribirse gratis",
+        "enrolling": "Inscribiendo…",
+        "enrolled": "✓ Estás inscrito",
+        "enroll_error": "No se pudo inscribir. Intenta de nuevo.",
+        "unenroll": "Cancelar inscripción"
+      },
+      "error": {
+        "already_enrolled": "Ya estás inscrito en este programa.",
+        "cannot_unenroll": "No puedes cancelar una vez que el programa ha empezado."
+      },
       "stat": {
         "in_progress": { "label": "En progreso", "sub": "Cert. de montacargas" },
         "hours": { "label": "Horas completadas", "sub": "de 32 en cert. actual" },
@@ -1438,20 +1467,28 @@
     "applications_dense": {
       "meta": { "title": "Postulaciones" },
       "eyebrow": "5 activas · 2 esperando respuesta · sincronizado hace 2m",
+      "eyebrow_n": "{active} activas · {waiting} esperando respuesta",
       "title": { "lead": "Mis", "em": "postulaciones" },
       "sub": "Sigue cada trabajo al que postulaste. Te enviaremos un texto cuando un empleador responda — usualmente en 24 horas.",
       "cta_more": "Buscar más trabajos",
       "pipeline": {
         "label": {
           "applied": "Aplicado", "reviewed": "Revisado",
+          "hired": "Contratado", "withdrawn": "Cerradas",
           "interview": "Entrevista", "accepted": "Aceptado"
         },
         "hint": {
-          "applied": "En etapa de postulación",
-          "reviewed": "En etapa de revisión",
+          "applied": "Esperando primera revisión",
+          "reviewed": "El empleador te está considerando",
+          "hired": "Confirma detalles con el empleador",
+          "withdrawn": "Sin acciones pendientes",
           "interview": "Jue 9 AM Modesto",
           "accepted": "Confirma antes del 11 ago"
         }
+      },
+      "empty": {
+        "none_active": "Aún no has aplicado a ningún trabajo.",
+        "browse_jobs": "Buscar trabajos"
       },
       "active": {
         "title": "Postulaciones activas",
@@ -1468,7 +1505,7 @@
         "spots": "{n} cupos"
       },
       "stage": {
-        "applied": "Aplicado", "reviewed": "Revisado",
+        "applied": "Aplicado", "reviewed": "Revisado", "hired": "Contratado",
         "interview": "Entrevista", "accepted": "Aceptado"
       },
       "action": {
@@ -1477,10 +1514,28 @@
       },
       "archive": {
         "title": "Postulaciones pasadas",
-        "sub": "Últimos 90 días · 12 completadas · 2 no seleccionadas",
-        "result": { "hired": "Contratado y completado", "not_selected": "No seleccionado" },
+        "sub": "Últimos 90 días",
+        "result": {
+          "hired": "Contratado y completado",
+          "not_selected": "No seleccionado",
+          "withdrawn": "Retirada"
+        },
         "view": "Ver →"
       }
+    },
+    "job_detail": {
+      "back": "Volver a trabajos",
+      "verified": "Verificado",
+      "wage_label": "Pago",
+      "starts_on": "Inicia {date}",
+      "about": "Sobre este trabajo",
+      "no_description": "El empleador aún no ha publicado detalles — postula y te contactarán con más información.",
+      "skills": "Habilidades",
+      "housing": "Vivienda incluida",
+      "transport": "Transporte incluido",
+      "share_title": "Compartir este trabajo",
+      "apply_via_sms": "O envía JOB al (559) 555-0142",
+      "apply_by_label": "Aplicar antes de"
     }
   },
   "shell": {
@@ -1643,7 +1698,13 @@
         "dashboard": "Panel",
         "jobs": "Publicaciones",
         "inbox": "Aplicantes",
+        "candidates": "Candidatos",
         "workers": "Buscar trabajadores",
+        "crews": "Cuadrillas y turnos",
+        "payroll": "Nómina",
+        "compliance": "Cumplimiento",
+        "messages": "Mensajes",
+        "reports": "Reportes",
         "billing": "Facturación",
         "profile": "Perfil del negocio"
       },
@@ -1719,18 +1780,90 @@
       "internal": "Algo salió mal. Inténtalo de nuevo."
     },
     "dashboard": {
+      "meta": { "title": "AgConn — Panel" },
       "greeting_morning": "Buenos días",
       "greeting_afternoon": "Buenas tardes",
       "greeting_evening": "Buenas noches",
+      "there": "hola",
+      "weekly_report": "Reporte semanal",
+      "post_new_job": "Publicar empleo",
+      "summary": "{open, plural, =0 {Sin publicaciones abiertas} one {1 publicación abierta} other {# publicaciones abiertas}} · {applicants} aplicantes nuevos · {spots, plural, =0 {todas las cuadrillas completas} one {1 puesto por llenar} other {# puestos por llenar}}.",
       "kpi": {
-        "active_postings": "Publicaciones activas",
-        "applicants_week": "Aplicantes esta semana",
-        "open_seats": "Puestos abiertos",
-        "hired_season": "Contratados esta temporada"
+        "open_positions_label": "Posiciones abiertas",
+        "open_positions_sub": "en {count, plural, =0 {0 publicaciones activas} one {1 publicación activa} other {# publicaciones activas}}",
+        "spots_remaining_label": "Puestos restantes",
+        "spots_remaining_sub": "de {total} en total esta semana",
+        "applicants_week_label": "Aplicantes · 7 días",
+        "applicants_week_sub": "de tus publicaciones activas",
+        "time_to_fill_label": "Tiempo prom. para llenar",
+        "time_to_fill_sub": "desde publicar hasta el último contratado"
       },
-      "recent_postings": "Publicaciones recientes",
-      "recent_applicants": "Aplicantes recientes",
-      "view_all": "Ver todo"
+      "hero": {
+        "all_filled": "todas las posiciones llenas",
+        "open_count": "{count, plural, =1 {1 puesto restante} other {# puestos restantes}}",
+        "filled": "lleno",
+        "fill_spot": "Llenar último puesto",
+        "view_crew": "Ver cuadrilla",
+        "message_crew": "Mensaje a la cuadrilla"
+      },
+      "pipeline": {
+        "title": "Embudo de contratación",
+        "subtitle": "{count, plural, =0 {Aún sin aplicantes} one {1 aplicante activo} other {# aplicantes activos}}",
+        "open_full": "Abrir embudo completo",
+        "match": "afín",
+        "accepted": "Aceptado",
+        "more": "más"
+      },
+      "active_jobs": {
+        "title": "Publicaciones activas",
+        "subtitle": "{open, plural, =0 {Sin publicaciones abiertas} one {1 publicación abierta} other {# publicaciones abiertas}} · {applicants} aplicantes esta semana",
+        "manage_all": "Administrar todas",
+        "empty": "Aún sin publicaciones activas — publica un borrador para empezar a recibir aplicantes.",
+        "applicants": "aplicantes",
+        "filled_short": "lleno",
+        "status_filled": "Lleno",
+        "status_open": "{n, plural, =1 {1 puesto abierto} other {# puestos abiertos}}",
+        "review_n": "Revisar {n}"
+      },
+      "billing_card": {
+        "renews_on": "Renueva {date}",
+        "no_subscription": "Sin suscripción activa",
+        "plan": { "free": "Plan gratis", "pro": "Pro", "enterprise": "Enterprise" },
+        "interval": { "monthly": "Mensual", "yearly": "Anual" },
+        "postings_unlimited": "Publicaciones ilimitadas",
+        "postings_capped": "{n} publicaciones activas",
+        "worker_search_on": "Búsqueda de trabajadores activa",
+        "worker_search": "Búsqueda de trabajadores",
+        "priority": "Listado prioritario",
+        "payment": "Pago",
+        "on": "Activo",
+        "off": "Inactivo",
+        "saved": "Guardado",
+        "none": "Ninguno",
+        "manage": "Administrar facturación",
+        "add_payment": "Agregar método de pago"
+      },
+      "verification_card": {
+        "title": "Salud del perfil",
+        "verified": "Verificado",
+        "pending": "Pendiente",
+        "needs_action": "Requiere acción",
+        "completeness": "Perfil completo",
+        "check": {
+          "identity": "Identidad de la empresa verificada",
+          "flc_license": "Licencia FLC registrada",
+          "ein": "EIN registrado",
+          "county": "Condado principal definido",
+          "contact": "Correo o teléfono de contacto agregado"
+        },
+        "finish_setup": "Terminar configuración"
+      },
+      "top_applicants": {
+        "title": "Mejores aplicantes nuevos",
+        "new": "nuevos",
+        "match": "afín",
+        "empty": "Sin aplicantes nuevos esta semana."
+      }
     },
     "jobs": {
       "list": {
@@ -1807,6 +1940,7 @@
       "applied": "Aplicados",
       "reviewed": "Revisados",
       "hired": "Contratados",
+      "rejected": "Rechazados",
       "show_rejected": "Mostrar rechazados ({count})",
       "bulk_selected": "{count} seleccionados",
       "bulk_review": "Marcar revisado",
@@ -1881,6 +2015,135 @@
         "confirm": "Enviar invitación",
         "cancel": "Cancelar"
       }
+    },
+    "crews": {
+      "title": "Cuadrillas y turnos",
+      "title_a": "Cuadrillas",
+      "title_b": "y turnos",
+      "eyebrow": "Operaciones · Semana del {date}",
+      "summary": "{crews, plural, =0 {Sin cuadrillas} one {1 cuadrilla} other {# cuadrillas}} · {confirmed} confirmados · {filling, plural, =0 {todas llenas} one {1 todavía completándose} other {# todavía completándose}} · {hours} horas programadas",
+      "export": "Exportar horario",
+      "new_shift": "Nuevo turno",
+      "header_label": "Cuadrillas / Día",
+      "cell_off": "Libre",
+      "cell_pending_suffix": "completándose",
+      "cell_confirmed_suffix": "confirmados",
+      "empty_no_crews": "Aún sin cuadrillas — crea una para empezar a programar.",
+      "no_foreman": "sin capataz",
+      "hiring_foreman": "— contratando —",
+      "crew_size_short": "cuadrilla",
+      "crew_leaders": "Capataces",
+      "size": "Tamaño",
+      "rating": "Calificación",
+      "message_foreman": "Mensaje a {firstName}"
+    },
+    "payroll": {
+      "title": "Nómina",
+      "title_a": "Nómina",
+      "title_b": "· corre el viernes",
+      "eyebrow": "Periodo · {start} – {end}",
+      "summary": "{workers} trabajadores · {hours} horas · {bonuses} bonos por destajo aprobados",
+      "approve": "Aprobar y correr nómina",
+      "export_forms": "Exportar 941 / DE-9",
+      "hero_eyebrow": "Pago neto · este periodo",
+      "stat": {
+        "gross": "Bruto",
+        "bonuses": "Bonos",
+        "taxes": "Impuestos",
+        "hours": "Horas"
+      },
+      "season_to_date": "Acumulado de temporada",
+      "season_to_date_sub": "A través de {periods} periodos · {workers} trabajadores únicos",
+      "h2a_eyebrow": "Cumplimiento H-2A",
+      "h2a_headline": "AEWR + transporte reembolsado automáticamente",
+      "h2a_sub": "3/4 garantía rastreada · Salario AEWR $19.97/hr aplicado",
+      "table": {
+        "title": "Hojas de tiempo · listas para aprobar",
+        "showing": "Mostrando {n} de {total}",
+        "view_all": "ver todos",
+        "col_worker": "Trabajador",
+        "col_role": "Rol",
+        "col_hours": "Horas",
+        "col_overtime": "OT",
+        "col_gross": "Bruto",
+        "col_bonus": "Bono",
+        "col_net": "Neto",
+        "col_actions": "Acciones",
+        "edit": "Editar",
+        "approve": "Aprobar"
+      }
+    },
+    "compliance": {
+      "title": "Cumplimiento",
+      "headline_pct": "{pct}%",
+      "headline_suffix": "en cumplimiento",
+      "summary": "{actions, plural, =0 {0 acciones pendientes} one {1 acción pendiente} other {# acciones pendientes}} · listo para auditoría · última inspección DOL: aprobada Jun 14, 2025",
+      "audit_pdf": "PDF de auditoría",
+      "overall_label": "General",
+      "overall_delta": "+4 pts vs. el trimestre pasado",
+      "actions_title": "{count, plural, =0 {Estás al día} one {1 acción requiere tu atención} other {# acciones requieren tu atención}}",
+      "severity": {
+        "urgent": "URGENTE",
+        "soon": "PRÓXIMA"
+      }
+    },
+    "messages": {
+      "title": "Mensajes",
+      "title_a": "Mensajes",
+      "title_b": "· {unread} sin leer",
+      "eyebrow": "Buzón",
+      "summary": "SMS, WhatsApp y en-app · traducción automática EN ⇄ ES",
+      "new_broadcast": "Nuevo broadcast",
+      "folders": {
+        "all": "Todas las conversaciones",
+        "candidates": "Candidatos",
+        "crew": "Cuadrilla activa",
+        "foremen": "Capataces",
+        "broadcasts": "Broadcasts"
+      },
+      "templates_label": "Plantillas",
+      "templates": {
+        "interview": "Invitación a entrevista",
+        "offer": "Oferta de contratación",
+        "shift": "Recordatorio de turno",
+        "heat": "Aviso de calor"
+      },
+      "search_placeholder": "Buscar mensajes…",
+      "channel": {
+        "app": "APP",
+        "sms": "SMS",
+        "whatsapp": "WA",
+        "broadcast": "BROADCAST"
+      },
+      "thread_header_meta": "{members} miembros · {foreman} (Capataz) · auto-traducción ON",
+      "call_foreman": "Llamar capataz",
+      "pinned_eyebrow": "Fijado · Turno de mañana",
+      "pinned_confirmed": "{confirmed}/{total} confirmados",
+      "composer": {
+        "placeholder": "Escribe un mensaje — se traduce al inglés automáticamente",
+        "send": "Enviar",
+        "channel_app": "App",
+        "channel_sms": "SMS · todos {n}",
+        "channel_whatsapp": "WhatsApp · solo capataz"
+      }
+    },
+    "reports": {
+      "title": "Reportes de contratación",
+      "title_a": "Reportes",
+      "title_b": "de contratación",
+      "eyebrow": "Analítica · Temporada {year}",
+      "summary": "Pulso operacional · temporada vs. año pasado · exportes listos para DOL/EDD",
+      "this_season": "Esta temporada",
+      "export_csv": "Exportar CSV",
+      "applicant_flow": {
+        "title": "Flujo de aplicantes vs. puestos cubiertos · semanal",
+        "sub": "Marzo – Agosto {year} · a través de {jobTypes} tipos de empleo",
+        "applicants": "Aplicantes",
+        "hired": "Contratados"
+      },
+      "by_job_type": "Por tipo de empleo · temporada",
+      "top_workers": "Mejores en desempeño · esta temporada",
+      "top_workers_sub": "por rendimiento de destajo"
     },
     "billing": {
       "title": "Facturación",

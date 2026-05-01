@@ -46,6 +46,9 @@ export {
   PlanInterval,
   VerificationAction,
   RejectionReason,
+  CrewMemberRole,
+  ShiftStatus,
+  ShiftAssignmentStatus,
 } from '@prisma/client';
 export type {
   Tenant,
@@ -70,6 +73,10 @@ export type {
   WorkerSearchLog,
   WorkerInvitation,
   BillingEvent,
+  Crew,
+  CrewMember,
+  Shift,
+  ShiftAssignment,
 } from '@prisma/client';
 
 export type Db = PrismaClient;

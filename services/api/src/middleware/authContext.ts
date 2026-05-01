@@ -18,7 +18,15 @@ export type AuthVars = {
   role: 'authenticated';
 };
 
-export const clerkAuthMiddleware = clerkMiddleware();
+// @hono/clerk-auth defaults to reading CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY
+// from env, but our project standardizes on NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+// (so the same value can be reused by apps/web). Pass the keys in explicitly so
+// the middleware works regardless of which name is set.
+export const clerkAuthMiddleware = clerkMiddleware({
+  publishableKey:
+    process.env.CLERK_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
 
 export const requireAuth = createMiddleware<{ Variables: AuthVars }>(async (c, next) => {
   const auth = getAuth(c);
@@ -36,9 +44,12 @@ export const requireAuth = createMiddleware<{ Variables: AuthVars }>(async (c, n
   await prisma.$transaction(
     async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.role = 'authenticated'`);
-      await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${user.id}'`);
+      // Parameterize via set_config rather than string-interpolating into SET LOCAL,
+      // since user.id and user.tenantId originate from external auth and a malformed
+      // value would break out of the SQL string.
+      await tx.$executeRaw`SELECT set_config('app.user_id', ${user.id}, true)`;
       if (user.tenantId) {
-        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${user.tenantId}'`);
+        await tx.$executeRaw`SELECT set_config('app.tenant_id', ${user.tenantId}, true)`;
       }
       c.set('db', tx);
       c.set('userId', user.id);

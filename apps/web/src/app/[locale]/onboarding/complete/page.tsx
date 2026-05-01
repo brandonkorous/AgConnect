@@ -17,10 +17,10 @@ export default async function CompletePage({ params }: Props) {
         </div>
         <p className="text-base-content/80 text-base">{t('subtitle')}</p>
         <div className="grid gap-3">
-          <Link href={`/${locale}/jobs`} className="btn btn-primary btn-lg w-full">
+          <Link href={`/${locale}/worker/jobs`} className="btn btn-primary btn-lg w-full">
             {t('cta_jobs')}
           </Link>
-          <Link href={`/${locale}/profile`} className="btn btn-outline btn-lg w-full">
+          <Link href={`/${locale}/worker/profile`} className="btn btn-outline btn-lg w-full">
             {t('cta_profile')}
           </Link>
         </div>

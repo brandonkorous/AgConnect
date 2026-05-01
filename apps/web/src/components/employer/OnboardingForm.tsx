@@ -3,7 +3,9 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { isOk } from '@agconn/api-client';
 import { Wordmark } from '@/components/primitives/Wordmark';
+import { getApiClient } from '@/lib/api/client';
 
 type Props = { locale: string };
 
@@ -38,16 +40,14 @@ export function OnboardingForm({ locale }: Props) {
     };
 
     try {
-      const res = await fetch('/api/v1/employer/onboarding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const res = await client.post('/v1/employer/onboarding', body, {
+        handleErrorInline: true,
       });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        const code: string = data?.error?.code ?? 'internal';
-        const fieldErrs: Record<string, string> = data?.error?.fields ?? {};
-        const msg = tErrSafe(tErr, code) ?? data?.error?.message ?? tErr('internal');
+      if (!isOk(res)) {
+        const code = res.error.code;
+        const fieldErrs = res.error.fields ?? {};
+        const msg = tErrSafe(tErr, code) ?? res.error.message ?? tErr('internal');
         setErrors({ _root: msg, ...fieldErrs });
         setSubmitting(false);
         return;

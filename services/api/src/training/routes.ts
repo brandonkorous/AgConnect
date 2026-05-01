@@ -16,6 +16,21 @@ export const trainingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>()
 
 trainingRoutes.use('*', requireAuth);
 
+function decodeCursor(s: string): { startDate: Date; id: string } | null {
+  try {
+    const decoded = Buffer.from(s, 'base64url').toString('utf8');
+    const [iso, id] = decoded.split('|');
+    if (!iso || !id) return null;
+    return { startDate: new Date(iso), id };
+  } catch {
+    return null;
+  }
+}
+
+function encodeCursor(cur: { startDate: Date; id: string }): string {
+  return Buffer.from(`${cur.startDate.toISOString()}|${cur.id}`).toString('base64url');
+}
+
 trainingRoutes.get('/', validate('query', TrainingQuery), async (c) => {
   const q = c.var.body;
   const tenantId = c.var.tenantId;

@@ -118,9 +118,13 @@ export async function patchOnboardingProfile(
     '';
 
   // Merge resume partial onto existing.
+  const existingResumeObj =
+    existingProfile?.resume && typeof existingProfile.resume === 'object' && !Array.isArray(existingProfile.resume)
+      ? (existingProfile.resume as Record<string, unknown>)
+      : {};
   const mergedResume =
     body.resume !== undefined
-      ? deepMerge(existingProfile?.resume ?? {}, body.resume as Record<string, unknown>)
+      ? deepMerge(existingResumeObj, body.resume as Record<string, unknown>)
       : existingProfile?.resume;
 
   const profile = await db.workerProfile.upsert({

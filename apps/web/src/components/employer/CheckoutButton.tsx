@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { isOk } from '@agconn/api-client';
+import { getApiClient } from '@/lib/api/client';
 
 type Props =
   | { mode: 'checkout'; tier: 'pro' | 'enterprise'; label: string }
@@ -9,6 +11,7 @@ type Props =
 
 export function CheckoutButton(props: Props) {
   const t = useTranslations('employer.billing');
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,28 +19,22 @@ export function CheckoutButton(props: Props) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const path =
         props.mode === 'checkout'
-          ? '/api/v1/employer/billing/checkout'
-          : '/api/v1/employer/billing/portal',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:
-            props.mode === 'checkout'
-              ? JSON.stringify({ tier: props.tier, interval: 'monthly' })
-              : '{}',
-        },
-      );
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        if (res.status === 503) setError(t('stripe_unavailable'));
-        else setError(data?.error?.message ?? 'Could not continue.');
+          ? '/v1/employer/billing/checkout'
+          : '/v1/employer/billing/portal';
+      const body =
+        props.mode === 'checkout'
+          ? { tier: props.tier, interval: 'monthly' }
+          : {};
+      const res = await client.post<{ url: string }>(path, body, { handleErrorInline: true });
+      if (!isOk(res)) {
+        if (res.error.code === 'stripe_unavailable') setError(t('stripe_unavailable'));
+        else setError(res.error.message || 'Could not continue.');
         return;
       }
-      const data = await res.json();
-      const url: string | undefined = data?.data?.url;
-      if (url) window.location.href = url;
+      if (res.data.url) window.location.href = res.data.url;
     } finally {
       setBusy(false);
     }

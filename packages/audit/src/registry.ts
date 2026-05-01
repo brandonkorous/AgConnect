@@ -228,6 +228,56 @@ export const auditRegistry = {
     retentionDays: 90,
     metadata: ['errorCode', 'route', 'method'],
   },
+  'employer.crew.created': {
+    resourceType: 'crew',
+    retentionDays: 1460,
+    metadata: ['crewId', 'name'],
+  },
+  'employer.crew.updated': {
+    resourceType: 'crew',
+    retentionDays: 1460,
+    metadata: ['crewId', 'fields'],
+  },
+  'employer.crew.archived': {
+    resourceType: 'crew',
+    retentionDays: 1460,
+    metadata: ['crewId'],
+  },
+  'employer.crew.member.added': {
+    resourceType: 'crew_member',
+    retentionDays: 1460,
+    metadata: ['crewId', 'workerUserId', 'role'],
+  },
+  'employer.crew.member.removed': {
+    resourceType: 'crew_member',
+    retentionDays: 1460,
+    metadata: ['crewId', 'workerUserId'],
+  },
+  'employer.shift.created': {
+    resourceType: 'shift',
+    retentionDays: 1460,
+    metadata: ['shiftId', 'crewId', 'shiftDate'],
+  },
+  'employer.shift.updated': {
+    resourceType: 'shift',
+    retentionDays: 1460,
+    metadata: ['shiftId', 'fields'],
+  },
+  'employer.shift.cancelled': {
+    resourceType: 'shift',
+    retentionDays: 1460,
+    metadata: ['shiftId', 'reason'],
+  },
+  'employer.shift.assignment.created': {
+    resourceType: 'shift_assignment',
+    retentionDays: 1460,
+    metadata: ['shiftId', 'workerUserId'],
+  },
+  'employer.shift.assignment.updated': {
+    resourceType: 'shift_assignment',
+    retentionDays: 1460,
+    metadata: ['shiftId', 'assignmentId', 'fields'],
+  },
 } as const satisfies Record<string, RegistryEntry>;
 
 export type AuditAction = keyof typeof auditRegistry;

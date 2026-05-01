@@ -88,8 +88,19 @@ const readSource = async <T extends ValidateTarget>(
   switch (target) {
     case 'json':
       return c.req.json().catch(() => ({})) as ParseSource<T>;
-    case 'query':
-      return c.req.query() as ParseSource<T>;
+    case 'query': {
+      // Hono's c.req.query() returns string-only values (last write wins for
+      // repeats). For schemas that declare arrays, fold repeated keys into
+      // arrays so consumers don't have to choose between scalar and array
+      // shapes per parameter.
+      const flat = c.req.query();
+      const merged: Record<string, string | string[]> = { ...flat };
+      for (const k of Object.keys(flat)) {
+        const all = c.req.queries(k);
+        if (all && all.length > 1) merged[k] = all;
+      }
+      return merged as ParseSource<T>;
+    }
     case 'param':
       return c.req.param() as ParseSource<T>;
     case 'header':

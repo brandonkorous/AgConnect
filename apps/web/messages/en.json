@@ -1135,6 +1135,11 @@
         "cta": "Apply",
         "submitting": "Applying…",
         "error": "Couldn't submit. Try again.",
+        "error_already_applied": "You've already applied to this job.",
+        "already_applied": "Applied",
+        "already_reviewed": "Employer reviewing",
+        "already_hired": "Hired",
+        "view_application": "View application →",
         "success": "You applied for {jobTitle}. We'll text you when the employer responds."
       },
       "detail": {
@@ -1324,9 +1329,33 @@
     "training_hub": {
       "meta": { "title": "Training" },
       "eyebrow": "14 free programs in your area",
+      "eyebrow_n": "{n} free programs in your area",
       "title": { "lead": "Earn more,", "em": "learn more" },
       "sub": "Free certifications funded by California Department of Food & Agriculture and the F3 initiative. Most pay a stipend during training.",
       "cta_browse": "Browse all programs",
+      "detail": {
+        "back": "Back to training",
+        "fund_label": "{fund}-funded",
+        "full": "Full",
+        "free": "Free",
+        "cost": "Cost",
+        "funded_by": "Funded by {funder}",
+        "spots_left": "{n} of {capacity} spots left",
+        "about": "About this training",
+        "topics": "Topics",
+        "you_will_receive": "You'll receive",
+        "cert": "A bilingual certificate",
+        "reminders": "Reminder texts before each session",
+        "enroll": "Enroll free",
+        "enrolling": "Enrolling…",
+        "enrolled": "✓ You're enrolled",
+        "enroll_error": "Couldn't enroll. Try again.",
+        "unenroll": "Unenroll"
+      },
+      "error": {
+        "already_enrolled": "You're already enrolled in this program.",
+        "cannot_unenroll": "You can't unenroll once the program has started."
+      },
       "stat": {
         "in_progress": { "label": "In progress", "sub": "Forklift cert" },
         "hours": { "label": "Hours completed", "sub": "of 32 in current cert" },
@@ -1438,20 +1467,28 @@
     "applications_dense": {
       "meta": { "title": "Applications" },
       "eyebrow": "5 active · 2 awaiting reply · last sync 2m ago",
+      "eyebrow_n": "{active} active · {waiting} awaiting reply",
       "title": { "lead": "My", "em": "applications" },
       "sub": "Track every job you've applied for. We'll text you when an employer responds — usually within 24 hours.",
       "cta_more": "Find more jobs",
       "pipeline": {
         "label": {
           "applied": "Applied", "reviewed": "Reviewed",
+          "hired": "Hired", "withdrawn": "Closed",
           "interview": "Interview", "accepted": "Accepted"
         },
         "hint": {
-          "applied": "In applied stage",
-          "reviewed": "In reviewed stage",
+          "applied": "Awaiting first review",
+          "reviewed": "Employer is considering you",
+          "hired": "Confirm details with employer",
+          "withdrawn": "No further action",
           "interview": "Thu 9 AM Modesto",
           "accepted": "Confirm by Aug 11"
         }
+      },
+      "empty": {
+        "none_active": "You haven't applied to any jobs yet.",
+        "browse_jobs": "Browse jobs"
       },
       "active": {
         "title": "Active applications",
@@ -1468,7 +1505,7 @@
         "spots": "{n} spots"
       },
       "stage": {
-        "applied": "Applied", "reviewed": "Reviewed",
+        "applied": "Applied", "reviewed": "Reviewed", "hired": "Hired",
         "interview": "Interview", "accepted": "Accepted"
       },
       "action": {
@@ -1477,10 +1514,28 @@
       },
       "archive": {
         "title": "Past applications",
-        "sub": "Past 90 days · 12 completed · 2 not selected",
-        "result": { "hired": "Hired & completed", "not_selected": "Not selected" },
+        "sub": "Past 90 days",
+        "result": {
+          "hired": "Hired & completed",
+          "not_selected": "Not selected",
+          "withdrawn": "Withdrawn"
+        },
         "view": "View →"
       }
+    },
+    "job_detail": {
+      "back": "Back to jobs",
+      "verified": "Verified",
+      "wage_label": "Wage",
+      "starts_on": "Starts {date}",
+      "about": "About this job",
+      "no_description": "Employer hasn't posted details yet — apply and they'll reach out with more.",
+      "skills": "Skills",
+      "housing": "Housing provided",
+      "transport": "Transportation provided",
+      "share_title": "Share this job",
+      "apply_via_sms": "Or text JOB to (559) 555-0142",
+      "apply_by_label": "Apply by"
     }
   },
   "shell": {
@@ -1643,7 +1698,13 @@
         "dashboard": "Dashboard",
         "jobs": "Job postings",
         "inbox": "Applicants",
+        "candidates": "Candidates",
         "workers": "Find workers",
+        "crews": "Crews & shifts",
+        "payroll": "Payroll",
+        "compliance": "Compliance",
+        "messages": "Messages",
+        "reports": "Reports",
         "billing": "Billing",
         "profile": "Business profile"
       },
@@ -1721,18 +1782,90 @@
       "internal": "Something went wrong. Please try again."
     },
     "dashboard": {
+      "meta": { "title": "AgConn — Dashboard" },
       "greeting_morning": "Good morning",
       "greeting_afternoon": "Good afternoon",
       "greeting_evening": "Good evening",
+      "there": "there",
+      "weekly_report": "Weekly report",
+      "post_new_job": "Post a job",
+      "summary": "{open, plural, =0 {No open postings} one {1 open posting} other {# open postings}} · {applicants} new applicants · {spots, plural, =0 {all crews filled} one {1 spot left to fill} other {# spots left to fill}}.",
       "kpi": {
-        "active_postings": "Active postings",
-        "applicants_week": "Applicants this week",
-        "open_seats": "Open seats",
-        "hired_season": "Hired this season"
+        "open_positions_label": "Open positions",
+        "open_positions_sub": "across {count, plural, =0 {0 active postings} one {1 active posting} other {# active postings}}",
+        "spots_remaining_label": "Spots remaining",
+        "spots_remaining_sub": "of {total} total this week",
+        "applicants_week_label": "Applicants · 7 days",
+        "applicants_week_sub": "from your active postings",
+        "time_to_fill_label": "Avg. time to fill",
+        "time_to_fill_sub": "from publish to last hire"
       },
-      "recent_postings": "Recent postings",
-      "recent_applicants": "Recent applicants",
-      "view_all": "View all"
+      "hero": {
+        "all_filled": "all positions filled",
+        "open_count": "{count, plural, =1 {1 spot remaining} other {# spots remaining}}",
+        "filled": "filled",
+        "fill_spot": "Fill last spot",
+        "view_crew": "View crew",
+        "message_crew": "Message crew"
+      },
+      "pipeline": {
+        "title": "Hiring pipeline",
+        "subtitle": "{count, plural, =0 {No applicants yet} one {1 active applicant} other {# active applicants}}",
+        "open_full": "Open full pipeline",
+        "match": "match",
+        "accepted": "Accepted",
+        "more": "more"
+      },
+      "active_jobs": {
+        "title": "Active job postings",
+        "subtitle": "{open, plural, =0 {No open postings} one {1 open posting} other {# open postings}} · {applicants} applicants this week",
+        "manage_all": "Manage all",
+        "empty": "No active postings yet — publish a draft to start receiving applicants.",
+        "applicants": "applicants",
+        "filled_short": "filled",
+        "status_filled": "Filled",
+        "status_open": "{n, plural, =1 {1 spot open} other {# spots open}}",
+        "review_n": "Review {n}"
+      },
+      "billing_card": {
+        "renews_on": "Renews {date}",
+        "no_subscription": "No active subscription",
+        "plan": { "free": "Free plan", "pro": "Pro", "enterprise": "Enterprise" },
+        "interval": { "monthly": "Monthly", "yearly": "Yearly" },
+        "postings_unlimited": "Unlimited postings",
+        "postings_capped": "{n} active postings",
+        "worker_search_on": "Worker search on",
+        "worker_search": "Worker search",
+        "priority": "Priority listing",
+        "payment": "Payment",
+        "on": "On",
+        "off": "Off",
+        "saved": "Saved",
+        "none": "None",
+        "manage": "Manage billing",
+        "add_payment": "Add payment method"
+      },
+      "verification_card": {
+        "title": "Profile health",
+        "verified": "Verified",
+        "pending": "Pending",
+        "needs_action": "Action needed",
+        "completeness": "Profile completeness",
+        "check": {
+          "identity": "Business identity verified",
+          "flc_license": "FLC license on file",
+          "ein": "EIN on file",
+          "county": "Primary county set",
+          "contact": "Contact email or phone added"
+        },
+        "finish_setup": "Finish setup"
+      },
+      "top_applicants": {
+        "title": "Top new applicants",
+        "new": "new",
+        "match": "match",
+        "empty": "No new applicants this week."
+      }
     },
     "jobs": {
       "list": {
@@ -1809,6 +1942,7 @@
       "applied": "Applied",
       "reviewed": "Reviewed",
       "hired": "Hired",
+      "rejected": "Rejected",
       "show_rejected": "Show rejected ({count})",
       "bulk_selected": "{count} selected",
       "bulk_review": "Mark Reviewed",
@@ -1883,6 +2017,135 @@
         "confirm": "Send invite",
         "cancel": "Cancel"
       }
+    },
+    "crews": {
+      "title": "Crews & shifts",
+      "title_a": "Crews",
+      "title_b": "& shifts",
+      "eyebrow": "Operations · Week of {date}",
+      "summary": "{crews, plural, =0 {No crews} one {1 crew} other {# crews}} · {confirmed} confirmed · {filling, plural, =0 {all filled} one {1 still filling} other {# still filling}} · {hours} hours scheduled",
+      "export": "Export schedule",
+      "new_shift": "New shift",
+      "header_label": "Crews / Day",
+      "cell_off": "Off",
+      "cell_pending_suffix": "filling",
+      "cell_confirmed_suffix": "confirmed",
+      "empty_no_crews": "No crews yet — create one to start scheduling.",
+      "no_foreman": "no foreman",
+      "hiring_foreman": "— hiring —",
+      "crew_size_short": "crew",
+      "crew_leaders": "Crew leaders",
+      "size": "Size",
+      "rating": "Rating",
+      "message_foreman": "Message {firstName}"
+    },
+    "payroll": {
+      "title": "Payroll",
+      "title_a": "Payroll",
+      "title_b": "· runs Friday",
+      "eyebrow": "Pay period · {start} – {end}",
+      "summary": "{workers} workers · {hours} hours · {bonuses} piece-rate bonuses approved",
+      "approve": "Approve & run payroll",
+      "export_forms": "Export 941 / DE-9",
+      "hero_eyebrow": "Net payout · this period",
+      "stat": {
+        "gross": "Gross",
+        "bonuses": "Bonuses",
+        "taxes": "Taxes",
+        "hours": "Hours"
+      },
+      "season_to_date": "Season-to-date",
+      "season_to_date_sub": "Across {periods} pay periods · {workers} unique workers",
+      "h2a_eyebrow": "H-2A Compliance",
+      "h2a_headline": "AEWR + transport reimbursed automatically",
+      "h2a_sub": "3-fourths guarantee tracked · Adverse Effect Wage $19.97/hr applied",
+      "table": {
+        "title": "Worker timesheets · ready to approve",
+        "showing": "Showing {n} of {total}",
+        "view_all": "view all",
+        "col_worker": "Worker",
+        "col_role": "Role",
+        "col_hours": "Hours",
+        "col_overtime": "OT",
+        "col_gross": "Gross",
+        "col_bonus": "Bonus",
+        "col_net": "Net pay",
+        "col_actions": "Actions",
+        "edit": "Edit",
+        "approve": "Approve"
+      }
+    },
+    "compliance": {
+      "title": "Compliance",
+      "headline_pct": "{pct}%",
+      "headline_suffix": "compliant",
+      "summary": "{actions, plural, =0 {0 actions due} one {1 action due} other {# actions due}} · audit-ready · last DOL inspection: passed Jun 14, 2025",
+      "audit_pdf": "Audit binder PDF",
+      "overall_label": "Overall",
+      "overall_delta": "+4 pts vs. last quarter",
+      "actions_title": "{count, plural, =0 {You're all caught up} one {1 action needs your attention} other {# actions need your attention}}",
+      "severity": {
+        "urgent": "URGENT",
+        "soon": "SOON"
+      }
+    },
+    "messages": {
+      "title": "Messages",
+      "title_a": "Messages",
+      "title_b": "· {unread} unread",
+      "eyebrow": "Inbox",
+      "summary": "SMS, WhatsApp & in-app · automatic translation EN ⇄ ES",
+      "new_broadcast": "New broadcast",
+      "folders": {
+        "all": "All conversations",
+        "candidates": "Candidates",
+        "crew": "Active crew",
+        "foremen": "Foremen",
+        "broadcasts": "Broadcasts"
+      },
+      "templates_label": "Templates",
+      "templates": {
+        "interview": "Interview invite",
+        "offer": "Hiring offer",
+        "shift": "Shift reminder",
+        "heat": "Heat advisory"
+      },
+      "search_placeholder": "Search messages…",
+      "channel": {
+        "app": "APP",
+        "sms": "SMS",
+        "whatsapp": "WA",
+        "broadcast": "BROADCAST"
+      },
+      "thread_header_meta": "{members} members · {foreman} (Foreman) · auto-translate ON",
+      "call_foreman": "Call foreman",
+      "pinned_eyebrow": "Pinned · Tomorrow's shift",
+      "pinned_confirmed": "{confirmed}/{total} confirmed",
+      "composer": {
+        "placeholder": "Type a message — auto-translates to Spanish",
+        "send": "Send",
+        "channel_app": "App",
+        "channel_sms": "SMS · all {n}",
+        "channel_whatsapp": "WhatsApp · foreman only"
+      }
+    },
+    "reports": {
+      "title": "Hiring reports",
+      "title_a": "Hiring",
+      "title_b": "reports",
+      "eyebrow": "Analytics · Season {year}",
+      "summary": "Operational pulse · season vs. last year · DOL/EDD-ready exports",
+      "this_season": "This season",
+      "export_csv": "Export CSV",
+      "applicant_flow": {
+        "title": "Applicant flow vs. spots filled · weekly",
+        "sub": "March – August {year} · across {jobTypes} job types",
+        "applicants": "Applicants",
+        "hired": "Hired"
+      },
+      "by_job_type": "By job type · season",
+      "top_workers": "Top performers · this season",
+      "top_workers_sub": "by piece-rate yield"
     },
     "billing": {
       "title": "Billing",

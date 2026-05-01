@@ -2,7 +2,12 @@ import { redirect } from 'next/navigation';
 import { EmployerSidebar } from '@/components/employer/EmployerSidebar';
 import { EmployerTopBar } from '@/components/employer/EmployerTopBar';
 import { VerificationBanner } from '@/components/employer/VerificationBanner';
-import { getEmployerProfile, verificationStatus, listInbox } from '@/lib/api/employer';
+import {
+  getEmployerProfile,
+  listEmployerJobs,
+  listInbox,
+  verificationStatus,
+} from '@/lib/api/employer';
 
 type Props = {
   children: React.ReactNode;
@@ -11,10 +16,12 @@ type Props = {
 
 export default async function EmployerLayout({ children, params }: Props) {
   const { locale } = await params;
-  const profile = await getEmployerProfile();
+  const [profile, jobs, inbox] = await Promise.all([
+    getEmployerProfile(),
+    listEmployerJobs(),
+    listInbox(),
+  ]);
 
-  // Not onboarded yet — push to onboarding. Onboarding renders its own minimal
-  // chrome; employers without a profile shouldn't see the shell.
   if (!profile) {
     redirect(`/${locale}/employer/onboarding`);
   }
@@ -27,14 +34,17 @@ export default async function EmployerLayout({ children, params }: Props) {
     .slice(0, 2)
     .toUpperCase();
 
+  const inboxNew = inbox.filter((a) => a.status === 'applied').length;
+  const jobsActive = jobs.filter((j) => j.status === 'active').length;
+
   return (
     <div className="bg-base-100 flex min-h-screen items-start">
       <EmployerSidebar
         locale={locale}
         displayName={profile.displayName}
         initials={initials}
-        inboxCount={6}
-        jobsCount={3}
+        candidatesCount={inboxNew}
+        jobsCount={jobsActive}
       />
       <main className="min-w-0 flex-1">
         <EmployerTopBar locale={locale} canPublish={status === 'verified'} />
