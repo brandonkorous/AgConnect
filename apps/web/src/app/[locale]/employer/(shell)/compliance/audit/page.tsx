@@ -19,7 +19,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ComplianceAuditPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.compliance.audit' });
-  const tList = await getTranslations({ locale, namespace: 'employer.compliance' });
 
   const [profile, cats, actions] = await Promise.all([
     getEmployerProfile(),
@@ -32,139 +31,205 @@ export default async function ComplianceAuditPage({ params }: Props) {
     cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length),
   );
   const today = new Date();
+  const generatedDate = today.toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const docId = buildDocId(profile.id ?? profile.legalName, today);
+
+  const statusLabel = (s: 'ok' | 'warn' | 'fail') => {
+    if (s === 'ok') return t('legend_ok');
+    if (s === 'warn') return t('legend_warn');
+    return t('legend_fail');
+  };
 
   return (
-    <div className="bg-base-100 min-h-screen px-8 pb-16 pt-8 print:px-0 print:pt-0">
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-6 flex items-center justify-between print:hidden">
-          <a
-            href={`/${locale}/employer/compliance`}
-            className="text-base-content/60 hover:text-base-content text-sm"
-          >
-            ← {t('back')}
-          </a>
-          <PrintTrigger label={t('print_button')} autoOpen={true} />
-        </div>
+    <div className="bg-white text-black min-h-screen">
+      {/* On-screen toolbar — hidden when printing. */}
+      <div className="screen-only mx-auto flex max-w-[7in] items-center justify-between px-6 pb-4 pt-6">
+        <a
+          href={`/${locale}/employer/compliance`}
+          className="text-base-content/60 hover:text-base-content text-sm"
+        >
+          ← {t('back')}
+        </a>
+        <PrintTrigger label={t('print_button')} />
+      </div>
 
-        <header className="border-base-300 mb-8 border-b pb-6">
-          <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
-            {t('eyebrow')}
-          </p>
-          <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight">
+      <article className="doc-binder mx-auto max-w-[7in] px-[0.5in] pb-[0.75in] pt-[0.5in] print:max-w-none print:px-0 print:pt-0 print:pb-0">
+
+        {/* ─────────────────── Letterhead-style header */}
+        <header>
+          <div className="flex items-end justify-between border-b border-black pb-3">
+            <span className="font-serif text-[26pt] font-semibold leading-none tracking-tight text-black">
+              AG<span style={{ opacity: 0.5 }}>CONN</span>
+            </span>
+            <span className="meta text-right">
+              <span className="block">{t('letterhead_dept')}</span>
+              <span className="block">DOC {docId}</span>
+            </span>
+          </div>
+          <h1 className="mt-5 text-[22pt] font-semibold leading-tight">
             {t('title')}
           </h1>
-          <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <dt className="text-base-content/60 font-mono text-[10px] uppercase tracking-wider">
-                {t('employer')}
-              </dt>
-              <dd className="font-semibold">{profile.legalName}</dd>
-            </div>
-            <div>
-              <dt className="text-base-content/60 font-mono text-[10px] uppercase tracking-wider">
-                {t('generated')}
-              </dt>
-              <dd className="font-mono">
-                {today.toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-base-content/60 font-mono text-[10px] uppercase tracking-wider">
-                {t('overall_score')}
-              </dt>
-              <dd className="text-primary font-display text-2xl font-light">
-                {overall}%
-              </dd>
-            </div>
-            <div>
-              <dt className="text-base-content/60 font-mono text-[10px] uppercase tracking-wider">
-                {t('actions_due')}
-              </dt>
-              <dd className="font-display text-2xl font-light">{actions.length}</dd>
-            </div>
-          </dl>
+          <div className="meta mt-1">{t('subtitle')}</div>
+
+          <div className="mt-5 border-t border-black pt-3">
+            <Field label={t('employer')} value={profile.legalName} />
+            <Field
+              label={t('generated')}
+              value={generatedDate}
+              valueMono
+            />
+            <Field
+              label={t('overall_score')}
+              value={`${overall}%`}
+            />
+            <Field
+              label={t('actions_due')}
+              value={String(actions.length)}
+            />
+          </div>
         </header>
 
-        {actions.length > 0 && (
-          <section className="mb-8">
-            <h2 className="font-display mb-3 text-xl font-light tracking-tight">
-              {t('actions_heading')}
-            </h2>
-            <ul className="space-y-2">
-              {actions.map((a, i) => (
-                <li
-                  key={i}
-                  className={[
-                    'rounded-lg border p-3.5 text-sm',
-                    a.severity === 'urgent'
-                      ? 'bg-error/10 border-error/30'
-                      : 'bg-warning/10 border-warning/30',
-                  ].join(' ')}
-                >
-                  <div className="font-semibold">{a.title}</div>
-                  <div className="text-base-content/70 text-xs">{a.detail}</div>
-                  <div className="text-base-content/60 mt-1 font-mono text-[10px] uppercase tracking-wider">
-                    {tList(`severity.${a.severity}`)} · {a.cta}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {/* ─────────────────── §1 Summary */}
+        <Section number={1} heading={t('summary_heading')}>
+          <p className="mt-2">
+            {t('summary_body', {
+              employer: profile.legalName,
+              score: overall,
+              actions: actions.length,
+            })}
+          </p>
+          <p className="mt-3">
+            <span className="font-semibold">{t('legend_heading')}: </span>
+            <span>{t('legend_ok')}</span>
+            <span className="meta"> · </span>
+            <span>{t('legend_warn')}</span>
+            <span className="meta"> · </span>
+            <span>{t('legend_fail')}</span>
+          </p>
+        </Section>
 
-        <section>
-          <h2 className="font-display mb-3 text-xl font-light tracking-tight">
-            {t('items_heading')}
-          </h2>
-          <div className="grid gap-4">
-            {cats.map((c) => (
-              <div key={c.key} className="border-base-300 rounded-lg border p-4">
-                <div className="mb-3 flex items-baseline justify-between">
-                  <h3 className="text-sm font-semibold">{c.label}</h3>
-                  <span className="font-mono text-sm font-bold">{c.score}%</span>
-                </div>
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-base-content/60 border-base-300 border-b text-left font-mono uppercase tracking-wider">
-                      <th className="py-1.5 pr-2 font-bold text-[10px]">{t('col_status')}</th>
-                      <th className="py-1.5 pr-2 font-bold text-[10px]">{t('col_item')}</th>
-                      <th className="py-1.5 pr-2 font-bold text-[10px]">{t('col_details')}</th>
-                      <th className="py-1.5 font-bold text-[10px]">{t('col_due')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {c.items.map((it) => (
-                      <tr key={it.key} className="border-base-200 border-b last:border-0">
-                        <td className="py-2 pr-2 font-mono uppercase tracking-wider">
-                          {it.status}
-                        </td>
-                        <td className="py-2 pr-2 font-medium">{it.label}</td>
-                        <td className="text-base-content/70 py-2 pr-2">{it.details}</td>
-                        <td className="font-mono py-2 text-[10px]">
-                          {it.dueAt
-                            ? new Date(it.dueAt).toLocaleDateString(
-                                locale === 'es' ? 'es-MX' : 'en-US',
-                                { month: 'short', day: 'numeric', year: 'numeric' },
-                              )
-                            : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* ─────────────────── Category sections (§2 onwards) */}
+        {cats.map((c, idx) => (
+          <Section key={c.key} number={idx + 2} heading={c.label}>
+            <div className="mt-1 flex items-baseline justify-between">
+              <div className="meta">
+                {t('category_score', { score: c.score })}
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
+            <table className="mt-3">
+              <thead>
+                <tr>
+                  <th style={{ width: '22%' }}>{t('col_status')}</th>
+                  <th style={{ width: '32%' }}>{t('col_item')}</th>
+                  <th>{t('col_details')}</th>
+                  <th style={{ width: '14%' }}>{t('col_due')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {c.items.map((it) => (
+                  <tr key={it.key}>
+                    <td>{statusLabel(it.status)}</td>
+                    <td className="font-semibold">{it.label}</td>
+                    <td>{it.details || '—'}</td>
+                    <td className="meta">
+                      {it.dueAt
+                        ? new Date(it.dueAt).toLocaleDateString(
+                            locale === 'es' ? 'es-MX' : 'en-US',
+                            { month: 'short', day: 'numeric', year: 'numeric' },
+                          )
+                        : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Section>
+        ))}
 
-        <footer className="text-base-content/60 mt-10 pt-6 text-[10px]">
-          {t('footer', { generated: today.toISOString() })}
+        {/* ─────────────────── Signature block */}
+        <Section number={cats.length + 2} heading={t('signature_heading')}>
+          <p className="mt-2">{t('signature_body', { employer: profile.legalName })}</p>
+          <div className="mt-10 grid grid-cols-2 gap-12">
+            <SignLine label={t('sign_employer')} />
+            <SignLine label={t('sign_inspector')} />
+          </div>
+        </Section>
+
+        <footer className="mt-12 border-t border-black pt-3">
+          <div className="meta flex items-baseline justify-between">
+            <span>{t('footer_doc', { id: docId })}</span>
+            <span>{t('footer_generated', { date: today.toISOString() })}</span>
+          </div>
         </footer>
-      </div>
+      </article>
     </div>
   );
+}
+
+function Section({
+  number,
+  heading,
+  children,
+}: {
+  number: number;
+  heading: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="mt-8">
+      <h2 className="border-b border-black pb-1 text-[13pt]">
+        <span className="meta mr-2">§{number}</span>
+        {heading}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function Field({
+  label,
+  value,
+  valueMono = false,
+}: {
+  label: string;
+  value: string;
+  valueMono?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-[1.4in_1fr] items-baseline border-b border-black/15 py-1.5 last:border-b-0">
+      <div className="meta">{label}</div>
+      <div className={valueMono ? 'meta text-black' : 'font-semibold'}>{value}</div>
+    </div>
+  );
+}
+
+function SignLine({ label }: { label: string }) {
+  return (
+    <div>
+      <div className="border-b border-black pb-9" />
+      <div className="meta mt-1">{label}</div>
+    </div>
+  );
+}
+
+function buildDocId(seed: string, today: Date): string {
+  // Stable doc id derived from the employer + the day the binder was
+  // generated, e.g. "KOROUS-20260501-A4F2". Keeps the doc identifiable on
+  // paper without exposing internal IDs.
+  const tag = seed
+    .toUpperCase()
+    .replace(/[^A-Z]/g, '')
+    .slice(0, 8) || 'AGCONN';
+  const ymd =
+    today.getFullYear().toString() +
+    String(today.getMonth() + 1).padStart(2, '0') +
+    String(today.getDate()).padStart(2, '0');
+  let h = 0;
+  for (const c of `${seed}|${ymd}`) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  const suffix = h.toString(16).toUpperCase().slice(0, 4).padStart(4, '0');
+  return `${tag}-${ymd}-${suffix}`;
 }

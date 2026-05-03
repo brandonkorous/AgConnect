@@ -7,7 +7,11 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
+import { AddressAutocomplete, type AddressLabels, type AddressValue } from '@agconn/ui';
+import { useAddressPinDropFallback } from '@/components/ui/useAddressPinDropFallback';
 import { getApiClient } from '@/lib/api/client';
+
+const CV_PROXIMITY: [number, number] = [-119.78, 36.74];
 
 type CrewOption = { id: string; name: string };
 
@@ -18,23 +22,43 @@ type Props = {
 
 export function NewShiftForm({ locale, crews }: Props) {
   const t = useTranslations('employer.crews.new_shift_form');
+  const tShared = useTranslations('shell.address');
   const _locale = useLocale();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [address, setAddress] = useState<AddressValue | null>(null);
+  const pinDrop = useAddressPinDropFallback(CV_PROXIMITY);
+
+  const labels: AddressLabels = {
+    placeholder: tShared('placeholder'),
+    searching: tShared('searching'),
+    noMatches: tShared('noMatches'),
+    suggestionsAria: tShared('suggestions.aria'),
+    selectedAria: tShared('selected.aria'),
+    pinFallback: tShared('dropPin.fallbackLink'),
+    edit: tShared('edit'),
+  };
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!address) {
+      setError(t('error'));
+      return;
+    }
     setBusy(true);
     const f = new FormData(e.currentTarget);
     const crewId = String(f.get('crewId') ?? '').trim();
+    const locationLabel = `${address.streetAddress}, ${address.city}`;
     const body = {
       crewId: crewId || undefined,
       shiftDate: String(f.get('shiftDate') ?? ''),
       startTime: String(f.get('startTime') ?? ''),
       endTime: String(f.get('endTime') ?? '').trim() || undefined,
-      locationLabel: String(f.get('locationLabel') ?? '').trim(),
+      locationLabel,
+      locationLat: address.addressLat,
+      locationLng: address.addressLng,
       notes: String(f.get('notes') ?? '').trim() || undefined,
     };
     try {
@@ -53,7 +77,7 @@ export function NewShiftForm({ locale, crews }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-2xl">
+    <form onSubmit={onSubmit}>
       <div className="mb-6">
         <Link
           href={`/${locale}/employer/crews`}
@@ -111,17 +135,17 @@ export function NewShiftForm({ locale, crews }: Props) {
           </fieldset>
         </div>
 
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">{t('location_label')}</legend>
-          <input
-            name="locationLabel"
-            type="text"
-            required
-            maxLength={120}
-            placeholder={t('location_placeholder')}
-            className="input w-full"
-          />
-        </fieldset>
+        <AddressAutocomplete
+          label={t('location_label')}
+          labels={labels}
+          required
+          types="address,poi"
+          proximity={CV_PROXIMITY}
+          language={_locale === 'es' ? 'es' : 'en'}
+          value={address}
+          onChange={setAddress}
+          onPinDropRequested={pinDrop.request}
+        />
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend">{t('notes_label')}</legend>
@@ -140,6 +164,7 @@ export function NewShiftForm({ locale, crews }: Props) {
           {busy ? '…' : t('confirm')}
         </button>
       </div>
+      {pinDrop.modal}
     </form>
   );
 }

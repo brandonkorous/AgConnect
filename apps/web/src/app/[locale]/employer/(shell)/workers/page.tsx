@@ -38,9 +38,8 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
 
   if (!isProPlus) {
     return (
-      <div className="px-8 pb-16 pt-8">
-        <div className="mx-auto max-w-xl">
-          <div className="bg-base-100 border-base-300 rounded-2xl border p-10 text-center">
+      <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
+        <div className="bg-base-100 border-base-300 rounded-2xl border p-10 text-center">
             <div className="bg-primary/10 text-primary mx-auto grid h-14 w-14 place-items-center rounded-full">
               <FontAwesomeIcon icon={faLock} className="h-6 w-6" />
             </div>
@@ -54,7 +53,6 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
               {t('plan_gate.upgrade')}
             </Link>
           </div>
-        </div>
       </div>
     );
   }
@@ -66,7 +64,7 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
   const activeJobs = jobs.filter((j) => j.status === 'active');
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">

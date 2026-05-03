@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { LicenseType, VerificationAction, type Tx } from '@agconn/db';
+import { LicenseType, UserRole, VerificationAction, type Tx } from '@agconn/db';
 import {
   EmployerOnboardingBody,
   PatchEmployerBody,
@@ -15,11 +15,12 @@ import { seedDefaultComplianceItems, seedInitialPayrollPeriod } from './seed-def
 export const employerOnboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerOnboardingRoutes.use('*', requireAuth);
 employerOnboardingRoutes.use('*', requireRole('employer'));
-employerOnboardingRoutes.use('*', requireTenant);
+// requireTenant is applied only to routes that mutate or read an existing
+// tenant. POST / is the bootstrap that *creates* the tenant for a brand-new
+// employer, so it must be reachable when c.var.tenantId is still null.
 
 employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), async (c) => {
   const userId = c.var.userId;
-  const tenantId = c.var.tenantId!;
   const body = c.var.body;
 
   const existing = await c.var.db.employerProfile.findUnique({ where: { userId } });
@@ -28,6 +29,33 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
   }
 
   const profile = await c.var.db.$transaction(async (tx) => {
+    let tenantId = c.var.tenantId;
+
+    // Elevate to 'admin' for the bootstrapping writes: 'authenticated' has no
+    // INSERT policy on tenants and no UPDATE policy on users. We drop back to
+    // 'authenticated' once app.tenant_id is set so the rest of the work goes
+    // through normal tenant-scoped RLS.
+    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
+
+    if (!tenantId) {
+      const tenant = await tx.tenant.create({
+        data: {
+          slug: generateTenantSlug(body.legalName),
+          name: body.dbaName?.trim() || body.legalName,
+          isPublic: false,
+        },
+      });
+      tenantId = tenant.id;
+    }
+
+    await tx.user.update({
+      where: { id: userId },
+      data: { tenantId, role: UserRole.employer, onboarded: true },
+    });
+
+    await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
+    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'authenticated'`);
+
     const created = await tx.employerProfile.create({
       data: {
         userId,
@@ -41,6 +69,14 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
         county: body.county ?? null,
         contactEmail: body.contactEmail ?? null,
         contactPhone: body.contactPhone ?? null,
+        participatesInH2a: body.participatesInH2a ?? false,
+        streetAddress: body.address.streetAddress,
+        city: body.address.city,
+        stateCode: body.address.stateCode,
+        postalCode: body.address.postalCode,
+        addressLat: body.address.addressLat,
+        addressLng: body.address.addressLng,
+        mapboxId: body.address.mapboxId ?? null,
         seoSlug: generateEmployerSlug(body.legalName, body.dbaName),
       },
     });
@@ -59,8 +95,6 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
       },
     });
 
-    await tx.user.update({ where: { id: userId }, data: { onboarded: true } });
-
     await seedDefaultComplianceItems(tx, tenantId, userId);
     await seedInitialPayrollPeriod(tx, tenantId, userId);
 
@@ -76,7 +110,7 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
   await enqueueEmployerEmail({
     template: 'employer.flc_pending',
     employerId: profile.id,
-    tenantId,
+    tenantId: profile.tenantId,
     to: body.contactEmail ?? null,
     locale: 'en',
     vars: { legalName: profile.legalName },
@@ -89,7 +123,7 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
   } satisfies { employer: EmployerProfile; status: 'pending' });
 });
 
-employerOnboardingRoutes.patch('/', validate('json', PatchEmployerBody), async (c) => {
+employerOnboardingRoutes.patch('/', requireTenant, validate('json', PatchEmployerBody), async (c) => {
   const userId = c.var.userId;
   const body = c.var.body;
   const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
@@ -111,6 +145,18 @@ employerOnboardingRoutes.patch('/', validate('json', PatchEmployerBody), async (
           body.contactEmail === null ? null : body.contactEmail ?? undefined,
         contactPhone:
           body.contactPhone === null ? null : body.contactPhone ?? undefined,
+        participatesInH2a: body.participatesInH2a ?? undefined,
+        ...(body.address
+          ? {
+              streetAddress: body.address.streetAddress,
+              city: body.address.city,
+              stateCode: body.address.stateCode,
+              postalCode: body.address.postalCode,
+              addressLat: body.address.addressLat,
+              addressLng: body.address.addressLng,
+              mapboxId: body.address.mapboxId ?? null,
+            }
+          : {}),
         ...(licenseChanged
           ? {
               flcVerifiedAt: null,
@@ -164,7 +210,7 @@ employerOnboardingRoutes.patch('/', validate('json', PatchEmployerBody), async (
   return ok(c, { employer: shapeEmployer(updated) });
 });
 
-employerOnboardingRoutes.get('/me', async (c) => {
+employerOnboardingRoutes.get('/me', requireTenant, async (c) => {
   const userId = c.var.userId;
   const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
   if (!profile) return err(c, 404, 'not_found');
@@ -185,6 +231,17 @@ function generateEmployerSlug(legalName: string, dbaName: string | undefined): s
     .slice(0, 60);
   const suffix = Math.random().toString(36).slice(2, 8);
   return `${base || 'employer'}-${suffix}`;
+}
+
+function generateTenantSlug(legalName: string): string {
+  const base = legalName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 40);
+  const suffix = Math.random().toString(36).slice(2, 8);
+  return `${base || 'tenant'}-${suffix}`;
 }
 
 // Type re-export so the routes file is a leaf for the API surface.

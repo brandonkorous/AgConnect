@@ -4,92 +4,78 @@ Tierra's audience is farmworkers, farm operators, FLCs, training organizations, 
 
 ## Typefaces
 
-Three families. Adding a fourth is a brand-level decision.
+Two families. The system collapses to one as much as possible — Inter does both display and body. JetBrains Mono is reserved for content that is *literally* code-shaped.
 
 | family | role | source |
 |---|---|---|
-| **Fraunces** | display headlines, section openers, marketing | Google Fonts (variable; SOFT, WONK, opsz, wght axes) |
-| **Inter** | UI body, labels, forms, tables of words | Google Fonts (variable; opsz, wght) |
-| **DM Mono** | tabular figures, money, time, timestamps, code, identifiers, civic stats | Google Fonts |
-
-### Fraunces — the headline serif
-
-Fraunces is a contemporary serif with optical-size and personality axes (SOFT, WONK). It gives Tierra warmth and craft at headline sizes without slipping into preciousness. Treat it as a serious display face, not a brand-magazine fingerprint.
-
-Variable axis defaults across the system:
-
-```css
-.fraunces {
-  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
-  font-variation-settings:
-    'opsz' 144,   /* display optical size at large sizes */
-    'SOFT' 50,    /* softened terminals — friendly but not cute */
-    'WONK' 0;     /* never enable swashes; WONK 1 is editorial decoration we do not use */
-  font-feature-settings: 'ss01' on, 'ss03' on; /* alternate g, single-story a */
-}
-```
-
-Display sizes ≥ 32px should set `opsz` to 144. UI sizes (rare — Fraunces should mostly be display) should set `opsz` to 14 or 28.
-
-**Default to upright Fraunces, weight 500–600.** Italic is reserved — for the rare quoted phrase, a single emphasized word inside body text, or a place name in running prose. **Italic is not the default headline cut.** Light-weight italic display (the magazine cover treatment) is out of brand. Bold-italic word-art splits — italic line one over bold line two — are out of brand. Stack ES italic over EN bold (or vice versa) is out of brand.
-
-If a marketing headline reaches for italic to feel warm, rewrite the headline instead.
+| **Inter** | display headlines, body, labels, forms, tables, money, dates, hours, stats — everything | Google Fonts (variable; opsz, wght axes) |
+| **JetBrains Mono** | code identifiers only — certificate hashes, job IDs (`#APP-2031`), program codes (`WIOA-1B`) | Google Fonts |
 
 ### Inter — the workhorse
 
-Inter is the body and UI face. Use the variable file. Set `opsz` to match the rendered size.
+Inter is **the** Tierra typeface. It does display, body, UI, forms, tables, and figures. Use the variable file. Set `opsz` to match the rendered size — Inter's optical-size axis carries the whole brand register.
 
 ```css
 .inter {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-feature-settings: 'cv11' on, /* single-story a */ 'ss01' on;
-  font-variant-numeric: tabular-nums; /* always for UI */
+  font-variant-numeric: tabular-nums slashed-zero; /* always for UI and figures */
 }
 ```
 
-Use Inter for: paragraphs, form labels, button text, table cells (except numeric — see DM Mono), nav, menu, alerts, and most product chrome.
+Use Inter for: headlines (weights 600–700, tightened tracking at display sizes), paragraphs, form labels, button text, table cells, nav, menu, alerts, and **all numeric content** — money (`$19.50/hr`), dates (`Apr 29`), hours (`8h`), display-size statistics, dashboard counters. Inter's tabular-nums + slashed-zero are excellent at every size; no separate tabular face is needed.
 
-### DM Mono — the figures
+**At display sizes** (≥32px): use weight 600 or 700, set letter-spacing to `-0.02em` to `-0.025em` for the calm density Tierra wants. Inter opens up at large sizes; the negative tracking pulls it back.
 
-DM Mono is the **inline tabular face**: numbers that align in columns, money shown in lists or table cells (`$19.50/hr`), time, dates in metadata strips, and anything that reads as a code or identifier (job IDs, certificate hashes, `WIOA-1B`). Tabular monospaced numbers are non-negotiable in reporting and pay tables.
+**Italic** is permitted at any size for short emphasis runs (1–4 words inside a heading or body) — the canonical pattern is the single-word italic accent inside an otherwise upright heading: `Buenas tardes, *Miguel*.` What's still out of brand: italic spanning a whole headline, italic on multi-line marketing displays, bold-italic word-art splits (italic line one over bold line two), and stack ES italic over EN bold (or vice versa).
 
-DM Mono is **not a display face.** Display-size statistics (impact-tile numbers, dashboard hero counters, pricing) belong in upright Fraunces with `tabular-nums` — the slab-mono terminal feel takes over at large sizes and reads as code output rather than money or impact. Keep DM Mono at body sizes (≤ 18px in most surfaces, ≤ 24px in rare emphasis cases).
+If a marketing headline reaches for italic across the whole line to feel warm, rewrite the headline instead.
+
+### JetBrains Mono — code identifiers only
+
+JetBrains Mono is reserved for content that **is literally code-shaped** and benefits from monospace alignment as a typographic signal: program codes (`WIOA-1B`, `WPS-2`), certificate hashes (`0xA1F2…`), job IDs (`#APP-2031`), CLI output, request payloads.
 
 ```css
-.dm-mono {
-  font-family: 'DM Mono', 'JetBrains Mono', 'Menlo', monospace;
+.jetbrains-mono {
+  font-family: 'JetBrains Mono', 'Menlo', ui-monospace, monospace;
   font-variant-numeric: tabular-nums slashed-zero;
-  letter-spacing: -0.005em; /* DM Mono is slightly wide; nudge tighter */
+  font-feature-settings: 'calt' off; /* no programming ligatures in user-facing chrome */
 }
 ```
 
-DM Mono is also the typeface for the eyebrow label pattern when the label is a short code (`#APP-2031`, `WIOA-1B`). For text-style eyebrow labels, use Inter — see "Label convention" below.
+**Money, dates, hours, and stats use Inter, not JetBrains Mono.** The slab-mono terminal feel reads as code output, not as money or human-readable data. Inter's tabular-nums handle column alignment perfectly without the code-y connotation.
+
+JetBrains Mono is also acceptable as the eyebrow typeface when the eyebrow label *is* a code (`#APP-2031`, `WIOA-1B`); see the eyebrow variants below.
 
 ## Type scale
 
-The scale is small. Tierra prefers fewer, more deliberate sizes over a long ramp.
+The scale is small. Tierra prefers fewer, more deliberate sizes over a long ramp. All sizes use Inter except the explicit code-identifier tokens.
 
-| token | family | size | line-height | weight | use |
-|---|---|---|---|---|---|
-| `display-xl` | Fraunces upright | 72px / 4.5rem | 1.05 | 600 | hero on marketing only |
-| `display-l`  | Fraunces upright | 56px / 3.5rem | 1.10 | 600 | section openers in marketing |
-| `display-m`  | Fraunces upright | 40px / 2.5rem | 1.15 | 500 | secondary marketing headlines |
-| `headline`   | Fraunces upright | 32px / 2rem   | 1.20 | 500 | product page H1 |
-| `title`      | Fraunces upright | 24px / 1.5rem | 1.20 | 500 | card titles, dialog titles |
-| `stat`       | Fraunces upright | 48px / 3rem   | 1.00 | 600 | display-size statistics (impact tiles, dashboard hero counters) — set with `tabular-nums` |
-| `subtitle`   | Inter            | 18px / 1.125rem | 1.45 | 500 | grouping above a list, intro paragraph |
-| `body`       | Inter            | 16px / 1rem   | 1.55 | 400 | default body |
-| `body-s`     | Inter            | 14px / 0.875rem | 1.50 | 400 | dense rows, secondary body |
-| `caption`    | Inter            | 13px / 0.8125rem | 1.45 | 400 | metadata, helper text |
-| `label`      | Inter            | 11px / 0.6875rem | 1.30 | 600 | UPPERCASE 0.18em — see below |
-| `mono`       | DM Mono          | 14px / 0.875rem | 1.50 | 400 | money, time, IDs |
-| `mono-s`     | DM Mono          | 12px / 0.75rem | 1.40 | 400 | dense numeric tables |
+| token | family | size | line-height | weight | tracking | use |
+|---|---|---|---|---|---|---|
+| `display-xl` | Inter | 72px / 4.5rem | 1.05 | 700 | -0.025em | hero on marketing only |
+| `display-l`  | Inter | 56px / 3.5rem | 1.10 | 700 | -0.025em | section openers in marketing |
+| `display-m`  | Inter | 40px / 2.5rem | 1.15 | 600 | -0.02em  | secondary marketing headlines |
+| `headline`   | Inter | 32px / 2rem   | 1.20 | 600 | -0.02em  | product page H1 |
+| `title`      | Inter | 24px / 1.5rem | 1.20 | 600 | -0.015em | card titles, dialog titles |
+| `stat`       | Inter | 48px / 3rem   | 1.00 | 700 | -0.03em  | display-size statistics (impact tiles, dashboard hero counters) — set with `tabular-nums slashed-zero` |
+| `subtitle`   | Inter | 18px / 1.125rem | 1.45 | 500 | 0       | grouping above a list, intro paragraph |
+| `body`       | Inter | 16px / 1rem   | 1.55 | 400 | 0       | default body |
+| `body-s`     | Inter | 14px / 0.875rem | 1.50 | 400 | 0       | dense rows, secondary body |
+| `caption`    | Inter | 13px / 0.8125rem | 1.45 | 400 | 0       | metadata, helper text |
+| `label`      | Inter | 11px / 0.6875rem | 1.30 | 600 | 0.18em  | UPPERCASE — see eyebrow variants below |
+| `code`       | JetBrains Mono | 14px / 0.875rem | 1.50 | 400 | 0      | code identifiers (`#APP-2031`, `WIOA-1B`) |
+| `code-s`     | JetBrains Mono | 12px / 0.75rem | 1.40 | 400 | 0      | dense identifier tables (cert hashes) |
 
-> **Inferred:** Pixel sizes are the canonical brand scale; the `rem` equivalents assume `font-size: 16px` on `:root`. Production `rem` values may differ if a project sets a different root size. The scale was tuned on the Tierra landing page artboard; adjust the smallest sizes (`label`, `caption`, `mono-s`) cautiously — they are at the bottom of the readability cliff.
+> **Inferred:** Pixel sizes are the canonical brand scale; the `rem` equivalents assume `font-size: 16px` on `:root`. Production `rem` values may differ if a project sets a different root size. The scale was tuned on the Tierra landing page artboard; adjust the smallest sizes (`label`, `caption`, `code-s`) cautiously — they are at the bottom of the readability cliff.
 
-## Label convention
+## Eyebrow / label variants
 
-A signature Tierra gesture. Eyebrow labels appear above section titles, on cards, and in metadata strips.
+A signature Tierra gesture. Eyebrows appear above section titles, on cards, and in metadata strips. Three variants exist in the system, each with a specific role.
+
+### `.label` — marketing eyebrow (default)
+
+The brand-defining eyebrow. Used on marketing surfaces above section titles.
 
 ```css
 .label {
@@ -98,29 +84,67 @@ A signature Tierra gesture. Eyebrow labels appear above section titles, on cards
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: color-mix(in oklab, var(--color-base-content) 65%, transparent); /* default; shift to var(--color-primary) for emphasis */
+  color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
   line-height: 1.3;
 }
 ```
 
-- Always uppercase.
-- Always 0.18em letter-spacing — this is the value verified across the landing page and brand kit. Do not improvise.
-- Default color is `base-content` at ~65% opacity on base surfaces. On `neutral` (dark) surfaces, use `neutral-content` at ~64% opacity, never `accent`.
-- Trailing punctuation is not used — labels do not take periods or colons.
+- Always uppercase, always 0.18em letter-spacing. Do not improvise either.
+- Default color is `base-content` at ~65% opacity on base surfaces. On `neutral` (dark) surfaces, use `neutral-content` at ~64% opacity. **Never `accent` for a label** unless the label is itself the eye-catching accent (rare — UpNextShift "TOMORROW · 6:00 AM" is the canonical example, and it's gold against a dark surface, not against a base surface).
+- No trailing punctuation — labels do not take periods or colons.
 
 Examples: `FOR FARMWORKERS`, `ABOUT TIERRA`, `WORKER ROLE`, `STEP 02`, `EN ESPAÑOL`.
 
+### `.section-num` — page-header eyebrow
+
+Used in product chrome above page H1s. Carries metadata (date + location, breadcrumb residue) rather than a category name.
+
+```css
+.section-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-base-content);   /* full strength, not muted — this is metadata */
+  opacity: 0.55;                       /* a11y: prefer color-mix, not opacity, in production */
+}
+```
+
+Examples: `SUNDAY, AUGUST 3 · MADERA, CA` above the worker dashboard greeting; `JOBS · PISCA DE UVA · DETALLES` as a breadcrumb-style header.
+
+### `.label-metric` — stat tile eyebrow
+
+Used inside KPI / stat tiles where the label sits directly above a display-size figure. Tighter tracking because it pairs visually with the number, not with body copy.
+
+```css
+.label-metric {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+}
+```
+
+Examples: `THIS WEEK EARNED`, `HOURS LOGGED`, `ACTIVE APPLICATIONS`, `AVG PAY RATE` above dashboard KPI tiles.
+
+### When the eyebrow is itself a code
+
+If the eyebrow content is a code identifier (`#APP-2031`, `WIOA-1B`), use JetBrains Mono at the same 11px / 0.18em / weight 600 spec. The monospace cue tells the reader "this is a literal code, not a category."
+
 ## Italic and bold
 
-Use italic sparingly: a quoted phrase, a place name in running prose, a single emphasized word. Italic is **not** a display device, **not** a section-opener treatment, and **not** the way bilingual text is differentiated. Languages are differentiated by the locale toggle, not by italicizing one of them.
+Use italic for short emphasis runs: a quoted phrase, a place name in running prose, a single emphasized word inside an otherwise upright headline (`Buenas tardes, *Miguel*.`). Italic at any size is permitted as long as it stays short — 1 to 4 words. What's still out of brand: italic spanning the *whole* headline, italic on multi-line displays, bold-italic word-art splits, and stack ES italic over EN bold (or vice versa). Languages are differentiated by the locale toggle, not by italicizing one of them.
 
 Use bold confidently: form labels, button text, headlines, the first word of a scannable list item, table headers, statistic numbers in civic data bands. Bold is a utilitarian tool, not a brand smell.
 
-If you find yourself reaching for italic to make a marketing headline feel warm, rewrite the headline. If you find yourself reaching for bold-italic display word-art to make a hero "feel like Tierra," redesign the hero.
+If you find yourself reaching for italic to make an *entire* marketing headline feel warm, rewrite the headline. If you find yourself reaching for bold-italic display word-art to make a hero "feel like Tierra," redesign the hero.
 
 ## Numbers and money
 
-All numeric figures use `font-variant-numeric: tabular-nums`. Money and key statistics also use DM Mono.
+All numeric figures use Inter with `font-variant-numeric: tabular-nums slashed-zero`. Money, dates, hours, stats — every numeric content type uses Inter. JetBrains Mono is reserved for code identifiers (`#APP-2031`, `WIOA-1B`, certificate hashes), not money or dates.
 
 Acceptable formats:
 
@@ -135,13 +159,13 @@ Acceptable formats:
 ## Tracking and case
 
 - **Body text**: default Inter tracking (0). Do not tighten or loosen.
-- **Display Fraunces** at ≥48px: tighten by `-0.01em` to `-0.02em`. Fraunces opens up at large sizes.
-- **All-caps labels**: 0.18em (the brand-defining value). Anything tighter looks generic; anything looser looks decorative.
+- **Display Inter** at ≥32px: tighten to `-0.02em` to `-0.025em`. Inter opens up at large sizes; the negative tracking pulls it back.
+- **All-caps labels**: 0.18em for `.label` and `.section-num` (the brand-defining value); 0.10em for `.label-metric` inside KPI tiles. Anything tighter looks generic; anything looser looks decorative.
 - **Sentence case** for English headlines (`Find work today`), not Title Case. RAE-conformant **sentence case** for Spanish (`Encuentra trabajo hoy`). Title Case is reserved for proper-noun-heavy headers and is the exception.
 
 ## Font loading
 
-The page should not flash unstyled (FOUT) or invisible (FOIT) text. Use `font-display: swap` and load the variable files. For Fraunces specifically, preload the variable italic file because it is the brand-defining cut.
+The page should not flash unstyled (FOUT) or invisible (FOIT) text. Use `font-display: swap` and load the variable files. Preload Inter at the variable opsz/wght axes — it carries the entire visual register.
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -149,8 +173,8 @@ The page should not flash unstyled (FOUT) or invisible (FOIT) text. Use `font-di
 <link
   rel="preload"
   as="style"
-  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,30..100,0..1;1,9..144,300..700,30..100,0..1&family=Inter:opsz,wght@14..32,300..700&family=DM+Mono:wght@400;500&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&family=JetBrains+Mono:wght@400;500&display=swap"
 />
 ```
 
-For self-hosting (preferred for production), download the latest static cuts from Google Fonts, place under `public/fonts/`, and declare with `@font-face` using `font-display: swap` and `unicode-range: U+0000-007F, U+00A0-00FF, U+0100-017F` to cover EN and ES.
+For self-hosting (preferred for production), download the latest static cuts from Google Fonts, place under `public/fonts/`, and declare with `@font-face` using `font-display: swap` and `unicode-range: U+0000-007F, U+00A0-00FF, U+0100-017F` to cover EN and ES. JetBrains Mono is small (single weight 400, optional 500); subsetting is unnecessary.

@@ -1,19 +1,23 @@
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilter, faBolt } from '@fortawesome/free-solid-svg-icons';
-import { listInbox, type ApplicantCardView } from '@/lib/api/employer';
+import { faFilter, faBolt, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  listInbox,
+  listEmployerJobs,
+  type ApplicantCardView,
+} from '@/lib/api/employer';
 import {
   CandidateRowActions,
   RowCheckbox,
 } from '@/components/employer/candidates/RowActions';
 
-type TabKey = 'all' | 'new' | 'reviewed' | 'interview' | 'offer' | 'hired' | 'archived';
+type TabKey = 'all' | 'new' | 'reviewed' | 'hired' | 'archived';
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ tab?: string; q?: string }>;
+  searchParams: Promise<{ tab?: string; q?: string; job?: string; county?: string }>;
 };
 
 function matchTab(a: { status: string }, tab: TabKey): boolean {
@@ -31,32 +35,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `AgConn — ${t('title')}` };
 }
 
-const VALID_TABS: ReadonlyArray<TabKey> = [
-  'all',
-  'new',
-  'reviewed',
-  'interview',
-  'offer',
-  'hired',
-  'archived',
-];
+const VALID_TABS: ReadonlyArray<TabKey> = ['all', 'new', 'reviewed', 'hired', 'archived'];
 
 export default async function CandidatesPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const sp = await searchParams;
   const tab: TabKey =
     sp.tab && (VALID_TABS as ReadonlyArray<string>).includes(sp.tab) ? (sp.tab as TabKey) : 'all';
+  const q = (sp.q ?? '').trim();
+  const jobFilter = (sp.job ?? '').trim();
+  const countyFilter = (sp.county ?? '').trim();
   const t = await getTranslations({ locale, namespace: 'employer.candidates' });
   const tStatus = await getTranslations({ locale, namespace: 'employer.kanban' });
-  const allApps = await listInbox();
-  const apps = allApps.filter((a) => matchTab(a, tab));
+  const [allApps, jobs] = await Promise.all([listInbox(), listEmployerJobs()]);
+
+  const counties = Array.from(new Set(allApps.map((a) => a.worker.county).filter((c): c is string => Boolean(c)))).sort();
+  const filtered = allApps.filter((a) => {
+    if (!matchTab(a, tab)) return false;
+    if (jobFilter && a.job.id !== jobFilter) return false;
+    if (countyFilter && a.worker.county !== countyFilter) return false;
+    if (q) {
+      const needle = q.toLowerCase();
+      const hay = `${a.worker.firstName} ${a.worker.lastInitial} ${a.worker.skills.join(' ')}`.toLowerCase();
+      if (!hay.includes(needle)) return false;
+    }
+    return true;
+  });
+  const apps = filtered;
 
   const counts = {
     all: allApps.length,
     new: allApps.filter((a) => a.status === 'applied').length,
     reviewed: allApps.filter((a) => a.status === 'reviewed').length,
-    interview: 0,
-    offer: 0,
     hired: allApps.filter((a) => a.status === 'hired').length,
     archived: allApps.filter((a) => a.status === 'rejected' || a.status === 'withdrawn').length,
   };
@@ -65,14 +75,29 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
     { key: 'all', n: counts.all },
     { key: 'new', n: counts.new },
     { key: 'reviewed', n: counts.reviewed },
-    { key: 'interview', n: counts.interview },
-    { key: 'offer', n: counts.offer },
     { key: 'hired', n: counts.hired },
     { key: 'archived', n: counts.archived },
   ];
 
+  const hasActiveFilter = jobFilter || countyFilter || q;
+  function buildHref(overrides: Partial<{ tab: TabKey; job: string; county: string; q: string }>): string {
+    const usp = new URLSearchParams();
+    const merged = {
+      tab: overrides.tab ?? tab,
+      job: overrides.job ?? jobFilter,
+      county: overrides.county ?? countyFilter,
+      q: overrides.q ?? q,
+    };
+    if (merged.tab !== 'all') usp.set('tab', merged.tab);
+    if (merged.job) usp.set('job', merged.job);
+    if (merged.county) usp.set('county', merged.county);
+    if (merged.q) usp.set('q', merged.q);
+    const qs = usp.toString();
+    return qs ? `/${locale}/employer/inbox?${qs}` : `/${locale}/employer/inbox`;
+  }
+
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -85,25 +110,82 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
             </em>
           </h1>
           <div className="text-base-content/70 mt-2 text-sm">
-            {t('summary', {
+            {t('summary_v2', {
               new: counts.new,
               reviewed: counts.reviewed,
-              interview: counts.interview,
               hired: counts.hired,
             })}
           </div>
         </div>
         <div className="flex gap-2">
+          <details className="dropdown dropdown-end">
+            <summary
+              className={[
+                'btn btn-sm rounded-full border font-medium',
+                hasActiveFilter
+                  ? 'bg-primary/10 border-primary text-primary'
+                  : 'bg-base-100 border-base-300',
+              ].join(' ')}
+            >
+              <FontAwesomeIcon icon={faFilter} className="h-3 w-3" />
+              {t('filters')}
+              {hasActiveFilter && (
+                <span className="bg-primary text-primary-content ml-1 rounded-full px-1.5 font-mono text-[10px]">
+                  {[jobFilter, countyFilter, q].filter(Boolean).length}
+                </span>
+              )}
+            </summary>
+            <div className="dropdown-content bg-base-100 border-base-300 rounded-box z-10 mt-2 w-72 border p-4 shadow-md">
+              <form className="flex flex-col gap-3 text-xs" method="get">
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend text-[11px]">{t('filter.search')}</legend>
+                  <input
+                    type="search"
+                    name="q"
+                    defaultValue={q}
+                    placeholder={t('filter.search_placeholder')}
+                    className="input input-sm input-bordered w-full"
+                  />
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend text-[11px]">{t('filter.job')}</legend>
+                  <select name="job" defaultValue={jobFilter} className="select select-sm select-bordered w-full">
+                    <option value="">{t('filter.all_jobs')}</option>
+                    {jobs.map((j) => (
+                      <option key={j.id} value={j.id}>
+                        {locale === 'es' ? j.titleEs : j.titleEn}
+                      </option>
+                    ))}
+                  </select>
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend text-[11px]">{t('filter.county')}</legend>
+                  <select name="county" defaultValue={countyFilter} className="select select-sm select-bordered w-full">
+                    <option value="">{t('filter.all_counties')}</option>
+                    {counties.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </fieldset>
+                {tab !== 'all' && <input type="hidden" name="tab" value={tab} />}
+                <div className="mt-1 flex justify-between gap-2">
+                  <Link
+                    href={buildHref({ job: '', county: '', q: '' }) as Route}
+                    className="btn btn-ghost btn-xs"
+                  >
+                    {t('filter.clear')}
+                  </Link>
+                  <button type="submit" className="btn btn-primary btn-xs">
+                    {t('filter.apply')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </details>
           <Link
-            href={`/${locale}/employer/jobs`}
-            className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
-            title={t('filters_help')}
-          >
-            <FontAwesomeIcon icon={faFilter} className="h-3 w-3" />
-            {t('filters')}
-          </Link>
-          <Link
-            href={`/${locale}/employer/messages?folder=broadcasts`}
+            href={`/${locale}/employer/messages?folder=broadcasts` as Route}
             className="btn btn-sm btn-primary rounded-full"
           >
             <FontAwesomeIcon icon={faBolt} className="h-3 w-3" />
@@ -112,6 +194,42 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
         </div>
       </div>
 
+      {hasActiveFilter && (
+        <div className="text-base-content/70 mb-4 flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-mono uppercase tracking-wider">{t('filter.active')}</span>
+          {q && (
+            <Link
+              href={buildHref({ q: '' }) as Route}
+              className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold"
+            >
+              {q}
+              <FontAwesomeIcon icon={faXmark} className="h-2 w-2" />
+            </Link>
+          )}
+          {jobFilter && (
+            <Link
+              href={buildHref({ job: '' }) as Route}
+              className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold"
+            >
+              {(() => {
+                const j = jobs.find((x) => x.id === jobFilter);
+                return j ? (locale === 'es' ? j.titleEs : j.titleEn) : jobFilter;
+              })()}
+              <FontAwesomeIcon icon={faXmark} className="h-2 w-2" />
+            </Link>
+          )}
+          {countyFilter && (
+            <Link
+              href={buildHref({ county: '' }) as Route}
+              className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold"
+            >
+              {countyFilter}
+              <FontAwesomeIcon icon={faXmark} className="h-2 w-2" />
+            </Link>
+          )}
+        </div>
+      )}
+
       <div className="bg-base-100 border-base-300 mb-5 inline-flex w-fit gap-1 rounded-full border p-1">
         {tabs.map((tabItem) => {
           const isActive = tabItem.key === tab;
@@ -119,27 +237,15 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
             'rounded-full px-3.5 py-1.5 text-xs font-semibold',
             isActive ? 'bg-base-content text-base-100' : 'text-base-content/70',
           ].join(' ');
-          if (tabItem.key === 'all') {
-            return (
-              <Link
-                key={tabItem.key}
-                href={`/${locale}/employer/inbox`}
-                className={className}
-              >
-                {t(`tab.${tabItem.key}`)}{' '}
-                <span className="opacity-60 font-mono">{tabItem.n}</span>
-              </Link>
-            );
-          }
           return (
-            <a
+            <Link
               key={tabItem.key}
-              href={`/${locale}/employer/inbox?tab=${tabItem.key}`}
+              href={buildHref({ tab: tabItem.key }) as Route}
               className={className}
             >
               {t(`tab.${tabItem.key}`)}{' '}
               <span className="opacity-60 font-mono">{tabItem.n}</span>
-            </a>
+            </Link>
           );
         })}
       </div>

@@ -12,12 +12,13 @@ The logo specification is intentionally not in this folder yet; it is being deve
 | -------------------------------------------- | ---------------------------------------------------------------------------- |
 | [01-overview.md](01-overview.md)             | brand philosophy, archetype, positioning, what we are and are not            |
 | [02-color.md](02-color.md)                   | palette, semantic roles, daisyUI 5 token map, Tailwind config, pairing rules |
-| [03-typography.md](03-typography.md)         | Fraunces / Inter / DM Mono, variable axes, type scale, label convention      |
-| [04-spacing-layout.md](04-spacing-layout.md) | spacing scale, section rhythm, grid, rectangular geometry, dividers          |
+| [03-typography.md](03-typography.md)         | Inter (single family) + JetBrains Mono for code identifiers, type scale, label convention |
+| [04-spacing-layout.md](04-spacing-layout.md) | spacing scale, section rhythm, grid, radius scale, dividers, motion          |
 | [05-voice-tone.md](05-voice-tone.md)         | bilingual EN/ES voice, copy patterns, formatting, glossary                   |
-| [06-components.md](06-components.md)         | buttons, cards, badges, inputs, tables, section headers, header/footer       |
-| [07-imagery.md](07-imagery.md)               | photography direction, illustration approach, iconography                    |
+| [06-components.md](06-components.md)         | buttons, cards, hero feature cards, filter chips, badges, inputs, tables, header/footer |
+| [07-imagery.md](07-imagery.md)               | photography direction, illustration approach, FontAwesome iconography        |
 | [08-accessibility.md](08-accessibility.md)   | contrast verification, focus, motion, touch targets                          |
+| [13-a11y-baseline.md](13-a11y-baseline.md)   | initial axe-core sweep findings (2026-04-30) — historical                    |
 
 ## Conventions
 

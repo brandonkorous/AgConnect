@@ -14,7 +14,7 @@ The brand promise is dignity. Accessibility is the operational version of that p
 - Primary body pairings (`base-content` on `base-100` / `base-200` / `base-300`, `primary-content` on `primary`, `neutral-content` on `neutral`) are the verified pairings — run any new combination through a checker before shipping. See [02-color.md](02-color.md).
 - **`accent` (gold) is not a body-text color** on base surfaces. Its contrast on light cream is too low for body — treat `accent` as a fill color and a large-display color, not a body color. On `neutral` (dark) it clears AA only for large text (≥18px or ≥14px bold).
 - **Never communicate state with color alone.** Errors take an icon and a text label, not red color alone. Success states take a check and the word "Saved" / "Guardado", not green alone.
-- Status colors (`info`, `success`, `warning`, `error`) must always be paired with their semantic icon: info circle, check, triangle, x-circle. Lucide names: `info`, `check`, `triangle-alert`, `circle-x`.
+- Status colors (`info`, `success`, `warning`, `error`) must always be paired with their semantic icon: info circle, check, triangle, x-circle. FontAwesome solid names: `circle-info`, `circle-check`, `triangle-exclamation`, `circle-xmark`.
 - Charts use position, label, and pattern — not color alone — to distinguish series. See [07-imagery.md § Charts](07-imagery.md).
 
 ## Typography accessibility
@@ -22,8 +22,8 @@ The brand promise is dignity. Accessibility is the operational version of that p
 - **No text below 14px** on screen, ever. Eyebrow labels at 11px are the documented exception and must never carry essential meaning that does not also appear in adjacent text (a label is decorative-categorical, never the only place a fact appears).
 - **No text below 16px on form inputs** — iOS auto-zooms inputs below 16px, which breaks the layout and the sense of control.
 - **Line length** for body paragraphs: 65–75 characters. Tierra's container widths in [04-spacing-layout.md](04-spacing-layout.md) yield this naturally; do not let long-form copy expand to the full container.
-- **Line height** at body sizes is 1.5+ (Inter body is 1.55). At display sizes Fraunces drops as low as 0.95 — that is a display-only allowance, not a license to crunch body type.
-- **Italic is reserved for emphasis only.** It costs about 5% legibility, so use it for short emphasis runs (1–4 words) in body — a quoted phrase, a place name, a single emphasized word — never for entire paragraphs and never as a display-headline treatment. Display-size italic Fraunces is out of brand (see [03-typography.md](03-typography.md)).
+- **Line height** at body sizes is 1.5+ (Inter body is 1.55). At display sizes Inter drops as low as 1.0–1.05 — that is a display-only allowance, not a license to crunch body type.
+- **Italic is reserved for short emphasis runs.** It costs about 5% legibility, so use it for 1–4 word runs — a quoted phrase, a place name, a single emphasized word inside an otherwise upright headline (`Buenas tardes, *Miguel*.`) — never for entire paragraphs and never spanning a whole headline. Single-word italic accent inside a heading is the canonical pattern (see [03-typography.md](03-typography.md)).
 
 ## Focus
 
@@ -76,14 +76,14 @@ Focus indicators are visible, generous, and brand-aligned.
 ```
 
 - No parallax, no scroll-jacking, no auto-rotating carousels — these violate the spirit of `prefers-reduced-motion` even if you toggle them off when the preference is set.
-- Loading states: prefer a static "Loading…" / "Cargando…" message with a small Lucide `loader` spun via CSS rotation to a multi-step progress animation. The spinner is honored by `prefers-reduced-motion`.
+- Loading states: prefer a static "Loading…" / "Cargando…" message with a small FontAwesome `spinner` (or `circle-notch`) spun via CSS rotation to a multi-step progress animation. The spinner is honored by `prefers-reduced-motion`.
 
 ## Screen reader semantics
 
 - Use semantic HTML. `<button>` not `<div role="button">`. `<nav>`, `<main>`, `<header>`, `<footer>` for landmarks.
 - Every page has exactly one `<h1>`. Section titles are `<h2>`; subsections `<h3>`. Don't skip levels.
 - Form inputs are wired to their label via `<label for>` or by wrapping. Eyebrow-style floating labels MUST be backed by a real `<label>` element — visual position is not a substitute for the input/label association.
-- Lucide icons: when an icon is decorative (paired with text that conveys the meaning), set `aria-hidden="true"`. When an icon stands alone (icon-only button), provide an `aria-label` and a visible `title` on hover.
+- FontAwesome icons: when an icon is decorative (paired with text that conveys the meaning), set `aria-hidden="true"` (the `FontAwesomeIcon` component does this by default). When an icon stands alone (icon-only button), provide an `aria-label` on the button and a visible `title` on hover.
 - Status messages (toasts, inline form errors) use `role="status"` (polite) for confirmations and `role="alert"` (assertive) for errors.
 - Live regions for async content updates (`aria-live="polite"` on a results container).
 

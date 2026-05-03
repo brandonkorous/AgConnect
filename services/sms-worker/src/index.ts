@@ -1,4 +1,6 @@
-import { runSmsWorker } from '@agconn/sms';
+import { runSmsWorker, getSmsBoss } from '@agconn/sms';
+import { startRenotifyWorker } from './renotify';
+import { startAutomatchWorker } from './automatch';
 
 const ENV_KEYS_REQUIRED = ['DATABASE_URL', 'AUDIT_HMAC_KEY', 'PUBLIC_API_URL'] as const;
 
@@ -15,6 +17,11 @@ function assertEnv(): void {
 async function main(): Promise<void> {
   assertEnv();
   const handle = await runSmsWorker();
+  // Two adjacent consumers share the sms-worker process so we don't have to
+  // ship a separate container for them. They use the same pg-boss instance.
+  const boss = await getSmsBoss();
+  await startRenotifyWorker(boss);
+  await startAutomatchWorker(boss);
 
   const shutdown = async (signal: string) => {
     console.log(`[sms-worker] received ${signal}, stopping…`);

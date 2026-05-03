@@ -30,9 +30,9 @@ export async function BillingSnapshot({ locale, billing }: Props) {
         <div className="opacity-75 font-mono text-[11px] font-semibold uppercase tracking-wider">
           {renewsLine}
         </div>
-        <div className="font-display mt-2 text-3xl font-light leading-none tracking-tight">
+        <h2 className="font-display mt-2 text-3xl font-light leading-none tracking-tight">
           {headline}
-        </div>
+        </h2>
         <div className="mt-1 text-xs opacity-85">
           {billing.features.activePostings === -1
             ? t('postings_unlimited')

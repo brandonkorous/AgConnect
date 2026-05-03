@@ -219,6 +219,12 @@ enum ComplianceItemStatus {
   fail
 }
 
+enum InspectionResult {
+  pass
+  fail
+  pending
+}
+
 enum MessageChannel {
   app
   sms
@@ -231,66 +237,127 @@ enum MessageDirection {
   outbound
 }
 
-model Tenant {
-  id        String       @id @default(uuid()) @db.Uuid
-  slug      String       @unique
-  name      String
-  isPublic  Boolean      @default(false)       @map("is_public")
-  settings  Json         @default("{}")
-  createdAt DateTime     @default(now())       @map("created_at")
-  updatedAt DateTime     @updatedAt            @map("updated_at")
-  deletedAt DateTime?                           @map("deleted_at")
+enum WageStructure {
+  hourly
+  hourly_piece
+  piece
+}
 
-  waitlist          Waitlist[]
-  emailLogs         EmailLog[]
-  auditEvents       AuditEvent[]
-  users             User[]
-  employerProfiles  EmployerProfile[]
-  authEvents        AuthEvent[]
-  smsLogs           SmsLog[]
-  workerProfiles    WorkerProfile[]
-  jobPostings       JobPosting[]
-  applications      Application[]
-  applicationEvents ApplicationEvent[]
-  savedSearches     SavedSearch[]
-  searchViews       SearchView[]
-  trainingPrograms  TrainingProgram[]
-  enrollments       Enrollment[]
-  verificationLogs  VerificationLog[]
-  workerInvitations WorkerInvitation[]
-  workerSearchLogs  WorkerSearchLog[]
-  billingEvents     BillingEvent[]
-  crews             Crew[]
-  crewMembers       CrewMember[]
-  shifts            Shift[]
-  shiftAssignments  ShiftAssignment[]
-  payrollPeriods    PayrollPeriod[]
-  payrollLines      PayrollLine[]
-  complianceItems   ComplianceItem[]
-  conversations     Conversation[]
-  conversationParticipants ConversationParticipant[]
-  messages          Message[]
-  translationKeys   TranslationKey[]
+enum PayFrequency {
+  weekly
+  biweekly
+  daily
+}
+
+enum MinExperience {
+  none
+  one_year
+  three_years
+  five_years
+}
+
+enum MinAge {
+  sixteen
+  eighteen
+  twenty_one
+}
+
+enum ScreeningAnswerType {
+  yes_no
+  text
+}
+
+enum JobEditEventKind {
+  field_changed
+  photo_added
+  photo_removed
+  photo_reordered
+  screening_changed
+  renotify_dispatched
+  autosaved
+}
+
+enum RenotifyChannel {
+  sms
+  email
+  app
+}
+
+enum RenotifyStatus {
+  queued
+  sent
+  failed
+  skipped_quiet_hours
+}
+
+model Tenant {
+  id        String    @id @default(uuid()) @db.Uuid
+  slug      String    @unique
+  name      String
+  isPublic  Boolean   @default(false) @map("is_public")
+  settings  Json      @default("{}")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  waitlist                    Waitlist[]
+  emailLogs                   EmailLog[]
+  auditEvents                 AuditEvent[]
+  users                       User[]
+  employerProfiles            EmployerProfile[]
+  authEvents                  AuthEvent[]
+  smsLogs                     SmsLog[]
+  workerProfiles              WorkerProfile[]
+  jobPostings                 JobPosting[]
+  applications                Application[]
+  applicationEvents           ApplicationEvent[]
+  savedSearches               SavedSearch[]
+  searchViews                 SearchView[]
+  trainingPrograms            TrainingProgram[]
+  enrollments                 Enrollment[]
+  verificationLogs            VerificationLog[]
+  workerInvitations           WorkerInvitation[]
+  workerSearchLogs            WorkerSearchLog[]
+  billingEvents               BillingEvent[]
+  crews                       Crew[]
+  crewMembers                 CrewMember[]
+  shifts                      Shift[]
+  shiftAssignments            ShiftAssignment[]
+  payrollPeriods              PayrollPeriod[]
+  payrollLines                PayrollLine[]
+  complianceItems             ComplianceItem[]
+  complianceScoreSnapshots    ComplianceScoreSnapshot[]
+  conversations               Conversation[]
+  conversationParticipants    ConversationParticipant[]
+  messages                    Message[]
+  translationKeys             TranslationKey[]
+  employerContacts            EmployerContact[]
+  jobPhotos                   JobPhoto[]
+  jobScreeningQuestions       JobScreeningQuestion[]
+  applicationScreeningAnswers ApplicationScreeningAnswer[]
+  jobEditEvents               JobEditEvent[]
+  jobRenotifications          JobRenotification[]
+  smsKeywords                 SmsKeyword[]
 
   @@map("tenants")
 }
 
 model Waitlist {
   id             String            @id @default(uuid()) @db.Uuid
-  tenantId       String            @db.Uuid                @map("tenant_id")
+  tenantId       String            @map("tenant_id") @db.Uuid
   email          String?
   phone          String?
   county         String?
-  preferredLang  Lang              @default(es)            @map("preferred_lang")
+  preferredLang  Lang              @default(es) @map("preferred_lang")
   audience       WaitlistAudience?
   source         WaitlistSource    @default(landing_final_cta)
-  confirmedAt    DateTime?                                 @map("confirmed_at")
-  welcomedAt     DateTime?                                 @map("welcomed_at")
-  unsubscribedAt DateTime?                                 @map("unsubscribed_at")
-  createdAt      DateTime          @default(now())         @map("created_at")
-  updatedAt      DateTime          @updatedAt              @map("updated_at")
+  confirmedAt    DateTime?         @map("confirmed_at")
+  welcomedAt     DateTime?         @map("welcomed_at")
+  unsubscribedAt DateTime?         @map("unsubscribed_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
 
-  tenant         Tenant            @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, email], map: "waitlist_tenant_email_key")
   @@index([tenantId])
@@ -301,25 +368,25 @@ model Waitlist {
 
 model EmailLog {
   id           String      @id @default(uuid()) @db.Uuid
-  tenantId     String      @db.Uuid             @map("tenant_id")
+  tenantId     String      @map("tenant_id") @db.Uuid
   template     String
   locale       Lang
-  toEmail      String                            @map("to_email")
-  fromEmail    String                            @map("from_email")
+  toEmail      String      @map("to_email")
+  fromEmail    String      @map("from_email")
   subject      String
   status       EmailStatus @default(queued)
-  providerId   String?     @unique               @map("provider_id")
-  errorMsg     String?                           @map("error_msg")
-  refType      String?                           @map("ref_type")
-  refId        String?                           @map("ref_id")
-  queuedAt     DateTime    @default(now())       @map("queued_at")
-  sentAt       DateTime?                         @map("sent_at")
-  deliveredAt  DateTime?                         @map("delivered_at")
-  bouncedAt    DateTime?                         @map("bounced_at")
-  complainedAt DateTime?                         @map("complained_at")
-  failedAt     DateTime?                         @map("failed_at")
+  providerId   String?     @unique @map("provider_id")
+  errorMsg     String?     @map("error_msg")
+  refType      String?     @map("ref_type")
+  refId        String?     @map("ref_id")
+  queuedAt     DateTime    @default(now()) @map("queued_at")
+  sentAt       DateTime?   @map("sent_at")
+  deliveredAt  DateTime?   @map("delivered_at")
+  bouncedAt    DateTime?   @map("bounced_at")
+  complainedAt DateTime?   @map("complained_at")
+  failedAt     DateTime?   @map("failed_at")
 
-  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@index([toEmail])
@@ -347,24 +414,24 @@ model EmailSuppression {
 // Prisma needs a single-field id, so we annotate id with @id but the
 // migration replaces the PK with the compound version.
 model AuditEvent {
-  id              BigInt       @id @default(autoincrement())
-  tenantId        String       @db.Uuid                    @map("tenant_id")
-  occurredAt      DateTime     @default(now()) @db.Timestamptz @map("occurred_at")
-  actorType       ActorType                                  @map("actor_type")
-  actorId         String?                                    @map("actor_id")
-  actorRole       String?                                    @map("actor_role")
-  actorIp         String?      @db.Inet                       @map("actor_ip")
-  actorUserAgent  String?                                    @map("actor_user_agent")
-  action          String
-  resourceType    String?                                    @map("resource_type")
-  resourceId      String?                                    @map("resource_id")
-  outcome         AuditOutcome @default(success)
-  correlationId   String?      @db.Uuid                       @map("correlation_id")
-  metadata        Json         @default("{}")
-  eventHmac       Bytes                                      @map("event_hmac")
-  eventHmacV      Int          @default(1) @db.SmallInt        @map("event_hmac_v")
+  id             BigInt       @id @default(autoincrement())
+  tenantId       String       @map("tenant_id") @db.Uuid
+  occurredAt     DateTime     @default(now()) @map("occurred_at") @db.Timestamptz
+  actorType      ActorType    @map("actor_type")
+  actorId        String?      @map("actor_id")
+  actorRole      String?      @map("actor_role")
+  actorIp        String?      @map("actor_ip") @db.Inet
+  actorUserAgent String?      @map("actor_user_agent")
+  action         String
+  resourceType   String?      @map("resource_type")
+  resourceId     String?      @map("resource_id")
+  outcome        AuditOutcome @default(success)
+  correlationId  String?      @map("correlation_id") @db.Uuid
+  metadata       Json         @default("{}")
+  eventHmac      Bytes        @map("event_hmac")
+  eventHmacV     Int          @default(1) @map("event_hmac_v") @db.SmallInt
 
-  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId, occurredAt(sort: Desc)])
   @@index([tenantId, actorId, occurredAt(sort: Desc)])
@@ -378,38 +445,41 @@ model AuditEvent {
 // in sync via webhooks (services/api/src/webhooks/clerk.ts). PII like phone
 // + email is stored here too for joins; Clerk remains the source of truth.
 model User {
-  id            String    @id                                 // matches Clerk userId
-  tenantId      String?   @db.Uuid                @map("tenant_id")
+  id            String   @id // matches Clerk userId
+  tenantId      String?  @map("tenant_id") @db.Uuid
   role          UserRole
-  permissions   String[]  @default([])                          // fine-grained scopes within role; '*' = wildcard
-  preferredLang Lang      @default(es)            @map("preferred_lang")
+  permissions   String[] @default([]) // fine-grained scopes within role; '*' = wildcard
+  preferredLang Lang     @default(es) @map("preferred_lang")
   email         String?
   phone         String?
-  onboarded     Boolean   @default(false)
-  createdAt     DateTime  @default(now())         @map("created_at")
-  updatedAt     DateTime  @updatedAt              @map("updated_at")
+  onboarded     Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  tenant              Tenant?            @relation(fields: [tenantId], references: [id])
-  employerProfile     EmployerProfile?
-  workerProfile       WorkerProfile?
-  applications        Application[]
-  savedSearches       SavedSearch[]
-  enrollments         Enrollment[]
-  trainingPrograms    TrainingProgram[]  @relation("TrainingProgramOrg")
-  jobPostings         JobPosting[]       @relation("JobPostingEmployer")
-  workerInvitations   WorkerInvitation[] @relation("WorkerInvitationWorker")
-  crewsOwned          Crew[]             @relation("CrewEmployer")
-  crewsLed            Crew[]             @relation("CrewForeman")
-  crewMemberships     CrewMember[]
-  shiftsOwned         Shift[]            @relation("ShiftEmployer")
-  shiftAssignments    ShiftAssignment[]
-  payrollOwned        PayrollPeriod[]    @relation("PayrollEmployer")
-  payrollApproved     PayrollPeriod[]    @relation("PayrollApprover")
-  payrollLines        PayrollLine[]
-  complianceItems     ComplianceItem[]   @relation("ComplianceEmployer")
-  conversationsOwned  Conversation[]     @relation("ConversationEmployer")
+  tenant                     Tenant?                   @relation(fields: [tenantId], references: [id])
+  employerProfile            EmployerProfile?
+  workerProfile              WorkerProfile?
+  applications               Application[]
+  savedSearches              SavedSearch[]
+  enrollments                Enrollment[]
+  trainingPrograms           TrainingProgram[]         @relation("TrainingProgramOrg")
+  jobPostings                JobPosting[]              @relation("JobPostingEmployer")
+  jobPostingsEdited          JobPosting[]              @relation("JobPostingLastEditor")
+  jobEditEvents              JobEditEvent[]
+  jobPhotosUploaded          JobPhoto[]
+  workerInvitations          WorkerInvitation[]        @relation("WorkerInvitationWorker")
+  crewsOwned                 Crew[]                    @relation("CrewEmployer")
+  crewsLed                   Crew[]                    @relation("CrewForeman")
+  crewMemberships            CrewMember[]
+  shiftsOwned                Shift[]                   @relation("ShiftEmployer")
+  shiftAssignments           ShiftAssignment[]
+  payrollOwned               PayrollPeriod[]           @relation("PayrollEmployer")
+  payrollApproved            PayrollPeriod[]           @relation("PayrollApprover")
+  payrollLines               PayrollLine[]
+  complianceItems            ComplianceItem[]          @relation("ComplianceEmployer")
+  conversationsOwned         Conversation[]            @relation("ConversationEmployer")
   conversationParticipations ConversationParticipant[]
-  messagesSent        Message[]
+  messagesSent               Message[]
 
   @@index([tenantId])
   @@index([phone])
@@ -421,43 +491,55 @@ model User {
 // FLC verification, plan tier, and Stripe subscription state live here.
 // See docs/20-employer/01-flc-verification/02-data-model.md and 05-subscription-billing/02-data-model.md.
 model EmployerProfile {
-  id                    String           @id @default(uuid()) @db.Uuid
-  userId                String           @unique                       @map("user_id")
-  tenantId              String           @db.Uuid                      @map("tenant_id")
-  clerkOrgId            String?          @unique                       @map("clerk_org_id")
-  legalName             String                                          @map("legal_name")
-  dbaName               String?                                         @map("dba_name")
-  contactEmail          String?                                         @map("contact_email")
-  contactPhone          String?                                         @map("contact_phone")
-  licenseType           LicenseType?                                    @map("license_type")
-  ein                   String?
-  flcLicenseNum         String?                                         @map("flc_license_num")
-  dolMspaNum            String?                                         @map("dol_mspa_num")
-  county                County?
-  flcVerifiedAt         DateTime?                                       @map("flc_verified_at")
-  verifiedBy            String?                                         @map("verified_by")
-  rejectedAt            DateTime?                                       @map("rejected_at")
-  rejectionReason       String?                                         @map("rejection_reason")
-  signatureName         String?                                         @map("signature_name")
-  signatureTitle        String?                                         @map("signature_title")
-  signatureImageUrl     String?                                         @map("signature_image_url")
-  stripeCustomer        String?          @unique                        @map("stripe_customer")
-  stripeSubId           String?                                         @map("stripe_sub_id")
-  plan                  EmployerPlanTier @default(free)
-  planInterval          PlanInterval?                                   @map("plan_interval")
-  planCurrentPeriodEnd  DateTime?                                       @map("plan_current_period_end")
-  planCancelAtPeriodEnd Boolean          @default(false)                @map("plan_cancel_at_period_end")
-  seoSlug               String?          @unique                        @map("seo_slug")
-  createdAt             DateTime         @default(now())                @map("created_at")
-  updatedAt             DateTime         @updatedAt                     @map("updated_at")
-  deletedAt             DateTime?                                       @map("deleted_at")
+  id                      String            @id @default(uuid()) @db.Uuid
+  userId                  String            @unique @map("user_id")
+  tenantId                String            @map("tenant_id") @db.Uuid
+  clerkOrgId              String?           @unique @map("clerk_org_id")
+  legalName               String            @map("legal_name")
+  dbaName                 String?           @map("dba_name")
+  contactEmail            String?           @map("contact_email")
+  contactPhone            String?           @map("contact_phone")
+  licenseType             LicenseType?      @map("license_type")
+  ein                     String?
+  flcLicenseNum           String?           @map("flc_license_num")
+  dolMspaNum              String?           @map("dol_mspa_num")
+  county                  County?
+  streetAddress           String?           @map("street_address")
+  city                    String?
+  stateCode               String?           @map("state_code")
+  postalCode              String?           @map("postal_code")
+  addressLat              Decimal?          @map("address_lat") @db.Decimal(9, 6)
+  addressLng              Decimal?          @map("address_lng") @db.Decimal(9, 6)
+  mapboxId                String?           @map("mapbox_id")
+  flcVerifiedAt           DateTime?         @map("flc_verified_at")
+  verifiedBy              String?           @map("verified_by")
+  rejectedAt              DateTime?         @map("rejected_at")
+  rejectionReason         String?           @map("rejection_reason")
+  signatureName           String?           @map("signature_name")
+  signatureTitle          String?           @map("signature_title")
+  signatureImageUrl       String?           @map("signature_image_url")
+  stripeCustomer          String?           @unique @map("stripe_customer")
+  stripeSubId             String?           @map("stripe_sub_id")
+  plan                    EmployerPlanTier  @default(free)
+  planInterval            PlanInterval?     @map("plan_interval")
+  planCurrentPeriodEnd    DateTime?         @map("plan_current_period_end")
+  planCancelAtPeriodEnd   Boolean           @default(false) @map("plan_cancel_at_period_end")
+  participatesInH2a       Boolean           @default(false) @map("participates_in_h2a")
+  dolLastInspectionAt     DateTime?         @map("dol_last_inspection_at")
+  dolLastInspectionResult InspectionResult? @map("dol_last_inspection_result")
+  seoSlug                 String?           @unique @map("seo_slug")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @updatedAt @map("updated_at")
+  deletedAt               DateTime?         @map("deleted_at")
 
-  user             User              @relation(fields: [userId], references: [id])
-  tenant           Tenant            @relation(fields: [tenantId], references: [id])
-  verificationLogs VerificationLog[]
-  workerInvitations WorkerInvitation[]
-  workerSearchLogs WorkerSearchLog[]
-  billingEvents    BillingEvent[]
+  user                     User                      @relation(fields: [userId], references: [id])
+  tenant                   Tenant                    @relation(fields: [tenantId], references: [id])
+  verificationLogs         VerificationLog[]
+  workerInvitations        WorkerInvitation[]
+  workerSearchLogs         WorkerSearchLog[]
+  billingEvents            BillingEvent[]
+  complianceScoreSnapshots ComplianceScoreSnapshot[]
+  contacts                 EmployerContact[]
 
   @@index([tenantId])
   @@index([flcVerifiedAt])
@@ -468,17 +550,17 @@ model EmployerProfile {
 // Audit log for FLC / grower verification state changes.
 // See docs/20-employer/01-flc-verification/02-data-model.md.
 model VerificationLog {
-  id           String             @id @default(uuid()) @db.Uuid
-  tenantId     String             @db.Uuid              @map("tenant_id")
-  employerId   String             @db.Uuid              @map("employer_id")
-  action       VerificationAction
-  actorUserId  String                                    @map("actor_user_id")
-  notes        String?
-  payload      Json               @default("{}")
-  createdAt    DateTime           @default(now())        @map("created_at")
+  id          String             @id @default(uuid()) @db.Uuid
+  tenantId    String             @map("tenant_id") @db.Uuid
+  employerId  String             @map("employer_id") @db.Uuid
+  action      VerificationAction
+  actorUserId String             @map("actor_user_id")
+  notes       String?
+  payload     Json               @default("{}")
+  createdAt   DateTime           @default(now()) @map("created_at")
 
-  tenant       Tenant             @relation(fields: [tenantId], references: [id])
-  employer     EmployerProfile    @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  employer EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([employerId, createdAt])
@@ -489,14 +571,14 @@ model VerificationLog {
 // See docs/20-employer/04-worker-search/02-data-model.md.
 model WorkerSearchLog {
   id          String   @id @default(uuid()) @db.Uuid
-  tenantId    String   @db.Uuid              @map("tenant_id")
-  employerId  String   @db.Uuid              @map("employer_id")
+  tenantId    String   @map("tenant_id") @db.Uuid
+  employerId  String   @map("employer_id") @db.Uuid
   filters     Json
-  resultCount Int                              @map("result_count")
-  createdAt   DateTime @default(now())        @map("created_at")
+  resultCount Int      @map("result_count")
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  tenant      Tenant          @relation(fields: [tenantId], references: [id])
-  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  employer EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, createdAt])
   @@index([employerId, createdAt])
@@ -506,21 +588,21 @@ model WorkerSearchLog {
 // Pro+ employer invites a specific worker to apply to one of their postings.
 // See docs/20-employer/04-worker-search/02-data-model.md.
 model WorkerInvitation {
-  id          String    @id @default(uuid()) @db.Uuid
-  tenantId    String    @db.Uuid              @map("tenant_id")
-  employerId  String    @db.Uuid              @map("employer_id")
-  workerId    String                          @map("worker_id")
-  jobId       String    @db.Uuid              @map("job_id")
-  message     String?   @db.VarChar(500)
-  acceptedAt  DateTime?                       @map("accepted_at")
-  declinedAt  DateTime?                       @map("declined_at")
-  expiredAt   DateTime?                       @map("expired_at")
-  createdAt   DateTime  @default(now())       @map("created_at")
+  id         String    @id @default(uuid()) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  employerId String    @map("employer_id") @db.Uuid
+  workerId   String    @map("worker_id")
+  jobId      String    @map("job_id") @db.Uuid
+  message    String?   @db.VarChar(500)
+  acceptedAt DateTime? @map("accepted_at")
+  declinedAt DateTime? @map("declined_at")
+  expiredAt  DateTime? @map("expired_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
 
-  tenant      Tenant          @relation(fields: [tenantId], references: [id])
-  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  worker      User            @relation("WorkerInvitationWorker", fields: [workerId], references: [id])
-  job         JobPosting      @relation(fields: [jobId], references: [id])
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  employer EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  worker   User            @relation("WorkerInvitationWorker", fields: [workerId], references: [id])
+  job      JobPosting      @relation(fields: [jobId], references: [id])
 
   @@unique([employerId, workerId, jobId])
   @@index([tenantId])
@@ -531,18 +613,18 @@ model WorkerInvitation {
 // Append-only Stripe webhook event log. Idempotent on stripe_event_id.
 // See docs/20-employer/05-subscription-billing/02-data-model.md.
 model BillingEvent {
-  id              String    @id @default(uuid()) @db.Uuid
-  tenantId        String    @db.Uuid              @map("tenant_id")
-  employerId      String    @db.Uuid              @map("employer_id")
-  eventType       String                          @map("event_type")
-  stripeEventId   String    @unique               @map("stripe_event_id")
-  payload         Json
-  processedAt     DateTime?                       @map("processed_at")
-  errorMsg        String?                         @map("error_msg")
-  createdAt       DateTime  @default(now())       @map("created_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  employerId    String    @map("employer_id") @db.Uuid
+  eventType     String    @map("event_type")
+  stripeEventId String    @unique @map("stripe_event_id")
+  payload       Json
+  processedAt   DateTime? @map("processed_at")
+  errorMsg      String?   @map("error_msg")
+  createdAt     DateTime  @default(now()) @map("created_at")
 
-  tenant          Tenant          @relation(fields: [tenantId], references: [id])
-  employer        EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  employer EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([employerId, createdAt])
@@ -552,24 +634,24 @@ model BillingEvent {
 // SMS log — append-only audit of every send attempt. RLS isolates by tenant
 // for worker self-views; admin sees all. See migration sql for policies.
 model SmsLog {
-  id          String     @id @default(uuid()) @db.Uuid
-  tenantId    String     @db.Uuid                     @map("tenant_id")
-  userId      String?                                   @map("user_id")
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  userId      String?   @map("user_id")
   template    String
   locale      Lang
-  toPhone     String                                    @map("to_phone")
+  toPhone     String    @map("to_phone")
   body        String
-  vars        Json       @default("{}")
-  status      SmsStatus  @default(queued)
-  providerSid String?                                   @map("provider_sid")
-  errorCode   String?                                   @map("error_code")
-  optedOutAt  DateTime?                                 @map("opted_out_at")
-  queuedAt    DateTime   @default(now())                @map("queued_at")
-  sentAt      DateTime?                                 @map("sent_at")
-  deliveredAt DateTime?                                 @map("delivered_at")
-  failedAt    DateTime?                                 @map("failed_at")
+  vars        Json      @default("{}")
+  status      SmsStatus @default(queued)
+  providerSid String?   @map("provider_sid")
+  errorCode   String?   @map("error_code")
+  optedOutAt  DateTime? @map("opted_out_at")
+  queuedAt    DateTime  @default(now()) @map("queued_at")
+  sentAt      DateTime? @map("sent_at")
+  deliveredAt DateTime? @map("delivered_at")
+  failedAt    DateTime? @map("failed_at")
 
-  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@index([userId])
@@ -594,16 +676,16 @@ model SmsOptOut {
 // upserts on (event_type, payload->>'id') to handle Svix retries.
 model AuthEvent {
   id          String          @id @default(uuid()) @db.Uuid
-  tenantId    String?         @db.Uuid              @map("tenant_id")
-  userId      String?                                @map("user_id")
-  eventType   String                                 @map("event_type")
+  tenantId    String?         @map("tenant_id") @db.Uuid
+  userId      String?         @map("user_id")
+  eventType   String          @map("event_type")
   payload     Json
-  receivedAt  DateTime        @default(now())        @map("received_at")
-  processedAt DateTime?                              @map("processed_at")
+  receivedAt  DateTime        @default(now()) @map("received_at")
+  processedAt DateTime?       @map("processed_at")
   status      AuthEventStatus @default(received)
-  errorMsg    String?                                @map("error_msg")
+  errorMsg    String?         @map("error_msg")
 
-  tenant      Tenant?         @relation(fields: [tenantId], references: [id])
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@index([userId])
@@ -614,26 +696,26 @@ model AuthEvent {
 // Worker profile — extends User for the `worker` role. PK == User.id.
 // See docs/10-worker/01-onboarding/02-data-model.md.
 model WorkerProfile {
-  id              String    @id                                  // matches User.id (Clerk userId)
-  tenantId        String    @db.Uuid              @map("tenant_id")
-  firstName       String                                          @map("first_name")
-  lastName        String                                          @map("last_name")
-  zipCode         String?                                         @map("zip_code")
-  county          County?
-  skills          String[]                                        @default([])
-  certifications  Json      @default("[]")
-  availability    Json      @default("{}")
-  resume          Json?
-  resumeRawUrl    String?                                         @map("resume_raw_url")
-  parserStatus    ParserStatus?                                   @map("parser_status")
-  phoneHash       String?                                         @map("phone_hash")
-  onboardedAt     DateTime?                                       @map("onboarded_at")
-  createdAt       DateTime  @default(now())                       @map("created_at")
-  updatedAt       DateTime  @updatedAt                            @map("updated_at")
-  deletedAt       DateTime?                                       @map("deleted_at")
+  id             String        @id // matches User.id (Clerk userId)
+  tenantId       String        @map("tenant_id") @db.Uuid
+  firstName      String        @map("first_name")
+  lastName       String        @map("last_name")
+  zipCode        String?       @map("zip_code")
+  county         County?
+  skills         String[]      @default([])
+  certifications Json          @default("[]")
+  availability   Json          @default("{}")
+  resume         Json?
+  resumeRawUrl   String?       @map("resume_raw_url")
+  parserStatus   ParserStatus? @map("parser_status")
+  phoneHash      String?       @map("phone_hash")
+  onboardedAt    DateTime?     @map("onboarded_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  deletedAt      DateTime?     @map("deleted_at")
 
-  user            User      @relation(fields: [id], references: [id], onDelete: Cascade)
-  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@index([county])
@@ -644,45 +726,84 @@ model WorkerProfile {
 // Job postings created by employers. SEO slug-routed for crawlable URLs.
 // See docs/20-employer/02-job-postings (referenced by 10-worker/03-job-discovery).
 model JobPosting {
-  id              String    @id @default(uuid()) @db.Uuid
-  tenantId        String    @db.Uuid              @map("tenant_id")
-  employerId      String                          @map("employer_id")
-  titleEn         String                          @map("title_en")
-  titleEs         String                          @map("title_es")
-  descriptionEn   String                          @map("description_en")
-  descriptionEs   String                          @map("description_es")
-  county          County
-  city            String?
-  zipCode         String?                         @map("zip_code")
-  wageMin         Decimal   @db.Decimal(8, 2)    @map("wage_min")
-  wageMax         Decimal   @db.Decimal(8, 2)    @map("wage_max")
-  wageUnit        WageUnit  @default(hour)       @map("wage_unit")
-  startDate       DateTime  @db.Date              @map("start_date")
-  endDate         DateTime? @db.Date              @map("end_date")
-  applyBy         DateTime? @db.Date              @map("apply_by")
-  skills          String[]                        @default([])
-  housing         Boolean   @default(false)
-  transport       Boolean   @default(false)
-  positionsTotal  Int       @default(1)            @map("positions_total")
-  hireCount       Int       @default(0)            @map("hire_count")
-  status          JobStatus @default(draft)
-  seoSlug         String?   @unique               @map("seo_slug")            // null for drafts; set at publish
-  publishedAt     DateTime?                       @map("published_at")
-  filledAt        DateTime?                       @map("filled_at")
-  closedAt        DateTime?                       @map("closed_at")
-  createdAt       DateTime  @default(now())       @map("created_at")
-  updatedAt       DateTime  @updatedAt            @map("updated_at")
-  deletedAt       DateTime?                       @map("deleted_at")
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  employerId     String    @map("employer_id")
+  titleEn        String    @map("title_en")
+  titleEs        String    @map("title_es")
+  descriptionEn  String    @map("description_en")
+  descriptionEs  String    @map("description_es")
+  county         County
+  city           String?
+  zipCode        String?   @map("zip_code")
+  wageMin        Decimal   @map("wage_min") @db.Decimal(8, 2)
+  wageMax        Decimal   @map("wage_max") @db.Decimal(8, 2)
+  wageUnit       WageUnit  @default(hour) @map("wage_unit")
+  startDate      DateTime  @map("start_date") @db.Date
+  endDate        DateTime? @map("end_date") @db.Date
+  applyBy        DateTime? @map("apply_by") @db.Date
+  skills         String[]  @default([])
+  housing        Boolean   @default(false)
+  transport      Boolean   @default(false)
+  positionsTotal Int       @default(1) @map("positions_total")
+  hireCount      Int       @default(0) @map("hire_count")
+  status         JobStatus @default(draft)
+  seoSlug        String?   @unique @map("seo_slug") // null for drafts; set at publish
+  publishedAt    DateTime? @map("published_at")
+  filledAt       DateTime? @map("filled_at")
+  closedAt       DateTime? @map("closed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
 
-  tenant            Tenant             @relation(fields: [tenantId], references: [id])
-  employer          User               @relation("JobPostingEmployer", fields: [employerId], references: [id])
-  applications      Application[]
-  workerInvitations WorkerInvitation[]
+  // ── Edit-Job v2 spec ──
+  cropId                String?       @map("crop_id") @db.Uuid
+  roleTypeId            String?       @map("role_type_id") @db.Uuid
+  dailyStartTime        DateTime?     @map("daily_start_time") @db.Time(0)
+  dailyEndTime          DateTime?     @map("daily_end_time") @db.Time(0)
+  workingDays           Int           @default(31) @map("working_days") @db.SmallInt
+  wageStructure         WageStructure @default(hourly) @map("wage_structure")
+  pieceRate             Decimal?      @map("piece_rate") @db.Decimal(8, 4)
+  pieceUnit             String?       @map("piece_unit")
+  payFrequency          PayFrequency  @default(weekly) @map("pay_frequency")
+  mealsProvided         Boolean       @default(false) @map("meals_provided")
+  endOfSeasonBonusCents Int?          @map("end_of_season_bonus_cents")
+  pickupPoint           String?       @map("pickup_point")
+  minExperience         MinExperience @default(none) @map("min_experience")
+  minAge                MinAge        @default(eighteen) @map("min_age")
+  autoMatchEnabled      Boolean       @default(true) @map("auto_match_enabled")
+  autoTranslateEnabled  Boolean       @default(true) @map("auto_translate_enabled")
+  smsApplyEnabled       Boolean       @default(true) @map("sms_apply_enabled")
+  smsApplyKeyword       String?       @map("sms_apply_keyword")
+  applicationDeadlineAt DateTime?     @map("application_deadline_at")
+  foremanContactId      String?       @map("foreman_contact_id") @db.Uuid
+  siteAddress           String?       @map("site_address")
+  siteAcres             Decimal?      @map("site_acres") @db.Decimal(8, 2)
+  siteLat               Float?        @map("site_lat")
+  siteLng               Float?        @map("site_lng")
+  humanId               String?       @map("human_id")
+  lastEditedById        String?       @map("last_edited_by_id")
+  autosavedAt           DateTime?     @map("autosaved_at")
+
+  tenant             Tenant                 @relation(fields: [tenantId], references: [id])
+  employer           User                   @relation("JobPostingEmployer", fields: [employerId], references: [id])
+  lastEditedBy       User?                  @relation("JobPostingLastEditor", fields: [lastEditedById], references: [id])
+  crop               Crop?                  @relation(fields: [cropId], references: [id])
+  roleType           RoleType?              @relation(fields: [roleTypeId], references: [id])
+  foremanContact     EmployerContact?       @relation(fields: [foremanContactId], references: [id])
+  applications       Application[]
+  workerInvitations  WorkerInvitation[]
+  photos             JobPhoto[]
+  screeningQuestions JobScreeningQuestion[]
+  editEvents         JobEditEvent[]
+  renotifications    JobRenotification[]
 
   @@index([tenantId])
   @@index([tenantId, status, county])
   @@index([status, startDate])
   @@index([employerId, status])
+  @@index([cropId])
+  @@index([roleTypeId])
   @@map("job_postings")
 }
 
@@ -691,31 +812,33 @@ model JobPosting {
 // docs/20-employer/03-applicant-review/02-data-model.md (employer-side fields).
 model Application {
   id                  String           @id @default(uuid()) @db.Uuid
-  tenantId            String           @db.Uuid              @map("tenant_id")
-  jobId               String           @db.Uuid              @map("job_id")
-  workerId            String                                  @map("worker_id")
+  tenantId            String           @map("tenant_id") @db.Uuid
+  jobId               String           @map("job_id") @db.Uuid
+  workerId            String           @map("worker_id")
   status              AppStatus        @default(applied)
-  wageOffered         Decimal?         @db.Decimal(8, 2)    @map("wage_offered")
-  workerNote          String?          @db.VarChar(500)     @map("worker_note")
-  employerNote        String?          @db.VarChar(2000)    @map("employer_note")        // private to employer
-  rejectionReason     RejectionReason?                       @map("rejection_reason")
-  rejectionReasonText String?          @db.VarChar(500)     @map("rejection_reason_text")
-  appliedAt           DateTime         @default(now())       @map("applied_at")
-  reviewedAt          DateTime?                              @map("reviewed_at")
-  hiredAt             DateTime?                              @map("hired_at")
-  rejectedAt          DateTime?                              @map("rejected_at")
-  withdrawnAt         DateTime?                              @map("withdrawn_at")
-  startDate           DateTime?        @db.Date              @map("start_date")
-  countyAtApply       County?                                 @map("county_at_apply")
-  skillsAtApply       String[]                                @default([]) @map("skills_at_apply")
-  createdAt           DateTime         @default(now())       @map("created_at")
-  updatedAt           DateTime         @updatedAt            @map("updated_at")
-  deletedAt           DateTime?                               @map("deleted_at")
+  wageOffered         Decimal?         @map("wage_offered") @db.Decimal(8, 2)
+  workerNote          String?          @map("worker_note") @db.VarChar(500)
+  employerNote        String?          @map("employer_note") @db.VarChar(2000) // private to employer
+  rejectionReason     RejectionReason? @map("rejection_reason")
+  rejectionReasonText String?          @map("rejection_reason_text") @db.VarChar(500)
+  appliedAt           DateTime         @default(now()) @map("applied_at")
+  reviewedAt          DateTime?        @map("reviewed_at")
+  hiredAt             DateTime?        @map("hired_at")
+  rejectedAt          DateTime?        @map("rejected_at")
+  withdrawnAt         DateTime?        @map("withdrawn_at")
+  startDate           DateTime?        @map("start_date") @db.Date
+  countyAtApply       County?          @map("county_at_apply")
+  skillsAtApply       String[]         @default([]) @map("skills_at_apply")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+  deletedAt           DateTime?        @map("deleted_at")
 
-  tenant              Tenant             @relation(fields: [tenantId], references: [id])
-  job                 JobPosting         @relation(fields: [jobId], references: [id])
-  worker              User               @relation(fields: [workerId], references: [id])
-  events              ApplicationEvent[]
+  tenant           Tenant                       @relation(fields: [tenantId], references: [id])
+  job              JobPosting                   @relation(fields: [jobId], references: [id])
+  worker           User                         @relation(fields: [workerId], references: [id])
+  events           ApplicationEvent[]
+  screeningAnswers ApplicationScreeningAnswer[]
+  renotifications  JobRenotification[]
 
   @@unique([jobId, workerId])
   @@index([tenantId])
@@ -726,18 +849,18 @@ model Application {
 }
 
 model ApplicationEvent {
-  id              String    @id @default(uuid()) @db.Uuid
-  tenantId        String    @db.Uuid              @map("tenant_id")
-  applicationId   String    @db.Uuid              @map("application_id")
-  fromStatus      AppStatus?                      @map("from_status")
-  toStatus        AppStatus                       @map("to_status")
-  actorUserId     String                          @map("actor_user_id")
-  actorRole       UserRole                        @map("actor_role")
-  metadata        Json      @default("{}")
-  createdAt       DateTime  @default(now())       @map("created_at")
+  id            String     @id @default(uuid()) @db.Uuid
+  tenantId      String     @map("tenant_id") @db.Uuid
+  applicationId String     @map("application_id") @db.Uuid
+  fromStatus    AppStatus? @map("from_status")
+  toStatus      AppStatus  @map("to_status")
+  actorUserId   String     @map("actor_user_id")
+  actorRole     UserRole   @map("actor_role")
+  metadata      Json       @default("{}")
+  createdAt     DateTime   @default(now()) @map("created_at")
 
-  tenant          Tenant    @relation(fields: [tenantId], references: [id])
-  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([applicationId, createdAt])
@@ -747,20 +870,20 @@ model ApplicationEvent {
 // Saved searches with optional SMS / email alerts.
 // See docs/10-worker/03-job-discovery/02-data-model.md.
 model SavedSearch {
-  id              String       @id @default(uuid()) @db.Uuid
-  tenantId        String       @db.Uuid             @map("tenant_id")
-  workerId        String                              @map("worker_id")
-  name            String?
-  filters         Json
-  alertChannel    AlertChannel @default(sms)         @map("alert_channel")
-  alertActive     Boolean      @default(true)        @map("alert_active")
-  lastNotifiedAt  DateTime?                          @map("last_notified_at")
-  createdAt       DateTime     @default(now())       @map("created_at")
-  updatedAt       DateTime     @updatedAt            @map("updated_at")
-  deletedAt       DateTime?                          @map("deleted_at")
+  id             String       @id @default(uuid()) @db.Uuid
+  tenantId       String       @map("tenant_id") @db.Uuid
+  workerId       String       @map("worker_id")
+  name           String?
+  filters        Json
+  alertChannel   AlertChannel @default(sms) @map("alert_channel")
+  alertActive    Boolean      @default(true) @map("alert_active")
+  lastNotifiedAt DateTime?    @map("last_notified_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
 
-  tenant          Tenant       @relation(fields: [tenantId], references: [id])
-  worker          User         @relation(fields: [workerId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  worker User   @relation(fields: [workerId], references: [id])
 
   @@index([tenantId])
   @@index([workerId])
@@ -772,13 +895,13 @@ model SavedSearch {
 // admin reports + zero-result detection.
 model SearchView {
   id          String   @id @default(uuid()) @db.Uuid
-  tenantId    String   @db.Uuid              @map("tenant_id")
-  workerId    String?                         @map("worker_id")
+  tenantId    String   @map("tenant_id") @db.Uuid
+  workerId    String?  @map("worker_id")
   filters     Json
-  resultCount Int                             @map("result_count")
-  createdAt   DateTime @default(now())        @map("created_at")
+  resultCount Int      @map("result_count")
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId, createdAt])
   @@map("search_views")
@@ -788,34 +911,34 @@ model SearchView {
 // See docs/10-worker/05-training-browser/02-data-model.md.
 model TrainingProgram {
   id              String        @id @default(uuid()) @db.Uuid
-  tenantId        String        @db.Uuid             @map("tenant_id")
-  orgId           String                              @map("org_id")
-  titleEn         String                              @map("title_en")
-  titleEs         String                              @map("title_es")
-  summaryEn       String?       @db.VarChar(280)    @map("summary_en")
-  summaryEs       String?       @db.VarChar(280)    @map("summary_es")
-  descriptionEn   String                              @map("description_en")
-  descriptionEs   String                              @map("description_es")
+  tenantId        String        @map("tenant_id") @db.Uuid
+  orgId           String        @map("org_id")
+  titleEn         String        @map("title_en")
+  titleEs         String        @map("title_es")
+  summaryEn       String?       @map("summary_en") @db.VarChar(280)
+  summaryEs       String?       @map("summary_es") @db.VarChar(280)
+  descriptionEn   String        @map("description_en")
+  descriptionEs   String        @map("description_es")
   funder          Funder
   county          County
-  locationName    String                              @map("location_name")
-  locationAddress String                              @map("location_address")
+  locationName    String        @map("location_name")
+  locationAddress String        @map("location_address")
   capacity        Int
-  enrolledCount   Int           @default(0)           @map("enrolled_count")
-  startDate       DateTime                            @map("start_date")
-  endDate         DateTime                            @map("end_date")
-  sessionTimes    Json          @default("[]")        @map("session_times")
-  topics          String[]                            @default([])
-  certName        String?                             @map("cert_name")
-  seoSlug         String        @unique               @map("seo_slug")
+  enrolledCount   Int           @default(0) @map("enrolled_count")
+  startDate       DateTime      @map("start_date")
+  endDate         DateTime      @map("end_date")
+  sessionTimes    Json          @default("[]") @map("session_times")
+  topics          String[]      @default([])
+  certName        String?       @map("cert_name")
+  seoSlug         String        @unique @map("seo_slug")
   status          ProgramStatus @default(draft)
-  createdAt       DateTime      @default(now())       @map("created_at")
-  updatedAt       DateTime      @updatedAt            @map("updated_at")
-  deletedAt       DateTime?                           @map("deleted_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  deletedAt       DateTime?     @map("deleted_at")
 
-  tenant          Tenant        @relation(fields: [tenantId], references: [id])
-  org             User          @relation("TrainingProgramOrg", fields: [orgId], references: [id])
-  enrollments     Enrollment[]
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  org         User         @relation("TrainingProgramOrg", fields: [orgId], references: [id])
+  enrollments Enrollment[]
 
   @@index([tenantId])
   @@index([county])
@@ -826,26 +949,26 @@ model TrainingProgram {
 
 model Enrollment {
   id              String           @id @default(uuid()) @db.Uuid
-  tenantId        String           @db.Uuid             @map("tenant_id")
-  programId       String           @db.Uuid             @map("program_id")
-  workerId        String                                  @map("worker_id")
+  tenantId        String           @map("tenant_id") @db.Uuid
+  programId       String           @map("program_id") @db.Uuid
+  workerId        String           @map("worker_id")
   status          EnrollmentStatus @default(enrolled)
-  enrolledAt      DateTime         @default(now())       @map("enrolled_at")
-  completedAt     DateTime?                              @map("completed_at")
-  droppedAt       DateTime?                              @map("dropped_at")
-  certUrl         String?                                @map("cert_url")
-  certGeneratedAt DateTime?                              @map("cert_generated_at")
-  certificateId   String?          @unique               @map("certificate_id")
-  noShow          Boolean          @default(false)       @map("no_show")
-  reminderSent48h Boolean          @default(false)       @map("reminder_sent_48h")
-  reminderSent2h  Boolean          @default(false)       @map("reminder_sent_2h")
-  createdAt       DateTime         @default(now())       @map("created_at")
-  updatedAt       DateTime         @updatedAt            @map("updated_at")
-  deletedAt       DateTime?                              @map("deleted_at")
+  enrolledAt      DateTime         @default(now()) @map("enrolled_at")
+  completedAt     DateTime?        @map("completed_at")
+  droppedAt       DateTime?        @map("dropped_at")
+  certUrl         String?          @map("cert_url")
+  certGeneratedAt DateTime?        @map("cert_generated_at")
+  certificateId   String?          @unique @map("certificate_id")
+  noShow          Boolean          @default(false) @map("no_show")
+  reminderSent48h Boolean          @default(false) @map("reminder_sent_48h")
+  reminderSent2h  Boolean          @default(false) @map("reminder_sent_2h")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  deletedAt       DateTime?        @map("deleted_at")
 
-  tenant          Tenant           @relation(fields: [tenantId], references: [id])
-  program         TrainingProgram  @relation(fields: [programId], references: [id])
-  worker          User             @relation(fields: [workerId], references: [id])
+  tenant  Tenant          @relation(fields: [tenantId], references: [id])
+  program TrainingProgram @relation(fields: [programId], references: [id])
+  worker  User            @relation(fields: [workerId], references: [id])
 
   @@unique([programId, workerId])
   @@index([tenantId])
@@ -857,23 +980,23 @@ model Enrollment {
 // Crew = stable group of workers that move together across shifts.
 // See docs/20-employer/06-crews-shifts/02-data-model.md.
 model Crew {
-  id              String       @id @default(uuid()) @db.Uuid
-  tenantId        String       @db.Uuid             @map("tenant_id")
-  employerId      String                              @map("employer_id")
-  foremanUserId   String?                             @map("foreman_user_id")
-  jobId           String?      @db.Uuid              @map("job_id")
-  name            String
-  color           String       @default("primary")
-  notes           String?
-  createdAt       DateTime     @default(now())       @map("created_at")
-  updatedAt       DateTime     @updatedAt            @map("updated_at")
-  deletedAt       DateTime?                          @map("deleted_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  employerId    String    @map("employer_id")
+  foremanUserId String?   @map("foreman_user_id")
+  jobId         String?   @map("job_id") @db.Uuid
+  name          String
+  color         String    @default("primary")
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
-  tenant          Tenant       @relation(fields: [tenantId], references: [id])
-  employer        User         @relation("CrewEmployer", fields: [employerId], references: [id])
-  foreman         User?        @relation("CrewForeman",  fields: [foremanUserId], references: [id])
-  members         CrewMember[]
-  shifts          Shift[]
+  tenant   Tenant       @relation(fields: [tenantId], references: [id])
+  employer User         @relation("CrewEmployer", fields: [employerId], references: [id])
+  foreman  User?        @relation("CrewForeman", fields: [foremanUserId], references: [id])
+  members  CrewMember[]
+  shifts   Shift[]
 
   @@index([tenantId])
   @@index([employerId])
@@ -882,17 +1005,17 @@ model Crew {
 }
 
 model CrewMember {
-  id              String         @id @default(uuid()) @db.Uuid
-  tenantId        String         @db.Uuid             @map("tenant_id")
-  crewId          String         @db.Uuid             @map("crew_id")
-  workerUserId    String                              @map("worker_user_id")
-  role            CrewMemberRole @default(member)
-  joinedAt        DateTime       @default(now())     @map("joined_at")
-  leftAt          DateTime?                          @map("left_at")
+  id           String         @id @default(uuid()) @db.Uuid
+  tenantId     String         @map("tenant_id") @db.Uuid
+  crewId       String         @map("crew_id") @db.Uuid
+  workerUserId String         @map("worker_user_id")
+  role         CrewMemberRole @default(member)
+  joinedAt     DateTime       @default(now()) @map("joined_at")
+  leftAt       DateTime?      @map("left_at")
 
-  tenant          Tenant         @relation(fields: [tenantId], references: [id])
-  crew            Crew           @relation(fields: [crewId], references: [id], onDelete: Cascade)
-  worker          User           @relation(fields: [workerUserId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  crew   Crew   @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  worker User   @relation(fields: [workerUserId], references: [id])
 
   @@index([tenantId])
   @@index([crewId])
@@ -903,26 +1026,26 @@ model CrewMember {
 // Shift = single dated work block tied to a crew (or ad-hoc when crew is null).
 // See docs/20-employer/06-crews-shifts/02-data-model.md.
 model Shift {
-  id              String      @id @default(uuid()) @db.Uuid
-  tenantId        String      @db.Uuid             @map("tenant_id")
-  employerId      String                              @map("employer_id")
-  crewId          String?     @db.Uuid              @map("crew_id")
-  jobId           String?     @db.Uuid              @map("job_id")
-  shiftDate       DateTime    @db.Date              @map("shift_date")
-  startTime       String                              @map("start_time")          // 'HH:MM' local
-  endTime         String?                             @map("end_time")
-  locationLabel   String                              @map("location_label")
-  locationLat     Decimal?    @db.Decimal(9, 6)    @map("location_lat")
-  locationLng     Decimal?    @db.Decimal(9, 6)    @map("location_lng")
-  status          ShiftStatus @default(scheduled)
-  notes           String?
-  createdAt       DateTime    @default(now())       @map("created_at")
-  updatedAt       DateTime    @updatedAt            @map("updated_at")
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @map("tenant_id") @db.Uuid
+  employerId    String      @map("employer_id")
+  crewId        String?     @map("crew_id") @db.Uuid
+  jobId         String?     @map("job_id") @db.Uuid
+  shiftDate     DateTime    @map("shift_date") @db.Date
+  startTime     String      @map("start_time") // 'HH:MM' local
+  endTime       String?     @map("end_time")
+  locationLabel String      @map("location_label")
+  locationLat   Decimal?    @map("location_lat") @db.Decimal(9, 6)
+  locationLng   Decimal?    @map("location_lng") @db.Decimal(9, 6)
+  status        ShiftStatus @default(scheduled)
+  notes         String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
 
-  tenant          Tenant            @relation(fields: [tenantId], references: [id])
-  employer        User              @relation("ShiftEmployer", fields: [employerId], references: [id])
-  crew            Crew?             @relation(fields: [crewId], references: [id])
-  assignments     ShiftAssignment[]
+  tenant      Tenant            @relation(fields: [tenantId], references: [id])
+  employer    User              @relation("ShiftEmployer", fields: [employerId], references: [id])
+  crew        Crew?             @relation(fields: [crewId], references: [id])
+  assignments ShiftAssignment[]
 
   @@index([tenantId])
   @@index([employerId, shiftDate])
@@ -932,20 +1055,20 @@ model Shift {
 }
 
 model ShiftAssignment {
-  id              String                @id @default(uuid()) @db.Uuid
-  tenantId        String                @db.Uuid             @map("tenant_id")
-  shiftId         String                @db.Uuid             @map("shift_id")
-  workerUserId    String                                      @map("worker_user_id")
-  status          ShiftAssignmentStatus @default(assigned)
-  hoursWorked     Decimal?              @db.Decimal(5, 2)   @map("hours_worked")
-  piecesCount     Int?                                        @map("pieces_count")
-  pieceRateCents  Int?                                        @map("piece_rate_cents")
-  createdAt       DateTime              @default(now())     @map("created_at")
-  updatedAt       DateTime              @updatedAt          @map("updated_at")
+  id             String                @id @default(uuid()) @db.Uuid
+  tenantId       String                @map("tenant_id") @db.Uuid
+  shiftId        String                @map("shift_id") @db.Uuid
+  workerUserId   String                @map("worker_user_id")
+  status         ShiftAssignmentStatus @default(assigned)
+  hoursWorked    Decimal?              @map("hours_worked") @db.Decimal(5, 2)
+  piecesCount    Int?                  @map("pieces_count")
+  pieceRateCents Int?                  @map("piece_rate_cents")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
 
-  tenant          Tenant @relation(fields: [tenantId], references: [id])
-  shift           Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  worker          User   @relation(fields: [workerUserId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  shift  Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  worker User   @relation(fields: [workerUserId], references: [id])
 
   @@unique([shiftId, workerUserId])
   @@index([tenantId])
@@ -957,23 +1080,23 @@ model ShiftAssignment {
 // Payroll period — bounded date range with aggregated line items.
 // See docs/20-employer/07-payroll/02-data-model.md.
 model PayrollPeriod {
-  id            String              @id @default(uuid()) @db.Uuid
-  tenantId      String              @db.Uuid             @map("tenant_id")
-  employerId    String                                    @map("employer_id")
-  startDate     DateTime            @db.Date              @map("start_date")
-  endDate       DateTime            @db.Date              @map("end_date")
-  payDate       DateTime            @db.Date              @map("pay_date")
-  status        PayrollPeriodStatus @default(draft)
-  approvedAt    DateTime?                                  @map("approved_at")
-  approvedById  String?                                    @map("approved_by_id")
-  paidAt        DateTime?                                  @map("paid_at")
-  createdAt     DateTime            @default(now())       @map("created_at")
-  updatedAt     DateTime            @updatedAt            @map("updated_at")
+  id           String              @id @default(uuid()) @db.Uuid
+  tenantId     String              @map("tenant_id") @db.Uuid
+  employerId   String              @map("employer_id")
+  startDate    DateTime            @map("start_date") @db.Date
+  endDate      DateTime            @map("end_date") @db.Date
+  payDate      DateTime            @map("pay_date") @db.Date
+  status       PayrollPeriodStatus @default(draft)
+  approvedAt   DateTime?           @map("approved_at")
+  approvedById String?             @map("approved_by_id")
+  paidAt       DateTime?           @map("paid_at")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
 
-  tenant        Tenant            @relation(fields: [tenantId], references: [id])
-  employer      User              @relation("PayrollEmployer", fields: [employerId], references: [id])
-  approvedBy    User?             @relation("PayrollApprover", fields: [approvedById], references: [id])
-  lines         PayrollLine[]
+  tenant     Tenant        @relation(fields: [tenantId], references: [id])
+  employer   User          @relation("PayrollEmployer", fields: [employerId], references: [id])
+  approvedBy User?         @relation("PayrollApprover", fields: [approvedById], references: [id])
+  lines      PayrollLine[]
 
   @@index([tenantId])
   @@index([employerId, startDate])
@@ -982,25 +1105,25 @@ model PayrollPeriod {
 }
 
 model PayrollLine {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenantId        String   @db.Uuid             @map("tenant_id")
-  periodId        String   @db.Uuid             @map("period_id")
-  workerUserId    String                          @map("worker_user_id")
-  role            String?
-  hours           Decimal  @db.Decimal(6, 2)   @default(0)
-  overtimeHours   Decimal  @db.Decimal(6, 2)   @default(0)              @map("overtime_hours")
-  grossCents      Int      @default(0)                                  @map("gross_cents")
-  bonusCents      Int      @default(0)                                  @map("bonus_cents")
-  taxesCents      Int      @default(0)                                  @map("taxes_cents")
-  netCents        Int      @default(0)                                  @map("net_cents")
-  notes           String?
-  approvedAt      DateTime?                                              @map("approved_at")
-  createdAt       DateTime @default(now())                              @map("created_at")
-  updatedAt       DateTime @updatedAt                                   @map("updated_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  periodId      String    @map("period_id") @db.Uuid
+  workerUserId  String    @map("worker_user_id")
+  role          String?
+  hours         Decimal   @default(0) @db.Decimal(6, 2)
+  overtimeHours Decimal   @default(0) @map("overtime_hours") @db.Decimal(6, 2)
+  grossCents    Int       @default(0) @map("gross_cents")
+  bonusCents    Int       @default(0) @map("bonus_cents")
+  taxesCents    Int       @default(0) @map("taxes_cents")
+  netCents      Int       @default(0) @map("net_cents")
+  notes         String?
+  approvedAt    DateTime? @map("approved_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  tenant          Tenant        @relation(fields: [tenantId], references: [id])
-  period          PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
-  worker          User          @relation(fields: [workerUserId], references: [id])
+  tenant Tenant        @relation(fields: [tenantId], references: [id])
+  period PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  worker User          @relation(fields: [workerUserId], references: [id])
 
   @@unique([periodId, workerUserId])
   @@index([tenantId])
@@ -1011,22 +1134,22 @@ model PayrollLine {
 // Compliance — flat item registry per employer.
 // See docs/20-employer/08-compliance/02-data-model.md.
 model ComplianceItem {
-  id           String                @id @default(uuid()) @db.Uuid
-  tenantId     String                @db.Uuid             @map("tenant_id")
-  employerId   String                                      @map("employer_id")
-  category     String                                      // 'documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', custom
-  itemKey      String                                      @map("item_key")
-  label        String
-  status       ComplianceItemStatus  @default(ok)
-  details      String?
-  evidenceUrl  String?                                     @map("evidence_url")
-  dueAt        DateTime?                                   @map("due_at")
-  resolvedAt   DateTime?                                   @map("resolved_at")
-  createdAt    DateTime              @default(now())       @map("created_at")
-  updatedAt    DateTime              @updatedAt            @map("updated_at")
+  id          String               @id @default(uuid()) @db.Uuid
+  tenantId    String               @map("tenant_id") @db.Uuid
+  employerId  String               @map("employer_id")
+  category    String // 'documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', custom
+  itemKey     String               @map("item_key")
+  label       String
+  status      ComplianceItemStatus @default(ok)
+  details     String?
+  evidenceUrl String?              @map("evidence_url")
+  dueAt       DateTime?            @map("due_at")
+  resolvedAt  DateTime?            @map("resolved_at")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
 
-  tenant       Tenant @relation(fields: [tenantId], references: [id])
-  employer     User   @relation("ComplianceEmployer", fields: [employerId], references: [id])
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  employer User   @relation("ComplianceEmployer", fields: [employerId], references: [id])
 
   @@unique([employerId, category, itemKey])
   @@index([tenantId])
@@ -1035,26 +1158,50 @@ model ComplianceItem {
   @@map("compliance_items")
 }
 
+// Periodic snapshot of overall compliance score per employer profile.
+// Written daily (idempotent on (employerProfileId, snapshotDate)) so the
+// compliance dashboard can compute real "vs. last quarter" deltas instead
+// of hardcoded copy.
+model ComplianceScoreSnapshot {
+  id                String   @id @default(uuid()) @db.Uuid
+  tenantId          String   @map("tenant_id") @db.Uuid
+  employerProfileId String   @map("employer_profile_id") @db.Uuid
+  snapshotDate      DateTime @map("snapshot_date") @db.Date
+  score             Int
+  okCount           Int      @default(0) @map("ok_count")
+  warnCount         Int      @default(0) @map("warn_count")
+  failCount         Int      @default(0) @map("fail_count")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  tenant          Tenant          @relation(fields: [tenantId], references: [id])
+  employerProfile EmployerProfile @relation(fields: [employerProfileId], references: [id])
+
+  @@unique([employerProfileId, snapshotDate])
+  @@index([tenantId])
+  @@index([employerProfileId, snapshotDate])
+  @@map("compliance_score_snapshots")
+}
+
 // In-app messaging — SMS/WhatsApp use existing sms package; this is the
 // per-conversation/per-message log + thread index for the messages UI.
 // See docs/20-employer/09-messaging/02-data-model.md.
 model Conversation {
   id            String         @id @default(uuid()) @db.Uuid
-  tenantId      String         @db.Uuid             @map("tenant_id")
-  employerId    String                              @map("employer_id")
+  tenantId      String         @map("tenant_id") @db.Uuid
+  employerId    String         @map("employer_id")
   title         String
-  isGroup       Boolean        @default(false)     @map("is_group")
+  isGroup       Boolean        @default(false) @map("is_group")
   channel       MessageChannel @default(app)
-  pinnedShiftId String?        @db.Uuid            @map("pinned_shift_id")
-  lastMessageAt DateTime?                          @map("last_message_at")
-  createdAt     DateTime       @default(now())     @map("created_at")
-  updatedAt     DateTime       @updatedAt          @map("updated_at")
-  deletedAt     DateTime?                          @map("deleted_at")
+  pinnedShiftId String?        @map("pinned_shift_id") @db.Uuid
+  lastMessageAt DateTime?      @map("last_message_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  deletedAt     DateTime?      @map("deleted_at")
 
-  tenant        Tenant                    @relation(fields: [tenantId], references: [id])
-  employer      User                      @relation("ConversationEmployer", fields: [employerId], references: [id])
-  participants  ConversationParticipant[]
-  messages      Message[]
+  tenant       Tenant                    @relation(fields: [tenantId], references: [id])
+  employer     User                      @relation("ConversationEmployer", fields: [employerId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
 
   @@index([tenantId])
   @@index([employerId, lastMessageAt])
@@ -1062,18 +1209,18 @@ model Conversation {
 }
 
 model ConversationParticipant {
-  id              String         @id @default(uuid()) @db.Uuid
-  tenantId        String         @db.Uuid             @map("tenant_id")
-  conversationId  String         @db.Uuid             @map("conversation_id")
-  userId          String                              @map("user_id")
-  joinedAt        DateTime       @default(now())     @map("joined_at")
-  leftAt          DateTime?                          @map("left_at")
-  unreadCount     Int            @default(0)         @map("unread_count")
-  lastReadAt      DateTime?                          @map("last_read_at")
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  conversationId String    @map("conversation_id") @db.Uuid
+  userId         String    @map("user_id")
+  joinedAt       DateTime  @default(now()) @map("joined_at")
+  leftAt         DateTime? @map("left_at")
+  unreadCount    Int       @default(0) @map("unread_count")
+  lastReadAt     DateTime? @map("last_read_at")
 
-  tenant          Tenant       @relation(fields: [tenantId], references: [id])
-  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user            User         @relation(fields: [userId], references: [id])
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
 
   @@unique([conversationId, userId])
   @@index([tenantId])
@@ -1082,21 +1229,21 @@ model ConversationParticipant {
 }
 
 model Message {
-  id              String           @id @default(uuid()) @db.Uuid
-  tenantId        String           @db.Uuid             @map("tenant_id")
-  conversationId  String           @db.Uuid             @map("conversation_id")
-  senderUserId    String                                @map("sender_user_id")
-  body            String
-  channel         MessageChannel   @default(app)
-  direction       MessageDirection @default(outbound)
-  smsLogId        String?          @db.Uuid             @map("sms_log_id")
-  metadata        Json             @default("{}")
-  createdAt       DateTime         @default(now())     @map("created_at")
-  deletedAt       DateTime?                            @map("deleted_at")
+  id             String           @id @default(uuid()) @db.Uuid
+  tenantId       String           @map("tenant_id") @db.Uuid
+  conversationId String           @map("conversation_id") @db.Uuid
+  senderUserId   String           @map("sender_user_id")
+  body           String
+  channel        MessageChannel   @default(app)
+  direction      MessageDirection @default(outbound)
+  smsLogId       String?          @map("sms_log_id") @db.Uuid
+  metadata       Json             @default("{}")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  deletedAt      DateTime?        @map("deleted_at")
 
-  tenant          Tenant       @relation(fields: [tenantId], references: [id])
-  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender          User         @relation(fields: [senderUserId], references: [id])
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderUserId], references: [id])
 
   @@index([tenantId])
   @@index([conversationId, createdAt])
@@ -1123,19 +1270,19 @@ model Message {
 // ============================================================================
 model TranslationKey {
   id          String            @id @default(uuid()) @db.Uuid
-  tenantId    String?           @db.Uuid                              @map("tenant_id")
-  namespace   String                                                                              // e.g. "marketing.faq_page", "landing.hero"
-  key         String                                                                              // dot-path within namespace, e.g. "headline", "tile.workersPlaced.label"
+  tenantId    String?           @map("tenant_id") @db.Uuid
+  namespace   String // e.g. "marketing.faq_page", "landing.hero"
+  key         String // dot-path within namespace, e.g. "headline", "tile.workersPlaced.label"
   locale      Lang
   value       String            @db.Text
   status      TranslationStatus @default(published)
-  reviewedBy  String?                                                  @map("reviewed_by")
-  reviewedAt  DateTime?                                                @map("reviewed_at")
-  publishedAt DateTime?                                                @map("published_at")
-  createdAt   DateTime          @default(now())                        @map("created_at")
-  updatedAt   DateTime          @updatedAt                             @map("updated_at")
+  reviewedBy  String?           @map("reviewed_by")
+  reviewedAt  DateTime?         @map("reviewed_at")
+  publishedAt DateTime?         @map("published_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
-  tenant      Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   // NOTE: uniqueness on (tenant_id, namespace, key, locale) is enforced by
   // partial indexes in the migration SQL (translation_keys_global_unique,
@@ -1151,4 +1298,202 @@ enum TranslationStatus {
   needs_review
   reviewed
   published
+}
+
+// ============================================================================
+// Edit-Job v2 — lookup tables, photos, screening, edit events, SMS routing
+// ============================================================================
+
+model Crop {
+  id        String   @id @default(uuid()) @db.Uuid
+  slug      String   @unique
+  labelEn   String   @map("label_en")
+  labelEs   String   @map("label_es")
+  glyphKey  String   @map("glyph_key")
+  sortOrder Int      @default(0) @map("sort_order")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  jobPostings JobPosting[]
+
+  @@index([active, sortOrder])
+  @@map("crops")
+}
+
+model RoleType {
+  id        String   @id @default(uuid()) @db.Uuid
+  slug      String   @unique
+  labelEn   String   @map("label_en")
+  labelEs   String   @map("label_es")
+  sortOrder Int      @default(0) @map("sort_order")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  jobPostings JobPosting[]
+
+  @@index([active, sortOrder])
+  @@map("role_types")
+}
+
+model SkillTag {
+  id        String   @id @default(uuid()) @db.Uuid
+  slug      String   @unique
+  labelEn   String   @map("label_en")
+  labelEs   String   @map("label_es")
+  category  String   @default("general")
+  sortOrder Int      @default(0) @map("sort_order")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([active, sortOrder])
+  @@index([category])
+  @@map("skill_tags")
+}
+
+model EmployerContact {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  employerId String    @map("employer_id") @db.Uuid
+  name       String
+  phone      String
+  role       String    @default("foreman")
+  languages  String[]  @default(["en", "es"])
+  sortOrder  Int       @default(0) @map("sort_order")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  jobPostings JobPosting[]
+
+  @@index([tenantId])
+  @@index([employerId])
+  @@map("employer_contacts")
+}
+
+model JobPhoto {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  jobId        String   @map("job_id") @db.Uuid
+  url          String
+  storageKey   String   @map("storage_key")
+  captionEn    String?  @map("caption_en")
+  captionEs    String?  @map("caption_es")
+  width        Int?
+  height       Int?
+  sortOrder    Int      @default(0) @map("sort_order")
+  uploadedById String?  @map("uploaded_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  job        JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  uploadedBy User?      @relation(fields: [uploadedById], references: [id])
+
+  @@index([tenantId])
+  @@index([jobId, sortOrder])
+  @@map("job_photos")
+}
+
+model JobScreeningQuestion {
+  id         String              @id @default(uuid()) @db.Uuid
+  tenantId   String              @map("tenant_id") @db.Uuid
+  jobId      String              @map("job_id") @db.Uuid
+  sortOrder  Int                 @default(0) @map("sort_order")
+  questionEn String              @map("question_en")
+  questionEs String              @map("question_es")
+  answerType ScreeningAnswerType @default(yes_no) @map("answer_type")
+  required   Boolean             @default(true)
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+
+  tenant  Tenant                       @relation(fields: [tenantId], references: [id])
+  job     JobPosting                   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  answers ApplicationScreeningAnswer[]
+
+  @@index([tenantId])
+  @@index([jobId, sortOrder])
+  @@map("job_screening_questions")
+}
+
+model ApplicationScreeningAnswer {
+  id            String   @id @default(uuid()) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  applicationId String   @map("application_id") @db.Uuid
+  questionId    String   @map("question_id") @db.Uuid
+  answerYes     Boolean? @map("answer_yes")
+  answerText    String?  @map("answer_text")
+  answeredAt    DateTime @default(now()) @map("answered_at")
+
+  tenant      Tenant               @relation(fields: [tenantId], references: [id])
+  application Application          @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  question    JobScreeningQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, questionId])
+  @@index([tenantId])
+  @@map("application_screening_answers")
+}
+
+model JobEditEvent {
+  id                   String           @id @default(uuid()) @db.Uuid
+  tenantId             String           @map("tenant_id") @db.Uuid
+  jobId                String           @map("job_id") @db.Uuid
+  actorUserId          String           @map("actor_user_id")
+  kind                 JobEditEventKind
+  fieldPath            String?          @map("field_path")
+  before               Json             @default("{}")
+  after                Json             @default("{}")
+  renotifyDispatchedAt DateTime?        @map("renotify_dispatched_at")
+  createdAt            DateTime         @default(now()) @map("created_at")
+
+  tenant          Tenant              @relation(fields: [tenantId], references: [id])
+  job             JobPosting          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  actor           User                @relation(fields: [actorUserId], references: [id])
+  renotifications JobRenotification[]
+
+  @@index([tenantId])
+  @@index([jobId, createdAt])
+  @@map("job_edit_events")
+}
+
+model JobRenotification {
+  id            String          @id @default(uuid()) @db.Uuid
+  tenantId      String          @map("tenant_id") @db.Uuid
+  jobId         String          @map("job_id") @db.Uuid
+  editEventId   String          @map("edit_event_id") @db.Uuid
+  applicationId String          @map("application_id") @db.Uuid
+  channel       RenotifyChannel
+  status        RenotifyStatus  @default(queued)
+  sentAt        DateTime?       @map("sent_at")
+  error         String?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  job         JobPosting   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  editEvent   JobEditEvent @relation(fields: [editEventId], references: [id], onDelete: Cascade)
+  application Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@unique([editEventId, applicationId, channel])
+  @@index([tenantId])
+  @@index([jobId])
+  @@map("job_renotifications")
+}
+
+model SmsKeyword {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  keyword    String
+  kind       String
+  entityId   String    @map("entity_id") @db.Uuid
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  lastUsedAt DateTime? @map("last_used_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([kind, entityId])
+  @@map("sms_keywords")
 }

@@ -4,6 +4,7 @@ import { JobStatus, type Tx } from '@agconn/db';
 import {
   CreateJobBody,
   PatchJobBody,
+  AutosaveJobBody,
   CloseJobBody,
   TranslateJobBody,
   EmployerJobsQuery,
@@ -13,12 +14,18 @@ import { translate } from '@agconn/llm';
 import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
 import type { AuditCtxVars } from '../../middleware/audit';
 import { isVerified } from '../shared';
+import { shapeJob } from './shape';
+import { recordEditAndMaybeRenotify } from './edit-events';
+import { enqueueAutomatch } from './automatch-queue';
+import { employerJobPhotosRoutes } from './photos';
+import { employerJobScreeningRoutes } from './screening';
 
 export const employerJobsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerJobsRoutes.use('*', requireAuth);
 employerJobsRoutes.use('*', requireRole('employer'));
 employerJobsRoutes.use('*', requireTenant);
 
+// ─── List ──────────────────────────────────────────────────────────────────
 employerJobsRoutes.get('/', validate('query', EmployerJobsQuery), async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;
@@ -38,12 +45,16 @@ employerJobsRoutes.get('/', validate('query', EmployerJobsQuery), async (c) => {
     where,
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     take: q.limit + 1,
+    include: {
+      foremanContact: true,
+      photos: { orderBy: { sortOrder: 'asc' } },
+      screeningQuestions: { orderBy: { sortOrder: 'asc' } },
+    },
   });
 
   const slice = rows.slice(0, q.limit);
   const hasMore = rows.length > q.limit;
 
-  // Single grouped query for application counts across this slice.
   const ids = slice.map((j) => j.id);
   const counts = ids.length
     ? await c.var.db.application.groupBy({
@@ -66,40 +77,54 @@ employerJobsRoutes.get('/', validate('query', EmployerJobsQuery), async (c) => {
       : null;
 
   return ok(c, {
-    jobs: slice.map((j) => shape(j, countsByJob.get(j.id) ?? {})),
+    jobs: slice.map((j) => shapeJob(j, countsByJob.get(j.id) ?? {})),
     nextCursor,
   });
 });
 
+// ─── Create ────────────────────────────────────────────────────────────────
 employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;
   const body = c.var.body;
 
-  const created = await c.var.db.jobPosting.create({
-    data: {
-      tenantId,
-      employerId: userId,
-      titleEn: body.titleEn,
-      titleEs: body.titleEs,
-      descriptionEn: body.descriptionEn,
-      descriptionEs: body.descriptionEs,
-      county: body.county,
-      city: body.city ?? null,
-      zipCode: body.zipCode ?? null,
-      wageMin: body.wageMin,
-      wageMax: body.wageMax,
-      wageUnit: body.wageUnit,
-      startDate: new Date(body.startDate),
-      endDate: body.endDate ? new Date(body.endDate) : null,
-      applyBy: body.applyBy ? new Date(body.applyBy) : null,
-      skills: body.skills,
-      housing: body.housing,
-      transport: body.transport,
-      positionsTotal: body.positionsTotal,
-      status: JobStatus.draft,
-      seoSlug: null,
-    },
+  const screeningQs = body.screeningQuestions ?? [];
+
+  const created = await c.var.db.$transaction(async (tx) => {
+    const humanId = await reserveHumanId(tx, tenantId);
+    const job = await tx.jobPosting.create({
+      data: {
+        tenantId,
+        employerId: userId,
+        ...mapV1Fields(body),
+        ...mapV2Fields(body),
+        humanId,
+        status: JobStatus.draft,
+        seoSlug: null,
+        lastEditedById: userId,
+      },
+      include: {
+        foremanContact: true,
+        photos: true,
+        screeningQuestions: true,
+      },
+    });
+
+    if (screeningQs.length) {
+      await tx.jobScreeningQuestion.createMany({
+        data: screeningQs.map((q, idx) => ({
+          tenantId,
+          jobId: job.id,
+          sortOrder: idx,
+          questionEn: q.questionEn,
+          questionEs: q.questionEs,
+          answerType: q.answerType,
+          required: q.required,
+        })),
+      });
+    }
+
+    return job;
   });
 
   await c.var.audit.log({
@@ -113,14 +138,29 @@ employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
     },
   });
 
-  return ok(c, { job: shape(created, {}) });
+  // Re-fetch to include any seeded screening questions in the response.
+  const final = await c.var.db.jobPosting.findUnique({
+    where: { id: created.id },
+    include: {
+      foremanContact: true,
+      photos: { orderBy: { sortOrder: 'asc' } },
+      screeningQuestions: { orderBy: { sortOrder: 'asc' } },
+    },
+  });
+  return ok(c, { job: shapeJob(final!, {}) });
 });
 
+// ─── Detail ────────────────────────────────────────────────────────────────
 employerJobsRoutes.get('/:id', async (c) => {
   const userId = c.var.userId;
   const id = c.req.param('id');
   const job = await c.var.db.jobPosting.findFirst({
     where: { id, employerId: userId, deletedAt: null },
+    include: {
+      foremanContact: true,
+      photos: { orderBy: { sortOrder: 'asc' } },
+      screeningQuestions: { orderBy: { sortOrder: 'asc' } },
+    },
   });
   if (!job) return err(c, 404, 'not_found');
 
@@ -130,12 +170,13 @@ employerJobsRoutes.get('/:id', async (c) => {
     _count: { _all: true },
   });
   const countMap = Object.fromEntries(counts.map((r) => [r.status, r._count._all]));
-
-  return ok(c, { job: shape(job, countMap) });
+  return ok(c, { job: shapeJob(job, countMap) });
 });
 
+// ─── Patch (loosened — published edits are allowed; logged + re-notified) ─
 employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
   const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
@@ -144,62 +185,109 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
   });
   if (!existing) return err(c, 404, 'not_found');
 
-  // While active, only description, endDate (extend only), and additive
-  // skills are editable. Anything else: 422.
+  if (existing.status === JobStatus.filled || existing.status === JobStatus.closed) {
+    return err(c, 422, 'validation_failed', 'cannot_edit_archived');
+  }
+
+  // Hard-locked even on active: county (changes SEO slug + match radius) and
+  // positionsTotal can only INCREASE (never below current hires).
   if (existing.status === JobStatus.active) {
-    const forbiddenChange =
-      body.titleEn !== undefined ||
-      body.titleEs !== undefined ||
-      body.county !== undefined ||
-      body.wageMin !== undefined ||
-      body.wageMax !== undefined ||
-      body.wageUnit !== undefined ||
-      body.startDate !== undefined ||
-      body.positionsTotal !== undefined ||
-      body.housing !== undefined ||
-      body.transport !== undefined;
-    if (forbiddenChange) {
-      return err(c, 422, 'validation_failed', 'cannot_edit_active_field');
+    if (body.county && body.county !== existing.county) {
+      return err(c, 422, 'validation_failed', 'cannot_change_county_active');
+    }
+    if (body.positionsTotal != null && body.positionsTotal < existing.hireCount) {
+      return err(c, 422, 'validation_failed', 'positions_below_hire_count');
     }
     if (body.endDate && existing.endDate && new Date(body.endDate) < existing.endDate) {
       return err(c, 422, 'validation_failed', 'end_date_shorten_forbidden');
     }
-    if (body.skills && body.skills.some((s) => !existing.skills.includes(s)) === false &&
-        existing.skills.some((s) => !body.skills!.includes(s))) {
-      return err(c, 422, 'validation_failed', 'skills_remove_forbidden');
-    }
   }
 
-  if (existing.status === JobStatus.filled || existing.status === JobStatus.closed) {
-    return err(c, 422, 'validation_failed', 'cannot_edit_archived');
+  const employerProfile = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: { dbaName: true, legalName: true },
+  });
+  const employerName = employerProfile?.dbaName || employerProfile?.legalName || 'Your employer';
+
+  const result = await c.var.db.$transaction(async (tx) => {
+    const updated = await tx.jobPosting.update({
+      where: { id },
+      data: {
+        ...mapV1Patch(body),
+        ...mapV2Patch(body),
+        lastEditedById: userId,
+        autosavedAt: null, // explicit save clears the autosave watermark
+      },
+      include: {
+        foremanContact: true,
+        photos: { orderBy: { sortOrder: 'asc' } },
+        screeningQuestions: { orderBy: { sortOrder: 'asc' } },
+      },
+    });
+
+    const renotify = await recordEditAndMaybeRenotify({
+      tx,
+      tenantId,
+      jobId: id,
+      actorUserId: userId,
+      before: existing as unknown as Record<string, unknown>,
+      after: updated as unknown as Record<string, unknown>,
+      status: existing.status as 'draft' | 'active',
+      employerName,
+    });
+
+    return { updated, renotify };
+  });
+
+  if (result.renotify.changedFields.length > 0) {
+    await c.var.audit.log({
+      action: 'job.posting.edited',
+      resourceId: id,
+      metadata: {
+        fields: result.renotify.changedFields,
+        renotificationsQueued: result.renotify.renotificationsQueued,
+      },
+    });
+  }
+
+  return ok(c, {
+    job: shapeJob(result.updated, {}),
+    edit: {
+      changedFields: result.renotify.changedFields,
+      renotificationsQueued: result.renotify.renotificationsQueued,
+    },
+  });
+});
+
+// ─── Autosave (drafts only, no diff-log, no validation cross-field refines)
+employerJobsRoutes.post('/:id/autosave', validate('json', AutosaveJobBody), async (c) => {
+  const userId = c.var.userId;
+  const id = c.req.param('id');
+  const body = c.var.body;
+
+  const existing = await c.var.db.jobPosting.findFirst({
+    where: { id, employerId: userId, deletedAt: null },
+    select: { id: true, status: true },
+  });
+  if (!existing) return err(c, 404, 'not_found');
+  if (existing.status !== JobStatus.draft) {
+    return err(c, 422, 'validation_failed', 'autosave_drafts_only');
   }
 
   const updated = await c.var.db.jobPosting.update({
     where: { id },
     data: {
-      titleEn: body.titleEn ?? undefined,
-      titleEs: body.titleEs ?? undefined,
-      descriptionEn: body.descriptionEn ?? undefined,
-      descriptionEs: body.descriptionEs ?? undefined,
-      county: body.county ?? undefined,
-      city: body.city === null ? null : body.city ?? undefined,
-      zipCode: body.zipCode === null ? null : body.zipCode ?? undefined,
-      wageMin: body.wageMin ?? undefined,
-      wageMax: body.wageMax ?? undefined,
-      wageUnit: body.wageUnit ?? undefined,
-      startDate: body.startDate ? new Date(body.startDate) : undefined,
-      endDate: body.endDate === null ? null : body.endDate ? new Date(body.endDate) : undefined,
-      applyBy: body.applyBy === null ? null : body.applyBy ? new Date(body.applyBy) : undefined,
-      skills: body.skills ?? undefined,
-      housing: body.housing ?? undefined,
-      transport: body.transport ?? undefined,
-      positionsTotal: body.positionsTotal ?? undefined,
+      ...mapV1Patch(body),
+      ...mapV2Patch(body),
+      lastEditedById: userId,
+      autosavedAt: new Date(),
     },
+    select: { id: true, autosavedAt: true },
   });
-
-  return ok(c, { job: shape(updated, {}) });
+  return ok(c, { id: updated.id, autosavedAt: updated.autosavedAt?.toISOString() ?? null });
 });
 
+// ─── Publish ───────────────────────────────────────────────────────────────
 employerJobsRoutes.post('/:id/publish', async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;
@@ -212,7 +300,6 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
   const limit = activePostingLimit(profile.plan);
 
   const result = await c.var.db.$transaction(async (tx) => {
-    // Lock the employer profile row to serialize concurrent publishes.
     await tx.$queryRaw`SELECT id FROM employer_profiles WHERE id = ${profile.id} FOR UPDATE`;
 
     const job = await tx.jobPosting.findFirst({
@@ -223,16 +310,13 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
 
     if (Number.isFinite(limit)) {
       const activeCount = await tx.jobPosting.count({
-        where: {
-          employerId: userId,
-          status: JobStatus.active,
-          deletedAt: null,
-        },
+        where: { employerId: userId, status: JobStatus.active, deletedAt: null },
       });
       if (activeCount >= limit) return { kind: 'plan_limit' as const };
     }
 
     const slug = await reserveSlug(tx, job.county, job.titleEn, job.startDate);
+    const keyword = await reserveSmsKeyword(tx, tenantId, job.id, job.titleEn);
 
     const published = await tx.jobPosting.update({
       where: { id },
@@ -240,6 +324,12 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
         status: JobStatus.active,
         publishedAt: new Date(),
         seoSlug: slug,
+        smsApplyKeyword: keyword,
+      },
+      include: {
+        foremanContact: true,
+        photos: { orderBy: { sortOrder: 'asc' } },
+        screeningQuestions: { orderBy: { sortOrder: 'asc' } },
       },
     });
 
@@ -253,12 +343,23 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
   await c.var.audit.log({
     action: 'job.posting.published',
     resourceId: result.job.id,
-    metadata: {},
+    metadata: { keyword: result.job.smsApplyKeyword },
   });
 
-  return ok(c, { job: shape(result.job, {}) });
+  // Auto-match SMS blast — top 30 qualifying workers within ~25mi. Best-effort;
+  // do not fail the publish on enqueue error.
+  if (result.job.autoMatchEnabled) {
+    try {
+      await enqueueAutomatch({ tenantId, jobId: result.job.id });
+    } catch (e) {
+      console.warn('[publish] automatch enqueue failed', e);
+    }
+  }
+
+  return ok(c, { job: shapeJob(result.job, {}) });
 });
 
+// ─── Close + delete + translate (unchanged behavior, new shape) ──────────
 employerJobsRoutes.post('/:id/close', validate('json', CloseJobBody), async (c) => {
   const userId = c.var.userId;
   const id = c.req.param('id');
@@ -279,6 +380,11 @@ employerJobsRoutes.post('/:id/close', validate('json', CloseJobBody), async (c) 
       closedAt: new Date(),
       ...(body.reason === 'filled' ? { filledAt: new Date() } : {}),
     },
+    include: {
+      foremanContact: true,
+      photos: { orderBy: { sortOrder: 'asc' } },
+      screeningQuestions: { orderBy: { sortOrder: 'asc' } },
+    },
   });
 
   await c.var.audit.log({
@@ -287,7 +393,7 @@ employerJobsRoutes.post('/:id/close', validate('json', CloseJobBody), async (c) 
     metadata: { reason: body.reason ?? 'unspecified' },
   });
 
-  return ok(c, { job: shape(updated, {}) });
+  return ok(c, { job: shapeJob(updated, {}) });
 });
 
 employerJobsRoutes.delete('/:id', async (c) => {
@@ -315,7 +421,131 @@ employerJobsRoutes.post('/translate', validate('json', TranslateJobBody), async 
   return ok(c, result);
 });
 
-// Helpers ------------------------------------------------------------------
+// Mount the sub-routers under /v1/employer/jobs/*
+employerJobsRoutes.route('/', employerJobPhotosRoutes);
+employerJobsRoutes.route('/', employerJobScreeningRoutes);
+
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+function mapV1Fields(body: CreateJobBody) {
+  return {
+    titleEn: body.titleEn,
+    titleEs: body.titleEs,
+    descriptionEn: body.descriptionEn,
+    descriptionEs: body.descriptionEs,
+    county: body.county,
+    city: body.city ?? null,
+    zipCode: body.zipCode ?? null,
+    wageMin: body.wageMin,
+    wageMax: body.wageMax,
+    wageUnit: body.wageUnit,
+    startDate: new Date(body.startDate),
+    endDate: body.endDate ? new Date(body.endDate) : null,
+    applyBy: body.applyBy ? new Date(body.applyBy) : null,
+    skills: body.skills,
+    housing: body.housing,
+    transport: body.transport,
+    positionsTotal: body.positionsTotal,
+  };
+}
+
+function mapV2Fields(body: CreateJobBody) {
+  return {
+    cropId: body.cropId ?? null,
+    roleTypeId: body.roleTypeId ?? null,
+    dailyStartTime: body.dailyStartTime ? timeStringToDate(body.dailyStartTime) : null,
+    dailyEndTime: body.dailyEndTime ? timeStringToDate(body.dailyEndTime) : null,
+    workingDays: body.workingDays ?? 31,
+    wageStructure: body.wageStructure ?? 'hourly',
+    pieceRate: body.pieceRate ?? null,
+    pieceUnit: body.pieceUnit ?? null,
+    payFrequency: body.payFrequency ?? 'weekly',
+    mealsProvided: body.mealsProvided ?? false,
+    endOfSeasonBonusCents: body.endOfSeasonBonusCents ?? null,
+    pickupPoint: body.pickupPoint ?? null,
+    minExperience: body.minExperience ?? 'none',
+    minAge: body.minAge ?? 'eighteen',
+    autoMatchEnabled: body.autoMatchEnabled ?? true,
+    autoTranslateEnabled: body.autoTranslateEnabled ?? true,
+    smsApplyEnabled: body.smsApplyEnabled ?? true,
+    applicationDeadlineAt: body.applicationDeadlineAt ? new Date(body.applicationDeadlineAt) : null,
+    foremanContactId: body.foremanContactId ?? null,
+    siteAddress: body.siteAddress ?? null,
+    siteAcres: body.siteAcres ?? null,
+  };
+}
+
+// PATCH variants honor `null` as "clear" and `undefined` as "leave alone".
+function mapV1Patch(body: PatchJobBody) {
+  return {
+    titleEn: body.titleEn ?? undefined,
+    titleEs: body.titleEs ?? undefined,
+    descriptionEn: body.descriptionEn ?? undefined,
+    descriptionEs: body.descriptionEs ?? undefined,
+    county: body.county ?? undefined,
+    city: body.city === null ? null : body.city ?? undefined,
+    zipCode: body.zipCode === null ? null : body.zipCode ?? undefined,
+    wageMin: body.wageMin ?? undefined,
+    wageMax: body.wageMax ?? undefined,
+    wageUnit: body.wageUnit ?? undefined,
+    startDate: body.startDate ? new Date(body.startDate) : undefined,
+    endDate: body.endDate === null ? null : body.endDate ? new Date(body.endDate) : undefined,
+    applyBy: body.applyBy === null ? null : body.applyBy ? new Date(body.applyBy) : undefined,
+    skills: body.skills ?? undefined,
+    housing: body.housing ?? undefined,
+    transport: body.transport ?? undefined,
+    positionsTotal: body.positionsTotal ?? undefined,
+  };
+}
+
+function mapV2Patch(body: PatchJobBody) {
+  return {
+    cropId: body.cropId === null ? null : body.cropId ?? undefined,
+    roleTypeId: body.roleTypeId === null ? null : body.roleTypeId ?? undefined,
+    dailyStartTime:
+      body.dailyStartTime === null
+        ? null
+        : body.dailyStartTime
+          ? timeStringToDate(body.dailyStartTime)
+          : undefined,
+    dailyEndTime:
+      body.dailyEndTime === null
+        ? null
+        : body.dailyEndTime
+          ? timeStringToDate(body.dailyEndTime)
+          : undefined,
+    workingDays: body.workingDays ?? undefined,
+    wageStructure: body.wageStructure ?? undefined,
+    pieceRate: body.pieceRate === null ? null : body.pieceRate ?? undefined,
+    pieceUnit: body.pieceUnit === null ? null : body.pieceUnit ?? undefined,
+    payFrequency: body.payFrequency ?? undefined,
+    mealsProvided: body.mealsProvided ?? undefined,
+    endOfSeasonBonusCents:
+      body.endOfSeasonBonusCents === null ? null : body.endOfSeasonBonusCents ?? undefined,
+    pickupPoint: body.pickupPoint === null ? null : body.pickupPoint ?? undefined,
+    minExperience: body.minExperience ?? undefined,
+    minAge: body.minAge ?? undefined,
+    autoMatchEnabled: body.autoMatchEnabled ?? undefined,
+    autoTranslateEnabled: body.autoTranslateEnabled ?? undefined,
+    smsApplyEnabled: body.smsApplyEnabled ?? undefined,
+    applicationDeadlineAt:
+      body.applicationDeadlineAt === null
+        ? null
+        : body.applicationDeadlineAt
+          ? new Date(body.applicationDeadlineAt)
+          : undefined,
+    foremanContactId:
+      body.foremanContactId === null ? null : body.foremanContactId ?? undefined,
+    siteAddress: body.siteAddress === null ? null : body.siteAddress ?? undefined,
+    siteAcres: body.siteAcres === null ? null : body.siteAcres ?? undefined,
+  };
+}
+
+function timeStringToDate(hhmm: string): Date {
+  const [h, m] = hhmm.split(':').map((s) => Number(s));
+  // Postgres TIME has no date component — store as UTC time-of-day.
+  return new Date(Date.UTC(1970, 0, 1, h ?? 0, m ?? 0, 0, 0));
+}
 
 async function reserveSlug(tx: Tx, county: string, titleEn: string, startDate: Date): Promise<string> {
   const base = [
@@ -337,58 +567,57 @@ async function reserveSlug(tx: Tx, county: string, titleEn: string, startDate: D
   throw new Error('slug_collision');
 }
 
-function shape(j: {
-  id: string;
-  seoSlug: string | null;
-  titleEn: string;
-  titleEs: string;
-  county: string;
-  city: string | null;
-  wageMin: { toString: () => string };
-  wageMax: { toString: () => string };
-  wageUnit: string;
-  startDate: Date;
-  endDate: Date | null;
-  skills: string[];
-  housing: boolean;
-  transport: boolean;
-  positionsTotal: number;
-  hireCount: number;
-  status: string;
-  publishedAt: Date | null;
-  filledAt: Date | null;
-  closedAt: Date | null;
-  createdAt: Date;
-}, counts: Record<string, number>) {
-  return {
-    id: j.id,
-    seoSlug: j.seoSlug,
-    titleEn: j.titleEn,
-    titleEs: j.titleEs,
-    county: j.county,
-    city: j.city,
-    wageMin: Number(j.wageMin.toString()),
-    wageMax: Number(j.wageMax.toString()),
-    wageUnit: j.wageUnit,
-    startDate: j.startDate.toISOString().slice(0, 10),
-    endDate: j.endDate ? j.endDate.toISOString().slice(0, 10) : null,
-    employerName: '',
-    employerVerified: true,
-    skills: j.skills,
-    housing: j.housing,
-    transport: j.transport,
-    positionsTotal: j.positionsTotal,
-    hireCount: j.hireCount,
-    status: j.status,
-    publishedAt: j.publishedAt?.toISOString() ?? null,
-    filledAt: j.filledAt?.toISOString() ?? null,
-    closedAt: j.closedAt?.toISOString() ?? null,
-    createdAt: j.createdAt.toISOString(),
-    applicationCounts: {
-      applied: counts['applied'] ?? 0,
-      reviewed: counts['reviewed'] ?? 0,
-      hired: counts['hired'] ?? 0,
-      rejected: counts['rejected'] ?? 0,
+// "SV-2025-0042" — first 2 chars from employer DBA initials, year, sequence.
+async function reserveHumanId(tx: Tx, tenantId: string): Promise<string> {
+  const year = new Date().getUTCFullYear();
+  const prefixCount = await tx.jobPosting.count({
+    where: {
+      tenantId,
+      humanId: { startsWith: `${year}-`, mode: 'insensitive' },
     },
-  };
+  });
+  const seq = String(prefixCount + 1).padStart(4, '0');
+  return `${year}-${seq}`;
+}
+
+// SMS keyword: 4-7 chars, alphanumeric, derived from job title initials, with a
+// short suffix to avoid collisions. Stored on the job + in sms_keywords for
+// the inbound webhook to look up.
+async function reserveSmsKeyword(
+  tx: Tx,
+  tenantId: string,
+  jobId: string,
+  titleEn: string,
+): Promise<string> {
+  const base = titleEn
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.slice(0, 1))
+    .join('')
+    .slice(0, 4) || 'JOB';
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const suffix = randomAlnum(3);
+    const candidate = `${base}-${suffix}`;
+    const existing = await tx.smsKeyword.findFirst({
+      where: { keyword: { equals: candidate, mode: 'insensitive' } },
+    });
+    if (!existing) {
+      await tx.smsKeyword.create({
+        data: { tenantId, keyword: candidate, kind: 'job_apply', entityId: jobId, active: true },
+      });
+      return candidate;
+    }
+  }
+  throw new Error('keyword_collision');
+}
+
+function randomAlnum(n: number): string {
+  const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no I/O/L/0/1
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    out += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return out;
 }

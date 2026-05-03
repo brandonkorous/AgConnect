@@ -23,11 +23,6 @@ export function MobileMenu() {
     const tUtility = useTranslations('landing.utility');
     const locale = useLocale();
     const links = buildLinks(locale);
-    const themeLabels = {
-        light: tUtility('theme.light'),
-        dark: tUtility('theme.dark'),
-        aria: tUtility('theme.label'),
-    };
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -54,7 +49,7 @@ export function MobileMenu() {
                         <div className="flex items-center gap-3">
                             <LocaleToggle />
                             <span className="text-secondary/40 text-sm leading-4" aria-hidden>|</span>
-                            <ThemeToggle labels={themeLabels} />
+                            <ThemeToggle ariaLabel={tUtility('theme.label')} />
                         </div>
                         <button
                             type="button"

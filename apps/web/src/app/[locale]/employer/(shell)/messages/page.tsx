@@ -58,7 +58,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
   const unread = counts.all > 0 ? threads.reduce((sum, t) => sum + t.unread, 0) : 0;
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">

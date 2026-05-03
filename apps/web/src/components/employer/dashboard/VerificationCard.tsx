@@ -54,9 +54,9 @@ export async function VerificationCard({ locale, profile, status }: Props) {
   return (
     <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
       <div className="flex items-center justify-between">
-        <div className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+        <h2 className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
           {t('title')}
-        </div>
+        </h2>
         <span
           className={[
             'rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider',

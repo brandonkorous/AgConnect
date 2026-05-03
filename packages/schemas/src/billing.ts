@@ -5,9 +5,17 @@ export const CheckoutBody = z
   .object({
     tier: z.enum(['pro', 'enterprise']),
     interval: PlanIntervalEnum,
+    locale: z.enum(['en', 'es']).optional(),
   })
   .strict();
 export type CheckoutBody = z.infer<typeof CheckoutBody>;
+
+export const PortalBody = z
+  .object({
+    locale: z.enum(['en', 'es']).optional(),
+  })
+  .strict();
+export type PortalBody = z.infer<typeof PortalBody>;
 
 export const CheckoutResponse = z.object({
   url: z.string().url(),

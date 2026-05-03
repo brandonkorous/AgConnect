@@ -1,397 +1,437 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+// Edit Job v2 shell. Three-column layout at xl+: section nav · main · worker
+// preview. Stacks at lg / md / sm with the preview moved into a daisyUI
+// drawer behind a "Preview" toggle.
+
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faLanguage } from '@fortawesome/free-solid-svg-icons';
-import { isOk } from '@agconn/api-client';
-import { getApiClient } from '@/lib/api/client';
+import {
+  faChevronLeft,
+  faChevronRight,
+  faCheck,
+  faCopy,
+  faEye,
+} from '@fortawesome/free-solid-svg-icons';
+import type {
+  EmployerJobView,
+  EmployerProfileView,
+  CropLookupView,
+  LookupView,
+  SkillLookupView,
+  EmployerContactView,
+} from '@/lib/api/employer';
+import { fromView, toApiBody, type JobFormState } from './job-form/types';
+import { SectionNav } from './job-form/SectionNav';
+import { WorkerPreviewRail } from './job-form/WorkerPreviewRail';
+import { useAutosave } from './job-form/useAutosave';
+import { createJob, patchJob, publishJob, replaceScreeningQuestions } from './job-form/api';
+import { BasicsSection } from './job-form/sections/Basics';
+import { ScheduleSection } from './job-form/sections/Schedule';
+import { PaySection } from './job-form/sections/Pay';
+import { RequirementsSection } from './job-form/sections/Requirements';
+import { LocationSection } from './job-form/sections/Location';
+import { ApplicationSection } from './job-form/sections/Application';
+import { ComplianceSection } from './job-form/sections/Compliance';
 
-const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
+type Mode = 'create' | 'edit';
 
 type Props = {
   locale: string;
-  mode: 'create' | 'edit';
-  initial?: {
-    id: string;
-    titleEn: string;
-    titleEs: string;
-    descriptionEn: string;
-    descriptionEs: string;
-    county: string;
-    wageMin: number;
-    wageMax: number;
-    startDate: string;
-    endDate: string | null;
-    skills: string[];
-    positionsTotal: number;
-  };
+  mode: Mode;
+  canPublish?: boolean;
+  initial?: EmployerJobView;
+  profile: EmployerProfileView | null;
+  crops: CropLookupView[];
+  roleTypes: LookupView[];
+  skills: SkillLookupView[];
+  contacts: EmployerContactView[];
 };
 
-export function JobForm({ locale, mode, initial }: Props) {
-  const t = useTranslations('employer.jobs.form');
+const SECTIONS: Array<{ num: number; key: string; href: string }> = [
+  { num: 1, key: 'basics',       href: '#s-basics' },
+  { num: 2, key: 'schedule',     href: '#s-schedule' },
+  { num: 3, key: 'pay',          href: '#s-pay' },
+  { num: 4, key: 'requirements', href: '#s-requirements' },
+  { num: 5, key: 'location',     href: '#s-location' },
+  { num: 6, key: 'application',  href: '#s-application' },
+  { num: 7, key: 'compliance',   href: '#s-compliance' },
+];
+
+export function JobForm({
+  locale,
+  mode,
+  canPublish = true,
+  initial,
+  profile,
+  crops,
+  roleTypes,
+  skills,
+  contacts,
+}: Props) {
+  const t = useTranslations('employer.jobs.form_v2');
+  const tList = useTranslations('employer.jobs.list');
   const router = useRouter();
 
-  const [titleEn, setTitleEn] = useState(initial?.titleEn ?? '');
-  const [titleEs, setTitleEs] = useState(initial?.titleEs ?? '');
-  const [descEn, setDescEn] = useState(initial?.descriptionEn ?? '');
-  const [descEs, setDescEs] = useState(initial?.descriptionEs ?? '');
-  const [skills, setSkills] = useState<string[]>(initial?.skills ?? []);
-  const [skillDraft, setSkillDraft] = useState('');
-  const [translating, setTranslating] = useState<'titleEs' | 'titleEn' | 'descEs' | 'descEn' | null>(null);
+  const [state, setState] = useState<JobFormState>(() => fromView(initial));
+  const [jobId, setJobId] = useState<string | null>(initial?.id ?? null);
+  const [smsKeyword, setSmsKeyword] = useState<string | null>(initial?.smsApplyKeyword ?? null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [renotifyMsg, setRenotifyMsg] = useState<string | null>(null);
 
-  async function translate(field: 'title' | 'description', from: 'en' | 'es', text: string) {
-    if (!text.trim()) return;
-    const flag = field === 'title' ? (from === 'en' ? 'titleEs' : 'titleEn') : from === 'en' ? 'descEs' : 'descEn';
-    setTranslating(flag);
-    try {
-      const client = getApiClient(locale === 'es' ? 'es' : 'en');
-      const res = await client.post<{ translation: string }>(
-        '/v1/employer/jobs/translate',
-        {
-          field,
-          fromLocale: from,
-          toLocale: from === 'en' ? 'es' : 'en',
-          text,
-        },
-        { handleErrorInline: true },
-      );
-      if (!isOk(res)) return;
-      const translated = res.data.translation ?? '';
-      if (field === 'title') {
-        if (from === 'en') setTitleEs(translated);
-        else setTitleEn(translated);
-      } else {
-        if (from === 'en') setDescEs(translated);
-        else setDescEn(translated);
-      }
-    } finally {
-      setTranslating(null);
-    }
-  }
+  const isDraft = (initial?.status ?? 'draft') === 'draft';
+  const employerName = profile?.dbaName || profile?.legalName || 'Your business';
+  const crop = useMemo(() => crops.find((c) => c.id === state.cropId) ?? null, [crops, state.cropId]);
 
-  function addSkill() {
-    const v = skillDraft.trim();
-    if (v && !skills.includes(v)) setSkills([...skills, v]);
-    setSkillDraft('');
-  }
+  const { status: autosaveStatus, savedAt } = useAutosave({
+    enabled: mode === 'edit' && isDraft,
+    jobId,
+    locale,
+    state,
+  });
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>, action: 'draft' | 'publish') {
-    e.preventDefault();
+  const update = (patch: Partial<JobFormState>) => setState((s) => ({ ...s, ...patch }));
+
+  async function save(action: 'draft' | 'publish') {
     setError(null);
+    setRenotifyMsg(null);
     setSubmitting(true);
-    const form = new FormData(e.currentTarget);
-    const body = {
-      titleEn,
-      titleEs,
-      descriptionEn: descEn,
-      descriptionEs: descEs,
-      county: String(form.get('county') ?? ''),
-      city: String(form.get('city') ?? '').trim() || undefined,
-      wageMin: Number(form.get('wageMin') ?? 0),
-      wageMax: Number(form.get('wageMax') ?? 0),
-      wageUnit: 'hour',
-      startDate: String(form.get('startDate') ?? ''),
-      endDate: String(form.get('endDate') ?? '') || undefined,
-      skills,
-      positionsTotal: Number(form.get('positionsTotal') ?? 1),
-    };
     try {
-      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      let id = jobId;
+      const body = toApiBody(state);
       const res =
-        mode === 'create'
-          ? await client.post<{ job: { id: string } }>('/v1/employer/jobs', body, {
-              handleErrorInline: true,
-            })
-          : await client.patch<{ job: { id: string } }>(
-              `/v1/employer/jobs/${initial?.id}`,
-              body,
-              { handleErrorInline: true },
-            );
-      if (!isOk(res)) {
-        setError(res.error.message || 'Could not save.');
-        setSubmitting(false);
+        mode === 'create' && !id
+          ? await createJob(locale, body)
+          : await patchJob(locale, id!, body);
+      if (res.kind === 'error') {
+        setError(publishErrorMessage(res.code, res.message));
         return;
       }
-      const id = res.data.job.id ?? initial?.id;
+      id = res.job.id;
+      setJobId(id);
+      if (res.job.smsApplyKeyword) setSmsKeyword(res.job.smsApplyKeyword);
+      if (res.edit && res.edit.renotificationsQueued > 0) {
+        setRenotifyMsg(
+          t('renotify_dispatched', { count: res.edit.renotificationsQueued }),
+        );
+      }
+
+      // Sync screening questions whenever we have an ID.
+      if (id) {
+        await replaceScreeningQuestions(
+          locale,
+          id,
+          state.screeningQuestions.map((q) => ({
+            id: q.id.startsWith('tmp-') ? undefined : q.id,
+            sortOrder: q.sortOrder,
+            questionEn: q.questionEn,
+            questionEs: q.questionEs,
+            answerType: q.answerType,
+            required: q.required,
+          })),
+        );
+      }
+
       if (action === 'publish' && id) {
-        const pub = await client.post(`/v1/employer/jobs/${id}/publish`, undefined, {
-          handleErrorInline: true,
-        });
-        if (!isOk(pub)) {
-          setError(pub.error.message || 'Could not publish.');
-          setSubmitting(false);
+        const pub = await publishJob(locale, id);
+        if (!pub.ok) {
+          setError(publishErrorMessage(pub.code, pub.message));
           return;
         }
       }
       router.push(`/${locale}/employer/jobs`);
-    } catch {
-      setError('Network error.');
+    } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={(e) => onSubmit(e, 'draft')} className="mx-auto max-w-3xl">
-      <div className="mb-6">
-        <Link
-          href={`/${locale}/employer/jobs`}
-          className="text-base-content/60 hover:text-base-content inline-flex items-center gap-1 text-sm"
+    <form onSubmit={(e) => e.preventDefault()} className="px-5 md:px-8 lg:px-20 pb-16 pt-6">
+      <Header
+        mode={mode}
+        title={state.titleEn || state.titleEs}
+        humanId={initial?.humanId ?? null}
+        publishedAt={initial?.publishedAt ?? null}
+        applicantsCount={
+          (initial?.applicationCounts?.applied ?? 0) +
+          (initial?.applicationCounts?.reviewed ?? 0) +
+          (initial?.applicationCounts?.hired ?? 0)
+        }
+        spotsOpen={Math.max(0, state.positionsTotal - (initial?.hireCount ?? 0))}
+        autosaveStatus={autosaveStatus}
+        savedAt={savedAt}
+        locale={locale}
+      />
+
+      {error && (
+        <div role="alert" className="alert alert-error alert-soft mb-5 text-sm">
+          {error}
+        </div>
+      )}
+      {renotifyMsg && (
+        <div role="status" className="alert alert-info alert-soft mb-5 text-sm">
+          {renotifyMsg}
+        </div>
+      )}
+
+      {/* Mobile section jump */}
+      <div className="mb-4 xl:hidden">
+        <select
+          aria-label={t('jump_to_section')}
+          onChange={(e) => {
+            if (e.target.value) location.hash = e.target.value;
+          }}
+          className="select select-bordered w-full"
         >
-          <FontAwesomeIcon icon={faChevronLeft} className="h-3 w-3" />
-          {t('back')}
-        </Link>
+          <option value="">{t('jump_to_section')}</option>
+          {SECTIONS.map((s) => (
+            <option key={s.key} value={s.href}>
+              {String(s.num).padStart(2, '0')} · {t(`section_${s.key}_title`)}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {error && <div className="alert alert-error mb-4 text-sm">{error}</div>}
-
-      <Section heading={t('section_title')}>
-        <BilingualField
-          label={t('english')}
-          value={titleEn}
-          onChange={setTitleEn}
-          maxLength={120}
-        />
-        <BilingualField
-          label={t('spanish')}
-          value={titleEs}
-          onChange={setTitleEs}
-          maxLength={120}
-          translateAction={titleEn ? () => translate('title', 'en', titleEn) : undefined}
-          translateLabel={t('translate_from_en')}
-          translating={translating === 'titleEs'}
-        />
-      </Section>
-
-      <Section heading={t('section_description')}>
-        <BilingualField
-          label={t('english')}
-          value={descEn}
-          onChange={setDescEn}
-          textarea
-          minLength={20}
-          maxLength={5000}
-        />
-        <BilingualField
-          label={t('spanish')}
-          value={descEs}
-          onChange={setDescEs}
-          textarea
-          minLength={20}
-          maxLength={5000}
-          translateAction={descEn ? () => translate('description', 'en', descEn) : undefined}
-          translateLabel={t('translate_from_en')}
-          translating={translating === 'descEs'}
-        />
-      </Section>
-
-      <Section heading={t('section_location')}>
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">County</legend>
-          <select name="county" required defaultValue={initial?.county ?? COUNTIES[0]} className="select w-full">
-            {COUNTIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </fieldset>
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">City (optional)</legend>
-          <input name="city" type="text" maxLength={60} className="input w-full" />
-        </fieldset>
-      </Section>
-
-      <Section heading={t('section_pay_dates')}>
-        <div className="grid grid-cols-2 gap-3">
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">{t('wage_min')}</legend>
-            <input
-              name="wageMin"
-              type="number"
-              step="0.5"
-              min="0"
-              max="500"
-              required
-              defaultValue={initial?.wageMin}
-              className="input w-full"
-            />
-          </fieldset>
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">{t('wage_max')}</legend>
-            <input
-              name="wageMax"
-              type="number"
-              step="0.5"
-              min="0"
-              max="500"
-              required
-              defaultValue={initial?.wageMax}
-              className="input w-full"
-            />
-          </fieldset>
+      <div className="grid gap-6 xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
+        <div className="hidden xl:block">
+          <div className="sticky top-20">
+            <SectionNav sections={SECTIONS} />
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">{t('start_date')}</legend>
-            <input
-              name="startDate"
-              type="date"
-              required
-              defaultValue={initial?.startDate}
-              className="input w-full"
-            />
-          </fieldset>
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">{t('end_date')}</legend>
-            <input
-              name="endDate"
-              type="date"
-              defaultValue={initial?.endDate ?? ''}
-              className="input w-full"
-            />
-          </fieldset>
-        </div>
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">{t('positions')}</legend>
-          <input
-            name="positionsTotal"
-            type="number"
-            min="1"
-            max="500"
-            required
-            defaultValue={initial?.positionsTotal ?? 1}
-            className="input w-full"
+
+        <div className="min-w-0">
+          <BasicsSection
+            state={state}
+            update={update}
+            crops={crops}
+            roleTypes={roleTypes}
+            jobId={jobId}
+            locale={locale}
+            onPhotosChange={(photos) => update({ photos })}
           />
-        </fieldset>
-      </Section>
+          <ScheduleSection state={state} update={update} />
+          <PaySection state={state} update={update} />
+          <RequirementsSection state={state} update={update} skills={skills} locale={locale} />
+          <LocationSection state={state} update={update} locale={locale} />
+          <ApplicationSection
+            state={state}
+            update={update}
+            contacts={contacts}
+            smsApplyKeyword={smsKeyword}
+          />
+          <ComplianceSection state={state} profile={profile} locale={locale} />
 
-      <Section heading={t('section_skills')}>
-        <div className="flex flex-wrap gap-2">
-          {skills.map((s) => (
-            <span
-              key={s}
-              className="bg-base-200 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium"
-            >
-              {s}
+          <div className="bg-base-100 border-base-300 shadow-pop sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
+            <div className="flex items-center gap-3">
+              <span className="bg-primary/10 text-primary grid h-9 w-9 place-items-center rounded-full">
+                <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <div className="text-sm font-semibold">{t('save_bar_complete')}</div>
+                <div className="text-base-content/55 text-xs">
+                  {savedAt
+                    ? t('save_bar_autosaved', { time: relativeTime(savedAt, locale) })
+                    : t('save_bar_unsaved')}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/${locale}/employer/jobs`}
+                className="btn btn-ghost btn-sm border-base-300 rounded-full border"
+              >
+                {t('cancel')}
+              </Link>
               <button
                 type="button"
-                onClick={() => setSkills(skills.filter((x) => x !== s))}
-                className="text-base-content/60 hover:text-error"
-                aria-label={`Remove ${s}`}
+                disabled={submitting}
+                onClick={() => save('draft')}
+                className="btn btn-sm border-base-300 rounded-full border bg-transparent"
               >
-                ×
+                {tList('publish') /* reuse for "Save draft" via separate key below */}
               </button>
-            </span>
-          ))}
-          <input
-            type="text"
-            value={skillDraft}
-            onChange={(e) => setSkillDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                addSkill();
-              }
-            }}
-            placeholder={t('skills_placeholder')}
-            className="input input-sm w-44"
-          />
+              <button
+                type="button"
+                disabled={submitting || !canPublish}
+                title={!canPublish ? t('publish_blocked_pending_verification') : undefined}
+                onClick={() => save('publish')}
+                className="btn btn-primary btn-sm rounded-full"
+              >
+                <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
+                {mode === 'edit' && initial?.status === 'active'
+                  ? t('publish_changes')
+                  : t('publish')}
+              </button>
+            </div>
+          </div>
         </div>
-      </Section>
 
-      <div className="mt-8 flex justify-end gap-3">
-        <button type="submit" disabled={submitting} className="btn btn-ghost border-base-300 border">
-          {t('save_draft')}
-        </button>
-        <button
-          type="button"
-          disabled={submitting}
-          onClick={(e) => {
-            const form = (e.currentTarget as HTMLButtonElement).form!;
-            onSubmit(
-              { preventDefault: () => {}, currentTarget: form } as unknown as FormEvent<HTMLFormElement>,
-              'publish',
-            );
-          }}
-          className="btn btn-primary"
-        >
-          {t('publish')}
-        </button>
+        <div className="hidden xl:block">
+          <div className="sticky top-20">
+            <WorkerPreviewRail
+              state={state}
+              crop={crop}
+              employerName={employerName}
+              smsApplyKeyword={smsKeyword}
+              locale={locale}
+            />
+          </div>
+        </div>
       </div>
     </form>
   );
 }
 
-function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
+function Header({
+  mode,
+  title,
+  humanId,
+  publishedAt,
+  applicantsCount,
+  spotsOpen,
+  autosaveStatus,
+  savedAt,
+  locale,
+}: {
+  mode: Mode;
+  title: string;
+  humanId: string | null;
+  publishedAt: string | null;
+  applicantsCount: number;
+  spotsOpen: number;
+  autosaveStatus: 'idle' | 'pending' | 'saving' | 'saved' | 'error';
+  savedAt: string | null;
+  locale: string;
+}) {
+  const t = useTranslations('employer.jobs.form_v2');
+  const tList = useTranslations('employer.jobs.list');
+  const isLive = !!publishedAt;
+  const liveDays = isLive
+    ? Math.max(0, Math.floor((Date.now() - new Date(publishedAt!).getTime()) / 86_400_000))
+    : 0;
+
   return (
-    <section className="border-base-300 mb-6 border-b pb-6 last:border-b-0">
-      <h2 className="font-display mb-4 text-xl font-light">{heading}</h2>
-      <div className="flex flex-col gap-3">{children}</div>
-    </section>
+    <div className="mb-5 pt-2">
+      <nav aria-label="Breadcrumb" className="text-base-content/55 mb-2 flex items-center gap-1.5 text-xs">
+        <Link href={`/${locale}/employer/jobs`} className="hover:text-base-content no-underline">
+          {tList('title')}
+        </Link>
+        <FontAwesomeIcon icon={faChevronRight} className="h-2.5 w-2.5" />
+        <span className="text-base-content font-semibold">
+          {mode === 'edit' ? t('breadcrumb_edit') : t('breadcrumb_new')}
+        </span>
+      </nav>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+            {mode === 'edit' && humanId
+              ? t('header_meta_edit', {
+                  id: humanId,
+                  days: liveDays,
+                  applicants: applicantsCount,
+                })
+              : t('header_meta_new')}
+          </div>
+          <h1 className="font-display mt-1.5 text-3xl font-light leading-tight tracking-tight md:text-4xl">
+            {mode === 'edit' ? t('h1_edit') : t('h1_new')}{' '}
+            {title && <em className="text-primary font-light italic">{title}</em>}
+          </h1>
+          {mode === 'edit' && isLive && (
+            <div className="text-base-content/65 mt-2 flex flex-wrap items-center gap-2 text-sm">
+              <span className="bg-error/10 text-error inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider">
+                <span className="bg-error h-1.5 w-1.5 rounded-full" aria-hidden />
+                {t('spots_open', { n: spotsOpen })}
+              </span>
+              <AutosaveBadge status={autosaveStatus} savedAt={savedAt} locale={locale} />
+            </div>
+          )}
+        </div>
+        {mode === 'edit' && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="btn btn-sm btn-ghost border-base-300 rounded-full border"
+            >
+              <FontAwesomeIcon icon={faCopy} className="h-3 w-3" />
+              {tList('duplicate')}
+            </button>
+            <button
+              type="button"
+              className="btn btn-sm btn-ghost border-base-300 text-error rounded-full border"
+            >
+              {tList('close')}
+            </button>
+            <label
+              htmlFor="preview-drawer"
+              className="btn btn-sm btn-primary rounded-full xl:hidden"
+              aria-label={t('open_preview')}
+            >
+              <FontAwesomeIcon icon={faEye} className="h-3 w-3" />
+              {t('preview_button')}
+            </label>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
-function BilingualField({
-  label,
-  value,
-  onChange,
-  textarea = false,
-  maxLength,
-  minLength,
-  translateAction,
-  translateLabel,
-  translating,
+function AutosaveBadge({
+  status,
+  savedAt,
+  locale,
 }: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  textarea?: boolean;
-  maxLength?: number;
-  minLength?: number;
-  translateAction?: () => void;
-  translateLabel?: string;
-  translating?: boolean;
+  status: 'idle' | 'pending' | 'saving' | 'saved' | 'error';
+  savedAt: string | null;
+  locale: string;
 }) {
-  return (
-    <fieldset className="fieldset">
-      <legend className="fieldset-legend flex items-center gap-2">
-        <span>{label}</span>
-        {translateAction && (
-          <button
-            type="button"
-            onClick={translateAction}
-            disabled={translating}
-            className="text-primary inline-flex items-center gap-1 text-xs font-medium disabled:opacity-50"
-          >
-            <FontAwesomeIcon icon={faLanguage} className="h-3 w-3" />
-            {translating ? '…' : translateLabel}
-          </button>
-        )}
-      </legend>
-      {textarea ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          maxLength={maxLength}
-          minLength={minLength}
-          rows={4}
-          className="textarea w-full"
-        />
-      ) : (
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          maxLength={maxLength}
-          minLength={minLength}
-          className="input w-full"
-        />
-      )}
-    </fieldset>
-  );
+  const t = useTranslations('employer.jobs.form_v2');
+  if (status === 'saving') return <span className="text-base-content/55 text-xs">{t('autosaving')}</span>;
+  if (status === 'pending') return <span className="text-base-content/55 text-xs">{t('autosave_pending')}</span>;
+  if (status === 'error') return <span className="text-error text-xs">{t('autosave_error')}</span>;
+  if (savedAt)
+    return (
+      <span className="text-base-content/55 text-xs">
+        {t('autosave_saved', { time: relativeTime(savedAt, locale) })}
+      </span>
+    );
+  return null;
+}
+
+function relativeTime(iso: string, locale: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  const sec = Math.round(ms / 1000);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+  if (sec < 60) return rtf.format(-sec, 'second');
+  const min = Math.round(sec / 60);
+  if (min < 60) return rtf.format(-min, 'minute');
+  const hr = Math.round(min / 60);
+  return rtf.format(-hr, 'hour');
+}
+
+function publishErrorMessage(code: string, message?: string): string {
+  switch (code) {
+    case 'employer_not_verified':
+      return "Your business is still being verified. You can publish postings once it's approved.";
+    case 'plan_posting_limit':
+      return 'You have hit your plan posting limit. Upgrade or close an active posting to publish another.';
+    case 'validation_failed':
+      return message === 'not_draft'
+        ? 'This posting is no longer a draft.'
+        : 'Posting is missing required information.';
+    case 'cannot_change_county_active':
+      return 'County is locked while a posting is live.';
+    case 'positions_below_hire_count':
+      return "You can't reduce crew size below the number already hired.";
+    case 'end_date_shorten_forbidden':
+      return "End date can be extended but not shortened on a live posting.";
+    case 'not_found':
+      return 'Posting not found.';
+    default:
+      return message || 'Could not save.';
+  }
 }

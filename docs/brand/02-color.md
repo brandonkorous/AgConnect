@@ -91,7 +91,7 @@ What each token resolves to and where to use it:
 | `primary-content` | near-white | dark olive | text on `primary` |
 | `secondary` | `#3F4E1F` deep olive | `#7A9248` mid-olive | secondary CTA, supporting emphasis |
 | `secondary-content` | near-white | dark olive | text on `secondary` |
-| `accent` | `#D9B441` gold | gold (same chroma) | one-of-one loud element — single CTA, single chart highlight, single statistic |
+| `accent` | `#D9B441` gold | gold (same chroma) | the loud color — primary CTAs, active step indicators, count badges, ambient lighting on dark feature cards, statistic highlights |
 | `accent-content` | warm near-black | warm near-black | text on `accent` |
 | `neutral` | `#1C1C1A` warm near-black | `#2A2A26` elevated | dark surfaces, footer, "deep stop" sections |
 | `neutral-content` | near-white | near-white | text on `neutral` |
@@ -103,6 +103,23 @@ What each token resolves to and where to use it:
 | `success` | warm green | lifted green | success state |
 | `warning` | warm amber | gold | warning state |
 | `error` | warm red | lifted red | error state |
+
+## Crop palette
+
+A semantic mini-palette for crop / job-type identification — used in crop chips, glyphs, and category icons across worker and employer surfaces. These are categorical (each color identifies a category), not state colors.
+
+| crop | hex | typical use |
+|---|---|---|
+| grape | `#6B2B5E` | table grape, wine grape jobs |
+| almond | `#C58A5A` | almond shaking, hulling, processing |
+| citrus | `#E07A1F` | orange, lemon, mandarin pruning/picking |
+| tomato | `#C73E2A` | field tomato, processing tomato |
+| lettuce | `#4A8C3A` | leafy greens, ground crops |
+| strawberry | `#D43855` | berry pick, berry pack |
+
+Crop colors only appear in chips, glyphs, and category indicators — never as a body text color, a CTA background, or a categorical chart-series color (use the chart palette in [07-imagery.md § Charts](07-imagery.md) for that). They share the visual register of the rest of the brand (warm hues, mid saturation) but sit outside the semantic-state system; a crop color never communicates state.
+
+> **Inferred:** This palette was extracted from the worker dashboard Paper file. Validate the hex values when crop chips are first implemented — minor chroma/lightness adjustments may be needed for AA contrast on the chip background (`base-200` warm cream).
 
 ## Page surfaces
 
@@ -127,8 +144,8 @@ Landing page, blog, public site. Marketing uses a flat, civic-publication aesthe
 
 - **Page background**: `base-100` (warm near-white). The page is the brightest surface; bands step *down* into the deeper tones for rhythm.
 - **Section bands**: alternate `base-100` / `base-200` / `base-300` per [04-spacing-layout.md § Section rhythm](04-spacing-layout.md). For an unmistakable brand band reach for `bg-primary text-primary-content` (olive). A `bg-neutral` dark band is reserved for one or two "deep stop" moments per page.
-- **Cards in marketing**: rare. When used, hairline border, no shadow.
-- **Accent**: `accent` (gold) is the one-of-one loud color — single CTA, single key statistic, single chart highlight. Never as a body color, never as a decorative fill.
+- **Cards in marketing**: rare. When used, hairline border on light bands; elevated/dark feature cards may use the `--shadow-card` token plus an ambient gold radial overlay.
+- **Accent**: `accent` (gold) is the loud color — applied to primary CTAs, key statistics, chart highlights, ambient lighting on dark feature cards, count badges, and active states. **Never as a body text color** (a11y), **never as decoration with no purpose**. Apply where it serves intent.
 
 ### Implementation cheat sheet
 
@@ -173,7 +190,7 @@ Landing page, blog, public site. Marketing uses a flat, civic-publication aesthe
 - **`base-content` on `base-200` / `base-300`** — chrome and page-ground bodies; contrast eases slightly but stays AAA.
 - **`primary-content` on `primary`** — standard CTA pairing.
 - **`secondary-content` on `secondary`** — supporting CTA pairing.
-- **`accent-content` on `accent`** — one-of-one loud element. Reserved for a single CTA, single chart highlight, single statistic per surface.
+- **`accent-content` on `accent`** — the loud color. Applied to primary CTAs, statistic highlights, count badges, active state indicators, and chart highlights where attention is the goal. The intent of accent is to draw the eye; apply it where the eye should land.
 - **`neutral-content` on `neutral`** — inverse text on dark bands, footers, deep-stop sections.
 - **Status text** — `info`, `success`, `warning`, `error` paired with their `-content` counterparts inside alerts and badges. Do not use status colors as decorative accents; they read as state.
 

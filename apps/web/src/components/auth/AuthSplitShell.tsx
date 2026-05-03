@@ -48,7 +48,7 @@ export async function AuthSplitShell({ locale, variant, children }: Props) {
             className="inline-flex items-center self-start no-underline"
             aria-label="AgConn"
           >
-            <Wordmark size="md" tone={isDark ? 'bone' : 'ink'} />
+            <Wordmark size="lg" tone={isDark ? 'bone' : 'ink'} />
           </Link>
 
           {/* Hero block — typographic, not hero-metric. Asymmetric column. */}
@@ -123,17 +123,19 @@ export async function AuthSplitShell({ locale, variant, children }: Props) {
         </aside>
 
         {/* ─────────────────── Form panel — vertically centered, anchored */}
-        <section className="relative flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-16">
-          {/* Mobile-only top header (pitch hidden on small) */}
-          <div className="mb-6 flex items-center justify-between lg:hidden">
-            <Link
-              href={`/${locale}`}
-              className="text-base-content no-underline"
-              aria-label="AgConn"
-            >
-              <Wordmark size="sm" tone="ink" />
-            </Link>
-            <LocaleToggle locale={locale} variant={variant} />
+        <section className="relative flex flex-col">
+          {/* Mobile-only top header — matches MarketingNav padding + height */}
+          <div className="border-secondary/15 bg-base-100 w-full border-b lg:hidden">
+            <div className="flex h-16 items-center justify-between px-5 md:h-24 md:px-8">
+              <Link
+                href={`/${locale}`}
+                className="text-base-content inline-flex items-center no-underline"
+                aria-label="AgConn"
+              >
+                <Wordmark size="lg" tone="ink" />
+              </Link>
+              <LocaleToggle locale={locale} variant={variant} />
+            </div>
           </div>
 
           {/* Desktop locale toggle floats top-right of form panel */}
@@ -141,7 +143,9 @@ export async function AuthSplitShell({ locale, variant, children }: Props) {
             <LocaleToggle locale={locale} variant={variant} />
           </div>
 
-          <div className="mx-auto w-full max-w-[26rem]">{children}</div>
+          <div className="flex flex-1 flex-col justify-center px-6 py-10 sm:px-10 lg:px-16">
+            <div className="mx-auto w-full max-w-[26rem]">{children}</div>
+          </div>
         </section>
       </div>
     </main>

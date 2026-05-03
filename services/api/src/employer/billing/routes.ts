@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
 import {
   CheckoutBody,
+  PortalBody,
   hasPriceId,
   planFeatures,
   priceIdFor,
@@ -99,12 +100,13 @@ employerBillingRoutes.post('/checkout', validate('json', CheckoutBody), async (c
     });
   }
 
+  const locale = body.locale === 'es' ? 'es' : 'en';
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
     line_items: [{ price: priceIdFor(body.tier, body.interval), quantity: 1 }],
-    success_url: `${webUrl()}/en/employer/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${webUrl()}/en/employer/billing`,
+    success_url: `${webUrl()}/${locale}/employer/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${webUrl()}/${locale}/employer/billing`,
     metadata: { employerId: profile.id, tier: body.tier, interval: body.interval },
     automatic_tax: { enabled: true },
     allow_promotion_codes: true,
@@ -115,17 +117,19 @@ employerBillingRoutes.post('/checkout', validate('json', CheckoutBody), async (c
   return ok(c, { url: session.url });
 });
 
-employerBillingRoutes.post('/portal', async (c) => {
+employerBillingRoutes.post('/portal', validate('json', PortalBody), async (c) => {
   const userId = c.var.userId;
+  const body = c.var.body;
   const stripe = getStripe();
   if (!stripe) return err(c, 503, 'stripe_unavailable', 'stripe_not_configured');
 
   const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
   if (!profile?.stripeCustomer) return err(c, 404, 'not_found', 'no_customer');
 
+  const locale = body.locale === 'es' ? 'es' : 'en';
   const portal = await stripe.billingPortal.sessions.create({
     customer: profile.stripeCustomer,
-    return_url: `${webUrl()}/en/employer/billing`,
+    return_url: `${webUrl()}/${locale}/employer/billing`,
   });
 
   return ok(c, { url: portal.url });

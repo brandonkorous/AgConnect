@@ -5,17 +5,17 @@
   prefersdark: true;
   color-scheme: dark;
 
-  --color-primary:           oklch(50% 0.09 120);   /* #9CB360 lifted olive */
-  --color-primary-content:   oklch(15% 0.02 120);
-  --color-secondary:         oklch(62% 0.10 120);  /* #7A9248 */
-  --color-secondary-content: oklch(15% 0.02 120);
-  --color-accent:            oklch(83% 0.13 88);   /* #E9C661 lifted gold */
-  --color-accent-content:    oklch(20% 0.005 80);
-  --color-neutral:           oklch(26% 0.005 80);  /* #2A2A26 elevated */
-  --color-neutral-content:   oklch(98% 0.005 95);
-  --color-base-100:          oklch(20% 0.005 80);  /* #1C1C1A page bg */
-  --color-base-200:          oklch(24% 0.006 80);  /* #252521 card */
-  --color-base-300:          oklch(30% 0.008 80);  /* #33332E border */
+  --color-primary:           #5B6E2E; 
+  --color-primary-content:   #f9f8f5;
+  --color-secondary:         #3F4E1F; 
+  --color-secondary-content: #f9f8f5;
+  --color-accent:            #D9B441; 
+  --color-accent-content:    #f9f8f5;
+  --color-neutral:           #1C1C1A;
+  --color-neutral-content:   #f9f8f5;
+  --color-base-100:          #252518;
+  --color-base-200:          #181811;
+  --color-base-300:          #0C0C08;
   --color-base-content:      oklch(94% 0.012 80);
   --color-info:              oklch(70% 0.10 260);
   --color-info-content:        oklch(15% 0.02 120);
@@ -31,7 +31,7 @@
   --radius-box:      1rem;
 
   --size-selector: 0.25rem;
-  --size-field:    0.30rem;
+  --size-field:    0.25rem;
 
   --border: 1px;
   --depth:  1;

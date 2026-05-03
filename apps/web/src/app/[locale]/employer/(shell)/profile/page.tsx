@@ -32,7 +32,7 @@ export default async function EmployerProfilePage({ params }: Props) {
         : { bg: 'bg-warning/15', fg: 'text-warning', icon: faClock };
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-7">
         <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
           {t('eyebrow')}
@@ -55,15 +55,33 @@ export default async function EmployerProfilePage({ params }: Props) {
               contactEmail: profile.contactEmail ?? '',
               contactPhone: profile.contactPhone ?? '',
               licenseType: (profile.licenseType ?? 'grower') as 'grower' | 'flc',
+              participatesInH2a: profile.participatesInH2a ?? false,
+              address:
+                profile.streetAddress &&
+                profile.city &&
+                profile.stateCode &&
+                profile.postalCode &&
+                profile.addressLat != null &&
+                profile.addressLng != null
+                  ? {
+                      streetAddress: profile.streetAddress,
+                      city: profile.city,
+                      stateCode: profile.stateCode,
+                      postalCode: profile.postalCode,
+                      addressLat: profile.addressLat,
+                      addressLng: profile.addressLng,
+                      mapboxId: profile.mapboxId ?? undefined,
+                    }
+                  : null,
             }}
           />
         </div>
 
         <aside className="flex flex-col gap-4">
           <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-            <p className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+            <h2 className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
               {t('sidebar.status_label')}
-            </p>
+            </h2>
             <div
               className={[
                 'mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider',
@@ -93,9 +111,9 @@ export default async function EmployerProfilePage({ params }: Props) {
           </div>
 
           <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-            <p className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+            <h2 className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
               {t('sidebar.business_id')}
-            </p>
+            </h2>
             <dl className="mt-3 grid gap-3 text-xs">
               <div>
                 <dt className="text-base-content/60">{t('sidebar.legal_name')}</dt>
@@ -128,6 +146,21 @@ export default async function EmployerProfilePage({ params }: Props) {
               <div>
                 <dt className="text-base-content/60">{t('sidebar.county')}</dt>
                 <dd className="mt-0.5 text-sm font-semibold">{profile.county ?? '—'}</dd>
+              </div>
+              <div>
+                <dt className="text-base-content/60">{t('address.label')}</dt>
+                {profile.streetAddress ? (
+                  <dd className="mt-0.5 text-sm font-semibold tabular-nums">
+                    <div>{profile.streetAddress}</div>
+                    <div className="text-base-content/70 text-xs">
+                      {profile.city}, {profile.stateCode} {profile.postalCode}
+                    </div>
+                  </dd>
+                ) : (
+                  <dd className="text-base-content/55 mt-0.5 text-xs">
+                    {t('address.missing')}
+                  </dd>
+                )}
               </div>
             </dl>
           </div>

@@ -63,7 +63,7 @@ export default async function EmployerDashboardPage({ params }: Props) {
   const featured = pickFeaturedJob(jobs);
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <EmployerGreeting
         locale={locale}
         firstName={firstName}

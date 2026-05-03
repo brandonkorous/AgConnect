@@ -1,0 +1,138 @@
+import type { Metadata, Route } from 'next';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faBriefcase,
+  faUsers,
+  faCoins,
+  faShield,
+  faChartLine,
+  faEnvelope,
+  faPhone,
+  faBookOpen,
+} from '@fortawesome/free-solid-svg-icons';
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'employer.help' });
+  return { title: `AgConn — ${t('title')}` };
+}
+
+export default async function EmployerHelpPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'employer.help' });
+
+  const topics: Array<{
+    icon: typeof faBriefcase;
+    href: string;
+    titleKey: string;
+    bodyKey: string;
+  }> = [
+    {
+      icon: faBriefcase,
+      href: `/${locale}/employer/jobs/new`,
+      titleKey: 'topic.post_job.title',
+      bodyKey: 'topic.post_job.body',
+    },
+    {
+      icon: faUsers,
+      href: `/${locale}/employer/inbox`,
+      titleKey: 'topic.review_applicants.title',
+      bodyKey: 'topic.review_applicants.body',
+    },
+    {
+      icon: faCoins,
+      href: `/${locale}/employer/payroll`,
+      titleKey: 'topic.payroll.title',
+      bodyKey: 'topic.payroll.body',
+    },
+    {
+      icon: faShield,
+      href: `/${locale}/employer/compliance`,
+      titleKey: 'topic.compliance.title',
+      bodyKey: 'topic.compliance.body',
+    },
+    {
+      icon: faChartLine,
+      href: `/${locale}/employer/reports`,
+      titleKey: 'topic.reports.title',
+      bodyKey: 'topic.reports.body',
+    },
+    {
+      icon: faBookOpen,
+      href: `/${locale}/employer/profile`,
+      titleKey: 'topic.profile.title',
+      bodyKey: 'topic.profile.body',
+    },
+  ];
+
+  return (
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
+      <div className="mb-7 max-w-3xl">
+        <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+          {t('eyebrow')}
+        </p>
+        <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
+          {t('title_a')} <em className="text-primary not-italic font-light">{t('title_b')}</em>
+        </h1>
+        <p className="text-base-content/70 mt-3 text-base">{t('subtitle')}</p>
+      </div>
+
+      <section aria-labelledby="topics-heading" className="mb-8">
+        <h2
+          id="topics-heading"
+          className="text-base-content/60 mb-4 font-mono text-[11px] font-semibold uppercase tracking-wider"
+        >
+          {t('topics_heading')}
+        </h2>
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {topics.map((topic) => (
+            <Link
+              key={topic.titleKey}
+              href={topic.href as Route}
+              className="bg-base-100 border-base-300 hover:border-primary/40 group rounded-2xl border p-5 transition"
+            >
+              <div className="bg-primary/10 text-primary mb-3 grid h-9 w-9 place-items-center rounded-xl">
+                <FontAwesomeIcon icon={topic.icon} className="h-4 w-4" />
+              </div>
+              <h3 className="font-display text-lg font-light tracking-tight">{t(topic.titleKey)}</h3>
+              <p className="text-base-content/70 mt-1 text-sm">{t(topic.bodyKey)}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="contact-heading"
+        className="bg-base-100 border-base-300 grid gap-6 rounded-2xl border p-7 md:grid-cols-[1fr_auto] md:items-center"
+      >
+        <div>
+          <h2 id="contact-heading" className="font-display text-2xl font-light tracking-tight">
+            {t('contact_title')}
+          </h2>
+          <p className="text-base-content/70 mt-2 text-sm">{t('contact_body')}</p>
+          <p className="text-base-content/55 mt-2 font-mono text-[11px]">{t('contact_hours')}</p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <a
+            href="mailto:support@agconn.com"
+            className="btn btn-primary btn-sm rounded-full"
+          >
+            <FontAwesomeIcon icon={faEnvelope} className="h-3.5 w-3.5" />
+            support@agconn.com
+          </a>
+          <a
+            href="tel:+15598675309"
+            className="btn btn-ghost btn-sm border-base-300 rounded-full border"
+          >
+            <FontAwesomeIcon icon={faPhone} className="h-3.5 w-3.5" />
+            (559) 867-5309
+          </a>
+        </div>
+      </section>
+    </div>
+  );
+}

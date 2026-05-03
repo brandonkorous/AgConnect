@@ -15,7 +15,7 @@ export default async function ApplicantDetailPage({ params }: Props) {
   if (!app) notFound();
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <Link
         href={`/${locale}/employer/inbox`}
         className="text-base-content/60 hover:text-base-content mb-6 inline-block text-sm"
@@ -23,8 +23,7 @@ export default async function ApplicantDetailPage({ params }: Props) {
         ← {t('back')}
       </Link>
 
-      <div className="mx-auto max-w-3xl">
-        <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
+      <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
           <div className="flex items-start gap-4">
             <div className="bg-primary text-primary-content grid h-14 w-14 place-items-center rounded-full text-base font-bold">
               {app.worker.firstName[0]}
@@ -85,7 +84,6 @@ export default async function ApplicantDetailPage({ params }: Props) {
             jobTitle={locale === 'es' ? app.job.titleEs : app.job.titleEn}
           />
         </div>
-      </div>
     </div>
   );
 }

@@ -33,6 +33,9 @@ import {
 import { walletRoutes } from './wallet/routes';
 import { employerOnboardingRoutes } from './employer/onboarding/routes';
 import { employerJobsRoutes } from './employer/jobs/routes';
+import { employerJobMatchPreviewRoutes } from './employer/jobs/match-preview';
+import { employerContactsRoutes } from './employer/contacts/routes';
+import { employerLookupsRoutes } from './employer/lookups/routes';
 import {
   employerInboxRoutes,
   employerJobApplicantsRoute,
@@ -135,8 +138,11 @@ app.route('/v1/training', trainingRoutes);
 app.route('/v1/wallet', walletRoutes);
 app.route('/v1/org', orgTrainingRoutes);
 app.route('/v1/employer/onboarding', employerOnboardingRoutes);
+app.route('/v1/employer/jobs/match-preview', employerJobMatchPreviewRoutes);
 app.route('/v1/employer/jobs', employerJobsRoutes);
 app.route('/v1/employer/jobs', employerJobApplicantsRoute);
+app.route('/v1/employer/contacts', employerContactsRoutes);
+app.route('/v1/employer/lookups', employerLookupsRoutes);
 app.route('/v1/employer', employerInboxRoutes);
 app.route('/v1/employer/applications', employerApplicationsRoutes);
 app.route('/v1/employer/workers', employerWorkersRoutes);

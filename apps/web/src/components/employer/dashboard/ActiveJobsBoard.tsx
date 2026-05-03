@@ -25,7 +25,7 @@ export async function ActiveJobsBoard({ locale, jobs }: Props) {
     <section className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border">
       <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
         <div>
-          <div className="font-display text-xl font-light tracking-tight">{t('title')}</div>
+          <h2 className="font-display text-xl font-light tracking-tight">{t('title')}</h2>
           <div className="text-base-content/60 mt-0.5 text-xs">
             {t('subtitle', { open: openCount, applicants: applicantsThisWeek })}
           </div>

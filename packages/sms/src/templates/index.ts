@@ -81,6 +81,26 @@ export const smsTemplates = {
     es: 'Cancelaste {programTitle}. Ver más programas: agconn.com/training',
     vars: ['programTitle'] as const,
   }),
+  'job.posting.edited': def({
+    en: '{employer} updated {jobTitle} ({fields}). Review the new details: agconn.com/applications',
+    es: '{employer} actualizó {jobTitle} ({fields}). Revisa los nuevos detalles: agconn.com/applications',
+    vars: ['employer', 'jobTitle', 'fields'] as const,
+  }),
+  'job.match.invitation': def({
+    en: 'New {jobTitle} match in {county}: ${wageMin}-${wageMax}/hr, starts {startDate}. Reply {keyword} to apply.',
+    es: 'Nuevo trabajo de {jobTitle} en {county}: ${wageMin}-${wageMax}/hr, empieza {startDate}. Responde {keyword} para aplicar.',
+    vars: ['jobTitle', 'county', 'wageMin', 'wageMax', 'startDate', 'keyword'] as const,
+  }),
+  'sms.apply.confirmed': def({
+    en: 'You applied for {jobTitle} at {employer}. Track at agconn.com/applications. Reply STOP to opt out.',
+    es: 'Aplicaste para {jobTitle} con {employer}. Sigue en agconn.com/applications. Responde STOP para cancelar.',
+    vars: ['jobTitle', 'employer'] as const,
+  }),
+  'sms.apply.unknown_keyword': def({
+    en: "We couldn't find a job for '{keyword}'. Browse openings at agconn.com/jobs.",
+    es: "No encontramos un trabajo con '{keyword}'. Busca en agconn.com/jobs.",
+    vars: ['keyword'] as const,
+  }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;

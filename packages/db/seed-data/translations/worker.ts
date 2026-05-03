@@ -657,6 +657,14 @@ export const worker: TranslationBundle = {
         en: "ES",
         es: "ES",
     },
+    "dashboard.sidebar.menu_language": {
+        en: "Language",
+        es: "Idioma",
+    },
+    "dashboard.sidebar.menu_profile": {
+        en: "My profile",
+        es: "Mi perfil",
+    },
     "dashboard.sidebar.messages": {
         en: "Messages",
         es: "Mensajes",

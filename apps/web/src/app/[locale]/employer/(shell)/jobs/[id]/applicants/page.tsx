@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JobApplicantsPage({ params }: Props) {
   const { locale, id } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.kanban' });
+  const tForm = await getTranslations({ locale, namespace: 'employer.jobs.form' });
   const job = await getEmployerJob(id);
   if (!job) notFound();
 
@@ -28,13 +29,13 @@ export default async function JobApplicantsPage({ params }: Props) {
   };
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-6">
         <Link
           href={`/${locale}/employer/jobs`}
           className="text-base-content/60 hover:text-base-content text-sm"
         >
-          ← Jobs
+          ← {tForm('back')}
         </Link>
         <h1 className="font-display mt-2 text-3xl font-light">
           {locale === 'es' ? job.titleEs : job.titleEn}

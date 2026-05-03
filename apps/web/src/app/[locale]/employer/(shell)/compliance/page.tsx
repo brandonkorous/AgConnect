@@ -5,6 +5,7 @@ import { faDownload, faCheck, faMinus, faBell } from '@fortawesome/free-solid-sv
 import {
   listComplianceCategories,
   listComplianceActions,
+  getComplianceSummary,
 } from '@/lib/api/employer-ops';
 import {
   NewComplianceItemButton,
@@ -26,15 +27,39 @@ export default async function CompliancePage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.compliance' });
 
-  const [cats, actions] = await Promise.all([
+  const [cats, actions, summary] = await Promise.all([
     listComplianceCategories(),
     listComplianceActions(),
+    getComplianceSummary(),
   ]);
 
-  const overall = Math.round(cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length));
+  const overall = summary?.overall
+    ?? Math.round(cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length));
+
+  const subtitle = (() => {
+    if (summary?.delta != null && summary.priorScore != null) {
+      const sign = summary.delta > 0 ? '+' : '';
+      return t('overall_delta_real', {
+        sign,
+        delta: summary.delta,
+        prior: summary.priorScore,
+      });
+    }
+    return t('overall_delta');
+  })();
+
+  const inspectionLine = summary?.dolLastInspectionAt
+    ? t('dol_inspection_last', {
+        date: new Date(summary.dolLastInspectionAt).toLocaleDateString(
+          locale === 'es' ? 'es-MX' : 'en-US',
+          { month: 'short', day: 'numeric', year: 'numeric' },
+        ),
+        result: t(`dol_result.${summary.dolLastInspectionResult ?? 'pending'}`),
+      })
+    : t('dol_inspection_none');
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -81,15 +106,16 @@ export default async function CompliancePage({ params }: Props) {
               </div>
             </div>
           </div>
-          <div className="text-base-content/70 mt-3 text-xs">{t('overall_delta')}</div>
+          <div className="text-base-content/70 mt-3 text-xs">{subtitle}</div>
+          <div className="text-base-content/55 mt-1 text-[11px]">{inspectionLine}</div>
         </div>
 
         <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
           <div className="mb-3 flex items-center gap-2">
             <FontAwesomeIcon icon={faBell} className="text-accent h-4 w-4" />
-            <div className="font-display text-xl font-light tracking-tight">
+            <h2 className="font-display text-xl font-light tracking-tight">
               {t('actions_title', { count: actions.length })}
-            </div>
+            </h2>
           </div>
           <div className="grid gap-2.5">
             {actions.map((a, i) => {
@@ -128,7 +154,7 @@ export default async function CompliancePage({ params }: Props) {
         {cats.map((c) => (
           <div key={c.key} className="bg-base-100 border-base-300 rounded-2xl border p-5">
             <div className="mb-3 flex items-center justify-between">
-              <div className="text-sm font-semibold">{c.label}</div>
+              <h2 className="text-sm font-semibold">{c.label}</h2>
               <div className="flex items-center gap-2">
                 <div className="bg-base-200 h-1.5 w-[60px] overflow-hidden rounded-full">
                   <div

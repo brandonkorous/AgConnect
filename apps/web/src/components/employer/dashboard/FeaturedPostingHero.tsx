@@ -87,13 +87,13 @@ export async function FeaturedPostingHero({ locale, job, applicants }: Props) {
               {open > 0 ? t('fill_spot') : t('view_crew')}
               <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
             </Link>
-            <button
-              type="button"
+            <Link
+              href={`/${locale}/employer/messages?job=${job.id}`}
               className="border-base-100/25 inline-flex items-center gap-1.5 rounded-full border bg-transparent px-4 py-2 text-sm font-semibold"
             >
               <FontAwesomeIcon icon={faComments} className="h-3 w-3" />
               {t('message_crew')}
-            </button>
+            </Link>
           </div>
         </div>
         <div className="border-base-100/10 relative h-[180px] w-[200px] shrink-0 overflow-hidden rounded-xl border bg-gradient-to-br from-[#2a3d2f] to-[#1a2620]">

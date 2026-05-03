@@ -32,24 +32,27 @@ function assemble(rows: Row[]): Messages {
 }
 
 async function loadFromDb(locale: Locale, tenantId: string | null): Promise<Messages> {
-    const rows = await prisma.$transaction(async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
-        if (tenantId === null) {
+    const rows = await prisma.$transaction(
+        async (tx) => {
+            await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
+            if (tenantId === null) {
+                return tx.translationKey.findMany({
+                    where: { locale: locale as Lang, tenantId: null, status: TranslationStatus.published },
+                    select: { namespace: true, key: true, value: true },
+                });
+            }
             return tx.translationKey.findMany({
-                where: { locale: locale as Lang, tenantId: null, status: TranslationStatus.published },
-                select: { namespace: true, key: true, value: true },
+                where: {
+                    locale: locale as Lang,
+                    status: TranslationStatus.published,
+                    OR: [{ tenantId }, { tenantId: null }],
+                },
+                orderBy: [{ tenantId: 'asc' }],
+                select: { namespace: true, key: true, value: true, tenantId: true },
             });
-        }
-        return tx.translationKey.findMany({
-            where: {
-                locale: locale as Lang,
-                status: TranslationStatus.published,
-                OR: [{ tenantId }, { tenantId: null }],
-            },
-            orderBy: [{ tenantId: 'asc' }],
-            select: { namespace: true, key: true, value: true, tenantId: true },
-        });
-    });
+        },
+        { timeout: 15_000, maxWait: 5_000 },
+    );
 
     if (tenantId === null) return assemble(rows);
 
@@ -65,7 +68,14 @@ function assembleDeepMerge(globals: Row[], overrides: Row[]): Messages {
     return assemble(Array.from(merged.values()));
 }
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 export async function getMessages(locale: Locale, tenantId: string | null = null): Promise<Messages> {
+    if (isDev) {
+        // Skip the cache entirely in dev so newly seeded translation keys
+        // resolve on the next request instead of waiting out the 5-minute window.
+        return loadFromDb(locale, tenantId);
+    }
     const cached = unstable_cache(
         async () => loadFromDb(locale, tenantId),
         ['messages', locale, tenantId ?? 'global', 'v2'],

@@ -33,6 +33,7 @@ export function AppShellProviders({
     acceptAll: t('consent.accept_all'),
     rejectNonEssential: t('consent.reject_non_essential'),
     customize: t('consent.customize'),
+    back: t('consent.back'),
     save: t('consent.save'),
     privacyLinkLabel: t('consent.privacy_link'),
     privacyLinkHref: `/${locale}/privacy`,

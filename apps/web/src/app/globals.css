@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source "../../../../packages/*/src/**/*.{ts,tsx,js,jsx}";
 
 @plugin 'daisyui' {
   logs: false;
@@ -20,6 +23,33 @@
   --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-serif: var(--font-inter-tight), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: var(--font-dm-mono), 'JetBrains Mono', Menlo, monospace;
+
+  /* Tierra motion easing — see docs/brand/04-spacing-layout.md#motion.
+     `--ease-*` is a Tailwind 4 auto-namespace, so this becomes the
+     `ease-tierra` utility. Pair with the brand duration utilities below. */
+  --ease-tierra: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Tierra motion durations — semantic tokens matching the four brand tiers.
+   `--duration-*` is NOT a Tailwind 4 auto-namespace, so we expose these as
+   real utility classes via @utility. Each one sets BOTH transition-duration
+   and animation-duration so the same class works for transitions and
+   tw-animate-css entrance animations. */
+@utility duration-state {
+  transition-duration: 120ms;
+  animation-duration: 120ms;
+}
+@utility duration-transition {
+  transition-duration: 200ms;
+  animation-duration: 200ms;
+}
+@utility duration-modal {
+  transition-duration: 240ms;
+  animation-duration: 240ms;
+}
+@utility duration-route {
+  transition-duration: 320ms;
+  animation-duration: 320ms;
 }
 
 /* Tierra signature: eyebrow label utility — 0.18em tracking is brand-defining */
@@ -53,6 +83,7 @@ body {
 .file-input {
   --input-color: var(--color-base-300);
   border-color: var(--color-base-300);
+  @apply rounded bg-base-100;
 }
 [data-theme='tierra-dark'] .input,
 [data-theme='tierra-dark'] .select,
@@ -60,4 +91,85 @@ body {
 [data-theme='tierra-dark'] .file-input {
   --input-color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
   border-color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
+}
+
+/* ───────────────────────────────────────────── Compliance audit binder
+
+   The audit binder is a formal printable document, not a styled webpage.
+   The .doc-binder class flips body type to a serif system stack, sets
+   letter-size page geometry, and removes the cream brand wash so it prints
+   as a black-and-white legal-style report — the kind a DOL or county
+   inspector expects to read on paper. */
+.doc-binder {
+  font-family: 'Times New Roman', 'Liberation Serif', Times, serif;
+  color: #111;
+  background: #fff;
+  font-size: 11pt;
+  line-height: 1.45;
+}
+.doc-binder h1,
+.doc-binder h2,
+.doc-binder h3 {
+  font-family: 'Times New Roman', 'Liberation Serif', Times, serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.doc-binder .meta {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 9pt;
+  letter-spacing: 0.04em;
+  color: #444;
+}
+.doc-binder table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.doc-binder thead th {
+  border-top: 1pt solid #000;
+  border-bottom: 1pt solid #000;
+  font-weight: 600;
+  font-size: 9.5pt;
+  text-align: left;
+  padding: 4pt 6pt;
+}
+.doc-binder tbody td {
+  border-bottom: 0.5pt solid #c8c8c8;
+  padding: 4pt 6pt;
+  vertical-align: top;
+}
+.doc-binder tbody tr:last-child td {
+  border-bottom: 1pt solid #000;
+}
+
+@page {
+  size: Letter;
+  margin: 0.75in 0.75in 0.85in 0.75in;
+}
+
+@media print {
+  /* Reset the OS / DaisyUI cream backgrounds — printers should treat the
+     binder as B/W, not a screenshot of the app. */
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  /* Don't break a section across pages where the start has the heading
+     and the rows orphan onto the next page. */
+  .doc-binder section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .doc-binder .page-break-before {
+    break-before: page;
+    page-break-before: always;
+  }
+  /* Show a stable on-page footer on every printed page. The browser
+     handles repetition for table headers automatically; for the running
+     footer we set it via @page (above) — avoid duplicating with absolute
+     positioning so the binder remains print-engine portable. */
+  .screen-only {
+    display: none !important;
+  }
 }

@@ -1,10 +1,8 @@
 // Server-only employer data accessors.
 //
-// Calls the Hono API at services/api when authenticated; falls back to
-// curated mock data when the API is unreachable or the user isn't signed in
-// (dev convenience, so the UI is testable end-to-end without the API
-// container running). Shapes mirror what services/api/employer/* returns so
-// swapping to live data is automatic.
+// Calls the Hono API at services/api. On error we return null (single-record
+// fetchers) or [] (list fetchers) and log via console.error so the failure
+// surfaces in dev. Empty real data is treated as truth — never mocked.
 
 import 'server-only';
 import type { EmployerPlanTier, PlanInterval } from '@agconn/schemas';
@@ -22,19 +20,74 @@ export type EmployerProfileView = {
   ein: string | null;
   flcLicenseNum: string | null;
   county: string | null;
+  streetAddress: string | null;
+  city: string | null;
+  stateCode: string | null;
+  postalCode: string | null;
+  addressLat: number | null;
+  addressLng: number | null;
+  mapboxId: string | null;
   flcVerifiedAt: string | null;
   rejectedAt: string | null;
   rejectionReason: string | null;
+  participatesInH2a: boolean;
+  dolLastInspectionAt: string | null;
+  dolLastInspectionResult: 'pass' | 'fail' | 'pending' | null;
   plan: EmployerPlanTier;
   planInterval: PlanInterval | null;
   planCurrentPeriodEnd: string | null;
   planCancelAtPeriodEnd: boolean;
 };
 
+export type WageStructure = 'hourly' | 'hourly_piece' | 'piece';
+export type PayFrequency = 'weekly' | 'biweekly' | 'daily';
+export type MinExperience = 'none' | 'one_year' | 'three_years' | 'five_years';
+export type MinAge = 'sixteen' | 'eighteen' | 'twenty_one';
+
+export type JobPhotoView = {
+  id: string;
+  url: string;
+  captionEn: string | null;
+  captionEs: string | null;
+  width: number | null;
+  height: number | null;
+  sortOrder: number;
+};
+
+export type JobScreeningQuestionView = {
+  id: string;
+  sortOrder: number;
+  questionEn: string;
+  questionEs: string;
+  answerType: 'yes_no' | 'text';
+  required: boolean;
+};
+
+export type EmployerContactView = {
+  id: string;
+  name: string;
+  phone: string;
+  role: string;
+  languages: ('en' | 'es')[];
+  sortOrder: number;
+};
+
+export type LookupView = {
+  id: string;
+  slug: string;
+  labelEn: string;
+  labelEs: string;
+  sortOrder: number;
+};
+export type CropLookupView = LookupView & { glyphKey: string };
+export type SkillLookupView = LookupView & { category: string };
+
 export type EmployerJobView = {
   id: string;
   titleEn: string;
   titleEs: string;
+  descriptionEn?: string;
+  descriptionEs?: string;
   county: string;
   city: string | null;
   wageMin: number;
@@ -50,6 +103,40 @@ export type EmployerJobView = {
   filledAt?: string | null;
   closedAt?: string | null;
   createdAt?: string;
+
+  // ── Edit-Job v2 fields (optional so the list/card endpoints stay lean) ──
+  cropId?: string | null;
+  roleTypeId?: string | null;
+  dailyStartTime?: string | null;
+  dailyEndTime?: string | null;
+  workingDays?: number;
+  wageStructure?: WageStructure;
+  pieceRate?: number | null;
+  pieceUnit?: string | null;
+  payFrequency?: PayFrequency;
+  mealsProvided?: boolean;
+  endOfSeasonBonusCents?: number | null;
+  pickupPoint?: string | null;
+  minExperience?: MinExperience;
+  minAge?: MinAge;
+  autoMatchEnabled?: boolean;
+  autoTranslateEnabled?: boolean;
+  smsApplyEnabled?: boolean;
+  smsApplyKeyword?: string | null;
+  applicationDeadlineAt?: string | null;
+  foremanContactId?: string | null;
+  foremanContact?: EmployerContactView | null;
+  siteAddress?: string | null;
+  siteAcres?: number | null;
+  siteLat?: number | null;
+  siteLng?: number | null;
+  zipCode?: string | null;
+  humanId?: string | null;
+  autosavedAt?: string | null;
+  photos?: JobPhotoView[];
+  screeningQuestions?: JobScreeningQuestionView[];
+  housing?: boolean;
+  transport?: boolean;
 };
 
 export type ApplicantCardView = {
@@ -85,222 +172,7 @@ export type BillingView = {
   stripeConfigured: boolean;
 };
 
-const MOCK_EMPLOYER: EmployerProfileView = {
-  id: 'emp-mock-1',
-  legalName: 'Sunridge Vineyards LLC',
-  dbaName: 'Sunridge Vineyards',
-  displayName: 'Sunridge Vineyards',
-  contactEmail: 'elena@sunridgevineyards.com',
-  contactPhone: '+15595550123',
-  licenseType: 'grower',
-  ein: '12-3456789',
-  flcLicenseNum: null,
-  county: 'Madera',
-  flcVerifiedAt: '2026-04-15T16:30:00Z',
-  rejectedAt: null,
-  rejectionReason: null,
-  plan: 'pro',
-  planInterval: 'monthly',
-  planCurrentPeriodEnd: '2026-05-29T00:00:00Z',
-  planCancelAtPeriodEnd: false,
-};
-
-const MOCK_JOBS: EmployerJobView[] = [
-  {
-    id: 'job-1',
-    titleEn: 'Grape Harvest',
-    titleEs: 'Cosecha de uva',
-    county: 'Madera',
-    city: 'Block 7-North',
-    wageMin: 22.5,
-    wageMax: 22.5,
-    startDate: '2026-08-04',
-    endDate: '2026-08-07',
-    status: 'filled',
-    positionsTotal: 14,
-    hireCount: 14,
-    applicationCounts: { applied: 24, reviewed: 14, hired: 14, rejected: 10 },
-    skills: ['Harvesting', 'Bilingual'],
-    publishedAt: '2026-04-28T15:00:00Z',
-    filledAt: '2026-04-30T18:00:00Z',
-    closedAt: null,
-    createdAt: '2026-04-28T13:00:00Z',
-  },
-  {
-    id: 'job-2',
-    titleEn: 'Vineyard Setup Crew',
-    titleEs: 'Cuadrilla de preparación de viñedo',
-    county: 'Madera',
-    city: 'Block 4-East',
-    wageMin: 20,
-    wageMax: 20,
-    startDate: '2026-08-05',
-    endDate: '2026-08-09',
-    status: 'active',
-    positionsTotal: 8,
-    hireCount: 6,
-    applicationCounts: { applied: 8, reviewed: 4, hired: 6, rejected: 2 },
-    skills: ['Pruning', 'Forklift'],
-    publishedAt: '2026-05-01T08:00:00Z',
-    filledAt: null,
-    closedAt: null,
-    createdAt: '2026-05-01T07:00:00Z',
-  },
-  {
-    id: 'job-3',
-    titleEn: 'Almond Pre-shake Crew',
-    titleEs: 'Cuadrilla pre-vareo de almendros',
-    county: 'Madera',
-    city: 'East orchard',
-    wageMin: 21,
-    wageMax: 21,
-    startDate: '2026-08-08',
-    endDate: '2026-08-15',
-    status: 'active',
-    positionsTotal: 12,
-    hireCount: 3,
-    applicationCounts: { applied: 14, reviewed: 5, hired: 3, rejected: 0 },
-    skills: ['CDL-A', 'Forklift'],
-    publishedAt: '2026-04-27T14:00:00Z',
-    filledAt: null,
-    closedAt: null,
-    createdAt: '2026-04-27T12:00:00Z',
-  },
-  {
-    id: 'job-4',
-    titleEn: 'Sort Line — Day Shift',
-    titleEs: 'Línea de selección — turno de día',
-    county: 'Madera',
-    city: 'Pack house',
-    wageMin: 19,
-    wageMax: 19,
-    startDate: '2026-08-06',
-    endDate: '2026-09-30',
-    status: 'filled',
-    positionsTotal: 8,
-    hireCount: 8,
-    applicationCounts: { applied: 22, reviewed: 8, hired: 8, rejected: 6 },
-    skills: ['Packing', 'Bilingual'],
-    publishedAt: '2026-04-24T16:00:00Z',
-    filledAt: '2026-04-29T18:00:00Z',
-    closedAt: null,
-    createdAt: '2026-04-24T15:00:00Z',
-  },
-];
-
-const MOCK_APPLICANTS: ApplicantCardView[] = [
-  {
-    id: 'app-1',
-    status: 'applied',
-    appliedAt: '2026-05-01T15:00:00Z',
-    job: { id: 'job-3', titleEn: 'Almond Pre-shake Crew', titleEs: 'Cuadrilla pre-vareo de almendros', county: 'Madera' },
-    worker: {
-      id: 'usr-1',
-      firstName: 'Pedro',
-      lastInitial: 'E',
-      county: 'Madera',
-      skills: ['Forklift', 'Bilingual', 'WPS'],
-      skillsMatchCount: 2,
-      certifications: [{ name: 'WPS', source: 'agconn' }],
-    },
-  },
-  {
-    id: 'app-2',
-    status: 'applied',
-    appliedAt: '2026-05-01T11:00:00Z',
-    job: { id: 'job-2', titleEn: 'Vineyard Setup Crew', titleEs: 'Cuadrilla de preparación de viñedo', county: 'Madera' },
-    worker: {
-      id: 'usr-2',
-      firstName: 'Soledad',
-      lastInitial: 'S',
-      county: 'Madera',
-      skills: ['Forklift', 'WPS', 'Bilingual'],
-      skillsMatchCount: 2,
-      certifications: [{ name: 'Forklift', source: 'agconn' }],
-    },
-  },
-  {
-    id: 'app-3',
-    status: 'applied',
-    appliedAt: '2026-05-01T09:00:00Z',
-    job: { id: 'job-2', titleEn: 'Vineyard Setup Crew', titleEs: 'Cuadrilla de preparación de viñedo', county: 'Madera' },
-    worker: {
-      id: 'usr-3',
-      firstName: 'Beto',
-      lastInitial: 'V',
-      county: 'Madera',
-      skills: ['Pruning', 'Bilingual'],
-      skillsMatchCount: 1,
-      certifications: [{ name: 'Pruning', source: 'self' }],
-    },
-  },
-  {
-    id: 'app-4',
-    status: 'reviewed',
-    appliedAt: '2026-04-30T20:00:00Z',
-    job: { id: 'job-3', titleEn: 'Almond Pre-shake Crew', titleEs: 'Cuadrilla pre-vareo de almendros', county: 'Madera' },
-    worker: {
-      id: 'usr-4',
-      firstName: 'Joaquín',
-      lastInitial: 'N',
-      county: 'Madera',
-      skills: ['CDL-A', 'Bilingual', 'Forklift'],
-      skillsMatchCount: 2,
-      certifications: [{ name: 'CDL-A', source: 'self' }],
-    },
-  },
-  {
-    id: 'app-5',
-    status: 'reviewed',
-    appliedAt: '2026-04-30T15:00:00Z',
-    job: { id: 'job-2', titleEn: 'Vineyard Setup Crew', titleEs: 'Cuadrilla de preparación de viñedo', county: 'Madera' },
-    worker: {
-      id: 'usr-5',
-      firstName: 'Rosa',
-      lastInitial: 'A',
-      county: 'Madera',
-      skills: ['Pruning', 'Bilingual'],
-      skillsMatchCount: 1,
-      certifications: [{ name: 'WPS', source: 'agconn' }],
-    },
-  },
-  {
-    id: 'app-6',
-    status: 'hired',
-    appliedAt: '2026-04-28T17:00:00Z',
-    job: { id: 'job-1', titleEn: 'Grape Harvest', titleEs: 'Cosecha de uva', county: 'Madera' },
-    worker: {
-      id: 'usr-6',
-      firstName: 'Miguel',
-      lastInitial: 'R',
-      county: 'Madera',
-      skills: ['Harvesting', 'Bilingual'],
-      skillsMatchCount: 2,
-      certifications: [{ name: 'Harvesting', source: 'agconn' }],
-    },
-  },
-  {
-    id: 'app-7',
-    status: 'hired',
-    appliedAt: '2026-04-28T13:00:00Z',
-    job: { id: 'job-1', titleEn: 'Grape Harvest', titleEs: 'Cosecha de uva', county: 'Madera' },
-    worker: {
-      id: 'usr-7',
-      firstName: 'Carmen',
-      lastInitial: 'R',
-      county: 'Madera',
-      skills: ['Harvesting', 'Bilingual'],
-      skillsMatchCount: 2,
-      certifications: [{ name: 'Harvesting', source: 'agconn' }],
-    },
-  },
-];
-
-const apiConfigured = (): boolean =>
-  Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY);
-
 export async function getEmployerProfile(): Promise<EmployerProfileView | null> {
-  if (!apiConfigured()) return MOCK_EMPLOYER;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{
@@ -310,27 +182,27 @@ export async function getEmployerProfile(): Promise<EmployerProfileView | null> 
     }>('/v1/employer/onboarding/me', { handleErrorInline: true });
     if (!isOk(res)) return null;
     return res.data.employer;
-  } catch {
-    return MOCK_EMPLOYER;
+  } catch (e) {
+    console.error('getEmployerProfile failed', e);
+    return null;
   }
 }
 
 export async function listEmployerJobs(): Promise<EmployerJobView[]> {
-  if (!apiConfigured()) return MOCK_JOBS;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ jobs: EmployerJobView[] }>('/v1/employer/jobs', {
       handleErrorInline: true,
     });
-    if (!isOk(res)) return MOCK_JOBS;
+    if (!isOk(res)) return [];
     return res.data.jobs;
-  } catch {
-    return MOCK_JOBS;
+  } catch (e) {
+    console.error('listEmployerJobs failed', e);
+    return [];
   }
 }
 
 export async function getEmployerJob(id: string): Promise<EmployerJobView | null> {
-  if (!apiConfigured()) return MOCK_JOBS.find((j) => j.id === id) ?? null;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ job: EmployerJobView }>(`/v1/employer/jobs/${id}`, {
@@ -338,45 +210,86 @@ export async function getEmployerJob(id: string): Promise<EmployerJobView | null
     });
     if (!isOk(res)) return null;
     return res.data.job;
-  } catch {
-    return MOCK_JOBS.find((j) => j.id === id) ?? null;
+  } catch (e) {
+    console.error('getEmployerJob failed', e);
+    return null;
+  }
+}
+
+// ───────────────────────────────────────────────── Lookups (Edit Job v2)
+
+export async function listCrops(): Promise<CropLookupView[]> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ crops: CropLookupView[] }>('/v1/employer/lookups/crops', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return [];
+    return res.data.crops;
+  } catch (e) {
+    console.error('listCrops failed', e);
+    return [];
+  }
+}
+
+export async function listRoleTypes(): Promise<LookupView[]> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ roleTypes: LookupView[] }>('/v1/employer/lookups/role-types', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return [];
+    return res.data.roleTypes;
+  } catch (e) {
+    console.error('listRoleTypes failed', e);
+    return [];
+  }
+}
+
+export async function listSkills(): Promise<SkillLookupView[]> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ skills: SkillLookupView[] }>('/v1/employer/lookups/skills', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return [];
+    return res.data.skills;
+  } catch (e) {
+    console.error('listSkills failed', e);
+    return [];
+  }
+}
+
+export async function listEmployerContacts(): Promise<EmployerContactView[]> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ contacts: EmployerContactView[] }>('/v1/employer/contacts', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return [];
+    return res.data.contacts;
+  } catch (e) {
+    console.error('listEmployerContacts failed', e);
+    return [];
   }
 }
 
 export async function listInbox(): Promise<ApplicantCardView[]> {
-  if (!apiConfigured()) return MOCK_APPLICANTS;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ applications: ApplicantCardView[] }>(
       '/v1/employer/inbox',
       { handleErrorInline: true },
     );
-    if (!isOk(res)) return MOCK_APPLICANTS;
+    if (!isOk(res)) return [];
     return res.data.applications;
-  } catch {
-    return MOCK_APPLICANTS;
+  } catch (e) {
+    console.error('listInbox failed', e);
+    return [];
   }
 }
 
 export async function getBilling(): Promise<BillingView | null> {
-  if (!apiConfigured()) {
-    return {
-      plan: 'pro',
-      interval: 'monthly',
-      currentPeriodEnd: '2026-05-29T00:00:00Z',
-      cancelAtPeriodEnd: false,
-      features: {
-        activePostings: -1,
-        workerSearch: true,
-        priorityListing: true,
-        multiUser: false,
-        customCounties: false,
-        brandedReports: false,
-      },
-      hasPaymentMethod: true,
-      stripeConfigured: false,
-    };
-  }
   try {
     const client = await getServerApiClient();
     const res = await client.get<BillingView>('/v1/employer/billing', {
@@ -384,7 +297,8 @@ export async function getBilling(): Promise<BillingView | null> {
     });
     if (!isOk(res)) return null;
     return res.data;
-  } catch {
+  } catch (e) {
+    console.error('getBilling failed', e);
     return null;
   }
 }
@@ -412,20 +326,10 @@ export type WorkerDetailView = WorkerCardView & {
   languages: string[];
 };
 
-const MOCK_WORKERS: WorkerCardView[] = [
-  { id: 'w1', firstName: 'Pedro',   lastInitial: 'E', county: 'Madera',     skills: ['Forklift', 'Bilingual', 'WPS'],    matchScore: 96, certifications: [{ name: 'WPS', issuer: null, source: 'agconn' }], experienceCount: 5 },
-  { id: 'w2', firstName: 'Soledad', lastInitial: 'S', county: 'Madera',     skills: ['Sort line', 'WPS', 'Bilingual'],   matchScore: 94, certifications: [{ name: 'Forklift', issuer: null, source: 'agconn' }], experienceCount: 3 },
-  { id: 'w3', firstName: 'Joaquín', lastInitial: 'N', county: 'Chowchilla', skills: ['CDL-A', 'Almond'],                  matchScore: 92, certifications: [{ name: 'CDL-A', issuer: null, source: 'self' }],     experienceCount: 8 },
-  { id: 'w4', firstName: 'Rosa',    lastInitial: 'A', county: 'Madera',     skills: ['Vineyard', 'Citrus', 'Bilingual'], matchScore: 88, certifications: [{ name: 'Bilingual', issuer: null, source: 'self' }], experienceCount: 4 },
-  { id: 'w5', firstName: 'Beto',    lastInitial: 'V', county: 'Madera',     skills: ['Forklift', 'WPS'],                  matchScore: 89, certifications: [{ name: 'Forklift', issuer: null, source: 'agconn' }], experienceCount: 6 },
-  { id: 'w6', firstName: 'Lupita',  lastInitial: 'P', county: 'Madera',     skills: ['WPS', 'Bilingual'],                 matchScore: 86, certifications: [{ name: 'WPS', issuer: null, source: 'agconn' }],   experienceCount: 2 },
-];
-
 export async function searchWorkers(opts?: {
   county?: string;
   q?: string;
 }): Promise<WorkerCardView[]> {
-  if (!apiConfigured()) return MOCK_WORKERS;
   try {
     const client = await getServerApiClient();
     const params = new URLSearchParams();
@@ -436,24 +340,15 @@ export async function searchWorkers(opts?: {
       `/v1/employer/workers${qs ? `?${qs}` : ''}`,
       { handleErrorInline: true },
     );
-    if (!isOk(res)) return MOCK_WORKERS;
+    if (!isOk(res)) return [];
     return res.data.workers;
-  } catch {
-    return MOCK_WORKERS;
+  } catch (e) {
+    console.error('searchWorkers failed', e);
+    return [];
   }
 }
 
 export async function getWorkerDetail(id: string): Promise<WorkerDetailView | null> {
-  if (!apiConfigured()) {
-    const m = MOCK_WORKERS.find((w) => w.id === id);
-    if (!m) return null;
-    return {
-      ...m,
-      experience: [{ title: 'Almond Pre-shake', employer: 'Driscoll Madera Ranch', from: '2024', to: '2026' }],
-      education: [{ title: 'Madera HS · 2018' }],
-      languages: ['English', 'Spanish'],
-    };
-  }
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ worker: WorkerDetailView }>(
@@ -462,7 +357,8 @@ export async function getWorkerDetail(id: string): Promise<WorkerDetailView | nu
     );
     if (!isOk(res)) return null;
     return res.data.worker;
-  } catch {
+  } catch (e) {
+    console.error('getWorkerDetail failed', e);
     return null;
   }
 }

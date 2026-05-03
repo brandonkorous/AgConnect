@@ -22,6 +22,20 @@ export type Features = {
   brandedReports: boolean;
 };
 
+/**
+ * Display-only prices shown in the UI (USD). Real charges come from Stripe
+ * via `priceIdFor(tier, interval)` — these constants stay in sync with
+ * Stripe products manually. Don't use these for billing decisions.
+ */
+export const PLAN_DISPLAY_PRICE: Record<
+  EmployerPlanTier,
+  { monthly: number | null; yearly: number | null }
+> = {
+  free: { monthly: 0, yearly: 0 },
+  pro: { monthly: 99, yearly: 990 },
+  enterprise: { monthly: 299, yearly: 2990 },
+};
+
 export const PLAN_FEATURES: Record<EmployerPlanTier, Features> = {
   free: {
     activePostings: 2,

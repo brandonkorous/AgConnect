@@ -15,7 +15,7 @@ export default async function NewShiftPage({ params }: Props) {
   const { locale } = await params;
   const crews = await listCrews();
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <NewShiftForm locale={locale} crews={crews.map((c) => ({ id: c.id, name: c.name }))} />
     </div>
   );

@@ -20,7 +20,7 @@ export async function TopApplicantsCard({ locale, applicants }: Props) {
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border">
       <div className="border-base-300 flex items-center justify-between border-b px-4 py-3">
-        <div className="font-display text-base font-light tracking-tight">{t('title')}</div>
+        <h2 className="font-display text-base font-light tracking-tight">{t('title')}</h2>
         <span className="bg-accent text-accent-content rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider">
           {newCount} {t('new')}
         </span>

@@ -1,16 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { THEME_STORAGE_KEY, dataThemeFor, type Theme } from '@/lib/theme';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import { THEME_STORAGE_KEY, dataThemeFor, DEFAULT_THEME, type Theme } from '@/lib/theme';
 
 type Props = {
-    tone?: 'soil' | 'bone';
-    separator?: '|' | '·';
-    labels: { light: string; dark: string; aria: string };
+    ariaLabel: string;
+    className?: string;
 };
 
 function readCurrentTheme(): Theme {
-    if (typeof document === 'undefined') return 'light';
+    if (typeof document === 'undefined') return DEFAULT_THEME;
     return document.documentElement.dataset.theme === 'tierra-dark' ? 'dark' : 'light';
 }
 
@@ -25,15 +26,12 @@ function applyTheme(theme: Theme) {
     }
 }
 
-export function ThemeToggle({ tone = 'soil', separator = '|', labels }: Props) {
-    const [theme, setTheme] = useState<Theme>('light');
-    const [mounted, setMounted] = useState(false);
+export function ThemeToggle({ ariaLabel, className }: Props) {
+    const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
 
     useEffect(() => {
         setTheme(readCurrentTheme());
-        setMounted(true);
 
-        // Track OS theme changes when the user hasn't pinned a choice
         const media = window.matchMedia('(prefers-color-scheme: dark)');
         const onChange = (event: MediaQueryListEvent) => {
             const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -47,41 +45,22 @@ export function ThemeToggle({ tone = 'soil', separator = '|', labels }: Props) {
         return () => media.removeEventListener('change', onChange);
     }, []);
 
-    const select = (next: Theme) => {
-        setTheme(next);
-        applyTheme(next);
-    };
-
-    const activeClass = tone === 'bone' ? 'text-neutral-content' : 'text-neutral-content';
-    const inactiveClass =
-        tone === 'bone' ? 'text-neutral-content/60 hover:text-neutral-content' : 'text-secondary hover:text-neutral-content';
-    const dividerClass = tone === 'bone' ? 'text-neutral-content/40' : 'text-secondary/50';
+    const isLight = theme === 'light';
 
     return (
-        <div
-            role="group"
-            aria-label={labels.aria}
-            className="flex items-center gap-2 font-sans text-sm leading-4"
-        >
-            <button
-                type="button"
-                onClick={() => select('light')}
-                aria-pressed={mounted && theme === 'light'}
-                className={`font-semibold ${mounted && theme === 'light' ? activeClass : inactiveClass}`}
-            >
-                {labels.light}
-            </button>
-            <span className={dividerClass} aria-hidden>
-                {separator}
-            </span>
-            <button
-                type="button"
-                onClick={() => select('dark')}
-                aria-pressed={mounted && theme === 'dark'}
-                className={`font-semibold ${mounted && theme === 'dark' ? activeClass : inactiveClass}`}
-            >
-                {labels.dark}
-            </button>
-        </div>
+        <label className={`toggle text-base-content ${className ?? ''}`.trim()} aria-label={ariaLabel}>
+            <input
+                type="checkbox"
+                checked={isLight}
+                onChange={(event) => {
+                    const next: Theme = event.target.checked ? 'light' : 'dark';
+                    setTheme(next);
+                    applyTheme(next);
+                }}
+                suppressHydrationWarning
+            />
+            <FontAwesomeIcon icon={faSun} size="xs" className="swap-on m-auto text-yellow-500" />
+            <FontAwesomeIcon icon={faMoon} size="xs" className="swap-off m-auto text-gray-200" />
+        </label>
     );
 }

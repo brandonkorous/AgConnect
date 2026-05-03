@@ -135,7 +135,7 @@ function ToastCard({
 
   return (
     <div
-      className={`alert ${cls} pointer-events-auto motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 w-full max-w-md shadow-lg`}
+      className={`alert ${cls} pointer-events-auto motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-transition motion-safe:ease-tierra w-full max-w-md shadow-lg`}
       role={toast.variant === 'error' ? 'alert' : 'status'}
       onMouseEnter={() => setPaused(toast.id, true)}
       onMouseLeave={() => setPaused(toast.id, false)}

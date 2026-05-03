@@ -5,33 +5,33 @@
   prefersdark: false;
   color-scheme: light;
 
-  --color-primary:           oklch(50% 0.09 120);   /* #5B6E2E olive */
-  --color-primary-content:   oklch(98% 0.005 95);
-  --color-secondary:         oklch(36% 0.07 120);   /* #3F4E1F */
-  --color-secondary-content: oklch(98% 0.005 95);
-  --color-accent:            oklch(83% 0.13 88);   /* #D9B441 gold */
-  --color-accent-content:    oklch(20% 0.005 80);
-  --color-neutral:           oklch(20% 0.005 80);   /* #1C1C1A */
-  --color-neutral-content:   oklch(98% 0.005 95);
-  --color-base-100:          oklch(98% 0.005 95);   /* #FAFAF8 */
-  --color-base-200:          oklch(94% 0.012 80);   /* #F3EFE6 */
-  --color-base-300:          oklch(89% 0.014 80);   /* #E5E2D8 */
+  --color-primary:           #5B6E2E; /*oklch(50% 0.09 120);   /* #5B6E2E olive */
+  --color-primary-content:   #f9f8f5;
+  --color-secondary:         #3F4E1F; /*oklch(36% 0.07 120);   /* #3F4E1F */
+  --color-secondary-content: #f9f8f5;
+  --color-accent:            #D9B441; /*oklch(83% 0.13 88);   /* #D9B441 gold */
+  --color-accent-content:    #f9f8f5;
+  --color-neutral:           #1C1C1A; /*oklch(20% 0.005 80);   /* #1C1C1A */
+  --color-neutral-content:   ##f9f8f5;
+  --color-base-100:          #FFFFFF; /*oklch(98% 0.005 95);   /* #FAFAF8 */
+  --color-base-200:          #F7F7F3;/*oklch(94% 0.012 80);   /* #F3EFE6 */
+  --color-base-300:          #EFEFE7;
   --color-base-content:      oklch(20% 0.005 80);
-  --color-info:              oklch(40% 0.09 260);
-  --color-info-content:        oklch(98% 0.005 95);
-  --color-success:           oklch(45% 0.12 145);
-    --color-success-content:   oklch(98% 0.005 95);
-  --color-warning:           oklch(55% 0.13 60);
-    --color-warning-content:   oklch(98% 0.005 95);
-  --color-error:             oklch(52% 0.18 28);
-    --color-error-content:   oklch(98% 0.005 95);
+  --color-info:              #294778; /*oklch(40% 0.09 260);*/
+  --color-info-content:      #f9f8f5; /*  oklch(98% 0.005 95);*/
+  --color-success:           #1e6626; /*oklch(40% 0.09 120);*/
+  --color-success-content:   oklch(98% 0.005 95);
+  --color-warning:           #a75c00;
+  --color-warning-content:   oklch(98% 0.005 95);
+  --color-error:             #ba2c25;
+  --color-error-content:   oklch(98% 0.005 95);
 
   --radius-selector: 0.5rem;
   --radius-field:    9999px;
   --radius-box:      1rem;
 
   --size-selector: 0.25rem;
-  --size-field:    0.30rem;
+  --size-field:    0.25rem;
 
   --border: 1px;
   --depth:  1;

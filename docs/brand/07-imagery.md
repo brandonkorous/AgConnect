@@ -59,8 +59,9 @@ Illustration is rare in the Tierra system. When it appears:
 
 ### Library
 
-- **[Lucide](https://lucide.dev)** is the primary icon set. Use the `lucide-react` package for product implementation.
-- 1.5px stroke (Lucide's default).
+- **[FontAwesome](https://fontawesome.com/)** is the AgConn icon system. Use **per-icon imports** from `@fortawesome/free-solid-svg-icons` (`free-regular-svg-icons` and `free-brands-svg-icons` as needed). **Do not use the kit script** (the global `<script>` loader) — it ships every icon and bloats the bundle.
+- Component: `@fortawesome/react-fontawesome` `FontAwesomeIcon` for React surfaces; SSR-safe via the standard import pattern.
+- Default style: solid (`fas`) for product UI; regular (`far`) for the rare lighter accent; brands (`fab`) only for genuine third-party brand marks (Apple, Google sign-in).
 - Default size: 16px in dense UI, 20px on buttons and labels, 24px in cards and section headers, 32–48px in feature blocks.
 
 ### Use rules
@@ -72,9 +73,9 @@ Illustration is rare in the Tierra system. When it appears:
 
 ### Forbidden
 
-- Material Icons (filled-style mismatches Lucide's stroke).
-- FontAwesome (visual style mismatches the brand).
-- Multi-colored icon sets, isometric icons, gradient icons.
+- Material Icons, Lucide, Phosphor, Heroicons — pick one library and stay there. AgConn picked FontAwesome.
+- The FontAwesome **kit script** loader (global `<script>`). Always per-icon imports for tree-shaking.
+- Multi-colored icon sets, isometric icons, gradient icons, "Duotone" FontAwesome variants (the duotone style sits poorly against Tierra's solid-color discipline).
 - AI-sparkle icons. When the product has AI features (resume parser, search), describe them in plain words, not with a wand or a sparkle.
 
 ## Charts and data visualization
@@ -96,14 +97,14 @@ Beyond six categories: add hatching/pattern fills rather than a seventh color. T
 
 ### Single-metric highlight
 
-When highlighting a single number on a chart (a peak, a target, a current period), use `accent`. The rest of the data is `primary`. This is the same "`accent` is the loud one-of-one color" rule from [02-color.md](02-color.md), applied to data.
+When highlighting a key number on a chart (a peak, a target, a current period), use `accent`. The rest of the data is `primary`. This is `accent` being applied where it serves intent — drawing the eye to the number that matters most — consistent with the color guidance in [02-color.md](02-color.md).
 
 ### Axes and grids
 
 - Axes: `base-content` @ 24% (`--border-strong`), 1px.
 - Gridlines: `base-content` @ 8%, 1px, dashed.
 - Tick labels: 11px Inter, `base-content` @ 60%.
-- Numeric labels on data points: DM Mono 12px, `base-content`.
+- Numeric labels on data points: Inter 12px `tabular-nums slashed-zero`, `base-content`.
 - No 3D, no shadows, no glossy fills.
 
 ## Maps
@@ -116,15 +117,15 @@ Pin styles:
 
 - **Default**: 24×32 teardrop, `primary` fill, `base-100` border.
 - **Active**: 28×38 teardrop, `accent` fill, `base-content` border.
-- **Cluster**: square, `base-300` fill, `base-content` border, count in DM Mono.
+- **Cluster**: square, `base-300` fill, `base-content` border, count in Inter `tabular-nums`.
 
 ## Marketing graphics
 
 Hero compositions, blog headers, social images.
 
 - **Composition**: civic-publication layout — wide image left, text-heavy right; or full-bleed image with `base-100` overlay rectangle pinned bottom-left holding the headline.
-- **Type over image**: Fraunces upright (weight 500–600) for the hero phrase. Stay `base-100` or `base-content`, never `accent`. No italic display.
-- **Social-share images**: 1200×630, `bg-neutral` background with a single Fraunces upright phrase center-left, AgConn wordmark bottom-left, single botanical line illustration top-right. (When the wordmark and illustration land — see logo doc — replace the placeholder text mark currently used.)
+- **Type over image**: Inter at display weights (600–700) for the hero phrase. Stay `base-100` or `base-content` for the body of the headline. A single italic accent word inside the headline is permitted (the canonical pattern); italic spanning the entire phrase is not.
+- **Social-share images**: 1200×630, `bg-neutral` background with a single Inter display-weight phrase center-left, AgConn wordmark bottom-left, single botanical line illustration top-right. (When the wordmark and illustration land — see logo doc — replace the placeholder text mark currently used.)
 
 ## Examples to study, not to copy
 

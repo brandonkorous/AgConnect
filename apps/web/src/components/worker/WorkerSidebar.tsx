@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faChartLine,
@@ -14,12 +14,10 @@ import {
     faGraduationCap,
     faIdBadge,
     faComments,
-    faChevronRight,
-    faRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { Wordmark } from '@/components/primitives/Wordmark';
-import { SidebarLocaleToggle } from './SidebarLocaleToggle';
+import { UserMenu, computeInitials } from '@/components/shell/UserMenu';
 
 export type WorkerNavKey =
     | 'dashboard'
@@ -61,25 +59,26 @@ export function WorkerSidebar({ active, locale }: Props) {
     const t = useTranslations('worker.dashboard.sidebar');
     const pathname = usePathname();
     const { user } = useUser();
-    const { signOut } = useClerk();
     const derived = ITEMS.find((it) => pathname.startsWith(`/${locale}${it.path}`))?.key;
     const current = active ?? derived ?? 'dashboard';
 
     const firstName = user?.firstName ?? '';
     const lastName = user?.lastName ?? '';
-    const fullName = [firstName, lastName].filter(Boolean).join(' ') || (user?.primaryPhoneNumber?.phoneNumber ?? user?.primaryEmailAddress?.emailAddress ?? '');
-    const initials =
-        firstName || lastName
-            ? `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || '·'
-            : (user?.primaryEmailAddress?.emailAddress?.[0] ?? user?.primaryPhoneNumber?.phoneNumber?.[1] ?? '·').toUpperCase();
+    const email = user?.primaryEmailAddress?.emailAddress ?? null;
+    const phone = user?.primaryPhoneNumber?.phoneNumber ?? null;
+    const fullName =
+        [firstName, lastName].filter(Boolean).join(' ') ||
+        email ||
+        phone ||
+        t('profile_default_name');
+    const userInitials = computeInitials(firstName, lastName, email, phone);
 
     return (
         <aside className="bg-base-100 border-base-300 sticky top-0 flex min-h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6">
-            <div className="flex items-center justify-between px-2 pb-4 pt-1">
+            <div className="flex items-center px-2 pb-4 pt-1">
                 <Link href={`/${locale}`} aria-label="AgConn home">
                     <Wordmark size="sm" tone="ink" />
                 </Link>
-                <SidebarLocaleToggle />
             </div>
 
             <nav className="flex flex-col gap-1">
@@ -118,34 +117,20 @@ export function WorkerSidebar({ active, locale }: Props) {
             </nav>
 
             <div className="mt-auto pt-6">
-                <Link
-                    href={`/${locale}/worker/profile`}
-                    className="bg-base-200 border-base-300 hover:bg-base-300 flex items-center gap-2.5 rounded-2xl border p-3 no-underline transition-colors"
-                >
-                    <div className="bg-primary text-primary-content grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-bold">
-                        {initials}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                        <div className="text-base-content truncate text-sm font-semibold">
-                            {fullName || t('profile_default_name')}
-                        </div>
-                        <div className="text-base-content/60 truncate text-xs">
-                            {t('profile_default_location')}
-                        </div>
-                    </div>
-                    <FontAwesomeIcon
-                        icon={faChevronRight}
-                        className="text-base-content/40 h-3 w-3"
-                    />
-                </Link>
-                <button
-                    type="button"
-                    onClick={() => signOut({ redirectUrl: `/${locale}` })}
-                    className="text-base-content/60 hover:text-base-content mt-2 flex w-full items-center justify-center gap-1.5 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-colors"
-                >
-                    <FontAwesomeIcon icon={faRightFromBracket} className="h-3 w-3" />
-                    {t('sign_out')}
-                </button>
+                <UserMenu
+                    locale={locale}
+                    profileHref={`/${locale}/worker/profile`}
+                    name={fullName}
+                    subtext={t('profile_default_location')}
+                    initials={userInitials}
+                    labels={{
+                        profile: t('menu_profile'),
+                        signOut: t('sign_out'),
+                        language: t('menu_language'),
+                        languageEn: t('lang_en'),
+                        languageEs: t('lang_es'),
+                    }}
+                />
             </div>
         </aside>
     );

@@ -23,6 +23,7 @@ Materialize as needed — don't pre-create empty app folders.
     <p className="label">You can edit page title later on from settings</p>
   </fieldset>
   ```
+- Page-width shell: every full-width surface (marketing, product, admin chrome, sticky banners) uses the canonical container — `container mx-auto px-5 md:px-8 lg:px-20`. Vertical padding is per-section (e.g. `py-24 lg:py-30` for marketing bands, `py-5 sm:py-6` for chrome). **Do not** introduce `max-w-7xl`, `max-w-6xl`, etc. on a page-level wrapper — those are a parallel scale that drifts from the rest of the system. Reading-width caps (`max-w-prose`, `max-w-2xl`) are still allowed but only on a child of the container, never on the wrapper itself. See [../docs/brand/04-spacing-layout.md#container-widths](../docs/brand/04-spacing-layout.md#container-widths).
 - Backend (`api/`): Hono router, Prisma, Postgres with RLS. Tenant resolved in middleware from Clerk org and pinned via `set_config('app.tenant_id', ...)`. Domain folders (`worker/`, `employer/`, `admin/`, `billing/`, `messaging/`, `landing/`) each own their routes, services, repos, Zod schemas.
 - Auth: Clerk SMS OTP for workers, magic link for employers and admins. Org-bound — tenant === org.
 - HTTP: `/v1/*` versioning. Errors are typed; never leak DB messages to clients. Zod validates every request body and response shape.

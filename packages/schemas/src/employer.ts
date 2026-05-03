@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AddressInputSchema } from './address';
 import { CountyEnum } from './common';
 import { EmployerPlanTierEnum, PlanIntervalEnum } from './plans';
 
@@ -22,6 +23,8 @@ export const EmployerOnboardingBody = z
     county: CountyEnum.optional(),
     contactEmail: z.string().email().max(255).optional(),
     contactPhone: z.string().max(20).optional(),
+    participatesInH2a: z.boolean().optional(),
+    address: AddressInputSchema,
   })
   .strict()
   .refine(
@@ -44,6 +47,8 @@ export const PatchEmployerBody = z
     county: CountyEnum.optional(),
     contactEmail: z.string().email().max(255).nullable().optional(),
     contactPhone: z.string().max(20).nullable().optional(),
+    participatesInH2a: z.boolean().optional(),
+    address: AddressInputSchema.optional(),
   })
   .strict();
 export type PatchEmployerBody = z.infer<typeof PatchEmployerBody>;
@@ -62,9 +67,19 @@ export const EmployerProfileSchema = z.object({
   flcLicenseNum: z.string().nullable(),
   dolMspaNum: z.string().nullable(),
   county: CountyEnum.nullable(),
+  streetAddress: z.string().nullable(),
+  city: z.string().nullable(),
+  stateCode: z.string().nullable(),
+  postalCode: z.string().nullable(),
+  addressLat: z.number().nullable(),
+  addressLng: z.number().nullable(),
+  mapboxId: z.string().nullable(),
   flcVerifiedAt: z.string().datetime().nullable(),
   rejectedAt: z.string().datetime().nullable(),
   rejectionReason: z.string().nullable(),
+  participatesInH2a: z.boolean(),
+  dolLastInspectionAt: z.string().datetime().nullable(),
+  dolLastInspectionResult: z.enum(['pass', 'fail', 'pending']).nullable(),
   plan: EmployerPlanTierEnum,
   planInterval: PlanIntervalEnum.nullable(),
   planCurrentPeriodEnd: z.string().datetime().nullable(),

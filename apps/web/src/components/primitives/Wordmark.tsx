@@ -17,12 +17,12 @@ const toneClass: Record<NonNullable<Props['tone']>, string> = {
 
 export function Wordmark({ size = 'md', tone = 'ink' }: Props) {
     return (
-        <div className={`flex items-center gap-2 ${toneClass[tone]}`}>
+        <span className={`inline-flex items-center gap-2 ${toneClass[tone]}`}>
             {/* <SunMark size={size} /> */}
             <span className={`font-serif font-semibold tracking-tight ${sizeClass[size]}`}>
                 AG<span className={`${toneClass[tone]}/50`}>CONN</span>
             </span>
-        </div>
+        </span>
     );
 }
 

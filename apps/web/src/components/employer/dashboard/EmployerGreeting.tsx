@@ -34,13 +34,13 @@ export async function EmployerGreeting({
         <div className="text-base-content/70 mt-2 text-sm">{summaryLine}</div>
       </div>
       <div className="flex gap-2">
-        <button
-          type="button"
+        <Link
+          href={`/${locale}/employer/reports?range=week`}
           className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
         >
           <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
           {t('weekly_report')}
-        </button>
+        </Link>
         <Link
           href={`/${locale}/employer/jobs/new`}
           className="btn btn-sm btn-primary rounded-full"

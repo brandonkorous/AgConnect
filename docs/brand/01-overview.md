@@ -33,8 +33,8 @@ What Tierra is **not**: Hero, Outlaw, Magician, Jester. There is no "disruption"
 Implications:
 
 - Visuals lean civic-agricultural — closer to a UC Davis ag extension brochure, a CDFA program page, or a county-extension field guide than to a B2B brand magazine or any SaaS product.
-- The product surface is generous with whitespace and stingy with color. Color is information, not decoration.
-- Typography does utilitarian work first and warm work second. Fraunces is the headline serif; italic is reserved, not signature.
+- The product surface is generous with whitespace, and color is applied where it serves intent — drawing attention to actions, conveying state, marking hierarchy, providing ambient warmth on dark surfaces. Not as decoration.
+- Typography does utilitarian work first and warm work second. Inter is the single typeface across display and body; italic is reserved for short emphasis runs, not signature.
 - Motion is minimal. Static layouts that breathe will always beat animated ones that hustle.
 
 ## Voice principles
@@ -51,9 +51,9 @@ Implications:
 A short list, because constraints are the brand:
 
 - No neon green/CTAs-on-CTAs energy.
-- No glassmorphism, no frosted blurs, no gradient meshes.
+- No glass cards (glassmorphism on a content surface) and no overdone gradient meshes. Subtle `backdrop-filter` on sticky chrome (top bar) and ambient radial gradients on dark feature cards (`UpNextShift`, `PaycheckCard`) are part of the system — applied as ambient lighting, not as a gloss treatment.
 - No dark-mode-by-default tech aesthetic. Tierra is a daytime brand. (A respectful dark theme exists; see [02-color.md](02-color.md).)
-- No rounded-pill buttons, no fully-rounded cards. Tierra is rectangular. The only curve in the system is the device frame on marketing screenshots.
+- Pill buttons (`--radius-field: 9999px`) and 1rem rounded cards (`--radius-box: 1rem`) are the signature curves. Avatars are circular. Smaller chrome (badges, checkboxes, inputs internal to a card) uses the half-rem selector radius. Don't introduce additional curve scales.
 - No stock photography of smiling diverse coworkers in WeWork lighting. See [07-imagery.md](07-imagery.md).
 - No emoji in product UI or marketing copy. Emoji is allowed in user-generated content (worker bios, employer notes); the brand itself doesn't use them.
 - No "AI sparkle" iconography. AI assistance in the product is described in plain words.
@@ -62,13 +62,13 @@ A short list, because constraints are the brand:
 
 Recurring details that, taken together, are recognizably Tierra:
 
-- **Fraunces upright** at headline sizes — calm, not theatrical. Italic only inside body text for the rare quoted phrase or place name.
+- **Inter at display weights** (600–700, tightened tracking) for headlines — calm, not theatrical. Italic at any size is reserved for short emphasis runs (1–4 words inside a heading or body) — never the whole headline. The single-word italic accent inside a heading (`Buenas tardes, Miguel.`) is the canonical pattern.
 - **The middot delimiter** (`·`) between metadata fragments: `Fresno · $19.50/hr · today`.
-- **Eyebrow labels** — uppercase, 11px, 0.18em tracking — sitting above section titles. Used sparingly; not on every block.
-- **Fraunces upright with `tabular-nums`** for display-size statistics (impact tiles, dashboard hero counters, pricing) — calm, column-aligned, in the same family as headlines. DM Mono stays at body sizes for inline figures (`$19.50/hr`, dates, IDs).
-- **Layered base surfaces** (`base-100` cards on `base-300` page, `base-200` chrome) with **hairline rules** — never card shadows.
-- **`accent` (gold)** as the only loud color. Used for a single primary CTA per screen, the active step in a flow, or a notable statistic. If a screen has two accent elements, one of them is wrong.
-- **Tabular numbers** in DM Mono for money, hours, dates, and reporting figures.
+- **Eyebrow labels** — uppercase, 11px, 0.18em tracking — sitting above section titles. Used sparingly; not on every block. See [03-typography.md](03-typography.md) for the eyebrow variants.
+- **Inter with `tabular-nums slashed-zero`** for money, dates, hours, stats, and inline figures at every size. JetBrains Mono is reserved for code-shaped identifiers (`WIOA-1B`, certificate hashes, `#APP-2031`) — never for money or dates.
+- **Layered base surfaces** (`base-100` cards on `base-300` page, `base-200` chrome) with **hairline rules** as the default lift. Subtle elevation tokens (`--shadow-card`, `--shadow-pop`) are reserved for elevated marketing surfaces and dark feature cards — not the default product card.
+- **`accent` (gold)** is the loud color in the system — used for primary CTAs, active step indicators, count badges, ambient lighting on dark feature cards, statistic highlights, and active states. Color is information: apply where it serves intent, not where it merely fills space.
+- **Crop palette** — six categorical colors (grape, almond, citrus, tomato, lettuce, strawberry) for job-type chips and crop glyphs. See [02-color.md](02-color.md).
 
 ## Source material
 

@@ -60,24 +60,39 @@ Reserved for the single loudest action on the marketing site (e.g., the hero CTA
 
 ## Cards
 
-Cards are the product's primary container.
+Cards are the product's primary container. The default product card uses hairline lift only; elevated/marketing variants use shadow.
 
 - Background: `base-100` (default daisyUI `.card`). On a `base-100` band, lift via hairline border alone, or place over a `base-200` / `base-300` band so tone differential does the lifting work.
 - Border: 1px hairline (`--border-hairline`)
-- Border-radius: `--radius-box` (`1rem`, daisyUI default)
+- Border-radius: `--radius-box` (`1rem`, daisyUI default). Inner cards within a card (KPI tiles inside a dashboard region) may use the Paper `--r-md` (14px) for a tighter inner curve.
 - Padding: 24px (desktop), 20px (mobile)
-- Shadow: none
-- Internal type: title (Fraunces 24/1.2), body (Inter 16/1.55), label (eyebrow above title)
-- Internal stack: label → title → body → metadata strip (middot-delimited)
+- Shadow: **none** on default product cards (dashboard tiles, list items, table-style cards). Elevated marketing/feature cards use `--shadow-card`. See [04-spacing-layout.md § Borders, dividers, and elevation](04-spacing-layout.md).
+- Internal type: title (Inter 24px weight 600, line-height 1.20, tracking -0.015em), body (Inter 16px line-height 1.55), eyebrow above title — see [03-typography.md § Eyebrow / label variants](03-typography.md).
+- Internal stack: eyebrow → title → body → metadata strip (middot-delimited)
 
 A card with an internal CTA places the CTA bottom-right or bottom-full-width depending on density. For grids of cards with bottom-CTA rows, the CTA must be **baseline-aligned across all cards in the row**: ensure card heights are stretched to equal in the grid (via `grid-template-rows: 1fr` or `align-items: stretch`) and push the CTA with `margin-top: auto`.
 
+### Hero feature cards (dark variant)
+
+A signature pattern on dashboards and marketing — a feature card sitting on a dark surface (`bg-neutral`) or olive surface (`bg-primary`) with an ambient gold radial gradient overlay carrying visual weight. The Worker Dashboard `UpNextShift` and `PaycheckCard` are canonical examples.
+
+- Background: `bg-neutral` (warm near-black) or `bg-primary` (olive)
+- Border: none (the dark/olive background separates from the page)
+- Border-radius: `--radius-box` (1rem) or Paper `--r-lg` (22px) for larger composition
+- Padding: 24px (desktop)
+- Ambient overlay: `radial-gradient(ellipse 60% 100% at 100% 0%, color-mix(in oklab, var(--color-accent) 28%, transparent), transparent 60%)` — gold radial pinned top-right, fades to transparent. Use `var(--color-accent)`, never a hardcoded hex.
+- Internal type: eyebrow in `accent` (gold) or `accent` at higher opacity, title in `neutral-content` weight 500–600, body in `neutral-content` at ~75% opacity
+- Internal CTA: an accent-fill button (`bg-accent text-accent-content`) is the canonical primary action. Secondary actions are ghost buttons with `1px rgba(255,255,255,0.25)` borders.
+
+These cards exist for the one or two genuinely "look at this" moments per page (the next shift, the paycheck preview). Don't multiply them — when everything is a hero card, nothing is.
+
 ## Badges & chips
 
-Two distinct elements:
+Three distinct elements:
 
 - **Badge**: small status indicator, `base-300` background by default.
-- **Chip**: filterable token (skills, counties), `base-100` background with hairline border.
+- **Chip**: a tag-style token (skills, counties, crops), `base-100` background with hairline border, `--radius-selector` (slightly rounded).
+- **Filter chip**: a pill-shaped, toggleable filter selector — used in horizontal filter rows ("All · Within 25 mi · This week · Pays >$22"). Pill-shaped (`--radius-field`), distinct from `.chip` and from `.tabs` (see Navigation patterns).
 
 ### Badge
 
@@ -98,6 +113,20 @@ Two distinct elements:
 - Padding: 6px 10px
 - Border-radius: theme-default `--radius-selector` (`0.5rem`)
 - Selected state: `bg-base-300`, hairline becomes 1px `base-content`
+
+### Filter chip
+
+Pill-shaped toggleable selectors used in horizontal filter rows above lists (job results, application stage filters, training category filters). Distinct from the tag-style `.chip` (which is rectangular-ish and identifies a token) and from `.tabs` (which switch entire panels).
+
+- Background (default): `bg-base-100`, 1px hairline border
+- Background (active): `bg-neutral text-neutral-content`, no border
+- Text: `base-content` (default) / `neutral-content` (active), Inter 12px weight 600
+- Padding: 6px 12px
+- Border-radius: `--radius-field` (pill)
+- Spacing in a row: 6px gap, horizontal scroll on mobile if the row overflows
+- Touch target: still ≥44×44 — the visible chip is smaller, but the tap target extends via vertical padding on the parent row
+
+Example: `All · Within 25 mi · This week · Pays >$22` above a job list. The active filter is the dark-pill state; inactive filters are the white-pill state.
 
 ## Inputs
 
@@ -123,7 +152,7 @@ Inputs use the daisyUI `fieldset` pattern (one fieldset per input — see [`apps
 ### Specific input types
 
 - **Text / email / tel**: as above.
-- **Number / money**: as above, but the value display uses DM Mono.
+- **Number / money**: as above; the value display uses Inter with `font-variant-numeric: tabular-nums slashed-zero`.
 - **Select**: same shell; chevron icon on the right (12px, `base-content`).
 - **Checkbox**: 18px square, 1px `base-content` border, `primary` fill on check, `primary-content` checkmark. Theme `--radius-selector` (`0.5rem`).
 - **Radio**: 18px circle, 1px `base-content` border, `primary` dot on select.
@@ -133,7 +162,7 @@ Inputs use the daisyUI `fieldset` pattern (one fieldset per input — see [`apps
 ## Tables
 
 - Header row: `bg-base-200` background, label-style text (11px uppercase 0.18em, `base-content` @ 60%)
-- Body rows: `bg-base-100` background, body text (14px Inter or 14px DM Mono for numeric columns)
+- Body rows: `bg-base-100` background, body text (14px Inter; numeric columns use Inter `tabular-nums slashed-zero`)
 - Row separator: hairline rule between rows; no vertical column rules
 - Row padding: 12px vertical / 16px horizontal
 - Numeric alignment: right; tabular-nums always
@@ -148,8 +177,8 @@ A signature Tierra pattern. Three pieces stacked, top-aligned to the section.
 
 ```
 LABEL                 ← eyebrow, Inter 11px UPPER 0.18em base-content @ 60% (used sparingly, not on every section)
-Headline               ← Fraunces upright, weight 500–600. Hero: 56–72px. Section: 32–48px.
-Optional description   ← Inter 16px base-content, max-width ~640px
+Headline              ← Inter, weight 600–700, tracking -0.02em. Hero: 56–72px. Section: 32–48px.
+Optional description  ← Inter 16px base-content, max-width ~640px
 ```
 
 Spacing: 8px between label and headline, 16px between headline and description, 32–48px between description and the section content below.
@@ -175,15 +204,16 @@ Spacing: 8px between label and headline, 16px between headline and description, 
 
 - **Tabs**: `bg-base-100` or `bg-base-200`, `base-content` text, 2px `primary` underline on the active tab, hairline rule under the tab strip. No pills.
 - **Breadcrumbs**: middot-delimited, `base-content` @ 60% for all but the last segment which is full `base-content`. `Jobs · Pisca de uva · Detalles`
-- **Pagination**: prev/next text links with chevrons; numbered pages in DM Mono, the active page underlined with 2px `primary`. No square page tiles.
+- **Pagination**: prev/next text links with chevrons; numbered pages in Inter `tabular-nums`, the active page underlined with 2px `primary`. No square page tiles.
 
 ## Modals
 
 - Backdrop: `neutral` @ 60%
 - Container: `bg-base-100`, hairline border, `--radius-box` (`1rem`), max-width 560px (default)
 - Padding: 32px
-- Close button: top-right, 24×24 hit target, an `×` glyph in `base-content` (use `Lucide x`)
-- Header: title (Fraunces 24px), optional eyebrow above
+- Shadow: `--shadow-pop` for the lift off the backdrop
+- Close button: top-right, 24×24 hit target, an `×` glyph in `base-content` (FontAwesome `xmark` per [07-imagery.md](07-imagery.md))
+- Header: title (Inter 24px weight 600), optional eyebrow above
 - Body: Inter 16px
 - Footer: ghost (left) and primary (right) buttons, right-aligned
 
@@ -194,12 +224,13 @@ Spacing: 8px between label and headline, 16px between headline and description, 
 - Text: `neutral-content` (or contrast-pair for semantic variants)
 - Width: 400px max, single-line preferred
 - Auto-dismiss: 5s for info/success; never auto-dismiss for error
-- Icon: leading, 16px Lucide
+- Icon: leading, 16px FontAwesome (per-icon import from `@fortawesome/free-solid-svg-icons`)
 - Close button: trailing, optional, never present on auto-dismiss toasts
 
 ## Avatars
 
-- Square. 1px hairline border.
-- With photo: object-fit cover.
-- Without photo: `bg-base-200` or `bg-base-300` background, initials in Fraunces upright 600, 60% of the avatar height, `base-content` color.
-- Sizes: 24px (inline), 32px (table cell), 48px (card), 64px (profile header), 96px (profile page).
+- Circle (`border-radius: 50%`). 1px hairline border on photo avatars.
+- With photo: `object-fit: cover`.
+- Without photo: solid `bg-primary` (olive) with `primary-content` text, OR `bg-base-200` / `bg-base-300` with `base-content` text — pick one per surface and stay consistent. Initials in Inter weight 600 or 700, 40–45% of the avatar height (e.g., 13px on a 32px avatar, 18px on a 48px).
+- Initials are 1–2 characters, derived from the user's name. Two letters preferred when both first and last name are known (`Miguel Reyes` → `MR`).
+- Sizes: 24px (inline), 28px (message thread), 32px (table cell), 36px (sidebar profile), 48px (card), 64px (profile header), 96px (profile page).

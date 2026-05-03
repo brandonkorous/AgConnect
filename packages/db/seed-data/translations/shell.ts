@@ -5,6 +5,50 @@
 import type { TranslationBundle } from '../types';
 
 export const shell: TranslationBundle = {
+    "address.dropPin.cancel": {
+        en: "Cancel",
+        es: "Cancelar",
+    },
+    "address.edit": {
+        en: "Change",
+        es: "Cambiar",
+    },
+    "address.dropPin.confirm": {
+        en: "Use this location",
+        es: "Usar esta ubicación",
+    },
+    "address.dropPin.dragHint": {
+        en: "Drag the pin to the exact entrance, then confirm.",
+        es: "Arrastra el alfiler a la entrada exacta y confirma.",
+    },
+    "address.dropPin.fallbackLink": {
+        en: "Can't find it? Drop a pin on the map.",
+        es: "¿No lo encuentras? Coloca un alfiler en el mapa.",
+    },
+    "address.dropPin.title": {
+        en: "Pin the location",
+        es: "Marcar la ubicación",
+    },
+    "address.noMatches": {
+        en: "No matches. Try fewer words, or pin it on the map.",
+        es: "Sin resultados. Prueba con menos palabras o márcalo en el mapa.",
+    },
+    "address.placeholder": {
+        en: "Start typing an address",
+        es: "Empieza a escribir una dirección",
+    },
+    "address.searching": {
+        en: "Searching…",
+        es: "Buscando…",
+    },
+    "address.selected.aria": {
+        en: "Selected address",
+        es: "Dirección seleccionada",
+    },
+    "address.suggestions.aria": {
+        en: "Address suggestions",
+        es: "Sugerencias de dirección",
+    },
     "consent.accept_all": {
         en: "Accept all",
         es: "Aceptar todo",
@@ -44,6 +88,10 @@ export const shell: TranslationBundle = {
     "consent.category.marketing.label": {
         en: "Marketing",
         es: "Marketing",
+    },
+    "consent.back": {
+        en: "Back",
+        es: "Atrás",
     },
     "consent.customize": {
         en: "Customize",

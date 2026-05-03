@@ -63,7 +63,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             <head>
                 <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
             </head>
-            <body className="bg-base-200 text-base-content antialiased">
+            <body className="bg-base-300 text-base-content antialiased">
                 <MaybeClerkProvider>
                     <NextIntlClientProvider locale={locale} messages={messages}>
                         <AppShellProviders enablePwa={process.env.NODE_ENV === 'production'}>

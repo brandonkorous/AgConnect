@@ -19,15 +19,14 @@ export default async function WorkerPreviewPage({ params }: Props) {
   const alreadyInvited = worker.relationship === 'invited' || worker.relationship === 'hired';
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <Link
         href={`/${locale}/employer/workers`}
         className="text-base-content/60 hover:text-base-content mb-6 inline-block text-sm"
       >
         ← {t('title')}
       </Link>
-      <div className="mx-auto max-w-2xl">
-        <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
+      <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
           <div className="flex items-start gap-4">
             <div className="bg-primary text-primary-content grid h-14 w-14 place-items-center rounded-full text-base font-bold">
               {(worker.firstName[0] ?? '').toUpperCase()}
@@ -130,7 +129,6 @@ export default async function WorkerPreviewPage({ params }: Props) {
             </div>
           </Section>
         </div>
-      </div>
     </div>
   );
 }

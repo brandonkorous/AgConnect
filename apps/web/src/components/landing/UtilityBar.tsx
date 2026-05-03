@@ -7,11 +7,6 @@ import { ThemeToggle } from '@/components/primitives/ThemeToggle';
 export function UtilityBar() {
     const t = useTranslations('landing.utility');
     const locale = useLocale();
-    const themeLabels = {
-        light: t('theme.light'),
-        dark: t('theme.dark'),
-        aria: t('theme.label'),
-    };
 
     return (
         <div className="bg-neutral">
@@ -28,10 +23,10 @@ export function UtilityBar() {
                     <span className="text-neutral-content/40 text-xs" aria-hidden>|</span>
                     <div className="flex items-center gap-1.5">
                         <FontAwesomeIcon icon={faCircleHalfStroke} className="text-accent text-xs" />
-                        <ThemeToggle tone="bone" separator="·" labels={themeLabels} />
+                        <ThemeToggle ariaLabel={t('theme.label')} />
                     </div>
                     <span className="hidden text-neutral-content/40 text-xs md:inline" aria-hidden>|</span>
-                    <a href={`/${locale}/employers`} className="link link-hover text-neutral-content hover:text-neutral-content hidden text-xs md:inline">
+                    <a href={`/${locale}/employer/sign-up`} className="link link-hover text-neutral-content hover:text-neutral-content hidden text-xs md:inline">
                         {t('for_employers')}
                     </a>
                     <span className="hidden text-neutral-content/40 text-xs md:inline" aria-hidden>|</span>

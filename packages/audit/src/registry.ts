@@ -83,6 +83,36 @@ export const auditRegistry = {
     retentionDays: 1460,
     metadata: ['reason'],
   },
+  'job.posting.edited': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: ['fields', 'renotificationsQueued'],
+  },
+  'job.photo.uploaded': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: ['photoId', 'bytes'],
+  },
+  'job.photo.deleted': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: ['photoId'],
+  },
+  'job.screening.replaced': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: ['count'],
+  },
+  'employer.contact.created': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: ['name', 'role'],
+  },
+  'employer.contact.deleted': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: [],
+  },
   'application.status.changed': {
     resourceType: 'application',
     retentionDays: 2555,

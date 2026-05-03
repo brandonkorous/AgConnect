@@ -6,12 +6,19 @@ import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 
 type Props =
-  | { mode: 'checkout'; tier: 'pro' | 'enterprise'; label: string }
-  | { mode: 'portal'; label: string };
+  | {
+      mode: 'checkout';
+      tier: 'pro' | 'enterprise';
+      interval?: 'monthly' | 'yearly';
+      label: string;
+      disabled?: boolean;
+    }
+  | { mode: 'portal'; label: string; disabled?: boolean };
 
 export function CheckoutButton(props: Props) {
   const t = useTranslations('employer.billing');
   const locale = useLocale();
+  const lang = locale === 'es' ? 'es' : 'en';
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,15 +26,15 @@ export function CheckoutButton(props: Props) {
     setBusy(true);
     setError(null);
     try {
-      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const client = getApiClient(lang);
       const path =
         props.mode === 'checkout'
           ? '/v1/employer/billing/checkout'
           : '/v1/employer/billing/portal';
       const body =
         props.mode === 'checkout'
-          ? { tier: props.tier, interval: 'monthly' }
-          : {};
+          ? { tier: props.tier, interval: props.interval ?? 'monthly', locale: lang }
+          : { locale: lang };
       const res = await client.post<{ url: string }>(path, body, { handleErrorInline: true });
       if (!isOk(res)) {
         if (res.error.code === 'stripe_unavailable') setError(t('stripe_unavailable'));
@@ -45,7 +52,7 @@ export function CheckoutButton(props: Props) {
       <button
         type="button"
         onClick={go}
-        disabled={busy}
+        disabled={busy || props.disabled}
         className="btn btn-primary btn-sm mt-4 w-full"
       >
         {busy ? '…' : props.label}

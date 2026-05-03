@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import type { Route } from 'next';
+import { redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import { getTranslations } from 'next-intl/server';
 import { AuthSplitShell } from '@/components/auth/AuthSplitShell';
 import { EmployerSignUpForm } from '@/components/auth/EmployerSignUpForm';
@@ -13,6 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EmployerSignUpPage({ params }: Props) {
   const { locale } = await params;
+  const { userId } = await auth();
+  if (userId) redirect(`/${locale}/post-auth` as Route);
   return (
     <AuthSplitShell locale={locale} variant="employer">
       <EmployerSignUpForm locale={locale} />

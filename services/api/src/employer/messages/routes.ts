@@ -137,6 +137,129 @@ employerMessagesRoutes.post('/', validate('json', CreateConversationBody), async
   });
 });
 
+employerMessagesRoutes.get('/contacts', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const q = (c.req.query('q') ?? '').trim().toLowerCase();
+
+  const applications = await c.var.db.application.findMany({
+    where: { tenantId, job: { employerId: userId } },
+    select: {
+      status: true,
+      worker: {
+        select: {
+          id: true,
+          phone: true,
+          workerProfile: {
+            select: {
+              firstName: true,
+              lastName: true,
+              county: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const crewMembers = await c.var.db.crewMember.findMany({
+    where: { tenantId, leftAt: null, crew: { employerId: userId, deletedAt: null } },
+    select: {
+      role: true,
+      worker: {
+        select: {
+          id: true,
+          phone: true,
+          workerProfile: {
+            select: {
+              firstName: true,
+              lastName: true,
+              county: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  type Contact = {
+    id: string;
+    firstName: string;
+    lastInitial: string;
+    county: string | null;
+    phone: string | null;
+    relationship: 'hired' | 'crew' | 'applied' | 'reviewed';
+  };
+
+  const byId = new Map<string, Contact>();
+  const rank: Record<Contact['relationship'], number> = {
+    crew: 0,
+    hired: 1,
+    reviewed: 2,
+    applied: 3,
+  };
+
+  for (const a of applications) {
+    if (!a.worker) continue;
+    const profile = a.worker.workerProfile;
+    if (!profile) continue;
+    const rel: Contact['relationship'] =
+      a.status === 'hired'
+        ? 'hired'
+        : a.status === 'reviewed'
+          ? 'reviewed'
+          : 'applied';
+    const c0: Contact = {
+      id: a.worker.id,
+      firstName: profile.firstName,
+      lastInitial: profile.lastName?.charAt(0).toUpperCase() ?? '',
+      county: profile.county,
+      phone: a.worker.phone,
+      relationship: rel,
+    };
+    const existing = byId.get(c0.id);
+    if (!existing || rank[c0.relationship] < rank[existing.relationship]) {
+      byId.set(c0.id, c0);
+    }
+  }
+
+  for (const m of crewMembers) {
+    if (!m.worker) continue;
+    const profile = m.worker.workerProfile;
+    if (!profile) continue;
+    const c0: Contact = {
+      id: m.worker.id,
+      firstName: profile.firstName,
+      lastInitial: profile.lastName?.charAt(0).toUpperCase() ?? '',
+      county: profile.county,
+      phone: m.worker.phone,
+      relationship: 'crew',
+    };
+    const existing = byId.get(c0.id);
+    if (!existing || rank[c0.relationship] < rank[existing.relationship]) {
+      byId.set(c0.id, c0);
+    }
+  }
+
+  const all = Array.from(byId.values());
+  const filtered = q
+    ? all.filter(
+        (c2) =>
+          c2.firstName.toLowerCase().includes(q) ||
+          c2.lastInitial.toLowerCase().includes(q) ||
+          (c2.county?.toLowerCase().includes(q) ?? false),
+      )
+    : all;
+
+  filtered.sort((a, b) => {
+    const r = rank[a.relationship] - rank[b.relationship];
+    if (r !== 0) return r;
+    return a.firstName.localeCompare(b.firstName);
+  });
+
+  return ok(c, { contacts: filtered.slice(0, 200) });
+});
+
 employerMessagesRoutes.get('/:id/messages', async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;

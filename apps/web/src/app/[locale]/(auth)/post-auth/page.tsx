@@ -6,11 +6,9 @@ import { getServerApiClient } from '@/lib/api/server-client';
 
 export const dynamic = 'force-dynamic';
 
+type Role = 'worker' | 'employer' | 'admin' | 'training_org';
 type Props = { params: Promise<{ locale: string }> };
 
-// Post-auth router. After Clerk completes sign-in or sign-up, the form
-// pushes the user here. We look up the role from /v1/me/tenant (or the
-// onboarding endpoints) and redirect to the right dashboard.
 export default async function PostAuthPage({ params }: Props) {
   const { locale } = await params;
   const session = await auth().catch(() => null);
@@ -24,27 +22,23 @@ export default async function PostAuthPage({ params }: Props) {
     case 'employer':
       redirect(`/${locale}/employer/dashboard`);
     case 'admin':
-      redirect(`/${locale}/admin/audit`);
     case 'training_org':
       redirect(`/${locale}/admin/audit`);
     case 'worker':
       redirect(`/${locale}/worker/dashboard`);
     default:
-      // Webhook hasn't replicated the user yet — send them to the worker
-      // dashboard, which itself redirects unauthenticated/unknown users
-      // to /onboarding. Worst case the user sees one extra hop.
+      // API didn't return a role — provisioning hasn't completed. Worker
+      // dashboard itself redirects unknown users to /onboarding.
       redirect(`/${locale}/worker/dashboard`);
   }
 }
 
-async function fetchRole(): Promise<
-  'worker' | 'employer' | 'admin' | 'training_org' | null
-> {
+async function fetchRole(): Promise<Role | null> {
   try {
     const client = await getServerApiClient();
-    const res = await client.get<{
-      user: { role: 'worker' | 'employer' | 'admin' | 'training_org' };
-    }>('/v1/me/tenant', { handleErrorInline: true });
+    const res = await client.get<{ user: { role: Role } }>('/v1/me', {
+      handleErrorInline: true,
+    });
     if (!isOk(res)) return null;
     return res.data.user.role;
   } catch {

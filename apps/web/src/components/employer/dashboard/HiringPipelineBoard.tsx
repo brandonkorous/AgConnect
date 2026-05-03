@@ -29,7 +29,7 @@ export async function HiringPipelineBoard({ locale, applicants }: Props) {
     <section className="mb-7">
       <div className="mb-3.5 flex items-end justify-between">
         <div>
-          <div className="font-display text-2xl font-light tracking-tight">{t('title')}</div>
+          <h2 className="font-display text-2xl font-light tracking-tight">{t('title')}</h2>
           <div className="text-base-content/60 mt-1 text-xs">{t('subtitle', { count: total })}</div>
         </div>
         <Link

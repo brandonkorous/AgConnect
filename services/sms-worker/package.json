@@ -12,7 +12,8 @@
   "dependencies": {
     "@agconn/audit": "workspace:*",
     "@agconn/db": "workspace:*",
-    "@agconn/sms": "workspace:*"
+    "@agconn/sms": "workspace:*",
+    "pg-boss": "12.18.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

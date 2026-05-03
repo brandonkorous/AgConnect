@@ -22,7 +22,7 @@ export default async function CrewsPage({ params }: Props) {
   const [crews, shifts] = await Promise.all([listCrews(), listShifts()]);
 
   const weekStart = startOfWorkWeek(new Date());
-  const days = Array.from({ length: 5 }, (_, i) => {
+  const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekStart);
     d.setUTCDate(weekStart.getUTCDate() + i);
     return d;
@@ -39,7 +39,7 @@ export default async function CrewsPage({ params }: Props) {
   const totals = computeTotals(shifts);
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -77,7 +77,7 @@ export default async function CrewsPage({ params }: Props) {
       </div>
 
       <section className="bg-base-100 border-base-300 mb-7 overflow-hidden rounded-2xl border">
-        <div className="border-base-300 grid grid-cols-[180px_repeat(5,1fr)] border-b">
+        <div className="border-base-300 grid grid-cols-[180px_repeat(7,1fr)] border-b">
           <div className="bg-base-200 border-base-300 text-base-content/60 border-r px-5 py-4 font-mono text-[11px] font-bold uppercase tracking-wider">
             {t('header_label')}
           </div>
@@ -108,7 +108,7 @@ export default async function CrewsPage({ params }: Props) {
             <div
               key={cr.id}
               className={[
-                'grid min-h-[110px] grid-cols-[180px_repeat(5,1fr)]',
+                'grid min-h-[110px] grid-cols-[180px_repeat(7,1fr)]',
                 ci < crews.length - 1 ? 'border-base-300 border-b' : '',
               ].join(' ')}
             >
@@ -169,19 +169,27 @@ export default async function CrewsPage({ params }: Props) {
               </div>
               <div>
                 <div className="text-base-content/60">{t('rating')}</div>
-                <div className="font-mono text-sm font-bold">★ 4.7</div>
+                <div className="text-base-content/40 font-mono text-sm font-bold">—</div>
               </div>
             </div>
-            <button
-              type="button"
-              disabled={!cr.foremanName}
-              className="bg-base-200 hover:bg-base-300 border-base-300 disabled:text-base-content/40 mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed"
-            >
-              <FontAwesomeIcon icon={faComments} className="h-3 w-3" />
-              {cr.foremanName
-                ? t('message_foreman', { firstName: cr.foremanName.split(' ')[0] ?? '' })
-                : t('hiring_foreman')}
-            </button>
+            {cr.foremanUserId ? (
+              <Link
+                href={`/${locale}/employer/messages?worker=${cr.foremanUserId}`}
+                className="bg-base-200 hover:bg-base-300 border-base-300 mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold"
+              >
+                <FontAwesomeIcon icon={faComments} className="h-3 w-3" />
+                {t('message_foreman', { firstName: cr.foremanName?.split(' ')[0] ?? '' })}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="bg-base-200 border-base-300 text-base-content/40 mt-3 inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold"
+              >
+                <FontAwesomeIcon icon={faComments} className="h-3 w-3" />
+                {t('hiring_foreman')}
+              </button>
+            )}
           </div>
         ))}
       </div>

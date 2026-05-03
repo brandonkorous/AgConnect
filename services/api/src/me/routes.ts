@@ -14,6 +14,23 @@ export const meRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
 meRoutes.use('*', requireAuth);
 
+// Returns user role + tenant if any. Unlike /tenant below, this does NOT 403
+// when tenantId is null — a freshly-created employer has no tenant yet, and
+// the post-auth router still needs the role to pick the right destination.
+meRoutes.get('/', async (c) => {
+  const tenantId = c.var.tenantId;
+  const tenant = tenantId
+    ? await c.var.db.tenant.findUnique({
+        where: { id: tenantId },
+        select: { id: true, slug: true, name: true, isPublic: true },
+      })
+    : null;
+  return ok(c, {
+    user: { id: c.var.userId, role: c.var.userRole },
+    tenant,
+  });
+});
+
 meRoutes.get('/tenant', async (c) => {
   const tenantId = c.var.tenantId;
 

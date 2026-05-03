@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { ComplianceItemStatus } from '@agconn/db';
+import { ComplianceItemStatus, type Tx } from '@agconn/db';
 import { CreateComplianceItemBody, PatchComplianceItemBody } from '@agconn/schemas';
 import {
   requireAuth,
@@ -19,8 +19,17 @@ employerComplianceRoutes.get('/items', async (c) => {
   const userId = c.var.userId;
   const tenantId = c.var.tenantId!;
 
+  const profile = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: { id: true, participatesInH2a: true },
+  });
+
   const items = await c.var.db.complianceItem.findMany({
-    where: { tenantId, employerId: userId },
+    where: {
+      tenantId,
+      employerId: userId,
+      ...(profile?.participatesInH2a ? {} : { category: { not: 'h2a' } }),
+    },
     orderBy: [{ category: 'asc' }, { itemKey: 'asc' }],
   });
 
@@ -55,7 +64,59 @@ employerComplianceRoutes.get('/items', async (c) => {
       dueAt: i.dueAt?.toISOString() ?? null,
     }));
 
+  if (profile && items.length > 0) {
+    await snapshotScore(c.var.db, tenantId, profile.id, items);
+  }
+
   return ok(c, { categories, actions });
+});
+
+employerComplianceRoutes.get('/summary', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+
+  const profile = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: {
+      id: true,
+      participatesInH2a: true,
+      dolLastInspectionAt: true,
+      dolLastInspectionResult: true,
+    },
+  });
+  if (!profile) return err(c, 404, 'not_found');
+
+  const items = await c.var.db.complianceItem.findMany({
+    where: {
+      tenantId,
+      employerId: userId,
+      ...(profile.participatesInH2a ? {} : { category: { not: 'h2a' } }),
+    },
+    select: { status: true, category: true },
+  });
+
+  const overall = items.length === 0 ? 100 : computeScore(items);
+
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+  const priorSnapshot = await c.var.db.complianceScoreSnapshot.findFirst({
+    where: {
+      employerProfileId: profile.id,
+      snapshotDate: { lte: ninetyDaysAgo },
+    },
+    orderBy: { snapshotDate: 'desc' },
+    select: { score: true, snapshotDate: true },
+  });
+
+  return ok(c, {
+    overall,
+    priorScore: priorSnapshot?.score ?? null,
+    priorSnapshotDate: priorSnapshot?.snapshotDate?.toISOString().slice(0, 10) ?? null,
+    delta: priorSnapshot ? overall - priorSnapshot.score : null,
+    participatesInH2a: profile.participatesInH2a,
+    dolLastInspectionAt: profile.dolLastInspectionAt?.toISOString() ?? null,
+    dolLastInspectionResult: profile.dolLastInspectionResult,
+  });
 });
 
 employerComplianceRoutes.post('/items', validate('json', CreateComplianceItemBody), async (c) => {
@@ -121,6 +182,37 @@ function computeScore(items: { status: ComplianceItemStatus }[]): number {
   const warnCount = items.filter((i) => i.status === ComplianceItemStatus.warn).length;
   const total = items.length;
   return Math.round(((okCount + warnCount * 0.5) / total) * 100);
+}
+
+async function snapshotScore(
+  db: Tx,
+  tenantId: string,
+  employerProfileId: string,
+  items: { status: ComplianceItemStatus }[],
+): Promise<void> {
+  const score = computeScore(items);
+  const okCount = items.filter((i) => i.status === ComplianceItemStatus.ok).length;
+  const warnCount = items.filter((i) => i.status === ComplianceItemStatus.warn).length;
+  const failCount = items.filter((i) => i.status === ComplianceItemStatus.fail).length;
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  try {
+    await db.complianceScoreSnapshot.upsert({
+      where: { employerProfileId_snapshotDate: { employerProfileId, snapshotDate: today } },
+      create: {
+        tenantId,
+        employerProfileId,
+        snapshotDate: today,
+        score,
+        okCount,
+        warnCount,
+        failCount,
+      },
+      update: { score, okCount, warnCount, failCount },
+    });
+  } catch {
+    // Snapshot is best-effort; never fail the read on a snapshot write error.
+  }
 }
 
 function shapeItem(i: {

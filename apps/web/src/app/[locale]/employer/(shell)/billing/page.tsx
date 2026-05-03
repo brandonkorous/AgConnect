@@ -3,8 +3,9 @@ import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getEmployerProfile, getBilling } from '@/lib/api/employer';
-import { PLAN_FEATURES, type EmployerPlanTier } from '@agconn/schemas';
+import { PLAN_FEATURES, PLAN_DISPLAY_PRICE, type EmployerPlanTier } from '@agconn/schemas';
 import { CheckoutButton } from '@/components/employer/CheckoutButton';
+import { PlanCheckoutControls } from '@/components/employer/BillingIntervalSwitch';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -39,7 +40,7 @@ export default async function BillingPage({ params }: Props) {
     : null;
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -67,9 +68,9 @@ export default async function BillingPage({ params }: Props) {
             <p className="text-accent font-mono text-[11px] uppercase tracking-wider">
               {t('current_plan')}
             </p>
-            <div className="font-display mt-2 text-5xl font-light leading-none tracking-tight">
+            <h2 className="font-display mt-2 text-5xl font-light leading-none tracking-tight">
               {t(plan)}
-            </div>
+            </h2>
             <p className="text-base-100/75 mt-2 text-sm">
               {interval ? t(interval) : '—'}
               {billing?.hasPaymentMethod ? ` · ${t('payment_saved')}` : ''}
@@ -116,7 +117,14 @@ export default async function BillingPage({ params }: Props) {
 
       <div className="grid gap-4 md:grid-cols-3">
         {(['free', 'pro', 'enterprise'] as const).map((tier) => (
-          <PlanCard key={tier} tier={tier} current={plan} t={t} locale={locale} />
+          <PlanCard
+            key={tier}
+            tier={tier}
+            current={plan}
+            t={t}
+            locale={locale}
+            stripeConfigured={billing?.stripeConfigured ?? false}
+          />
         ))}
       </div>
 
@@ -134,11 +142,13 @@ function PlanCard({
   current,
   t,
   locale,
+  stripeConfigured,
 }: {
   tier: EmployerPlanTier;
   current: EmployerPlanTier;
   t: Awaited<ReturnType<typeof getTranslations>>;
   locale: string;
+  stripeConfigured: boolean;
 }) {
   const features = PLAN_FEATURES[tier];
   const isCurrent = tier === current;
@@ -162,6 +172,8 @@ function PlanCard({
       <h3 className="font-display text-2xl font-light tracking-tight">{t(tier)}</h3>
       <p className="text-base-content/60 mt-1 text-xs">{t(`pitch.${tier}`)}</p>
 
+      <PlanPrice tier={tier} t={t} />
+
       <ul className="mt-5 flex flex-col gap-2 text-sm">
         <FeatureLine
           on={true}
@@ -181,14 +193,49 @@ function PlanCard({
 
       {!isFree && !isCurrent && (
         <div className="mt-5">
-          <CheckoutButton
-            mode="checkout"
+          <PlanCheckoutControls
             tier={tier as 'pro' | 'enterprise'}
-            label={tier === 'pro' ? t('upgrade_pro') : t('upgrade_enterprise')}
+            disabled={!stripeConfigured}
           />
+          {!stripeConfigured && (
+            <p className="text-base-content/55 mt-2 text-[11px]">
+              {t('stripe_unavailable')}
+            </p>
+          )}
         </div>
       )}
     </article>
+  );
+}
+
+function PlanPrice({
+  tier,
+  t,
+}: {
+  tier: EmployerPlanTier;
+  t: Awaited<ReturnType<typeof getTranslations>>;
+}) {
+  const price = PLAN_DISPLAY_PRICE[tier];
+  if (price.monthly === null) return null;
+  if (tier === 'free') {
+    return (
+      <p className="text-base-content font-display mt-3 text-3xl font-light tracking-tight">
+        {t('price_free')}
+      </p>
+    );
+  }
+  return (
+    <p className="text-base-content mt-3 flex items-baseline gap-2">
+      <span className="font-display text-3xl font-light tracking-tight">
+        ${price.monthly}
+      </span>
+      <span className="text-base-content/60 text-xs">{t('per_month')}</span>
+      {price.yearly !== null && (
+        <span className="text-base-content/55 ml-auto font-mono text-[11px]">
+          {t('or_yearly', { price: price.yearly })}
+        </span>
+      )}
+    </p>
   );
 }
 

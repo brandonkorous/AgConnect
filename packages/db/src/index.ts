@@ -57,6 +57,14 @@ export {
   MessageChannel,
   MessageDirection,
   TranslationStatus,
+  WageStructure,
+  PayFrequency,
+  MinExperience,
+  MinAge,
+  ScreeningAnswerType,
+  JobEditEventKind,
+  RenotifyChannel,
+  RenotifyStatus,
 } from '@prisma/client';
 export type {
   Tenant,
@@ -92,6 +100,16 @@ export type {
   ConversationParticipant,
   Message,
   TranslationKey,
+  Crop,
+  RoleType,
+  SkillTag,
+  EmployerContact,
+  JobPhoto,
+  JobScreeningQuestion,
+  ApplicationScreeningAnswer,
+  JobEditEvent,
+  JobRenotification,
+  SmsKeyword,
 } from '@prisma/client';
 
 export type Db = PrismaClient;

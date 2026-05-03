@@ -134,9 +134,9 @@ export default async function EmployersPage({ params }: RouteProps) {
                         <span className="text-accent font-mono text-xs font-bold uppercase tracking-[0.22em]">
                             {t('pricing.eyebrow')}
                         </span>
-                        <p className="text-primary-content font-serif text-2xl leading-tight md:text-3xl">
+                        <h2 className="text-primary-content font-serif text-2xl leading-tight md:text-3xl">
                             {t('pricing.headline')}
-                        </p>
+                        </h2>
                         <p className="text-primary-content/80 max-w-prose font-sans text-base leading-relaxed">
                             {t('pricing.body')}
                         </p>

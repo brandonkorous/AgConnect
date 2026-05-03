@@ -11,6 +11,13 @@ export { Field } from './form/field';
 export type { FieldProps } from './form/field';
 export { FormSubmit } from './form/form-submit';
 export type { FormSubmitProps } from './form/form-submit';
+export { AddressAutocomplete, AddressAutocompleteField } from './form/address-autocomplete';
+export type {
+  AddressAutocompleteProps,
+  AddressAutocompleteControlledProps,
+  AddressLabels,
+  AddressValue,
+} from './form/address-autocomplete';
 
 export { Skeleton, SkeletonBlock, SkeletonAvatar } from './skeleton/skeleton';
 export type { SkeletonProps } from './skeleton/skeleton';

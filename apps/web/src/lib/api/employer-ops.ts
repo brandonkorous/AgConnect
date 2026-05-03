@@ -1,18 +1,12 @@
 // Server-only data accessors for employer operations surfaces:
 // crews & shifts, payroll, compliance, messages, reports.
 //
-// All endpoints have real backends. The mock fixtures are only used when:
-//   1. Clerk env keys are missing (no auth context — pure dev preview), or
-//   2. The API request errors out (network failure / API container down).
-// Empty data from a real authenticated request is treated as truth, not a
-// fallback signal — onboarding seeds compliance items and a payroll period.
+// On error we return empty/null and log via console.error. Empty real data is
+// treated as truth — onboarding seeds compliance items and a payroll period.
 
 import 'server-only';
 import { isOk } from '@agconn/api-client';
 import { getServerApiClient } from './server-client';
-
-const apiConfigured = (): boolean =>
-  Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY);
 
 // ───────────────────────────────────────────────── Crews & shifts
 
@@ -43,117 +37,17 @@ export type ShiftView = {
   capacity: number | null;
 };
 
-const MOCK_CREWS: CrewView[] = [
-  {
-    id: 'crew-a',
-    name: 'Crew A · Grape harvest',
-    color: 'primary',
-    foremanUserId: 'usr-foreman-a',
-    foremanName: 'Manuel Vargas',
-    jobId: 'job-1',
-    jobTitle: 'Grape Harvest',
-    memberCount: 14,
-    notes: null,
-  },
-  {
-    id: 'crew-b',
-    name: 'Crew B · Sort line',
-    color: 'success',
-    foremanUserId: 'usr-foreman-b',
-    foremanName: 'Lucia Mendez',
-    jobId: 'job-4',
-    jobTitle: 'Sort Line — Day Shift',
-    memberCount: 8,
-    notes: null,
-  },
-  {
-    id: 'crew-c',
-    name: 'Crew C · Vineyard setup',
-    color: 'accent',
-    foremanUserId: 'usr-foreman-c',
-    foremanName: 'Tomás Ríos',
-    jobId: 'job-2',
-    jobTitle: 'Vineyard Setup Crew',
-    memberCount: 6,
-    notes: null,
-  },
-  {
-    id: 'crew-d',
-    name: 'Crew D · Almond pre-shake',
-    color: 'warning',
-    foremanUserId: null,
-    foremanName: null,
-    jobId: 'job-3',
-    jobTitle: 'Almond Pre-shake Crew',
-    memberCount: 3,
-    notes: 'still hiring',
-  },
-];
-
-function mockShifts(weekStart: Date): ShiftView[] {
-  const result: ShiftView[] = [];
-  const days = 5;
-  for (let d = 0; d < days; d++) {
-    const date = new Date(weekStart);
-    date.setUTCDate(weekStart.getUTCDate() + d);
-    const dateStr = date.toISOString().slice(0, 10);
-
-    result.push(
-      shift(`crewA-${d}`, 'crew-a', 'Crew A · Grape harvest', dateStr, '06:00', '14:00', 'Block 7-North', 14, 13),
-      shift(`crewB-${d}`, 'crew-b', 'Crew B · Sort line', dateStr, '07:00', '15:00', 'Pack house', 8, 8),
-    );
-    if (d >= 1) {
-      result.push(
-        shift(`crewC-${d}`, 'crew-c', 'Crew C · Vineyard setup', dateStr, '06:00', '14:00', 'Block 4-East', 6, d >= 2 ? 6 : 5),
-      );
-    }
-    if (d >= 1) {
-      result.push(
-        shift(`crewD-${d}`, 'crew-d', 'Crew D · Almond pre-shake', dateStr, '05:30', '13:30', 'East orchard', d <= 1 ? 3 : 12, d <= 1 ? 0 : 9),
-      );
-    }
-  }
-  return result;
-}
-
-function shift(
-  id: string,
-  crewId: string,
-  crewName: string,
-  date: string,
-  start: string,
-  end: string,
-  loc: string,
-  assigned: number,
-  confirmed: number,
-): ShiftView {
-  return {
-    id,
-    crewId,
-    crewName,
-    jobId: null,
-    shiftDate: date,
-    startTime: start,
-    endTime: end,
-    locationLabel: loc,
-    status: 'scheduled',
-    assignedCount: assigned,
-    confirmedCount: confirmed,
-    capacity: null,
-  };
-}
-
 export async function listCrews(): Promise<CrewView[]> {
-  if (!apiConfigured()) return MOCK_CREWS;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ crews: CrewView[] }>('/v1/employer/crews', {
       handleErrorInline: true,
     });
-    if (!isOk(res)) return MOCK_CREWS;
+    if (!isOk(res)) return [];
     return res.data.crews;
-  } catch {
-    return MOCK_CREWS;
+  } catch (e) {
+    console.error('listCrews failed', e);
+    return [];
   }
 }
 
@@ -163,7 +57,6 @@ export async function listShifts(opts?: {
   crewId?: string;
 }): Promise<ShiftView[]> {
   const weekStart = startOfWorkWeek(opts?.from ?? new Date());
-  if (!apiConfigured()) return mockShifts(weekStart);
   try {
     const client = await getServerApiClient();
     const params: Record<string, string> = {
@@ -177,10 +70,11 @@ export async function listShifts(opts?: {
     const res = await client.get<{ shifts: ShiftView[] }>(`/v1/employer/shifts?${qs}`, {
       handleErrorInline: true,
     });
-    if (!isOk(res)) return mockShifts(weekStart);
+    if (!isOk(res)) return [];
     return res.data.shifts;
-  } catch {
-    return mockShifts(weekStart);
+  } catch (e) {
+    console.error('listShifts failed', e);
+    return [];
   }
 }
 
@@ -224,31 +118,6 @@ export type PayrollLineView = {
   netCents: number;
   approvedAt: string | null;
 };
-
-const MOCK_PAYROLL_PERIOD: PayrollPeriodView = {
-  id: 'pp-current',
-  startDate: '2026-04-27',
-  endDate: '2026-05-03',
-  payDate: '2026-05-08',
-  status: 'draft',
-  totals: {
-    workers: 26,
-    hours: 1187,
-    grossCents: 3_321_040,
-    bonusCents: 184_000,
-    taxesCents: 471_760,
-    netCents: 2_849_240,
-  },
-};
-
-const MOCK_PAYROLL_LINES: PayrollLineView[] = [
-  { id: 'pl-1', workerUserId: 'usr-6', workerName: 'Miguel Reyes',     workerInitials: 'MR', role: 'Crew A · Lead',     hours: 52, overtimeHours: 12, grossCents: 132_550, bonusCents: 18_000, netCents: 118_420, approvedAt: null },
-  { id: 'pl-2', workerUserId: 'usr-7', workerName: 'Carmen Rojas',     workerInitials: 'CR', role: 'Crew A · Picker',   hours: 48, overtimeHours:  8, grossCents: 111_600, bonusCents:  9_200, netCents:  99_430, approvedAt: null },
-  { id: 'pl-3', workerUserId: 'usr-2', workerName: 'Soledad Saavedra', workerInitials: 'SS', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820, approvedAt: null },
-  { id: 'pl-4', workerUserId: 'usr-3', workerName: 'Beto Villalobos',  workerInitials: 'BV', role: 'Crew B · Sort',     hours: 45, overtimeHours:  5, grossCents:  94_550, bonusCents:      0, netCents:  83_820, approvedAt: null },
-  { id: 'pl-5', workerUserId: 'usr-foreman-c', workerName: 'Tomás Ríos', workerInitials: 'TR', role: 'Crew C · Foreman',  hours: 48, overtimeHours:  8, grossCents: 129_600, bonusCents: 22_000, netCents: 116_240, approvedAt: null },
-  { id: 'pl-6', workerUserId: 'usr-5', workerName: 'Rosa Aguilar',     workerInitials: 'RA', role: 'Crew C · Setup',    hours: 40, overtimeHours:  0, grossCents:  80_000, bonusCents:  4_000, netCents:  71_250, approvedAt: null },
-];
 
 type ApiPayrollPeriod = {
   id: string;
@@ -296,18 +165,77 @@ function emptyPayrollPeriod(): PayrollPeriodView {
   };
 }
 
-export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
-  if (!apiConfigured()) return MOCK_PAYROLL_PERIOD;
+export type PayrollSeasonView = {
+  netCents: number;
+  grossCents: number;
+  periods: number;
+  uniqueWorkers: number;
+  perPeriod: { startDate: string; netCents: number; isCurrent: boolean }[];
+};
+
+export async function listPayrollPeriods(): Promise<PayrollPeriodView[]> {
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ periods: ApiPayrollPeriod[] }>(
       '/v1/employer/payroll/periods',
       { handleErrorInline: true },
     );
-    if (!isOk(res)) return MOCK_PAYROLL_PERIOD;
+    if (!isOk(res)) return [];
+    return res.data.periods.map((p) => ({
+      id: p.id,
+      startDate: p.startDate,
+      endDate: p.endDate,
+      payDate: p.payDate,
+      status: p.status,
+      totals: p.totals,
+    }));
+  } catch (e) {
+    console.error('listPayrollPeriods failed', e);
+    return [];
+  }
+}
+
+export async function getPayrollSeasonToDate(): Promise<PayrollSeasonView> {
+  const periods = await listPayrollPeriods();
+  if (periods.length === 0) {
+    return { netCents: 0, grossCents: 0, periods: 0, uniqueWorkers: 0, perPeriod: [] };
+  }
+  // Drafts shouldn't roll into season-to-date earnings totals — those are real
+  // money paid out. Counting drafts would inflate the figure with unfinalized
+  // amounts. Drafts still appear on the per-period spark so the user can see
+  // the upcoming bar.
+  const finalized = periods.filter((p) => p.status !== 'draft');
+  const netCents = finalized.reduce((s, p) => s + p.totals.netCents, 0);
+  const grossCents = finalized.reduce((s, p) => s + p.totals.grossCents, 0);
+  const uniqueWorkers = Math.max(...periods.map((p) => p.totals.workers), 0);
+  const perPeriod = [...periods]
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))
+    .slice(-14)
+    .map((p) => ({
+      startDate: p.startDate,
+      netCents: p.totals.netCents,
+      isCurrent: p.status === 'draft',
+    }));
+  return {
+    netCents,
+    grossCents,
+    periods: finalized.length,
+    uniqueWorkers,
+    perPeriod,
+  };
+}
+
+export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ periods: ApiPayrollPeriod[] }>(
+      '/v1/employer/payroll/periods',
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return emptyPayrollPeriod();
     if (res.data.periods.length === 0) {
       // Real authenticated employer with no periods yet — return a synthesized
-      // empty draft period so the UI renders cleanly without flashing fixtures.
+      // empty draft period so the UI renders cleanly with zeros.
       return emptyPayrollPeriod();
     }
     const draft = res.data.periods.find((p) => p.status === 'draft');
@@ -320,13 +248,13 @@ export async function getCurrentPayrollPeriod(): Promise<PayrollPeriodView> {
       status: p.status,
       totals: p.totals,
     };
-  } catch {
-    return MOCK_PAYROLL_PERIOD;
+  } catch (e) {
+    console.error('getCurrentPayrollPeriod failed', e);
+    return emptyPayrollPeriod();
   }
 }
 
 export async function listPayrollLines(periodId?: string): Promise<PayrollLineView[]> {
-  if (!apiConfigured()) return MOCK_PAYROLL_LINES;
   if (!periodId) return [];
   try {
     const client = await getServerApiClient();
@@ -334,7 +262,7 @@ export async function listPayrollLines(periodId?: string): Promise<PayrollLineVi
       `/v1/employer/payroll/periods/${periodId}/lines`,
       { handleErrorInline: true },
     );
-    if (!isOk(res)) return MOCK_PAYROLL_LINES;
+    if (!isOk(res)) return [];
     // Empty real data is truth — the period just hasn't been generated yet.
     return res.data.lines.map((l) => ({
       id: l.id,
@@ -349,8 +277,9 @@ export async function listPayrollLines(periodId?: string): Promise<PayrollLineVi
       netCents: l.netCents,
       approvedAt: l.approvedAt,
     }));
-  } catch {
-    return MOCK_PAYROLL_LINES;
+  } catch (e) {
+    console.error('listPayrollLines failed', e);
+    return [];
   }
 }
 
@@ -372,58 +301,6 @@ export type ComplianceItemView = {
   dueAt: string | null;
   evidenceUrl?: string | null;
 };
-
-const MOCK_COMPLIANCE_CATEGORIES: ComplianceCategoryView[] = [
-  {
-    key: 'documentation',
-    label: 'Worker documentation',
-    score: 94,
-    items: [
-      { key: 'i9_on_file', label: 'I-9 forms on file', status: 'ok', details: '24 of 26', dueAt: null },
-      { key: 'i9_expiring', label: '2 I-9s expiring within 30 days', status: 'fail', details: 'Pedro E., Tomás R.', dueAt: '2026-05-29' },
-      { key: 'w4_collected', label: 'W-4s collected', status: 'ok', details: 'All workers', dueAt: null },
-    ],
-  },
-  {
-    key: 'safety',
-    label: 'Worker safety (Cal/OSHA)',
-    score: 100,
-    items: [
-      { key: 'heat_plan',     label: 'Heat illness prevention plan', status: 'ok', details: 'Posted · trained 26/26', dueAt: null },
-      { key: 'wps_training',  label: 'Pesticide handler training (WPS)', status: 'ok', details: 'Current · expires Mar 2027', dueAt: '2027-03-31' },
-      { key: 'covid_plan',    label: 'COVID-19 prevention plan', status: 'ok', details: 'Updated July 12', dueAt: null },
-    ],
-  },
-  {
-    key: 'wage_hour',
-    label: 'Wage & hour',
-    score: 96,
-    items: [
-      { key: 'piece_breaks',  label: 'Piece-rate paid breaks tracked', status: 'ok', details: 'AB 1513 compliant', dueAt: null },
-      { key: 'overtime',      label: 'Overtime calculations',          status: 'ok', details: 'Phase-in 2025: 8h/40h', dueAt: null },
-      { key: 'wage_stmts',    label: 'Itemized wage statements',       status: 'ok', details: 'Auto-generated', dueAt: null },
-    ],
-  },
-  {
-    key: 'pesticide',
-    label: 'Pesticide records',
-    score: 100,
-    items: [
-      { key: 'pur_records',   label: 'Application records (PUR)', status: 'ok', details: 'Filed monthly', dueAt: null },
-      { key: 'noi_filing',    label: 'Notice of Intent (NOI)',    status: 'ok', details: 'CDPR submitted', dueAt: null },
-    ],
-  },
-  {
-    key: 'h2a',
-    label: 'H-2A program',
-    score: 88,
-    items: [
-      { key: 'aewr_rate',     label: 'AEWR rate compliance',     status: 'ok',   details: '$19.97/hr applied', dueAt: null },
-      { key: 'housing_insp',  label: 'Housing inspection',        status: 'warn', details: 'Due Aug 22',          dueAt: '2026-08-22' },
-      { key: 'three_quarter', label: '3/4 guarantee tracking',    status: 'ok',   details: 'Auto-tracked',         dueAt: null },
-    ],
-  },
-];
 
 type ApiComplianceItem = {
   id: string;
@@ -453,14 +330,13 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export async function listComplianceCategories(): Promise<ComplianceCategoryView[]> {
-  if (!apiConfigured()) return MOCK_COMPLIANCE_CATEGORIES;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{
       categories: ApiComplianceCategory[];
       actions: { id: string; severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
     }>('/v1/employer/compliance/items', { handleErrorInline: true });
-    if (!isOk(res)) return MOCK_COMPLIANCE_CATEGORIES;
+    if (!isOk(res)) return [];
     if (res.data.categories.length === 0) return [];
     return res.data.categories.map((c) => ({
       key: c.category,
@@ -476,8 +352,33 @@ export async function listComplianceCategories(): Promise<ComplianceCategoryView
         evidenceUrl: i.evidenceUrl,
       })),
     }));
-  } catch {
-    return MOCK_COMPLIANCE_CATEGORIES;
+  } catch (e) {
+    console.error('listComplianceCategories failed', e);
+    return [];
+  }
+}
+
+export type ComplianceSummaryView = {
+  overall: number;
+  priorScore: number | null;
+  priorSnapshotDate: string | null;
+  delta: number | null;
+  participatesInH2a: boolean;
+  dolLastInspectionAt: string | null;
+  dolLastInspectionResult: 'pass' | 'fail' | 'pending' | null;
+};
+
+export async function getComplianceSummary(): Promise<ComplianceSummaryView | null> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<ComplianceSummaryView>('/v1/employer/compliance/summary', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return null;
+    return res.data;
+  } catch (e) {
+    console.error('getComplianceSummary failed', e);
+    return null;
   }
 }
 
@@ -489,32 +390,14 @@ export type ComplianceActionView = {
   cta: string;
 };
 
-const MOCK_COMPLIANCE_ACTIONS: ComplianceActionView[] = [
-  {
-    id: null,
-    severity: 'urgent',
-    title: 'Two I-9s expiring within 30 days',
-    detail: 'Pedro Estrella (May 29) · Tomás Ríos (Jun 1) — re-verify with current ID.',
-    cta: 'Re-verify',
-  },
-  {
-    id: null,
-    severity: 'soon',
-    title: 'H-2A housing inspection due Aug 22',
-    detail: 'Annual housing inspection per 20 CFR 655.122 — schedule with CDPH 14 days in advance.',
-    cta: 'Schedule',
-  },
-];
-
 export async function listComplianceActions(): Promise<ComplianceActionView[]> {
-  if (!apiConfigured()) return MOCK_COMPLIANCE_ACTIONS;
   try {
     const client = await getServerApiClient();
     const res = await client.get<{
       categories: ApiComplianceCategory[];
       actions: { id: string; severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
     }>('/v1/employer/compliance/items', { handleErrorInline: true });
-    if (!isOk(res)) return MOCK_COMPLIANCE_ACTIONS;
+    if (!isOk(res)) return [];
     // Zero open actions is a real (good!) state — return an empty list.
     return res.data.actions.map((a) => ({
       id: a.id,
@@ -523,8 +406,9 @@ export async function listComplianceActions(): Promise<ComplianceActionView[]> {
       detail: a.details,
       cta: a.severity === 'urgent' ? 'Resolve' : 'Schedule',
     }));
-  } catch {
-    return MOCK_COMPLIANCE_ACTIONS;
+  } catch (e) {
+    console.error('listComplianceActions failed', e);
+    return [];
   }
 }
 
@@ -556,16 +440,6 @@ export type MessageView = {
   whenLabel: string;
 };
 
-const MOCK_THREADS: MessageThreadView[] = [
-  { id: 't-1', name: 'Crew A — Grape Harvest',     initials: 'A',  preview: 'M. Vargas: Pickup at 5:30 AM, Hwy 99…', whenLabel: '8m',   unread: 2, channel: 'app',       group: true,  category: 'crew',       foremanPhone: null,           participantCount: 14 },
-  { id: 't-2', name: 'Pedro Estrella',             initials: 'PE', preview: 'You: Can you do Thu 9 AM interview?',     whenLabel: '32m',  unread: 0, channel: 'sms',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
-  { id: 't-3', name: 'Soledad Saavedra',           initials: 'SS', preview: 'Soledad: Yes, I have forklift cert…',     whenLabel: '2h',   unread: 1, channel: 'sms',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
-  { id: 't-4', name: 'Manuel Vargas (Foreman)',    initials: 'MV', preview: 'Manuel: Need 1 more for tomorrow',         whenLabel: '3h',   unread: 0, channel: 'whatsapp',  group: false, category: 'foremen',    foremanPhone: '+15595550144', participantCount: 2 },
-  { id: 't-5', name: 'Almond Pre-shake applicants',initials: 'AP', preview: 'You: Job is still open — pay $21/hr…',    whenLabel: '5h',   unread: 0, channel: 'broadcast', group: true,  category: 'broadcasts', foremanPhone: null,           participantCount: 12 },
-  { id: 't-6', name: 'Joaquín Núñez',              initials: 'JN', preview: 'Joaquín: Available Mon-Sat',               whenLabel: 'Yest', unread: 0, channel: 'sms',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
-  { id: 't-7', name: 'Rosa Aguilar',               initials: 'RA', preview: 'You: Welcome to the crew!',                 whenLabel: 'Yest', unread: 0, channel: 'app',       group: false, category: 'candidates', foremanPhone: null,           participantCount: 2 },
-];
-
 type ApiConversation = {
   id: string;
   title: string;
@@ -593,24 +467,17 @@ export async function listThreads(folder: FolderKey = 'all'): Promise<{
   threads: MessageThreadView[];
   counts: FolderCounts;
 }> {
-  const mockCounts: FolderCounts = {
-    all: MOCK_THREADS.length,
-    candidates: MOCK_THREADS.filter((t) => t.category === 'candidates').length,
-    crew: MOCK_THREADS.filter((t) => t.category === 'crew').length,
-    foremen: MOCK_THREADS.filter((t) => t.category === 'foremen').length,
-    broadcasts: MOCK_THREADS.filter((t) => t.category === 'broadcasts').length,
+  const empty = {
+    threads: [] as MessageThreadView[],
+    counts: { all: 0, candidates: 0, crew: 0, foremen: 0, broadcasts: 0 } as FolderCounts,
   };
-  const filtered = folder === 'all' ? MOCK_THREADS : MOCK_THREADS.filter((t) => t.category === folder);
-  if (!apiConfigured()) return { threads: filtered, counts: mockCounts };
   try {
     const client = await getServerApiClient();
     const res = await client.get<{
       conversations: ApiConversation[];
       counts: FolderCounts;
     }>(`/v1/employer/messages?folder=${folder}`, { handleErrorInline: true });
-    if (!isOk(res)) {
-      return { threads: filtered, counts: mockCounts };
-    }
+    if (!isOk(res)) return empty;
     return {
       threads: res.data.conversations.map((co) => ({
         id: co.id,
@@ -627,30 +494,13 @@ export async function listThreads(folder: FolderKey = 'all'): Promise<{
       })),
       counts: res.data.counts,
     };
-  } catch {
-    return { threads: filtered, counts: mockCounts };
+  } catch (e) {
+    console.error('listThreads failed', e);
+    return empty;
   }
 }
 
-const MOCK_THREAD_T1: MessageView[] = [
-  { id: 'm-1', threadId: 't-1', senderRole: 'them', body: 'Buenos días Elena. Listo para mañana. Tengo 13 confirmados y uno me dijo que no puede.',                          whenLabel: '7:42 AM' },
-  { id: 'm-2', threadId: 't-1', senderRole: 'me',   body: 'Got it Manuel. Posting the 1 spot publicly now — should fill within an hour given how many applicants we have.', whenLabel: '7:44 AM' },
-  { id: 'm-3', threadId: 't-1', senderRole: 'them', body: 'Perfect. Pickup en Hwy 99 a las 5:30 AM, regresamos al campo Block 7-Norte. Llevo agua + carpa de sombra.',       whenLabel: '7:46 AM' },
-  { id: 'm-4', threadId: 't-1', senderRole: 'me',   body: 'Heat advisory says 102°F by 1 PM tomorrow. Push lunch to 11:30 and add a 10-min shade break at 9 AM and 1 PM.',  whenLabel: '7:48 AM' },
-  { id: 'm-5', threadId: 't-1', senderRole: 'them', body: '✓ Voy a avisar al equipo por WhatsApp. ¿Pago piezas hoy o se junta con el viernes?',                              whenLabel: '7:51 AM' },
-  { id: 'm-6', threadId: 't-1', senderRole: 'me',   body: 'Friday with payroll. Bonus rate is $0.18/lb — already loaded. See you at 5:30.',                                  whenLabel: '7:53 AM' },
-];
-
 export async function listMessages(threadId: string, employerUserId?: string): Promise<MessageView[]> {
-  if (!apiConfigured()) {
-    if (threadId !== 't-1') {
-      return [
-        { id: 'm-x', threadId, senderRole: 'them', body: 'Hi Elena — just confirming for tomorrow\'s shift.', whenLabel: '8:02 AM' },
-        { id: 'm-y', threadId, senderRole: 'me',   body: 'Confirmed. See you at 6 AM.',                       whenLabel: '8:05 AM' },
-      ];
-    }
-    return MOCK_THREAD_T1;
-  }
   try {
     const client = await getServerApiClient();
     const res = await client.get<{ messages: ApiMessage[] }>(
@@ -665,7 +515,8 @@ export async function listMessages(threadId: string, employerUserId?: string): P
       body: m.body,
       whenLabel: shortTime(m.createdAt),
     }));
-  } catch {
+  } catch (e) {
+    console.error('listMessages failed', e);
     return [];
   }
 }
@@ -740,48 +591,19 @@ const KPI_LABELS: Record<string, string> = {
   retention_30d: 'Retention · 30 d',
 };
 
-const MOCK_REPORTS = {
-  kpis: [
-    { label: 'Hires this season', value: '83',     delta: '+18 YoY',  sub: '14 active crews' },
-    { label: 'Avg time-to-fill',  value: '2.4 d',  delta: '-1.7 d YoY', sub: 'County avg 6.1 d' },
-    { label: 'Cost per hire',     value: '$42',    delta: '-$28 YoY', sub: 'incl. SMS, broadcast' },
-    { label: 'Retention · 30 d',  value: '88%',    delta: '+12 pts YoY', sub: '5 of 41 left early' },
-  ],
-  byJobType: [
-    { label: 'Grape Harvest',    applied: 142, hired: 38, fillPct: 100 },
-    { label: 'Almond Pre-shake', applied: 86,  hired: 21, fillPct: 87 },
-    { label: 'Vineyard Setup',   applied: 64,  hired: 14, fillPct: 92 },
-    { label: 'Sort Line',        applied: 58,  hired: 16, fillPct: 100 },
-    { label: 'Almond Sweep',     applied: 28,  hired: 0,  fillPct: 0 },
-  ],
-  topWorkers: [
-    { rank: 1, name: 'Miguel Reyes',     initials: 'MR', role: 'Crew A · Lead',    metric: '4,820 lb/day', delta: '+18%' },
-    { rank: 2, name: 'Carmen Rojas',     initials: 'CR', role: 'Crew A · Picker',  metric: '4,210 lb/day', delta: '+12%' },
-    { rank: 3, name: 'Tomás Ríos',       initials: 'TR', role: 'Crew C · Foreman', metric: '3,980 lb/day', delta: '+9%' },
-    { rank: 4, name: 'Ana Castillo',     initials: 'AC', role: 'Crew C · Setup',   metric: '3,640 lb/day', delta: '+7%' },
-    { rank: 5, name: 'Joaquín Núñez',    initials: 'JN', role: 'Crew B · Sort',    metric: '3,520 lb/day', delta: '+5%' },
-  ],
-  seasonFlow: [40, 56, 78, 92, 110, 128, 142, 156, 168, 152, 138, 120, 102, 88, 72, 84, 110, 138, 168, 184, 172, 158]
-    .map((applied, i) => ({
-      week: i + 1,
-      applied,
-      hired: Math.round(applied * 0.43),
-    })),
-};
-
 export async function getReportsOverview(): Promise<{
   kpis: ReportsKpiView[];
   byJobType: ReportsByJobTypeView[];
   topWorkers: ReportsTopWorkerView[];
   seasonFlow: ReportsSeasonFlowPoint[];
 }> {
-  if (!apiConfigured()) return MOCK_REPORTS;
+  const empty = { kpis: [], byJobType: [], topWorkers: [], seasonFlow: [] };
   try {
     const client = await getServerApiClient();
     const res = await client.get<ReportsOverviewResponse>('/v1/employer/reports/overview', {
       handleErrorInline: true,
     });
-    if (!isOk(res)) return MOCK_REPORTS;
+    if (!isOk(res)) return empty;
     // Empty real metrics are truth — render zero cards instead of fake fixtures.
     return {
       kpis: res.data.kpis.map((k) => ({
@@ -801,7 +623,8 @@ export async function getReportsOverview(): Promise<{
       })),
       seasonFlow: res.data.seasonFlow,
     };
-  } catch {
-    return MOCK_REPORTS;
+  } catch (e) {
+    console.error('getReportsOverview failed', e);
+    return empty;
   }
 }

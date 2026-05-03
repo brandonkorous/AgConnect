@@ -168,10 +168,6 @@ export const auth: TranslationBundle = {
         en: "Sign in to",
         es: "Inicia sesión en",
     },
-    "sign_in.title_b": {
-        en: "AgConn",
-        es: "AgConn",
-    },
     "sign_in.subtitle": {
         en: "Use your phone or email — whichever is on your account.",
         es: "Usa tu teléfono o correo — el que tengas en tu cuenta.",
@@ -262,6 +258,18 @@ export const auth: TranslationBundle = {
         en: "Hernández",
         es: "Hernández",
     },
+    "sign_up_worker.identifier_label": {
+        en: "Phone or email",
+        es: "Teléfono o correo",
+    },
+    "sign_up_worker.identifier_placeholder": {
+        en: "(555) 123-4567 or you@example.com",
+        es: "(555) 123-4567 o tu@ejemplo.com",
+    },
+    "sign_up_worker.identifier_help": {
+        en: "Phone gets a 6-digit SMS code. Email gets a code after you set a password.",
+        es: "Por teléfono recibes un código de 6 dígitos por SMS. Por correo, después de elegir contraseña.",
+    },
     "sign_up_worker.phone_label": {
         en: "Mobile number",
         es: "Número de celular",
@@ -289,6 +297,10 @@ export const auth: TranslationBundle = {
     "sign_up_worker.password_help": {
         en: "At least 8 characters.",
         es: "Al menos 8 caracteres.",
+    },
+    "sign_up_worker.password_subtitle": {
+        en: "Choose a password for {target}. We'll then email a 6-digit code to verify.",
+        es: "Elige una contraseña para {target}. Después enviaremos un código de 6 dígitos al correo.",
     },
     "sign_up_worker.verify_phone_subtitle": {
         en: "We sent a 6-digit code to {target}.",
@@ -372,41 +384,17 @@ export const auth: TranslationBundle = {
         en: "Sanchez",
         es: "Sánchez",
     },
-    "sign_up_employer.company_label": {
-        en: "Company / FLC name",
-        es: "Nombre de empresa / FLC",
+    "sign_up_employer.identifier_label": {
+        en: "Phone or email",
+        es: "Teléfono o correo",
     },
-    "sign_up_employer.company_placeholder": {
-        en: "Sunridge Vineyards LLC",
-        es: "Sunridge Vineyards LLC",
+    "sign_up_employer.identifier_placeholder": {
+        en: "(555) 123-4567 or you@yourfarm.com",
+        es: "(555) 123-4567 o tu@tugranja.com",
     },
-    "sign_up_employer.company_help": {
-        en: "Optional — you can add or change this during onboarding.",
-        es: "Opcional — puedes agregarlo o cambiarlo durante el onboarding.",
-    },
-    "sign_up_employer.email_label": {
-        en: "Work email",
-        es: "Correo de trabajo",
-    },
-    "sign_up_employer.email_placeholder": {
-        en: "you@yourfarm.com",
-        es: "tu@tugranja.com",
-    },
-    "sign_up_employer.email_help": {
-        en: "Where we send compliance notices, audit binders, and receipts.",
-        es: "Aquí enviamos avisos de cumplimiento, carpetas de auditoría y recibos.",
-    },
-    "sign_up_employer.phone_label": {
-        en: "Mobile number (optional)",
-        es: "Número de celular (opcional)",
-    },
-    "sign_up_employer.phone_placeholder": {
-        en: "(555) 123-4567",
-        es: "(555) 123-4567",
-    },
-    "sign_up_employer.phone_help": {
-        en: "Optional — adds SMS sign-in and faster crew communication.",
-        es: "Opcional — habilita inicio de sesión por SMS y comunicación rápida con cuadrillas.",
+    "sign_up_employer.identifier_help": {
+        en: "Phone gets a 6-digit SMS code. Email gets a code after you set a password.",
+        es: "Por teléfono recibes un código de 6 dígitos por SMS. Por correo, después de elegir contraseña.",
     },
     "sign_up_employer.password_label": {
         en: "Choose a password",
@@ -416,7 +404,15 @@ export const auth: TranslationBundle = {
         en: "At least 8 characters.",
         es: "Al menos 8 caracteres.",
     },
-    "sign_up_employer.verify_subtitle": {
+    "sign_up_employer.password_subtitle": {
+        en: "Choose a password for {target}. We'll then email a 6-digit code to verify.",
+        es: "Elige una contraseña para {target}. Después enviaremos un código de 6 dígitos al correo.",
+    },
+    "sign_up_employer.verify_phone_subtitle": {
+        en: "We sent a 6-digit code to {target}.",
+        es: "Enviamos un código de 6 dígitos a {target}.",
+    },
+    "sign_up_employer.verify_email_subtitle": {
         en: "We sent a 6-digit code to {target}.",
         es: "Enviamos un código de 6 dígitos a {target}.",
     },

@@ -7,11 +7,17 @@ import { useState } from 'react';
 import { useSignUp } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faEnvelope, faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle as faGoogleBrand } from '@fortawesome/free-brands-svg-icons';
-import { isEmail, normalizeUsPhone, clerkErrorMessage } from './authShared';
+import {
+  isEmail,
+  normalizeUsPhone,
+  clerkErrorMessage,
+  detectUnresolvableMissingFields,
+} from './authShared';
 
-type Step = 'details' | 'verify';
+type Mode = 'phone' | 'email';
+type Step = 'identifier' | 'password' | 'verify';
 
 type Props = { locale: string };
 
@@ -22,12 +28,11 @@ export function EmployerSignUpForm({ locale }: Props) {
   const t = useTranslations('auth.sign_up_employer');
   const { signUp } = useSignUp();
 
-  const [step, setStep] = useState<Step>('details');
+  const [step, setStep] = useState<Step>('identifier');
+  const [mode, setMode] = useState<Mode | null>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -35,38 +40,108 @@ export function EmployerSignUpForm({ locale }: Props) {
 
   const postAuthHref = `/${locale}/post-auth` as Route;
 
-  async function startEmail() {
+  function classify(input: string) {
+    if (isEmail(input)) return { kind: 'email' as const, value: input.trim() };
+    const phone = normalizeUsPhone(input);
+    if (phone) return { kind: 'phone' as const, value: phone };
+    return null;
+  }
+
+  function logState(label: string) {
     if (!signUp) return;
-    if (!isEmail(email)) {
-      setError(tErrors('invalid_email'));
+    const snapshot = {
+      status: signUp.status,
+      emailAddress: signUp.emailAddress,
+      phoneNumber: signUp.phoneNumber,
+      hasPassword: signUp.hasPassword,
+      unverifiedFields: signUp.unverifiedFields,
+      missingFields: signUp.missingFields,
+      requiredFields: signUp.requiredFields,
+      unsafeMetadata: signUp.unsafeMetadata,
+      createdSessionId: signUp.createdSessionId,
+      createdUserId: signUp.createdUserId,
+    };
+    // console.warn so the dev log forwarder always picks it up; stringify so
+    // the snapshot survives serialization to the terminal.
+    console.warn(`[employer-signup] state @ ${label}: ${JSON.stringify(snapshot)}`);
+  }
+
+  async function startIdentifier() {
+    if (!signUp) return;
+    const classified = classify(identifier);
+    if (!classified) {
+      setError(tErrors('invalid_identifier'));
       return;
     }
+    setSubmitting(true);
+    setError(null);
+    try {
+      if (classified.kind === 'phone') {
+        const createResult = await signUp.create({
+          phoneNumber: classified.value,
+          firstName: firstName.trim() || undefined,
+          lastName: lastName.trim() || undefined,
+          unsafeMetadata: { locale, role: 'employer' },
+        });
+        if (createResult.error) {
+          console.error('[employer-signup] phone create error', createResult.error);
+          throw createResult.error;
+        }
+        logState('after phone create');
+
+        const blocking = detectUnresolvableMissingFields(signUp.missingFields, ['phone_number']);
+        if (blocking) {
+          console.error('[employer-signup] unresolvable missing fields', signUp.missingFields);
+          setError(blocking);
+          return;
+        }
+
+        const sendResult = await signUp.verifications.sendPhoneCode({});
+        if (sendResult.error) {
+          console.error('[employer-signup] sendPhoneCode error', sendResult.error);
+          throw sendResult.error;
+        }
+        logState('after sendPhoneCode');
+        setMode('phone');
+        setStep('verify');
+      } else {
+        setMode('email');
+        setStep('password');
+      }
+    } catch (e) {
+      console.error('[employer-signup] startIdentifier caught', e);
+      setError(clerkErrorMessage(e, tErrors('generic')));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function submitPassword() {
+    if (!signUp) return;
     if (password.length < 8) {
       setError(tErrors('weak_password'));
-      return;
-    }
-    const normalizedPhone = phone.trim() ? normalizeUsPhone(phone) : null;
-    if (phone.trim() && !normalizedPhone) {
-      setError(tErrors('invalid_phone'));
       return;
     }
     setSubmitting(true);
     setError(null);
     try {
       const createResult = await signUp.create({
-        emailAddress: email.trim(),
+        emailAddress: identifier.trim(),
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
-        unsafeMetadata: {
-          locale,
-          role: 'employer',
-          ...(normalizedPhone ? { pending_phone: normalizedPhone } : {}),
-          ...(companyName.trim() ? { company_name: companyName.trim() } : {}),
-        },
+        unsafeMetadata: { locale, role: 'employer' },
       });
       if (createResult.error) {
-        console.error('[employer-signup] create error', createResult.error);
+        console.error('[employer-signup] email create error', createResult.error);
         throw createResult.error;
+      }
+      logState('after email create');
+
+      const blocking = detectUnresolvableMissingFields(signUp.missingFields, ['email_address', 'password']);
+      if (blocking) {
+        console.error('[employer-signup] unresolvable missing fields', signUp.missingFields);
+        setError(blocking);
+        return;
       }
 
       const passwordResult = await signUp.password({ password });
@@ -74,15 +149,17 @@ export function EmployerSignUpForm({ locale }: Props) {
         console.error('[employer-signup] password error', passwordResult.error);
         throw passwordResult.error;
       }
+      logState('after password');
 
       const sendResult = await signUp.verifications.sendEmailCode();
       if (sendResult.error) {
         console.error('[employer-signup] sendEmailCode error', sendResult.error);
         throw sendResult.error;
       }
+      logState('after sendEmailCode');
       setStep('verify');
     } catch (e) {
-      console.error('[employer-signup] caught', e);
+      console.error('[employer-signup] submitPassword caught', e);
       setError(clerkErrorMessage(e, tErrors('generic')));
     } finally {
       setSubmitting(false);
@@ -94,19 +171,41 @@ export function EmployerSignUpForm({ locale }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      const verifyResult = await signUp.verifications.verifyEmailCode({
-        code: code.trim(),
-      });
-      if (verifyResult.error) throw verifyResult.error;
-      if (signUp.status !== 'complete') {
-        setError(tErrors('generic'));
-        return;
+      const verifyResult =
+        mode === 'phone'
+          ? await signUp.verifications.verifyPhoneCode({ code: code.trim() })
+          : await signUp.verifications.verifyEmailCode({ code: code.trim() });
+      if (verifyResult.error) {
+        // "already verified" means a prior submission succeeded — fall through to finalize.
+        const msg = String(verifyResult.error?.message ?? '');
+        if (!/already.*verified/i.test(msg)) {
+          console.error('[employer-signup] verifyCode error', verifyResult.error);
+          throw verifyResult.error;
+        }
+        console.warn('[employer-signup] verifyCode returned "already verified" — proceeding to finalize');
       }
+      logState('after verifyCode');
+
       const finalizeResult = await signUp.finalize();
-      if (finalizeResult.error) throw finalizeResult.error;
+      if (finalizeResult.error) {
+        console.error('[employer-signup] finalize error', finalizeResult.error);
+        // Re-tag with a step hint so the catch block uses the right fallback.
+        throw Object.assign(finalizeResult.error as object, { __step: 'finalize' });
+      }
+      logState('after finalize');
       router.replace(postAuthHref);
     } catch (e) {
-      setError(clerkErrorMessage(e, tErrors('invalid_code')));
+      console.error('[employer-signup] verifyCode caught', e);
+      const isFinalize =
+        typeof e === 'object' && e !== null && (e as { __step?: string }).__step === 'finalize';
+      setError(
+        clerkErrorMessage(
+          e,
+          isFinalize
+            ? "Sign-up couldn't complete. Please try again or contact support@agconn.com."
+            : tErrors('invalid_code'),
+        ),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -130,8 +229,9 @@ export function EmployerSignUpForm({ locale }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
-    if (step === 'verify') return verifyCode();
-    return startEmail();
+    if (step === 'identifier') return startIdentifier();
+    if (step === 'password') return submitPassword();
+    return verifyCode();
   }
 
   return (
@@ -147,7 +247,7 @@ export function EmployerSignUpForm({ locale }: Props) {
         <p className="text-base-content/65 mt-2 text-sm leading-relaxed">{t('subtitle')}</p>
       </div>
 
-      {step === 'details' && (
+      {step === 'identifier' && (
         <>
           <button
             type="button"
@@ -167,7 +267,7 @@ export function EmployerSignUpForm({ locale }: Props) {
       )}
 
       <form onSubmit={handleSubmit} noValidate className="grid gap-4">
-        {step === 'details' && (
+        {step === 'identifier' && (
           <>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label={t('first_name_label')}>
@@ -194,47 +294,28 @@ export function EmployerSignUpForm({ locale }: Props) {
               </Field>
             </div>
 
-            <Field label={t('company_label')} help={t('company_help')}>
-              <IconInput icon={faBuilding}>
+            <Field label={t('identifier_label')} help={t('identifier_help')}>
+              <IconInput icon={isEmail(identifier) ? faEnvelope : faPhone}>
                 <input
                   type="text"
-                  autoComplete="organization"
-                  placeholder={t('company_placeholder')}
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="grow bg-transparent outline-none"
-                />
-              </IconInput>
-            </Field>
-
-            <Field label={t('email_label')} help={t('email_help')}>
-              <IconInput icon={faEnvelope}>
-                <input
-                  type="email"
-                  autoComplete="email"
-                  placeholder={t('email_placeholder')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  inputMode="email"
+                  autoComplete="username"
+                  placeholder={t('identifier_placeholder')}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className="grow bg-transparent outline-none"
                   required
                 />
               </IconInput>
             </Field>
+          </>
+        )}
 
-            <Field label={t('phone_label')} help={t('phone_help')}>
-              <IconInput icon={faPhone}>
-                <input
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  placeholder={t('phone_placeholder')}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="grow bg-transparent outline-none"
-                />
-              </IconInput>
-            </Field>
-
+        {step === 'password' && (
+          <>
+            <p className="text-base-content/70 text-sm">
+              {t('password_subtitle', { target: identifier })}
+            </p>
             <Field label={t('password_label')} help={t('password_help')}>
               <input
                 type="password"
@@ -244,6 +325,7 @@ export function EmployerSignUpForm({ locale }: Props) {
                 className="input input-bordered w-full"
                 required
                 minLength={8}
+                autoFocus
               />
             </Field>
           </>
@@ -252,7 +334,9 @@ export function EmployerSignUpForm({ locale }: Props) {
         {step === 'verify' && (
           <>
             <p className="text-base-content/70 text-sm">
-              {t('verify_subtitle', { target: email })}
+              {mode === 'phone'
+                ? t('verify_phone_subtitle', { target: identifier })
+                : t('verify_email_subtitle', { target: identifier })}
             </p>
             <Field label={t('code_label')}>
               <input
@@ -267,6 +351,7 @@ export function EmployerSignUpForm({ locale }: Props) {
                 }
                 className="input input-bordered w-full text-center font-mono text-xl tracking-[0.4em]"
                 required
+                autoFocus
               />
             </Field>
           </>
@@ -293,7 +378,7 @@ export function EmployerSignUpForm({ locale }: Props) {
         <div id="clerk-captcha" />
       </form>
 
-      {step === 'details' && (
+      {step === 'identifier' && (
         <div className="border-base-300 mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-sm">
           <Link
             href={`/${locale}/worker/sign-up` as Route}

@@ -16,7 +16,7 @@ export function VerificationBanner({ status, rejectionReason, locale }: Props) {
 
   if (status === 'rejected') {
     return (
-      <div className="border-error/30 bg-error/5 mx-8 mt-6 flex items-start gap-3 rounded-xl border p-4">
+      <div role="alert" className="border-error/30 bg-error/5 mx-8 mt-6 flex items-start gap-3 rounded-xl border p-4">
         <FontAwesomeIcon icon={faCircleXmark} className="text-error mt-0.5 h-4 w-4 shrink-0" />
         <div className="min-w-0 flex-1">
           <div className="text-base-content text-sm font-semibold">
@@ -39,7 +39,7 @@ export function VerificationBanner({ status, rejectionReason, locale }: Props) {
   }
 
   return (
-    <div className="border-warning/30 bg-warning/5 mx-8 mt-6 flex items-start gap-3 rounded-xl border p-4">
+    <div role="status" className="border-warning/30 bg-warning/5 mx-8 mt-6 flex items-start gap-3 rounded-xl border p-4">
       <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning mt-0.5 h-4 w-4 shrink-0" />
       <div className="min-w-0 flex-1">
         <div className="text-base-content text-sm font-semibold">{t('pending.title')}</div>

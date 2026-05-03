@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
-import { validateTwilioSignature } from '@agconn/sms';
-import { prisma, SmsStatus } from '@agconn/db';
+import { validateTwilioSignature, enqueueSms } from '@agconn/sms';
+import { prisma, SmsStatus, AppStatus } from '@agconn/db';
 import { emitSystemAudit } from '../middleware/audit';
 
 // Twilio webhook contracts:
@@ -110,8 +110,90 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
       resourceId: from,
       metadata: { phone: from, source: 'STOP' },
     });
+    return ok(c, { received: true });
   }
 
-  // Twilio's auto-reply handles confirmation copy; we only record.
+  // SMS-apply keyword routing — workers text APPLY-ALMD (or whatever the
+  // job's keyword is) to apply. Match the first whitespace-delimited token
+  // case-insensitively against sms_keywords.
+  const tokens = text.split(/\s+/);
+  for (const token of tokens) {
+    if (token.length < 4 || token.length > 24) continue;
+    const keyword = await prisma.smsKeyword.findFirst({
+      where: { keyword: { equals: token, mode: 'insensitive' }, active: true },
+    });
+    if (!keyword || keyword.kind !== 'job_apply') continue;
+
+    await handleJobApply({ keyword, fromPhone: from });
+    return ok(c, { received: true, keyword: token });
+  }
+
   return ok(c, { received: true });
 });
+
+async function handleJobApply(args: {
+  keyword: { id: string; tenantId: string; keyword: string; entityId: string };
+  fromPhone: string;
+}): Promise<void> {
+  const { keyword, fromPhone } = args;
+  if (!fromPhone) return;
+
+  const job = await prisma.jobPosting.findFirst({
+    where: { id: keyword.entityId, deletedAt: null, status: 'active' },
+    include: { employer: { include: { employerProfile: true } } },
+  });
+  if (!job) return;
+
+  // Resolve worker by phone. If unknown, send a "we couldn't find your
+  // account" reply — onboarding flow handles registration separately.
+  const worker = await prisma.user.findFirst({
+    where: { phone: fromPhone, role: 'worker', deletedAt: null },
+  });
+  if (!worker) {
+    await emitSystemAudit({
+      action: 'system.sms.dropped',
+      resourceType: 'sms_log',
+      resourceId: '',
+      metadata: { template: 'sms.apply.unknown_phone', reason: 'unknown_worker', toPhone: fromPhone },
+    });
+    return;
+  }
+
+  // Idempotent: skip if this worker already applied to this job.
+  const existing = await prisma.application.findFirst({
+    where: { jobId: job.id, workerId: worker.id },
+  });
+
+  let applicationId = existing?.id;
+  if (!existing) {
+    const created = await prisma.application.create({
+      data: {
+        tenantId: job.tenantId,
+        jobId: job.id,
+        workerId: worker.id,
+        status: AppStatus.applied,
+        countyAtApply: job.county,
+        skillsAtApply: [],
+      },
+    });
+    applicationId = created.id;
+  }
+
+  // Bump keyword usage so the employer can see SMS-apply traffic.
+  await prisma.smsKeyword.update({
+    where: { id: keyword.id },
+    data: { lastUsedAt: new Date() },
+  });
+
+  const employer =
+    job.employer.employerProfile?.dbaName ??
+    job.employer.employerProfile?.legalName ??
+    'AgConn employer';
+  await enqueueSms({
+    tenantId: job.tenantId,
+    userId: worker.id,
+    template: 'sms.apply.confirmed',
+    vars: { jobTitle: job.titleEn, employer },
+    jobKey: `apply-confirm-${applicationId}`,
+  });
+}

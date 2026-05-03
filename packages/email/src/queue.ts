@@ -92,7 +92,7 @@ const SEND_OPTS = {
   retryLimit: 3,
   retryBackoff: true,
   retryDelay: 30,
-  expireInSeconds: 24 * 60 * 60,
+  expireInHours: 23,
 } as const;
 
 export async function enqueueWaitlistConfirm(payload: WaitlistConfirmJob): Promise<string | null> {

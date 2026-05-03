@@ -32,7 +32,7 @@ Tone shifts by surface but never abandons the voice principles.
 - **No emoji** in product UI or marketing copy. Workers and employers can use them; Tierra doesn't.
 - **No "we" overload.** First-person is fine for the brand voice but use it deliberately, not in every sentence.
 - **No "your" excess.** Tierra avoids the SaaS habit of putting "your" before every noun. ("Profile" is fine; "Your profile" is fine; "Manage your profile to ensure your information is up to date for your employers" is not.)
-- **No marketing verbs:** _unlock, supercharge, level up, transform, revolutionize, reimagine._ Pick a plain verb instead.
+- **No marketing verbs in CTAs or headlines:** _unlock, supercharge, level up, transform, revolutionize, reimagine, boost._ A marketing verb is permitted in an **eyebrow label** when the line directly below is a concrete benefit — e.g., `BOOST YOUR EARNINGS` over `+$2.50/hr` is acceptable because the eyebrow is a category label and the next line provides the specifics. The rule: never use a marketing verb as the *only* thing communicating value.
 - **No urgency theater:** _don't miss out, last chance, only X left, hurry._ If something is finite, state it neutrally.
 - **No motivational filler:** _amazing, incredible, awesome, fantastic._ Use a number or a fact.
 - **No "Hey there!" greetings** in SMS or email. Use the user's first name if known, or no greeting.
@@ -108,7 +108,7 @@ Email is for richer content (welcome messages, certificates, weekly digests). Th
 
 The most formal Tierra surface. Voice tightens; no first-person.
 
-- Certificates use `This certifies that …` / `Se certifica que …` — Roman serif Fraunces, full names, ISO date in the sealed footer.
+- Certificates use `This certifies that …` / `Se certifica que …` — Inter at display weight 600–700 with negative tracking, full names, ISO date in the sealed footer.
 - Reports addressed to funders/agencies use neutral, evidence-forward sentences. Never "we crushed our targets"; instead "84% of placements retained at 90 days."
 
 ## Empty states

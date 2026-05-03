@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle as faGoogleBrand } from '@fortawesome/free-brands-svg-icons';
 import { isEmail, normalizeUsPhone, clerkErrorMessage } from './authShared';
+import { Wordmark } from '@/components/primitives/Wordmark';
 
 type Step = 'identifier' | 'password' | 'verify';
 
@@ -71,15 +72,18 @@ export function SignInForm({ locale }: Props) {
     setError(null);
     try {
       const passwordResult = await signIn.password({ password });
-      if (passwordResult.error) throw passwordResult.error;
-      if (signIn.status !== 'complete') {
-        setError(tErrors('generic'));
-        return;
+      if (passwordResult.error) {
+        console.error('[sign-in] password error', passwordResult.error);
+        throw passwordResult.error;
       }
       const finalizeResult = await signIn.finalize();
-      if (finalizeResult.error) throw finalizeResult.error;
+      if (finalizeResult.error) {
+        console.error('[sign-in] finalize error', finalizeResult.error);
+        throw finalizeResult.error;
+      }
       router.replace(postAuthHref);
     } catch (e) {
+      console.error('[sign-in] submitPassword caught', e);
       setError(clerkErrorMessage(e, tErrors('generic')));
     } finally {
       setSubmitting(false);
@@ -92,15 +96,21 @@ export function SignInForm({ locale }: Props) {
     setError(null);
     try {
       const verifyResult = await signIn.phoneCode.verifyCode({ code: code.trim() });
-      if (verifyResult.error) throw verifyResult.error;
-      if (signIn.status !== 'complete') {
-        setError(tErrors('generic'));
-        return;
+      if (verifyResult.error) {
+        const msg = String(verifyResult.error?.message ?? '');
+        if (!/already.*verified/i.test(msg)) {
+          console.error('[sign-in] verifyCode error', verifyResult.error);
+          throw verifyResult.error;
+        }
       }
       const finalizeResult = await signIn.finalize();
-      if (finalizeResult.error) throw finalizeResult.error;
+      if (finalizeResult.error) {
+        console.error('[sign-in] finalize error', finalizeResult.error);
+        throw finalizeResult.error;
+      }
       router.replace(postAuthHref);
     } catch (e) {
+      console.error('[sign-in] verifyCode caught', e);
       setError(clerkErrorMessage(e, tErrors('invalid_code')));
     } finally {
       setSubmitting(false);
@@ -135,9 +145,9 @@ export function SignInForm({ locale }: Props) {
         <p className="text-base-content/60 font-mono text-[10px] font-bold uppercase tracking-[0.18em]">
           {t('eyebrow')}
         </p>
-        <h1 className="font-display mt-2 text-3xl font-light leading-tight tracking-tight">
-          {t('title_a')}{' '}
-          <em className="text-primary not-italic font-light">{t('title_b')}</em>
+        <h1 className="font-display mt-2 flex flex-wrap items-baseline gap-x-2 text-3xl font-light leading-tight tracking-tight">
+          <span>{t('title_a')}</span>
+          <Wordmark size="lg" tone="moss" />
         </h1>
         <p className="text-base-content/65 mt-2 text-sm leading-relaxed">{t('subtitle')}</p>
       </div>

@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getCurrentPayrollPeriod, listPayrollLines } from '@/lib/api/employer-ops';
+import {
+  getCurrentPayrollPeriod,
+  getPayrollSeasonToDate,
+  listPayrollLines,
+} from '@/lib/api/employer-ops';
 import { PayrollActions } from '@/components/employer/payroll/PayrollActions';
 import { PayrollLineRow } from '@/components/employer/payroll/PayrollLineRow';
 
@@ -17,7 +21,10 @@ export default async function PayrollPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.payroll' });
   const period = await getCurrentPayrollPeriod();
-  const lines = await listPayrollLines(period.id);
+  const [lines, season] = await Promise.all([
+    listPayrollLines(period.id),
+    getPayrollSeasonToDate(),
+  ]);
 
   const fmtCents = (c: number, withSign = false) => {
     const n = c / 100;
@@ -29,7 +36,7 @@ export default async function PayrollPage({ params }: Props) {
   };
 
   return (
-    <div className="px-8 pb-16 pt-8">
+    <div className="px-5 md:px-8 lg:px-20 pb-16 pt-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -45,7 +52,7 @@ export default async function PayrollPage({ params }: Props) {
             {t('summary', {
               workers: period.totals.workers,
               hours: period.totals.hours.toLocaleString(),
-              bonuses: 124,
+              bonuses: lines.filter((l) => l.bonusCents > 0).length,
             })}
           </div>
         </div>
@@ -88,32 +95,43 @@ export default async function PayrollPage({ params }: Props) {
               {t('season_to_date')}
             </div>
             <div className="text-primary font-display mt-2 text-3xl font-light tracking-tight">
-              $284,108
+              {fmtCents(season.netCents)}
             </div>
             <div className="text-base-content/60 text-xs">
-              {t('season_to_date_sub', { periods: 14, workers: 41 })}
+              {t('season_to_date_sub', {
+                periods: season.periods,
+                workers: season.uniqueWorkers,
+              })}
             </div>
-            <div className="mt-4 flex h-8 gap-1">
-              {[42, 56, 48, 64, 72, 58, 66, 74, 82, 78, 86, 92, 88, 100].map((v, i) => (
-                <div key={i} className="flex flex-1 items-end">
-                  <div
-                    className={[
-                      'w-full rounded-sm',
-                      i === 13 ? 'bg-accent' : 'bg-primary',
-                    ].join(' ')}
-                    style={{ height: `${v}%`, opacity: i === 13 ? 1 : 0.3 + i * 0.05 }}
-                  />
-                </div>
-              ))}
-            </div>
+            {season.perPeriod.length > 0 && (
+              <div className="mt-4 flex h-8 items-end gap-1">
+                {(() => {
+                  const max = Math.max(...season.perPeriod.map((p) => p.netCents), 1);
+                  return season.perPeriod.map((p, i) => {
+                    const h = Math.max(8, Math.round((p.netCents / max) * 100));
+                    return (
+                      <div key={i} className="flex flex-1 items-end">
+                        <div
+                          className={[
+                            'w-full rounded-sm',
+                            p.isCurrent ? 'bg-accent' : 'bg-primary/60',
+                          ].join(' ')}
+                          style={{ height: `${h}%` }}
+                        />
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            )}
           </div>
           <div className="bg-accent text-accent-content rounded-2xl p-5">
             <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
               {t('h2a_eyebrow')}
             </div>
-            <div className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
+            <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
               {t('h2a_headline')}
-            </div>
+            </h2>
             <div className="mt-2 text-xs opacity-90">{t('h2a_sub')}</div>
           </div>
         </div>
@@ -121,9 +139,9 @@ export default async function PayrollPage({ params }: Props) {
 
       <section className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border">
         <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
-          <div className="font-display text-xl font-light tracking-tight">{t('table.title')}</div>
+          <h2 className="font-display text-xl font-light tracking-tight">{t('table.title')}</h2>
           <div className="text-base-content/60 text-xs">
-            {t('table.showing', { n: lines.length, total: 26 })} ·{' '}
+            {t('table.showing', { n: lines.length, total: lines.length })} ·{' '}
             <a className="text-primary font-semibold">{t('table.view_all')} →</a>
           </div>
         </div>
@@ -153,8 +171,9 @@ export default async function PayrollPage({ params }: Props) {
 }
 
 function shortDate(iso: string, locale: string): string {
+  const [y = 0, m = 1, d = 1] = iso.split('-').map(Number);
   return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
     month: 'short',
     day: 'numeric',
-  }).format(new Date(iso));
+  }).format(new Date(y, m - 1, d));
 }

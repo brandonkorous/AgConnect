@@ -1,4 +1,5 @@
 export * from './common';
+export * from './address';
 export * from './resume';
 export * from './worker';
 export * from './jobs';
