@@ -1,0 +1,90 @@
+[
+  {
+    "id": "99529615-cf16-43ed-bd76-fd42878c444c",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "kind": "screening_changed",
+    "fieldPath": null,
+    "before": {},
+    "after": {
+      "count": 1
+    },
+    "renotifyDispatchedAt": null,
+    "createdAt": "2026-05-03T21:15:48.082Z"
+  },
+  {
+    "id": "00e06b1b-83cd-4c95-b8f2-ddaab999df4d",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "kind": "field_changed",
+    "fieldPath": "wageMin",
+    "before": {
+      "wageMin": "19.5"
+    },
+    "after": {
+      "wageMin": "20"
+    },
+    "renotifyDispatchedAt": null,
+    "createdAt": "2026-05-03T21:39:38.575Z"
+  },
+  {
+    "id": "bd98c0d2-07ab-42e6-b807-af384e72856a",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "kind": "screening_changed",
+    "fieldPath": null,
+    "before": {},
+    "after": {
+      "count": 1
+    },
+    "renotifyDispatchedAt": null,
+    "createdAt": "2026-05-03T21:39:38.615Z"
+  },
+  {
+    "id": "b7b7d99b-32ec-43bd-ad95-0d62bf741db0",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "kind": "field_changed",
+    "fieldPath": "wageMax",
+    "before": {
+      "wageMax": "22"
+    },
+    "after": {
+      "wageMax": "23"
+    },
+    "renotifyDispatchedAt": "2026-05-03T21:46:52.575Z",
+    "createdAt": "2026-05-03T21:46:52.569Z"
+  },
+  {
+    "id": "0f950bed-6ab2-4d08-9c62-d2adec6f391e",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "kind": "screening_changed",
+    "fieldPath": null,
+    "before": {},
+    "after": {
+      "count": 1
+    },
+    "renotifyDispatchedAt": null,
+    "createdAt": "2026-05-03T21:46:52.629Z"
+  },
+  {
+    "id": "9edce613-b746-4a54-b804-5a4413dac77c",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "37b685eb-cacc-4d80-ae9f-fdd36b544903",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "kind": "screening_changed",
+    "fieldPath": null,
+    "before": {},
+    "after": {
+      "count": 0
+    },
+    "renotifyDispatchedAt": null,
+    "createdAt": "2026-05-03T22:00:20.465Z"
+  }
+]

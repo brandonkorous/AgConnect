@@ -62,7 +62,7 @@ const SEND_OPTS = {
   retryLimit: 3,
   retryBackoff: true,
   retryDelay: 30,
-  expireInSeconds: 24 * 60 * 60,
+  expireInSeconds: 23 * 60 * 60,
 } as const;
 
 // Templates that bypass quiet-hours by default. Two-hour training reminders

@@ -30,6 +30,13 @@
   --radius-field:    9999px;
   --radius-box:      1rem;
 
+  /* Tierra elevation tokens — see docs/brand/04-spacing-layout.md.
+     Use --shadow-card for product-card lift, --shadow-pop for modals/menus,
+     --shadow-hi for elevated heroes only. */
+  --shadow-card: 0 1px 2px rgba(28,28,26,0.06), 0 1px 1px rgba(28,28,26,0.04);
+  --shadow-pop:  0 12px 24px -8px rgba(28,28,26,0.18), 0 4px 8px -4px rgba(28,28,26,0.10);
+  --shadow-hi:   0 24px 48px -12px rgba(28,28,26,0.25), 0 8px 16px -6px rgba(28,28,26,0.12);
+
   --size-selector: 0.25rem;
   --size-field:    0.25rem;
 

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "44f01be8-25db-4e89-a2a4-fd5abedc9888",
+    "slug": "harvest_crew",
+    "labelEn": "Harvest crew",
+    "labelEs": "Cuadrilla de cosecha",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.755Z",
+    "updatedAt": "2026-05-03T21:35:23.847Z"
+  },
+  {
+    "id": "c6e7f09f-de83-4da8-b5c3-17227a5f0d7a",
+    "slug": "orchard_setup",
+    "labelEn": "Vineyard / orchard setup",
+    "labelEs": "Preparación de viñedo / huerto",
+    "sortOrder": 1,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.757Z",
+    "updatedAt": "2026-05-03T21:35:23.849Z"
+  },
+  {
+    "id": "be53a17e-ff1f-4293-888d-01edbe61c0d4",
+    "slug": "sort_pack",
+    "labelEn": "Sort line / packing",
+    "labelEs": "Línea de selección / empaque",
+    "sortOrder": 2,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.759Z",
+    "updatedAt": "2026-05-03T21:35:23.851Z"
+  },
+  {
+    "id": "63d8c349-46f0-45c3-a338-e4321ad4f3ba",
+    "slug": "equipment_op",
+    "labelEn": "Equipment operator",
+    "labelEs": "Operador de equipo",
+    "sortOrder": 3,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.760Z",
+    "updatedAt": "2026-05-03T21:35:23.852Z"
+  },
+  {
+    "id": "e3680173-df42-42e4-ac47-e7b8ce86acb3",
+    "slug": "foreman_lead",
+    "labelEn": "Foreman / lead",
+    "labelEs": "Mayordomo / líder",
+    "sortOrder": 4,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.761Z",
+    "updatedAt": "2026-05-03T21:35:23.854Z"
+  },
+  {
+    "id": "db047166-030e-494f-b1b4-5ccd2ab3b962",
+    "slug": "irrigation",
+    "labelEn": "Irrigation",
+    "labelEs": "Riego",
+    "sortOrder": 5,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.763Z",
+    "updatedAt": "2026-05-03T21:35:23.856Z"
+  },
+  {
+    "id": "578c629a-ffc9-47a9-abd0-1c4db9e6f713",
+    "slug": "pruning",
+    "labelEn": "Pruning",
+    "labelEs": "Poda",
+    "sortOrder": 6,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.764Z",
+    "updatedAt": "2026-05-03T21:35:23.857Z"
+  },
+  {
+    "id": "d74eb167-69b7-42c6-b4cc-08fd2bf2c8cc",
+    "slug": "general_labor",
+    "labelEn": "General labor",
+    "labelEs": "Labor general",
+    "sortOrder": 7,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.766Z",
+    "updatedAt": "2026-05-03T21:35:23.859Z"
+  }
+]

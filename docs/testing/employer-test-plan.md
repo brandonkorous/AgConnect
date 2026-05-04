@@ -687,8 +687,8 @@ These are the same root cause showing up across many routes — fixing the under
 ### Design audit (cross-cutting from rule changes during testing)
 
 **Container/full width sweep** — applied per the new "container or full" rule:
-- 17 working pages converted to `px-5 md:px-8 lg:px-20 pb-16 pt-8` (full-width with canonical responsive padding) — dashboard, jobs, jobs/new, jobs/[id], jobs/[id]/applicants, applications/[id], inbox, workers, workers/[id], crews, crews/new-shift, payroll, compliance, messages, reports, billing, profile
-- 1 confirmation page kept as `container mx-auto px-5 md:px-8 lg:px-20 pb-16 pt-8` — billing/success
+- 17 working pages converted to `px-5 pb-16 pt-8` (full-width with canonical responsive padding) — dashboard, jobs, jobs/new, jobs/[id], jobs/[id]/applicants, applications/[id], inbox, workers, workers/[id], crews, crews/new-shift, payroll, compliance, messages, reports, billing, profile
+- 1 confirmation page kept as `container mx-auto px-5 pb-16 pt-8` — billing/success
 - compliance/audit untouched (uses `max-w-[7in]` for printable letter-size legal binder; intentional fixed width)
 - Inner `mx-auto max-w-*` content wrappers removed from `workers/[id]`, `applications/[id]`, `billing/success`, `JobForm`, `NewShiftForm`, and the workers paywall
 - Remaining `max-w-*` instances are reading-width caps on `<p>` (allowed per CLAUDE.md), chat-bubble cap on `/messages` (component-level), and the print binder. Onboarding pages skipped per user direction.

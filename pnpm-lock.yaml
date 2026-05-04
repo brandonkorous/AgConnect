@@ -13,9 +13,6 @@ importers:
       '@agconn/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@agconn/db':
-        specifier: workspace:*
-        version: link:../../packages/db
       '@agconn/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas

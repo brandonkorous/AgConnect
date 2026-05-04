@@ -1,0 +1,14 @@
+[
+  {
+    "id": "3137102e-9c12-4b22-a65c-5eb2d63bacf5",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "shiftId": "c60daef4-c173-470e-8248-5e7bccb2ca50",
+    "workerUserId": "test_worker_1777844344062",
+    "status": "assigned",
+    "hoursWorked": null,
+    "piecesCount": null,
+    "pieceRateCents": null,
+    "createdAt": "2026-05-04T00:24:04.671Z",
+    "updatedAt": "2026-05-04T00:47:30.954Z"
+  }
+]

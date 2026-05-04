@@ -1,18 +1,16 @@
-'use client';
-
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import type { Route } from 'next';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NewCrewModal } from './NewCrewModal';
 
 type Props = {
   variant?: 'primary' | 'ghost' | 'cta';
 };
 
-export function NewCrewButton({ variant = 'ghost' }: Props) {
-  const t = useTranslations('employer.crews');
-  const [open, setOpen] = useState(false);
+export async function NewCrewButton({ variant = 'ghost' }: Props) {
+  const t = await getTranslations('employer.crews');
+  const locale = await getLocale();
 
   const className =
     variant === 'primary'
@@ -22,12 +20,9 @@ export function NewCrewButton({ variant = 'ghost' }: Props) {
         : 'btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium';
 
   return (
-    <>
-      <button type="button" onClick={() => setOpen(true)} className={className}>
-        <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
-        {t('new_crew_label')}
-      </button>
-      <NewCrewModal open={open} onClose={() => setOpen(false)} />
-    </>
+    <Link href={`/${locale}/employer/crews/new` as Route} className={className}>
+      <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
+      {t('new_crew_label')}
+    </Link>
   );
 }

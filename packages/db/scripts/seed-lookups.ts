@@ -62,12 +62,14 @@ const SKILLS: SkillSeed[] = [
   // Tasks
   { slug: 'pre_shake',      labelEn: 'Pre-shake',         labelEs: 'Pre-vareo',       category: 'task' },
   { slug: 'hand_harvest',   labelEn: 'Hand harvest',      labelEs: 'Cosecha a mano',  category: 'task' },
+  { slug: 'harvesting',     labelEn: 'Harvesting',        labelEs: 'Cosecha',         category: 'task' },
   { slug: 'pruning',        labelEn: 'Pruning',           labelEs: 'Poda',            category: 'task' },
   { slug: 'thinning',       labelEn: 'Thinning',          labelEs: 'Aclareo',         category: 'task' },
   { slug: 'packing',        labelEn: 'Packing',           labelEs: 'Empaque',         category: 'task' },
   { slug: 'sort_line',      labelEn: 'Sort line',         labelEs: 'Línea de selección', category: 'task' },
   { slug: 'irrigation',     labelEn: 'Irrigation',        labelEs: 'Riego',           category: 'task' },
   { slug: 'planting',       labelEn: 'Planting',          labelEs: 'Plantación',      category: 'task' },
+  { slug: 'crew_leadership', labelEn: 'Crew leadership',  labelEs: 'Liderazgo de cuadrilla', category: 'task' },
   // Equipment
   { slug: 'forklift',       labelEn: 'Forklift',          labelEs: 'Montacargas',     category: 'equipment' },
   { slug: 'tractor_op',     labelEn: 'Tractor op.',       labelEs: 'Operador de tractor', category: 'equipment' },

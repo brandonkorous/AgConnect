@@ -101,6 +101,11 @@ export const smsTemplates = {
     es: "No encontramos un trabajo con '{keyword}'. Busca en agconn.com/jobs.",
     vars: ['keyword'] as const,
   }),
+  'worker.shift.updated': def({
+    en: 'Shift updated: {shiftDate} at {startTime} · {location}. Open your AgConn schedule for details.',
+    es: 'Turno actualizado: {shiftDate} a las {startTime} · {location}. Revisa tu horario en AgConn.',
+    vars: ['shiftDate', 'startTime', 'location'] as const,
+  }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;

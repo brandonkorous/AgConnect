@@ -1,10 +1,18 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { ShiftStatus, ShiftAssignmentStatus, AppStatus, type Tx } from '@agconn/db';
+import {
+  ShiftStatus,
+  ShiftAssignmentStatus,
+  ShiftType,
+  AppStatus,
+  type Tx,
+} from '@agconn/db';
+import { enqueueSms } from '@agconn/sms';
 import {
   ShiftQuery,
   CreateShiftBody,
   PatchShiftBody,
+  DuplicateShiftBody,
   AssignWorkerBody,
   PatchAssignmentBody,
 } from '@agconn/schemas';
@@ -155,21 +163,30 @@ employerShiftsRoutes.post('/', validate('json', CreateShiftBody), async (c) => {
   }
 
   const created = await c.var.db.$transaction(async (tx) => {
-    const shift = await tx.shift.create({
-      data: {
-        tenantId,
-        employerId: userId,
-        crewId: body.crewId ?? null,
-        jobId: body.jobId ?? null,
-        shiftDate: new Date(body.shiftDate),
-        startTime: body.startTime,
-        endTime: body.endTime ?? null,
-        locationLabel: body.locationLabel,
-        locationLat: body.locationLat ?? null,
-        locationLng: body.locationLng ?? null,
-        notes: body.notes ?? null,
-      },
-    });
+    const baseData = {
+      tenantId,
+      employerId: userId,
+      crewId: body.crewId ?? null,
+      jobId: body.jobId ?? null,
+      startTime: body.startTime,
+      endTime: body.endTime ?? null,
+      locationLabel: body.locationLabel,
+      locationLat: body.locationLat ?? null,
+      locationLng: body.locationLng ?? null,
+      shiftType: (body.shiftType ?? 'work') as ShiftType,
+      metadata: (body.metadata ?? {}) as object,
+      notes: body.notes ?? null,
+    };
+    const dates = [body.shiftDate, ...(body.repeatDates ?? [])].filter(
+      (d, i, arr) => arr.indexOf(d) === i,
+    );
+    const created = [] as Array<Awaited<ReturnType<typeof tx.shift.create>>>;
+    for (const d of dates) {
+      const shift = await tx.shift.create({
+        data: { ...baseData, shiftDate: new Date(d) },
+      });
+      created.push(shift);
+    }
 
     if (body.assignWorkerUserIds && body.assignWorkerUserIds.length > 0) {
       const checked = await Promise.all(
@@ -179,13 +196,15 @@ employerShiftsRoutes.post('/', validate('json', CreateShiftBody), async (c) => {
         }),
       );
       const valid = checked.filter((x): x is string => Boolean(x));
-      for (const wId of valid) {
-        await tx.shiftAssignment.create({
-          data: { tenantId, shiftId: shift.id, workerUserId: wId },
-        });
+      for (const shift of created) {
+        for (const wId of valid) {
+          await tx.shiftAssignment.create({
+            data: { tenantId, shiftId: shift.id, workerUserId: wId },
+          });
+        }
       }
     }
-    return shift;
+    return created[0]!;
   });
 
   await c.var.audit.log({
@@ -263,9 +282,17 @@ employerShiftsRoutes.patch('/:id', validate('json', PatchShiftBody), async (c) =
   });
   if (!existing) return err(c, 404, 'not_found');
 
+  if (body.crewId) {
+    const crew = await c.var.db.crew.findFirst({
+      where: { id: body.crewId, employerId: userId, tenantId, deletedAt: null },
+    });
+    if (!crew) return err(c, 422, 'crew_not_found');
+  }
+
   const updated = await c.var.db.shift.update({
     where: { id },
     data: {
+      crewId: body.crewId === null ? null : (body.crewId ?? undefined),
       shiftDate: body.shiftDate ? new Date(body.shiftDate) : undefined,
       startTime: body.startTime ?? undefined,
       endTime: body.endTime === null ? null : (body.endTime ?? undefined),
@@ -273,13 +300,52 @@ employerShiftsRoutes.patch('/:id', validate('json', PatchShiftBody), async (c) =
       locationLat: body.locationLat === null ? null : (body.locationLat ?? undefined),
       locationLng: body.locationLng === null ? null : (body.locationLng ?? undefined),
       status: body.status ?? undefined,
+      shiftType: (body.shiftType as ShiftType | undefined) ?? undefined,
+      metadata: body.metadata ? (body.metadata as object) : undefined,
       notes: body.notes === null ? null : (body.notes ?? undefined),
     },
     include: {
       crew: { select: { name: true } },
-      assignments: { select: { id: true, status: true } },
+      assignments: {
+        select: { id: true, status: true, workerUserId: true },
+      },
     },
   });
+
+  // Optional sibling-shift expansion: spawn new shifts on each repeatDate
+  // mirroring the just-saved values. Skip dates that already exist for this
+  // crew at the same start time.
+  if (body.repeatDates && body.repeatDates.length > 0) {
+    for (const d of body.repeatDates) {
+      const exists = await c.var.db.shift.findFirst({
+        where: {
+          employerId: userId,
+          tenantId,
+          crewId: updated.crewId,
+          shiftDate: new Date(d),
+          startTime: updated.startTime,
+        },
+      });
+      if (exists) continue;
+      await c.var.db.shift.create({
+        data: {
+          tenantId,
+          employerId: userId,
+          crewId: updated.crewId,
+          jobId: updated.jobId,
+          shiftDate: new Date(d),
+          startTime: updated.startTime,
+          endTime: updated.endTime,
+          locationLabel: updated.locationLabel,
+          locationLat: updated.locationLat,
+          locationLng: updated.locationLng,
+          shiftType: updated.shiftType,
+          metadata: updated.metadata as object,
+          notes: updated.notes,
+        },
+      });
+    }
+  }
 
   if (body.status === ShiftStatus.cancelled) {
     await c.var.audit.log({
@@ -295,6 +361,34 @@ employerShiftsRoutes.patch('/:id', validate('json', PatchShiftBody), async (c) =
     });
   }
 
+  if (body.notifyCrew && updated.assignments.length > 0) {
+    const dateStr = updated.shiftDate.toISOString().slice(0, 10);
+    for (const a of updated.assignments) {
+      // Idempotent on (jobKey) — re-saving a shift twice within the same
+      // minute won't re-blast SMS. The minute granularity is intentional:
+      // distinct edits a few seconds apart get the same notification, so we
+      // dedupe at the queue.
+      const key = `shift-update-${id}-${a.workerUserId}-${Date.now() / 60000 | 0}`;
+      try {
+        await enqueueSms({
+          tenantId,
+          userId: a.workerUserId,
+          template: 'worker.shift.updated',
+          vars: {
+            shiftDate: dateStr,
+            startTime: updated.startTime,
+            location: updated.locationLabel,
+          },
+          jobKey: key,
+        });
+      } catch (e) {
+        // Swallow: failed enqueue must not block the save. The audit log
+        // still records the edit.
+        console.error('shift-update SMS enqueue failed', { id, workerId: a.workerUserId, err: e });
+      }
+    }
+  }
+
   return ok(c, {
     shift: shapeShift(updated, {
       crewName: updated.crew?.name ?? null,
@@ -305,6 +399,73 @@ employerShiftsRoutes.patch('/:id', validate('json', PatchShiftBody), async (c) =
     }),
   });
 });
+
+employerShiftsRoutes.post(
+  '/:id/duplicate',
+  validate('json', DuplicateShiftBody),
+  async (c) => {
+    const userId = c.var.userId;
+    const tenantId = c.var.tenantId!;
+    const id = c.req.param('id');
+    const body = c.var.body;
+
+    const source = await c.var.db.shift.findFirst({
+      where: { id, employerId: userId, tenantId },
+    });
+    if (!source) return err(c, 404, 'not_found');
+
+    const targetCrewId = body.crewId === undefined ? source.crewId : body.crewId;
+    if (targetCrewId) {
+      const crew = await c.var.db.crew.findFirst({
+        where: { id: targetCrewId, employerId: userId, tenantId, deletedAt: null },
+      });
+      if (!crew) return err(c, 422, 'crew_not_found');
+    }
+
+    const created = await c.var.db.shift.create({
+      data: {
+        tenantId,
+        employerId: userId,
+        crewId: targetCrewId,
+        jobId: source.jobId,
+        shiftDate: new Date(body.shiftDate),
+        startTime: source.startTime,
+        endTime: source.endTime,
+        locationLabel: source.locationLabel,
+        locationLat: source.locationLat,
+        locationLng: source.locationLng,
+        shiftType: source.shiftType,
+        metadata: source.metadata as object,
+        notes: source.notes,
+      },
+      include: {
+        crew: { select: { name: true } },
+        assignments: { select: { id: true, status: true } },
+      },
+    });
+
+    await c.var.audit.log({
+      action: 'employer.shift.created',
+      resourceId: created.id,
+      metadata: {
+        shiftId: created.id,
+        sourceShiftId: id,
+        shiftDate: created.shiftDate.toISOString().slice(0, 10),
+      },
+    });
+
+    return ok(c, {
+      shift: shapeShift(created, {
+        crewName: created.crew?.name ?? null,
+        assignedCount: created.assignments.length,
+        confirmedCount: created.assignments.filter((a) =>
+          a.status === ShiftAssignmentStatus.confirmed ||
+          a.status === ShiftAssignmentStatus.completed,
+        ).length,
+      }),
+    });
+  },
+);
 
 employerShiftsRoutes.delete('/:id', async (c) => {
   const userId = c.var.userId;

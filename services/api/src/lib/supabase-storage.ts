@@ -3,15 +3,20 @@
 // scoping honest.
 //
 // Multi-tenancy model: ONE bucket per resource type, with the tenant_id as the
-// first path segment. Every key is `<tenantId>/<jobId>/<random>.<ext>`. RLS in
-// the bucket filters reads/writes to paths starting with the caller's tenant
-// prefix, so cross-tenant leakage is impossible at the storage layer. Bucket
-// names are code-controlled (not env) so they don't drift between deploys.
+// first path segment. Every key is `<tenantId>/<scopeId>/<random>.<ext>`. RLS
+// in the bucket filters reads/writes to paths starting with the caller's
+// tenant prefix, so cross-tenant leakage is impossible at the storage layer.
+//
+// Bucket privacy:
+//   - job-photos: PUBLIC (rendered in marketing surfaces, no PII).
+//   - compliance-evidence: PRIVATE (I-9s, signed audit binders — PII/SSN).
+//     Always served via short-lived signed URLs through the API.
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const BUCKETS = {
   jobPhotos: 'job-photos',
+  complianceEvidence: 'compliance-evidence',
 } as const;
 
 let cached: SupabaseClient | null = null;
@@ -31,6 +36,88 @@ export function jobPhotoBucket(): string {
   return BUCKETS.jobPhotos;
 }
 
+export function complianceEvidenceBucket(): string {
+  return BUCKETS.complianceEvidence;
+}
+
+// ─────────────────────────────────────────────────── Generic primitives
+
+type UploadArgs = {
+  bucket: string;
+  storageKey: string;
+  contentType: string;
+  body: ArrayBuffer | Buffer | Uint8Array;
+  upsert?: boolean;
+  cacheControl?: string;
+};
+
+async function uploadToBucket(args: UploadArgs): Promise<void> {
+  const client = getClient();
+  const { error } = await client.storage.from(args.bucket).upload(args.storageKey, args.body, {
+    contentType: args.contentType,
+    upsert: args.upsert ?? false,
+    cacheControl: args.cacheControl ?? '31536000',
+  });
+  if (error) throw new Error(`supabase_upload_failed: ${error.message}`);
+}
+
+async function deleteFromBucket(bucket: string, storageKey: string): Promise<void> {
+  const client = getClient();
+  const { error } = await client.storage.from(bucket).remove([storageKey]);
+  if (error && !/Not Found/i.test(error.message)) {
+    throw new Error(`supabase_delete_failed: ${error.message}`);
+  }
+}
+
+function publicUrl(bucket: string, storageKey: string): string {
+  const client = getClient();
+  return client.storage.from(bucket).getPublicUrl(storageKey).data.publicUrl;
+}
+
+async function signedUrl(bucket: string, storageKey: string, expiresInSeconds: number): Promise<string> {
+  const client = getClient();
+  const { data, error } = await client.storage
+    .from(bucket)
+    .createSignedUrl(storageKey, expiresInSeconds);
+  if (error || !data) throw new Error(`supabase_sign_failed: ${error?.message ?? 'unknown'}`);
+  return data.signedUrl;
+}
+
+function cryptoRandomKey(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function inferExtFromImage(fileName: string, contentType: string): string {
+  const dot = fileName.lastIndexOf('.');
+  if (dot > 0 && dot < fileName.length - 1) return fileName.slice(dot).toLowerCase();
+  switch (contentType.toLowerCase()) {
+    case 'image/jpeg': return '.jpg';
+    case 'image/png':  return '.png';
+    case 'image/webp': return '.webp';
+    case 'image/heic': return '.heic';
+    case 'image/heif': return '.heif';
+    default: return '';
+  }
+}
+
+function inferExtFromEvidence(fileName: string, contentType: string): string {
+  const dot = fileName.lastIndexOf('.');
+  if (dot > 0 && dot < fileName.length - 1) return fileName.slice(dot).toLowerCase();
+  switch (contentType.toLowerCase()) {
+    case 'application/pdf': return '.pdf';
+    case 'image/jpeg':      return '.jpg';
+    case 'image/png':       return '.png';
+    case 'image/webp':      return '.webp';
+    case 'image/heic':      return '.heic';
+    case 'image/heif':      return '.heif';
+    default: return '';
+  }
+}
+
+// ─────────────────────────────────────────────────── Job photos (public bucket)
+
 export type UploadJobPhotoArgs = {
   tenantId: string;
   jobId: string;
@@ -44,37 +131,24 @@ export type UploadJobPhotoResult = {
   publicUrl: string;
 };
 
-// Path layout: <bucket>/<tenant>/<job>/<random>.<ext>. Tenant prefix lets us
-// scope deletes when a tenant is offboarded, and keeps signed URLs cleanly
-// scoped per-tenant if we ever flip the bucket private.
 export async function uploadJobPhoto(args: UploadJobPhotoArgs): Promise<UploadJobPhotoResult> {
-  const client = getClient();
   const bucket = jobPhotoBucket();
-  const ext = inferExt(args.fileName, args.contentType);
-  const random = cryptoRandomKey();
-  const storageKey = `${args.tenantId}/${args.jobId}/${random}${ext}`;
-
-  const { error } = await client.storage.from(bucket).upload(storageKey, args.body, {
+  const ext = inferExtFromImage(args.fileName, args.contentType);
+  const storageKey = `${args.tenantId}/${args.jobId}/${cryptoRandomKey()}${ext}`;
+  await uploadToBucket({
+    bucket,
+    storageKey,
     contentType: args.contentType,
-    upsert: false,
-    cacheControl: '31536000', // 1y immutable
+    body: args.body,
   });
-  if (error) throw new Error(`supabase_upload_failed: ${error.message}`);
-
-  const { data } = client.storage.from(bucket).getPublicUrl(storageKey);
-  return { storageKey, publicUrl: data.publicUrl };
+  return { storageKey, publicUrl: publicUrl(bucket, storageKey) };
 }
 
 export async function deleteJobPhoto(storageKey: string): Promise<void> {
-  const client = getClient();
-  const bucket = jobPhotoBucket();
-  const { error } = await client.storage.from(bucket).remove([storageKey]);
-  if (error && !/Not Found/i.test(error.message)) {
-    throw new Error(`supabase_delete_failed: ${error.message}`);
-  }
+  await deleteFromBucket(jobPhotoBucket(), storageKey);
 }
 
-const ALLOWED_TYPES = new Set([
+const ALLOWED_PHOTO_TYPES = new Set([
   'image/jpeg',
   'image/png',
   'image/webp',
@@ -83,24 +157,59 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 export function isAllowedPhotoType(contentType: string): boolean {
-  return ALLOWED_TYPES.has(contentType.toLowerCase());
+  return ALLOWED_PHOTO_TYPES.has(contentType.toLowerCase());
 }
 
-function inferExt(fileName: string, contentType: string): string {
-  const dot = fileName.lastIndexOf('.');
-  if (dot > 0 && dot < fileName.length - 1) return fileName.slice(dot).toLowerCase();
-  switch (contentType.toLowerCase()) {
-    case 'image/jpeg': return '.jpg';
-    case 'image/png':  return '.png';
-    case 'image/webp': return '.webp';
-    case 'image/heic': return '.heic';
-    case 'image/heif': return '.heif';
-    default: return '';
-  }
+// ─────────────────────────────────────────────────── Compliance evidence (private bucket)
+
+export type UploadComplianceEvidenceArgs = {
+  tenantId: string;
+  itemId: string;
+  fileName: string;
+  contentType: string;
+  body: ArrayBuffer | Buffer | Uint8Array;
+};
+
+export type UploadComplianceEvidenceResult = {
+  storageKey: string;
+};
+
+export async function uploadComplianceEvidence(
+  args: UploadComplianceEvidenceArgs,
+): Promise<UploadComplianceEvidenceResult> {
+  const bucket = complianceEvidenceBucket();
+  const ext = inferExtFromEvidence(args.fileName, args.contentType);
+  const storageKey = `${args.tenantId}/${args.itemId}/${cryptoRandomKey()}${ext}`;
+  await uploadToBucket({
+    bucket,
+    storageKey,
+    contentType: args.contentType,
+    body: args.body,
+    cacheControl: '0', // PII — never cache
+  });
+  return { storageKey };
 }
 
-function cryptoRandomKey(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+export async function deleteComplianceEvidence(storageKey: string): Promise<void> {
+  await deleteFromBucket(complianceEvidenceBucket(), storageKey);
+}
+
+export async function signComplianceEvidenceUrl(
+  storageKey: string,
+  expiresInSeconds: number = 60,
+): Promise<string> {
+  return signedUrl(complianceEvidenceBucket(), storageKey, expiresInSeconds);
+}
+
+const ALLOWED_EVIDENCE_TYPES = new Set([
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+]);
+
+export function isAllowedEvidenceType(contentType: string): boolean {
+  return ALLOWED_EVIDENCE_TYPES.has(contentType.toLowerCase());
 }

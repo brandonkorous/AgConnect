@@ -1,0 +1,16 @@
+[
+  {
+    "id": "f6dd5e92-30d6-42cd-aef6-fbbdbad67621",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "employerId": "1c1c6564-08d2-40d7-9c3f-cd3f5c1989e6",
+    "action": "submitted",
+    "actorUserId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "notes": null,
+    "payload": {
+      "ein": "12-3456789",
+      "licenseType": "grower",
+      "flcLicenseNum": null
+    },
+    "createdAt": "2026-05-02T03:31:19.737Z"
+  }
+]

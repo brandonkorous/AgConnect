@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { CountyEnum, LocaleEnum } from './common';
 import { JobCardSchema } from './jobs';
+import { SKILL_SLUGS } from './skill-slugs';
+
+const SkillSlugEnum = z.enum(SKILL_SLUGS);
 
 const titleField = z.string().min(1).max(120);
 const descriptionField = z.string().min(20).max(5000);
@@ -148,15 +151,18 @@ export const CreateJobBody = z
     descriptionEn: descriptionField,
     descriptionEs: descriptionField,
     county: CountyEnum,
-    city: z.string().max(60).optional(),
-    zipCode: z.string().max(10).optional(),
+    // Allow null on optional fields so the JobForm's toApiBody can use a
+    // single shape for both create and patch (it sends `null` for cleared
+    // optional values).
+    city: z.string().max(60).nullable().optional(),
+    zipCode: z.string().max(10).nullable().optional(),
     wageMin: z.number().min(0).max(500),
     wageMax: z.number().min(0).max(500),
     wageUnit: z.enum(['hour', 'day', 'piece']).default('hour'),
     startDate: z.string().date(),
-    endDate: z.string().date().optional(),
-    applyBy: z.string().date().optional(),
-    skills: z.array(z.string().min(1).max(60)).max(15).default([]),
+    endDate: z.string().date().nullable().optional(),
+    applyBy: z.string().date().nullable().optional(),
+    skills: z.array(SkillSlugEnum).max(15).default([]),
     housing: z.boolean().default(false),
     transport: z.boolean().default(false),
     positionsTotal: z.number().int().min(1).max(500).default(1),
@@ -201,10 +207,15 @@ export const PatchJobBody = z
     startDate: z.string().date().optional(),
     endDate: z.string().date().nullable().optional(),
     applyBy: z.string().date().nullable().optional(),
-    skills: z.array(z.string().min(1).max(60)).max(15).optional(),
+    skills: z.array(SkillSlugEnum).max(15).optional(),
     housing: z.boolean().optional(),
     transport: z.boolean().optional(),
     positionsTotal: z.number().int().min(1).max(500).optional(),
+    // Renotify gate. `undefined` = server-decides (back-compat: enqueues iff
+    // active job has material diff + active applicants). `true` = same as
+    // undefined but explicit. `false` = suppress queue even when material diff
+    // exists (the "Save & don't notify" save-bar action).
+    notifyApplicants: z.boolean().optional(),
     ...editJobV2Fields,
   })
   .strict();
@@ -310,7 +321,14 @@ export const EmployerJobsResponse = z.object({
 
 export const MatchPreviewQuery = z
   .object({
-    skills: z.array(z.string()).max(15).optional(),
+    // Hono's query parser collapses a single repeated param ("?skills=foo") to
+    // a string and only widens to an array on 2+ values. Accept either and
+    // normalize to an array so the route always sees a list.
+    skills: z
+      .union([z.string(), z.array(z.string())])
+      .optional()
+      .transform((v) => (v == null ? [] : Array.isArray(v) ? v : [v]))
+      .pipe(z.array(z.string()).max(15)),
     minExperience: MinExperienceEnum.optional(),
     minAge: MinAgeEnum.optional(),
     county: CountyEnum.optional(),

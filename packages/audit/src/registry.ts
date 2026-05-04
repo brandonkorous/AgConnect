@@ -333,6 +333,21 @@ export const auditRegistry = {
     retentionDays: 2555,
     metadata: ['itemId', 'fields'],
   },
+  'employer.compliance.item.deleted': {
+    resourceType: 'compliance_item',
+    retentionDays: 2555,
+    metadata: ['itemId', 'label'],
+  },
+  'employer.compliance.item.evidence.uploaded': {
+    resourceType: 'compliance_item',
+    retentionDays: 2555,
+    metadata: ['itemId', 'fileName', 'size', 'contentType'],
+  },
+  'employer.compliance.item.evidence.removed': {
+    resourceType: 'compliance_item',
+    retentionDays: 2555,
+    metadata: ['itemId'],
+  },
   'employer.message.conversation.created': {
     resourceType: 'conversation',
     retentionDays: 1460,

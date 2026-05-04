@@ -1,0 +1,16 @@
+[
+  {
+    "id": "d659f48f-6dd4-4743-a763-8350262ea501",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "employerId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "startDate": "2026-04-27T00:00:00.000Z",
+    "endDate": "2026-05-03T00:00:00.000Z",
+    "payDate": "2026-05-08T00:00:00.000Z",
+    "status": "draft",
+    "approvedAt": null,
+    "approvedById": null,
+    "paidAt": null,
+    "createdAt": "2026-05-02T03:31:19.759Z",
+    "updatedAt": "2026-05-02T03:31:19.759Z"
+  }
+]

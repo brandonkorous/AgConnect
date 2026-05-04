@@ -1,0 +1,32 @@
+[
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "slug": "public",
+    "name": "AgConn Public",
+    "isPublic": true,
+    "settings": {},
+    "createdAt": "2026-04-30T07:28:38.760Z",
+    "updatedAt": "2026-04-30T07:28:38.760Z",
+    "deletedAt": null
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "slug": "system",
+    "name": "System",
+    "isPublic": false,
+    "settings": {},
+    "createdAt": "2026-05-01T03:41:02.217Z",
+    "updatedAt": "2026-05-01T03:41:02.217Z",
+    "deletedAt": null
+  },
+  {
+    "id": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "slug": "korous-family-farms-llc-r7r7tw",
+    "name": "Korous Farms",
+    "isPublic": false,
+    "settings": {},
+    "createdAt": "2026-05-02T03:31:19.720Z",
+    "updatedAt": "2026-05-02T03:31:19.720Z",
+    "deletedAt": null
+  }
+]

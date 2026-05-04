@@ -51,6 +51,7 @@ export {
   RejectionReason,
   CrewMemberRole,
   ShiftStatus,
+  ShiftType,
   ShiftAssignmentStatus,
   PayrollPeriodStatus,
   ComplianceItemStatus,
@@ -114,3 +115,13 @@ export type {
 
 export type Db = PrismaClient;
 export type Tx = PrismaNS.TransactionClient;
+
+// Compliance instruction content lives in the DB (table:
+// compliance_item_content). The TS seed file is retained for re-seeding
+// fresh environments and is exported as `_COMPLIANCE_CONTENT_SEED` for the
+// seed script only — runtime callers must read from the DB.
+export {
+  COMPLIANCE_ITEM_CONTENT as _COMPLIANCE_CONTENT_SEED,
+  type ComplianceItemContent,
+  type LocalizedString,
+} from '../seed-data/compliance-item-content.js';

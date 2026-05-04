@@ -49,18 +49,35 @@ export type EditEventArgs = {
   after: JobLikeShape;
   status: 'draft' | 'active' | 'closed' | 'filled';
   employerName: string;
+  // Renotify gate: undefined = auto (queue when status is active + material
+  // diff + active applicants); true = same as undefined but explicit; false =
+  // suppress queue even when material diff exists. Wired from the save-bar's
+  // "Save & don't notify" / "Save & notify crew" choice.
+  notifyApplicants?: boolean;
 };
 
 export type EditEventResult = {
   changedFields: string[];
   eventId: string | null;
   renotificationsQueued: number;
+  // True when notifyApplicants === false suppressed a queue that would
+  // otherwise have fired (active job + material diff + active applicants).
+  // Lets the UI confirm "Saved without notifying — N applicants will not see
+  // the changes."
+  renotificationsSuppressed: boolean;
+  suppressedRecipientCount: number;
 };
 
 export async function recordEditAndMaybeRenotify(args: EditEventArgs): Promise<EditEventResult> {
   const changed = diffMaterialFields(args.before, args.after);
   if (changed.length === 0) {
-    return { changedFields: [], eventId: null, renotificationsQueued: 0 };
+    return {
+      changedFields: [],
+      eventId: null,
+      renotificationsQueued: 0,
+      renotificationsSuppressed: false,
+      suppressedRecipientCount: 0,
+    };
   }
 
   const event = await args.tx.jobEditEvent.create({
@@ -76,7 +93,13 @@ export async function recordEditAndMaybeRenotify(args: EditEventArgs): Promise<E
   });
 
   if (args.status !== 'active') {
-    return { changedFields: changed, eventId: event.id, renotificationsQueued: 0 };
+    return {
+      changedFields: changed,
+      eventId: event.id,
+      renotificationsQueued: 0,
+      renotificationsSuppressed: false,
+      suppressedRecipientCount: 0,
+    };
   }
 
   const apps = await args.tx.application.findMany({
@@ -89,7 +112,23 @@ export async function recordEditAndMaybeRenotify(args: EditEventArgs): Promise<E
   });
 
   if (apps.length === 0) {
-    return { changedFields: changed, eventId: event.id, renotificationsQueued: 0 };
+    return {
+      changedFields: changed,
+      eventId: event.id,
+      renotificationsQueued: 0,
+      renotificationsSuppressed: false,
+      suppressedRecipientCount: 0,
+    };
+  }
+
+  if (args.notifyApplicants === false) {
+    return {
+      changedFields: changed,
+      eventId: event.id,
+      renotificationsQueued: 0,
+      renotificationsSuppressed: true,
+      suppressedRecipientCount: apps.length,
+    };
   }
 
   // Persist the queue rows transactionally — the consumer flips status to sent
@@ -131,7 +170,13 @@ export async function recordEditAndMaybeRenotify(args: EditEventArgs): Promise<E
     ),
   );
 
-  return { changedFields: changed, eventId: event.id, renotificationsQueued: apps.length };
+  return {
+    changedFields: changed,
+    eventId: event.id,
+    renotificationsQueued: apps.length,
+    renotificationsSuppressed: false,
+    suppressedRecipientCount: 0,
+  };
 }
 
 function diffMaterialFields(before: JobLikeShape, after: JobLikeShape): string[] {

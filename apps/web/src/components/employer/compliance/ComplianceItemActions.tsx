@@ -8,9 +8,21 @@ import { faPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
+import { EvidenceField } from '@/components/employer/compliance/EvidenceField';
+import { ComplianceInstructionsSidebar } from '@/components/employer/compliance/ComplianceInstructionsSidebar';
+import type {
+  ComplianceEvidenceView,
+  ComplianceInstructionsView,
+} from '@/lib/api/employer-ops';
 
 const CATEGORIES = ['documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', 'custom'] as const;
 const STATUSES = ['ok', 'warn', 'fail'] as const;
+
+function toIsoNoonUtc(yyyymmdd: string): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(yyyymmdd)) return null;
+  const d = new Date(`${yyyymmdd}T12:00:00.000Z`);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
 
 export function NewComplianceItemButton() {
   const t = useTranslations('employer.compliance.new_item');
@@ -21,9 +33,9 @@ export function NewComplianceItemButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
+        className="btn bg-base-100 border-base-300 rounded-full border font-medium"
       >
-        <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
+        <FontAwesomeIcon icon={faPlus} className="h-3.5 w-3.5" />
         {t('cta')}
       </button>
       {open && <NewItemModal onClose={() => setOpen(false)} />}
@@ -44,6 +56,12 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
     setError(null);
     const f = new FormData(e.currentTarget);
     const dueAtRaw = String(f.get('dueAt') ?? '').trim();
+    const dueAt = toIsoNoonUtc(dueAtRaw);
+    if (dueAtRaw && !dueAt) {
+      setError(t('invalid_date'));
+      setBusy(false);
+      return;
+    }
     const body = {
       category: String(f.get('category') ?? 'custom'),
       itemKey:
@@ -53,9 +71,9 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
           .replace(/^_+|_+$/g, '')
           .slice(0, 60) || `item-${Date.now()}`,
       label: String(f.get('label') ?? '').trim(),
-      status: String(f.get('status') ?? 'ok'),
+      status: String(f.get('status') ?? 'warn'),
       details: String(f.get('details') ?? '').trim() || undefined,
-      dueAt: dueAtRaw ? new Date(dueAtRaw).toISOString() : undefined,
+      dueAt,
     };
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
@@ -68,6 +86,8 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
       }
       onClose();
       router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('error'));
     } finally {
       setBusy(false);
     }
@@ -76,7 +96,7 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal title={t('title')} onClose={onClose} size="md">
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
-        {error && <div className="alert alert-error text-sm">{error}</div>}
+        {error && <div role="alert" aria-live="polite" className="alert alert-error text-sm">{error}</div>}
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend">{t('category_label')}</legend>
@@ -104,7 +124,7 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend">{t('status_label')}</legend>
-          <select name="status" className="select w-full" defaultValue="ok">
+          <select name="status" className="select w-full" defaultValue="warn">
             {STATUSES.map((s) => (
               <option key={s} value={s}>
                 {t(`status.${s}`)}
@@ -124,10 +144,10 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
         </fieldset>
 
         <div className="mt-2 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">
+          <button type="button" onClick={onClose} className="btn btn-ghost">
             {t('cancel')}
           </button>
-          <button type="submit" disabled={busy} className="btn btn-primary btn-sm">
+          <button type="submit" disabled={busy} className="btn btn-primary">
             {busy ? '…' : t('confirm')}
           </button>
         </div>
@@ -142,6 +162,9 @@ type Action = {
   title: string;
   detail: string;
   cta: string;
+  evidence?: ComplianceEvidenceView | null;
+  evidenceUrl?: string | null;
+  instructions?: ComplianceInstructionsView | null;
 };
 
 export function ComplianceActionCta({ action }: { action: Action }) {
@@ -157,7 +180,7 @@ export function ComplianceActionCta({ action }: { action: Action }) {
       <button
         type="button"
         disabled
-        className="bg-base-200 text-base-content/50 shrink-0 cursor-not-allowed rounded-full px-3.5 py-2 text-xs font-bold"
+        className="btn rounded-full bg-base-200 text-base-content/50"
         title={t('seeded_only')}
       >
         {action.cta}
@@ -170,17 +193,21 @@ export function ComplianceActionCta({ action }: { action: Action }) {
     setBusy(true);
     setError(null);
     const f = new FormData(e.currentTarget);
+    // The EvidenceField also writes its own input named "evidenceUrl" when in
+    // URL-entry mode; pick that up here. When the user has uploaded a file,
+    // the field renders no URL input, so this is empty and we leave URL alone.
     const evidenceUrl = String(f.get('evidenceUrl') ?? '').trim() || null;
     const note = String(f.get('note') ?? '').trim();
     const markResolved = f.get('resolve') === 'on';
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
-      const body: Record<string, unknown> = {
-        status: markResolved ? 'ok' : action.severity === 'urgent' ? 'warn' : 'warn',
-      };
+      const body: Record<string, unknown> = {};
+      if (markResolved) {
+        body.status = 'ok';
+        body.resolved = true;
+      }
       if (evidenceUrl) body.evidenceUrl = evidenceUrl;
-      if (note) body.details = `${action.detail}\n\n${note}`;
-      if (markResolved) body.resolved = true;
+      if (note) body.noteAppend = note;
       const res = await client.patch(`/v1/employer/compliance/items/${action.id}`, body, {
         handleErrorInline: true,
       });
@@ -190,6 +217,8 @@ export function ComplianceActionCta({ action }: { action: Action }) {
       }
       setOpen(false);
       router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('error'));
     } finally {
       setBusy(false);
     }
@@ -200,26 +229,27 @@ export function ComplianceActionCta({ action }: { action: Action }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="bg-base-content text-base-100 hover:opacity-90 shrink-0 rounded-full px-3.5 py-2 text-xs font-bold"
+        className="btn btn-primary rounded-full"
       >
         {action.cta}
       </button>
       {open && (
-        <Modal title={action.title} onClose={() => setOpen(false)} size="md">
+        <Modal
+          title={action.title}
+          onClose={() => setOpen(false)}
+          size="xl"
+          sidebar={<ComplianceInstructionsSidebar instructions={action.instructions ?? null} />}
+        >
           <form onSubmit={onSubmit} className="flex flex-col gap-3">
-            {error && <div className="alert alert-error text-sm">{error}</div>}
+            {error && <div role="alert" aria-live="polite" className="alert alert-error text-sm">{error}</div>}
             <p className="text-base-content/70 text-xs">{action.detail}</p>
-            <fieldset className="fieldset">
-              <legend className="fieldset-legend">{t('evidence_label')}</legend>
-              <input
-                name="evidenceUrl"
-                type="url"
-                maxLength={2048}
-                placeholder="https://…"
-                className="input w-full"
+            {action.id && (
+              <EvidenceField
+                itemId={action.id}
+                initialEvidence={action.evidence ?? null}
+                initialUrl={action.evidenceUrl ?? null}
               />
-              <p className="label">{t('evidence_help')}</p>
-            </fieldset>
+            )}
             <fieldset className="fieldset">
               <legend className="fieldset-legend">{t('note_label')}</legend>
               <textarea name="note" rows={2} maxLength={500} className="textarea w-full" />
@@ -229,10 +259,10 @@ export function ComplianceActionCta({ action }: { action: Action }) {
               <span className="text-sm">{t('resolve_label')}</span>
             </label>
             <div className="mt-2 flex justify-end gap-2">
-              <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost btn-sm">
+              <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost">
                 {t('cancel')}
               </button>
-              <button type="submit" disabled={busy} className="btn btn-primary btn-sm">
+              <button type="submit" disabled={busy} className="btn btn-primary">
                 {busy ? '…' : t('confirm')}
               </button>
             </div>
@@ -248,6 +278,8 @@ export function EditComplianceItemButton({
   status,
   details,
   evidenceUrl,
+  evidence,
+  instructions,
   dueAt,
   label,
 }: {
@@ -255,6 +287,8 @@ export function EditComplianceItemButton({
   status: 'ok' | 'warn' | 'fail';
   details: string;
   evidenceUrl: string | null;
+  evidence: ComplianceEvidenceView | null;
+  instructions: ComplianceInstructionsView | null;
   dueAt: string | null;
   label: string;
 }) {
@@ -271,11 +305,17 @@ export function EditComplianceItemButton({
     setError(null);
     const f = new FormData(e.currentTarget);
     const dueAtRaw = String(f.get('dueAt') ?? '').trim();
+    const dueAt = dueAtRaw ? toIsoNoonUtc(dueAtRaw) : null;
+    if (dueAtRaw && !dueAt) {
+      setError(t('invalid_date'));
+      setBusy(false);
+      return;
+    }
     const body: Record<string, unknown> = {
       status: String(f.get('status') ?? 'ok'),
       details: String(f.get('details') ?? '').trim() || null,
       evidenceUrl: String(f.get('evidenceUrl') ?? '').trim() || null,
-      dueAt: dueAtRaw ? new Date(dueAtRaw).toISOString() : null,
+      dueAt,
     };
     if (f.get('resolved') === 'on') body.resolved = true;
     try {
@@ -289,6 +329,8 @@ export function EditComplianceItemButton({
       }
       setOpen(false);
       router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('error'));
     } finally {
       setBusy(false);
     }
@@ -300,14 +342,19 @@ export function EditComplianceItemButton({
         type="button"
         onClick={() => setOpen(true)}
         aria-label={t('cta')}
-        className="bg-base-100 border-base-300 hover:bg-base-200 grid h-6 w-6 shrink-0 place-items-center rounded border"
+        className="bg-base-100 border-base-300 hover:bg-base-200 focus-visible:ring-primary focus-visible:ring-2 grid h-11 w-11 shrink-0 place-items-center rounded-full border"
       >
-        <FontAwesomeIcon icon={faPenToSquare} className="text-base-content/60 h-2.5 w-2.5" />
+        <FontAwesomeIcon icon={faPenToSquare} className="text-base-content/60 h-3.5 w-3.5" />
       </button>
       {open && (
-        <Modal title={`${t('title')}: ${label}`} onClose={() => setOpen(false)} size="md">
+        <Modal
+          title={`${t('title')}: ${label}`}
+          onClose={() => setOpen(false)}
+          size="xl"
+          sidebar={<ComplianceInstructionsSidebar instructions={instructions} />}
+        >
           <form onSubmit={onSubmit} className="flex flex-col gap-3">
-            {error && <div className="alert alert-error text-sm">{error}</div>}
+            {error && <div role="alert" aria-live="polite" className="alert alert-error text-sm">{error}</div>}
 
             <fieldset className="fieldset">
               <legend className="fieldset-legend">{t('status_label')}</legend>
@@ -331,17 +378,11 @@ export function EditComplianceItemButton({
               />
             </fieldset>
 
-            <fieldset className="fieldset">
-              <legend className="fieldset-legend">{t('evidence_label')}</legend>
-              <input
-                name="evidenceUrl"
-                type="url"
-                maxLength={2048}
-                defaultValue={evidenceUrl ?? ''}
-                placeholder="https://…"
-                className="input w-full"
-              />
-            </fieldset>
+            <EvidenceField
+              itemId={itemId}
+              initialEvidence={evidence}
+              initialUrl={evidenceUrl}
+            />
 
             <fieldset className="fieldset">
               <legend className="fieldset-legend">{t('due_label')}</legend>
@@ -359,10 +400,10 @@ export function EditComplianceItemButton({
             </label>
 
             <div className="mt-2 flex justify-end gap-2">
-              <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost btn-sm">
+              <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost">
                 {t('cancel')}
               </button>
-              <button type="submit" disabled={busy} className="btn btn-primary btn-sm">
+              <button type="submit" disabled={busy} className="btn btn-primary">
                 {busy ? '…' : t('confirm')}
               </button>
             </div>

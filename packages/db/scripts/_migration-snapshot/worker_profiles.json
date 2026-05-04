@@ -1,0 +1,23 @@
+[
+  {
+    "id": "test_worker_1777844344062",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "firstName": "Test",
+    "lastName": "Applicant",
+    "zipCode": null,
+    "county": null,
+    "skills": [
+      "harvesting"
+    ],
+    "certifications": [],
+    "availability": {},
+    "resume": null,
+    "resumeRawUrl": null,
+    "parserStatus": null,
+    "phoneHash": null,
+    "onboardedAt": null,
+    "createdAt": "2026-05-03T21:39:04.073Z",
+    "updatedAt": "2026-05-03T21:39:04.073Z",
+    "deletedAt": null
+  }
+]

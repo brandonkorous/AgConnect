@@ -39,15 +39,13 @@ export default async function EmployerLayout({ children, params }: Props) {
 
     return (
         <div className="flex min-h-screen items-start print:block print:min-h-0">
-            <div className="print:hidden">
-                <EmployerSidebar
-                    locale={locale}
-                    displayName={profile.displayName}
-                    initials={initials}
-                    candidatesCount={inboxNew}
-                    jobsCount={jobsActive}
-                />
-            </div>
+            <EmployerSidebar
+                locale={locale}
+                displayName={profile.displayName}
+                initials={initials}
+                candidatesCount={inboxNew}
+                jobsCount={jobsActive}
+            />
             <main className="min-w-0 flex-1">
                 <div className="print:hidden">
                     <EmployerTopBar locale={locale} canPublish={status === 'verified'} />

@@ -1,0 +1,25 @@
+[
+  {
+    "id": "37658059-9a13-4be2-a6cd-4e07126c09ea",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "workerId": "test_worker_1777844344062",
+    "status": "hired",
+    "wageOffered": "20",
+    "workerNote": null,
+    "employerNote": null,
+    "rejectionReason": null,
+    "rejectionReasonText": null,
+    "appliedAt": "2026-05-03T21:39:23.453Z",
+    "reviewedAt": null,
+    "hiredAt": "2026-05-03T23:26:41.500Z",
+    "rejectedAt": null,
+    "withdrawnAt": null,
+    "startDate": null,
+    "countyAtApply": null,
+    "skillsAtApply": [],
+    "createdAt": "2026-05-03T21:39:23.453Z",
+    "updatedAt": "2026-05-03T23:26:41.504Z",
+    "deletedAt": null
+  }
+]

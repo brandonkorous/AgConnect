@@ -14,8 +14,15 @@ import type {
 type Locale = 'en' | 'es';
 const client = (l: string) => getApiClient(l === 'es' ? 'es' : 'en');
 
+export type EditMeta = {
+  changedFields: string[];
+  renotificationsQueued: number;
+  renotificationsSuppressed?: boolean;
+  suppressedRecipientCount?: number;
+};
+
 export type SaveResult =
-  | { kind: 'ok'; job: EmployerJobView; edit?: { changedFields: string[]; renotificationsQueued: number } }
+  | { kind: 'ok'; job: EmployerJobView; edit?: EditMeta }
   | { kind: 'error'; code: string; message: string };
 
 export async function createJob(locale: string, body: Record<string, unknown>): Promise<SaveResult> {
@@ -33,7 +40,7 @@ export async function patchJob(
 ): Promise<SaveResult> {
   const res = await client(locale).patch<{
     job: EmployerJobView;
-    edit?: { changedFields: string[]; renotificationsQueued: number };
+    edit?: EditMeta;
   }>(`/v1/employer/jobs/${id}`, body, { handleErrorInline: true });
   if (!isOk(res)) return { kind: 'error', code: res.error.code, message: res.error.message };
   return { kind: 'ok', job: res.data.job, edit: res.data.edit };

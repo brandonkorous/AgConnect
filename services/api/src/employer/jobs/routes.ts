@@ -234,6 +234,7 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
       after: updated as unknown as Record<string, unknown>,
       status: existing.status as 'draft' | 'active',
       employerName,
+      notifyApplicants: body.notifyApplicants,
     });
 
     return { updated, renotify };
@@ -246,6 +247,7 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
       metadata: {
         fields: result.renotify.changedFields,
         renotificationsQueued: result.renotify.renotificationsQueued,
+        renotificationsSuppressed: result.renotify.renotificationsSuppressed,
       },
     });
   }
@@ -255,6 +257,8 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
     edit: {
       changedFields: result.renotify.changedFields,
       renotificationsQueued: result.renotify.renotificationsQueued,
+      renotificationsSuppressed: result.renotify.renotificationsSuppressed,
+      suppressedRecipientCount: result.renotify.suppressedRecipientCount,
     },
   });
 });

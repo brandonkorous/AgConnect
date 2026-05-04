@@ -1,9 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
-import { AddressAutocomplete, type AddressLabels, type AddressValue } from '@agconn/ui';
+import {
+  AddressAutocomplete,
+  MapPreview,
+  type AddressLabels,
+  type AddressValue,
+  type MapPreviewLabels,
+} from '@agconn/ui';
 import { useAddressPinDropFallback } from '@/components/ui/useAddressPinDropFallback';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';
@@ -18,14 +22,17 @@ type Props = {
 };
 
 function deriveAddress(state: JobFormState): AddressValue | null {
-  if (!state.siteAddress || state.siteLat == null || state.siteLng == null) return null;
+  if (!state.siteAddress) return null;
+  // Lat/lng may be missing on legacy or pre-geocoded rows. Pass 0/0 so the
+  // selected-summary view still renders the street address; the map preview
+  // separately gates on real coordinates.
   return {
     streetAddress: state.siteAddress,
     city: state.city || '',
     stateCode: 'CA',
     postalCode: state.zipCode || '',
-    addressLat: state.siteLat,
-    addressLng: state.siteLng,
+    addressLat: state.siteLat ?? 0,
+    addressLng: state.siteLng ?? 0,
   };
 }
 
@@ -90,7 +97,16 @@ export function LocationSection({ state, update, locale }: Props) {
         </fieldset>
       </div>
 
-      <MapPreview state={state} />
+      <div className="mt-4">
+        <MapPreview
+          lat={state.siteLat}
+          lng={state.siteLng}
+          label={state.siteAddress}
+          token={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+          labels={mapLabels(t)}
+          heightClass="h-44"
+        />
+      </div>
 
       <div className="mt-4">
         <AddressAutocomplete
@@ -127,42 +143,17 @@ export function LocationSection({ state, update, locale }: Props) {
   );
 }
 
-function MapPreview({ state }: { state: JobFormState }) {
-  const t = useTranslations('employer.jobs.form_v2');
-  const hasGeo = state.siteLat != null && state.siteLng != null;
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-
-  if (!hasGeo || !token) {
-    return (
-      <div
-        role="img"
-        aria-label={t('map_alt')}
-        className="bg-base-200 border-base-300 text-base-content/55 mt-4 flex h-44 items-center justify-center rounded-xl border text-sm"
-      >
-        {t('map_placeholder')}
-      </div>
-    );
-  }
-
-  // Mapbox Static Image API — single PNG, no JS, no bundle weight.
-  // Olive-brand pin (#5b6e2e) matches the pin-drop modal marker.
-  const url =
-    `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/` +
-    `pin-l+5b6e2e(${state.siteLng},${state.siteLat})/` +
-    `${state.siteLng},${state.siteLat},13,0/1200x352@2x?access_token=${token}`;
-
-  return (
-    <div className="border-base-300 relative mt-4 h-44 overflow-hidden rounded-xl border">
-      <img
-        src={url}
-        alt={t('map_alt')}
-        className="h-full w-full object-cover"
-        loading="lazy"
-      />
-      <div className="absolute bottom-2.5 left-2.5 rounded-md bg-base-100/90 px-2 py-1 font-mono text-[10.5px] tabular-nums shadow-sm">
-        <FontAwesomeIcon icon={faLocationDot} className="text-primary mr-1 h-3 w-3" />
-        {state.siteLat?.toFixed(4)}, {state.siteLng?.toFixed(4)}
-      </div>
-    </div>
-  );
+function mapLabels(
+  t: ReturnType<typeof useTranslations<'employer.jobs.form_v2'>>,
+): MapPreviewLabels {
+  return {
+    styleStreets: t('map_style_streets'),
+    styleSatellite: t('map_style_satellite'),
+    openInMaps: t('map_open_in_maps'),
+    emptyTitle: t('map_empty_title'),
+    emptyHelp: t('map_empty_help'),
+    alt: t('map_alt_template'),
+    fullscreenOpen: t('map_fullscreen_open'),
+    fullscreenClose: t('map_fullscreen_close'),
+  };
 }

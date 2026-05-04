@@ -1,0 +1,14 @@
+[
+  {
+    "id": "79f0d30a-0646-4457-900d-6869a0a98913",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "sortOrder": 0,
+    "questionEn": "Do you have a valid driver license?",
+    "questionEs": "¿Tiene licencia de conducir vigente?",
+    "answerType": "yes_no",
+    "required": true,
+    "createdAt": "2026-05-03T21:15:48.078Z",
+    "updatedAt": "2026-05-03T21:46:52.628Z"
+  }
+]

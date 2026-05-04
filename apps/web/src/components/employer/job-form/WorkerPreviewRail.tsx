@@ -173,9 +173,7 @@ function JobPreviewCard(props: {
   pickupPoint: string;
 }) {
   const t = useTranslations('employer.jobs.form_v2.preview');
-  const startLabel = props.startDate
-    ? new Date(props.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-    : '—';
+  const startLabel = props.startDate ? formatLocalDate(props.startDate) : '—';
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-sm">
       <div className="bg-warning relative grid h-[86px] place-items-center">
@@ -269,6 +267,18 @@ function computeDailyHours(state: JobFormState): number {
   if ([sh, sm, eh, em].some((n) => Number.isNaN(n))) return 8;
   const mins = (eh! * 60 + em!) - (sh! * 60 + sm!);
   return mins > 0 ? mins / 60 : 8;
+}
+
+function formatLocalDate(yyyymmdd: string): string {
+  // `new Date('2026-05-15')` parses as UTC midnight, then toLocaleDateString
+  // shifts to the user's TZ — off by one day in PDT/PST. Build from local
+  // components instead.
+  const [y, m, d] = yyyymmdd.split('-').map(Number);
+  if (!y || !m || !d) return yyyymmdd;
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 function fmtTimeRange(start: string, end: string): string {

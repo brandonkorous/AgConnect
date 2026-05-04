@@ -78,15 +78,24 @@ export const createApiClient = (opts: ApiClientOptions): ApiClient => {
 
     try {
       const session = opts.getSession?.();
+      const isFormData =
+        typeof FormData !== 'undefined' && options.body instanceof FormData;
+      const baseHeaders: Record<string, string> = {
+        'accept-language': opts.getLocale(),
+        ...(session ? { authorization: `Bearer ${session}` } : {}),
+        ...options.headers,
+      };
+      // For multipart uploads, let the browser set Content-Type with the boundary.
+      if (!isFormData) baseHeaders['content-type'] = 'application/json';
       const res = await fetch(buildUrl(opts.baseUrl, path, options.query), {
         method: options.method ?? 'GET',
-        headers: {
-          'content-type': 'application/json',
-          'accept-language': opts.getLocale(),
-          ...(session ? { authorization: `Bearer ${session}` } : {}),
-          ...options.headers,
-        },
-        body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+        headers: baseHeaders,
+        body:
+          options.body === undefined
+            ? undefined
+            : isFormData
+              ? (options.body as FormData)
+              : JSON.stringify(options.body),
         signal,
         credentials: 'include',
       });

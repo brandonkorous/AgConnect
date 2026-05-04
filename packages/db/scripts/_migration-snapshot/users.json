@@ -1,0 +1,50 @@
+[
+  {
+    "id": "user_3D8XORVBDprDDXDdB1JVNvn1WO9",
+    "tenantId": null,
+    "role": "worker",
+    "permissions": [],
+    "preferredLang": "en",
+    "email": null,
+    "phone": "+15598873433",
+    "onboarded": false,
+    "createdAt": "2026-05-01T22:55:43.323Z",
+    "updatedAt": "2026-05-01T23:06:48.879Z"
+  },
+  {
+    "id": "user_3D9PeIam5xohI7s1zNEAItRH4sy",
+    "tenantId": null,
+    "role": "employer",
+    "permissions": [],
+    "preferredLang": "en",
+    "email": "bkorous+grains1@gmail.com",
+    "phone": null,
+    "onboarded": false,
+    "createdAt": "2026-05-02T03:10:07.039Z",
+    "updatedAt": "2026-05-02T03:10:07.039Z"
+  },
+  {
+    "id": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "role": "employer",
+    "permissions": [],
+    "preferredLang": "en",
+    "email": "bkorous+grain1@gmail.com",
+    "phone": null,
+    "onboarded": true,
+    "createdAt": "2026-05-02T03:12:14.194Z",
+    "updatedAt": "2026-05-02T03:31:19.728Z"
+  },
+  {
+    "id": "test_worker_1777844344062",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "role": "worker",
+    "permissions": [],
+    "preferredLang": "es",
+    "email": null,
+    "phone": "+15551234567",
+    "onboarded": true,
+    "createdAt": "2026-05-03T21:39:04.066Z",
+    "updatedAt": "2026-05-03T21:39:04.066Z"
+  }
+]

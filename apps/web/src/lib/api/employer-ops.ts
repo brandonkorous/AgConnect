@@ -10,20 +10,100 @@ import { getServerApiClient } from './server-client';
 
 // ───────────────────────────────────────────────── Crews & shifts
 
+export type CrewColor = 'grape' | 'almond' | 'citrus' | 'tomato' | 'lettuce' | 'olive';
+export type CrewType = 'harvest' | 'setup' | 'sort' | 'irrigation' | 'pruning' | 'general';
+export type CrewCrop = 'grape' | 'almond' | 'citrus' | 'tomato' | 'lettuce' | 'strawberry';
+export type CrewSkill = 'forklift' | 'cdl' | 'wps' | 'bilingual' | 'lead' | 'irrigation';
+
+export type CrewCommsChannels = {
+  groupChat?: boolean;
+  smsDigest?: boolean;
+  whatsappForeman?: boolean;
+  voiceBroadcast?: boolean;
+};
+
 export type CrewView = {
   id: string;
+  tenantId: string;
+  employerId: string;
   name: string;
-  color: 'primary' | 'accent' | 'info' | 'success' | 'warning';
+  shortCode: string | null;
+  crewType: CrewType | null;
+  primaryCrop: CrewCrop | null;
+  color: CrewColor;
+  requiredSkills: CrewSkill[];
+  baseWageCents: number | null;
+  pieceRateCents: number | null;
+  pieceRateUnit: string | null;
+  foremanPremiumCents: number | null;
+  commsChannels: CrewCommsChannels;
   foremanUserId: string | null;
   foremanName: string | null;
   jobId: string | null;
   jobTitle: string | null;
   memberCount: number;
+  activeMemberCount: number;
   notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CrewMemberView = {
+  id: string;
+  crewId: string;
+  workerUserId: string;
+  firstName: string;
+  lastInitial: string;
+  role: 'lead' | 'member';
+  joinedAt: string;
+  leftAt: string | null;
+};
+
+export type CrewYieldPointView = { date: string; pieces: number };
+export type CrewActivityEventView = {
+  id: string;
+  action: string;
+  occurredAt: string;
+  actorId: string | null;
+};
+export type CrewSkillCoverageView = {
+  skill: CrewSkill;
+  haveCount: number;
+  totalCount: number;
+};
+export type CrewInsightsView = {
+  yield: CrewYieldPointView[];
+  activity: CrewActivityEventView[];
+  skillCoverage: CrewSkillCoverageView[];
+};
+
+export type ShiftType = 'work' | 'training' | 'off' | 'holiday';
+
+export type ShiftMetadata = {
+  pickup?: { enabled: boolean; label?: string };
+  equipmentProvided?: boolean;
+  equipmentDetail?: string;
+  lunchProvided?: boolean;
+  lunchDetail?: string;
+  safety?: {
+    wpsCleared?: boolean;
+    ppeBriefingDone?: boolean;
+    emergencyContactsLoaded?: boolean;
+    restroomNearby?: boolean;
+  };
+  notifications?: {
+    smsEveningBefore?: boolean;
+    whatsappMorning?: boolean;
+    foremanRollCall?: boolean;
+  };
+  heatAdvisoryAutoApply?: boolean;
+  heatAdvisoryForecastF?: number;
 };
 
 export type ShiftView = {
   id: string;
+  tenantId: string;
+  employerId: string;
   crewId: string | null;
   crewName: string | null;
   jobId: string | null;
@@ -31,11 +111,42 @@ export type ShiftView = {
   startTime: string;
   endTime: string | null;
   locationLabel: string;
+  locationLat: number | null;
+  locationLng: number | null;
+  notes: string | null;
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+  shiftType: ShiftType;
+  metadata: ShiftMetadata;
   assignedCount: number;
   confirmedCount: number;
   capacity: number | null;
 };
+
+export type ShiftAssignmentView = {
+  id: string;
+  shiftId: string;
+  workerUserId: string;
+  firstName: string;
+  lastInitial: string;
+  status: 'assigned' | 'confirmed' | 'declined' | 'no_show' | 'completed';
+};
+
+export async function getShift(
+  id: string,
+): Promise<{ shift: ShiftView; assignments: ShiftAssignmentView[] } | null> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{
+      shift: ShiftView;
+      assignments: ShiftAssignmentView[];
+    }>(`/v1/employer/shifts/${id}`, { handleErrorInline: true });
+    if (!isOk(res)) return null;
+    return res.data;
+  } catch (e) {
+    console.error('getShift failed', e);
+    return null;
+  }
+}
 
 export async function listCrews(): Promise<CrewView[]> {
   try {
@@ -51,17 +162,54 @@ export async function listCrews(): Promise<CrewView[]> {
   }
 }
 
+export async function getCrew(
+  id: string,
+): Promise<{ crew: CrewView; members: CrewMemberView[] } | null> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ crew: CrewView; members: CrewMemberView[] }>(
+      `/v1/employer/crews/${id}`,
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return null;
+    return res.data;
+  } catch (e) {
+    console.error('getCrew failed', e);
+    return null;
+  }
+}
+
+export async function getCrewInsights(id: string): Promise<CrewInsightsView> {
+  const empty: CrewInsightsView = { yield: [], activity: [], skillCoverage: [] };
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<CrewInsightsView>(`/v1/employer/crews/${id}/insights`, {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return empty;
+    return res.data;
+  } catch (e) {
+    console.error('getCrewInsights failed', e);
+    return empty;
+  }
+}
+
 export async function listShifts(opts?: {
   from?: Date;
   to?: Date;
   crewId?: string;
 }): Promise<ShiftView[]> {
-  const weekStart = startOfWorkWeek(opts?.from ?? new Date());
+  // Anchor on the supplied `from` verbatim — only fall back to "this week"
+  // when no anchor is provided. The crews page passes the navigated week
+  // start; re-anchoring here would defeat week-prev/-next navigation.
+  const fromDate = opts?.from ?? startOfWorkWeek(new Date());
+  const toDate =
+    opts?.to ?? new Date(fromDate.getTime() + 13 * 24 * 60 * 60 * 1000);
   try {
     const client = await getServerApiClient();
     const params: Record<string, string> = {
-      from: weekStart.toISOString().slice(0, 10),
-      to: new Date(weekStart.getTime() + 13 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      from: fromDate.toISOString().slice(0, 10),
+      to: toDate.toISOString().slice(0, 10),
     };
     if (opts?.crewId) params.crewId = opts.crewId;
     const qs = Object.entries(params)
@@ -74,6 +222,28 @@ export async function listShifts(opts?: {
     return res.data.shifts;
   } catch (e) {
     console.error('listShifts failed', e);
+    return [];
+  }
+}
+
+export type ActiveHireView = {
+  workerUserId: string;
+  firstName: string;
+  lastInitial: string;
+  jobTitle: string;
+  hiredAt: string;
+};
+
+export async function listActiveHires(): Promise<ActiveHireView[]> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<{ workers: ActiveHireView[] }>('/v1/employer/hires', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return [];
+    return res.data.workers;
+  } catch (e) {
+    console.error('listActiveHires failed', e);
     return [];
   }
 }
@@ -292,6 +462,23 @@ export type ComplianceCategoryView = {
   items: ComplianceItemView[];
 };
 
+export type ComplianceEvidenceView = {
+  fileName: string | null;
+  contentType: string | null;
+  size: number | null;
+  downloadPath: string;
+};
+
+export type ComplianceInstructionsView = {
+  why: string;
+  how: string[];
+  acceptableEvidence: string[];
+  deadline: string | null;
+  source: { label: string; url: string };
+  extraSources?: { label: string; url: string }[];
+  lastVerified: string;
+};
+
 export type ComplianceItemView = {
   id?: string;
   key: string;
@@ -300,6 +487,8 @@ export type ComplianceItemView = {
   details: string;
   dueAt: string | null;
   evidenceUrl?: string | null;
+  evidence?: ComplianceEvidenceView | null;
+  instructions?: ComplianceInstructionsView | null;
 };
 
 type ApiComplianceItem = {
@@ -310,6 +499,8 @@ type ApiComplianceItem = {
   status: 'ok' | 'warn' | 'fail';
   details: string | null;
   evidenceUrl: string | null;
+  evidence: ComplianceEvidenceView | null;
+  instructions: ComplianceInstructionsView | null;
   dueAt: string | null;
   resolvedAt: string | null;
 };
@@ -320,14 +511,10 @@ type ApiComplianceCategory = {
   items: ApiComplianceItem[];
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  documentation: 'Worker documentation',
-  safety: 'Worker safety (Cal/OSHA)',
-  wage_hour: 'Wage & hour',
-  pesticide: 'Pesticide records',
-  h2a: 'H-2A program',
-  custom: 'Other',
-};
+// Category labels are translated at render-time on the page using
+// `compliance.category.<key>` translation keys — no English fallback in the
+// data layer. If a translation is missing the key is rendered verbatim,
+// which surfaces the gap rather than masking it.
 
 export async function listComplianceCategories(): Promise<ComplianceCategoryView[]> {
   try {
@@ -340,7 +527,7 @@ export async function listComplianceCategories(): Promise<ComplianceCategoryView
     if (res.data.categories.length === 0) return [];
     return res.data.categories.map((c) => ({
       key: c.category,
-      label: CATEGORY_LABELS[c.category] ?? c.category,
+      label: c.category, // Page translates via t(`category.${key}`).
       score: c.score,
       items: c.items.map((i) => ({
         id: i.id,
@@ -350,6 +537,8 @@ export async function listComplianceCategories(): Promise<ComplianceCategoryView
         details: i.details ?? '',
         dueAt: i.dueAt,
         evidenceUrl: i.evidenceUrl,
+        evidence: i.evidence,
+        instructions: i.instructions,
       })),
     }));
   } catch (e) {
@@ -388,6 +577,10 @@ export type ComplianceActionView = {
   title: string;
   detail: string;
   cta: string;
+  dueAt: string | null;
+  evidenceUrl: string | null;
+  evidence: ComplianceEvidenceView | null;
+  instructions: ComplianceInstructionsView | null;
 };
 
 export async function listComplianceActions(): Promise<ComplianceActionView[]> {
@@ -395,7 +588,16 @@ export async function listComplianceActions(): Promise<ComplianceActionView[]> {
     const client = await getServerApiClient();
     const res = await client.get<{
       categories: ApiComplianceCategory[];
-      actions: { id: string; severity: 'urgent' | 'soon'; label: string; details: string; dueAt: string | null }[];
+      actions: {
+        id: string;
+        severity: 'urgent' | 'soon';
+        label: string;
+        details: string;
+        dueAt: string | null;
+        evidenceUrl: string | null;
+        evidence: ComplianceEvidenceView | null;
+        instructions: ComplianceInstructionsView | null;
+      }[];
     }>('/v1/employer/compliance/items', { handleErrorInline: true });
     if (!isOk(res)) return [];
     // Zero open actions is a real (good!) state — return an empty list.
@@ -404,7 +606,13 @@ export async function listComplianceActions(): Promise<ComplianceActionView[]> {
       severity: a.severity,
       title: a.label,
       detail: a.details,
-      cta: a.severity === 'urgent' ? 'Resolve' : 'Schedule',
+      // CTA label is empty here; the page renders it via
+      // t(`severity_cta.${severity}`) so it follows the request locale.
+      cta: '',
+      dueAt: a.dueAt,
+      evidenceUrl: a.evidenceUrl,
+      evidence: a.evidence,
+      instructions: a.instructions,
     }));
   } catch (e) {
     console.error('listComplianceActions failed', e);

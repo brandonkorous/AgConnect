@@ -1,0 +1,5109 @@
+[
+  {
+    "id": {
+      "__bigint": "8"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T03:41:19.547Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "siirt5jyro/II34v9IeW01J4pgZuGX3WQO65jGaIlKo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "9"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T03:42:53.153Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 1,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "WNNYp7+6/rDEPMKewrvG7tj1VCRm8FnvAuvQ+FawJ0Y="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "10"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T03:42:53.173Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "84MCKbktmwnsDozosqxfW6taQFQX79LBfqiiMUsJHoo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "11"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T03:45:29.102Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 3,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "9TWpLzW3WGLldgWsezQ0XFJAH5Y9JxGNuTLuCbHqed4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "12"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T03:45:29.129Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "gKb8JBBJD98Ig8GliHkrVhYjfjta8S3cc1P03wA9nQY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "13"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T03:45:54.803Z",
+    "actorType": "admin",
+    "actorId": "admin-bearer",
+    "actorRole": "admin",
+    "actorIp": null,
+    "actorUserAgent": "curl/8.6.0",
+    "action": "admin.data.exported",
+    "resourceType": "export",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": "f1d2a9ae-cd36-4c60-9595-e285f3fa9b20",
+    "metadata": {
+      "rowCount": 5,
+      "exportType": "audit.events.list",
+      "filterDigest": "{\"limit\":5}"
+    },
+    "eventHmac": {
+      "__bytes": "O37bJ9l1ShEwUNpZHZhSCd9bKEOl9kBe3ZdvlBoDt7c="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "14"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T04:30:41.840Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 6,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "vq37f+S63IL0cztWvMisfHUh18SuQWoByJPQANVM64A="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "15"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T04:30:41.867Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "klD3Y4QA/V1t9M/uKsWyter7eJo5o0RFa96V5GBm08k="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "16"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T08:48:19.377Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "Error"
+    },
+    "eventHmac": {
+      "__bytes": "IFlDoCavMoZj+ur9tP5skN9pnKfm3MKvqkBxgkYd+CY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "17"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T08:48:42.213Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "Error"
+    },
+    "eventHmac": {
+      "__bytes": "7+8kfOVJYVNU6adWXT2oKmPW5cPPz1A4Uz27Lcg8vrE="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "18"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T08:49:06.521Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "Error"
+    },
+    "eventHmac": {
+      "__bytes": "ZW4WzSRAaeHZBWlp0rTLd1sxm0IjCA67KXkm00uInmM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "19"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T08:50:28.027Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "Error"
+    },
+    "eventHmac": {
+      "__bytes": "qGdMklvz5wl+wkqcNvnFKPzTuowyRuq59PxeE4PTWwY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "20"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T08:51:11.473Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "Error"
+    },
+    "eventHmac": {
+      "__bytes": "Vjxfxd6OWC7ILYQRpF+tJqk8x3CCznV3ePMEMtMzu1w="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "21"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T08:51:13.920Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "Error"
+    },
+    "eventHmac": {
+      "__bytes": "H7fZbsnkNWlZUyRgCjRxRaJvbhSnIObzk3Aiu1dB+LA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "22"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T18:29:05.266Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 14,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "0QDOvz8ALNQ3liKoAMY/uBNAjkpwbK5nigottUq8v/g="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "23"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T18:29:05.293Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "40WL6G0Pcw24O+mCqzW0HP17cq/pUSA3v6gRuAkWb9M="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "24"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T19:24:38.404Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 16,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "VuwMMs86DgScl6ft5IsjYVWo82OCRQQxZ/02yO/iY48="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "25"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T19:24:38.475Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Ye31CXfxET5kvJx/mow4s1okWDJhFC6vHVOWO5aO5UM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "26"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T19:25:21.803Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 18,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "vQcc5CDtdyDQqbrDGH1u5vDaVUs2gfo5dk7GPwdaX0g="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "27"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T19:25:21.824Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "gnF0zLiSFvvkDXbi/CGN1uvfks1NhuLMnIiabBfdrXI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "28"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:10:49.973Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 20,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "VV/FpIGmwq/nTlfClo5/7mUMzd91xaiZ8Kku/LAEWq8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "29"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:10:50.024Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Uhs6cYXuT4qk/8P/JkWoU8zcLHWsWB1W113o2RQsgZY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "30"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:51:24.923Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 22,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "UsbxSy66W9IH3UDqJ+3WAJqSL4VSYXFi1xbLJ0HlY8M="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "31"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:51:24.948Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "9M5gyaJotxi+nr2jZXNuWyExNEPxIK4WzMkLnJZzafU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "32"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:53:09.300Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 24,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "l2D1otOe7+M5YOD/aIRHS5a8UpPNqj6eTIuVuhkVNBw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "33"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:53:09.321Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "jS6myw3W8EHT0nFCs/kVUtx39Ak0oSBtxCpeeQg/vk0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "34"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:53:51.128Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 26,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "tezeA4vnRwPfXJI6ZZlJ5dJAqJw3ydCH7d/O7XnyHOU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "35"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:53:51.148Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "XI0zF2NJFP3OPfM7JXOfK0PGU1yLJAyx4nNXQ0giXFo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "36"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:55:03.145Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 28,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "HwxLRJPLdrbrd5vbSEys+cU/pNT4eR57IWsQdnoilF4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "37"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:55:03.168Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "BYbALOrVAp7XW7LujKJoN5rvG2T0TP//lTHZUIzxx7U="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "38"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:59:53.683Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 30,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "eg2CixootoabqeBzUDVdBYmnnH/xxRmbmkX+WbbN3Us="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "39"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T20:59:53.706Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "61UCzvEnlDE1WSL4tk+xyx9g3s3/q+xojlRb9j7wTXM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "40"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T21:15:18.942Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 32,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "g4UT+mY6AgCq1cx4x7hNek/D3OWZCdQxWuCt6Iye1+U="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "41"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T21:15:18.965Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "+ksJ2pxzjOqUEY3P8ZpYexIsNDlSAucZU3wusqnIF7s="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "42"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T21:16:23.423Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 34,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "M6jhrDUNnUEXEaAQ6tYeZPodPOG+f+9ev/8eY4ouNN0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "43"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T21:16:23.446Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "sjVcWwDCtEip+v6JuA407itNLewFfXzSyrXc2RB6VcE="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "44"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:00:26.404Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 36,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "MTlabRzjtOijPJAF/pTPreSced+VMPcKZgXQCBLpJU4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "45"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:00:26.467Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "2BkjGIk92yBltyj78ax5i+4WYjgBl2FeeQrmwTWsQOA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "46"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:25:12.225Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 38,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "WjAAWBD1wTmJLia0k6+NdQSLDp+Dy/NtWV+I+WF7v4g="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "47"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:25:12.284Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "0erf0IABXz3Gb2gnJE2c0LiM33iDzVyk6f56kRgOnrg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "48"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:43:23.695Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 40,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "TOAFxLr9q/vXj55OjrtIuFfnaAqbwEi4z+E5s4ffZ3U="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "49"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:43:23.714Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "5Jdh1kZxowtvJMciUApPgi7ht9pTusJwCcHOrbmKl/I="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "50"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:46:11.166Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 42,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "MEpHC20GSqQXL06ufwnyUmtYS9WHdkypKx9zGWC9AgY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "51"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-01T23:46:11.189Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "RdUXghUpEglLpei6XIv30Ljlt+uX1025lF8FW2QoUZA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "52"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T00:14:20.861Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 44,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "+Xe3PaqyAVR7qx1To+JLihC6ZYqNwqqDMHfBb2Vo8aY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "53"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T00:14:20.883Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "DXAbUOUhkfcqtp48Uk1LsAMSU9BGeaXaLb+2Qw3yrAM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "54"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T00:17:31.411Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 46,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Q4kkK0qrCwG8jjTmvSkwmmpwPqf2mrGDkg++eMG+ho0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "55"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T00:17:31.434Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Pbn4chlXb8geeKSz41bfqaCPDGW7bTeZXQMFcllk0J4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "56"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T00:37:10.489Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 48,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "/rwJCLLX4eOQr1swhAn+Xdbu8ogZLBTtu6/YQeG2GGM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "57"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T00:37:10.511Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "kctCs9HiGd3oWOxKyYWBTc/fDK5y0XFy7bVriDWsuP8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "58"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T03:31:19.761Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.flc.submitted",
+    "resourceType": "flc_license",
+    "resourceId": "1c1c6564-08d2-40d7-9c3f-cd3f5c1989e6",
+    "outcome": "success",
+    "correlationId": "6d63df8f-3966-4685-bdb2-9333d0a082ff",
+    "metadata": {
+      "licenseNumber": "12-3456789"
+    },
+    "eventHmac": {
+      "__bytes": "JOa2V2LFE3Ue80G/TNkqQ6tMwaaK7WkXeL9qAIGJR0Q="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "59"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T03:31:19.810Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "AssertionError"
+    },
+    "eventHmac": {
+      "__bytes": "R3xxqSeXjO4K1pRAkwX5amZJFrQpfWgxb45xobWkn/s="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "60"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-02T03:39:44.196Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.posting.created",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "25177b12-2a54-4484-a0c6-dfe39b49397c",
+    "metadata": {
+      "wage": "18.5-22",
+      "title": "Almond harvest crew lead",
+      "county": "Fresno",
+      "wageUnit": "hour"
+    },
+    "eventHmac": {
+      "__bytes": "+XD3IfVVxgmJ8z7A/sceYmzSOxT2p2oMGmS2b5+syDU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "61"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-02T03:49:12.395Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.crew.created",
+    "resourceType": "crew",
+    "resourceId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+    "outcome": "success",
+    "correlationId": "e0e44132-3440-4062-8a39-a5766a3cfa0e",
+    "metadata": {
+      "name": "Crew A · Almond harvest",
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e"
+    },
+    "eventHmac": {
+      "__bytes": "5unAIdB5gLgveGExTsimaM9mEApeNTPO0Owv6Un7HVQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "62"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-02T03:50:08.809Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.created",
+    "resourceType": "shift",
+    "resourceId": "8bfabfc0-3b96-403c-ab27-148125726153",
+    "outcome": "success",
+    "correlationId": "3169af4c-7776-40b7-8b80-c1d4646ee153",
+    "metadata": {
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+      "shiftId": "8bfabfc0-3b96-403c-ab27-148125726153",
+      "shiftDate": "2026-05-02"
+    },
+    "eventHmac": {
+      "__bytes": "JZItaz0rjsw1Xfvvl1eywjFCRGyOondIXdfrZA3cnx8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "63"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-02T03:51:34.203Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.payroll.line.updated",
+    "resourceType": "payroll_line",
+    "resourceId": "d659f48f-6dd4-4743-a763-8350262ea501",
+    "outcome": "success",
+    "correlationId": "e96b0488-0f4a-4aa8-a87b-f1fc21d809d8",
+    "metadata": {
+      "fields": [
+        "generated",
+        "count=0"
+      ],
+      "lineId": "d659f48f-6dd4-4743-a763-8350262ea501",
+      "periodId": "d659f48f-6dd4-4743-a763-8350262ea501"
+    },
+    "eventHmac": {
+      "__bytes": "8NLLcvaNdG2AWlwiygb8mPQ9fG9LX66WvG+07ED2DnU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "64"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T04:12:36.953Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 56,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "ES8BK74XAO2JB9fAGcyfwsBRsQxxdSDu8SyQ/TuyPUE="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "65"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T04:12:37.012Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "IMCXSGHv2Tv8GrRczYUj8P/kyDVEiTgCYMNRdtQOHKQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "66"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T05:17:23.099Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 58,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "mpnR8thPQokebntXjkWUQKe2yCz0HZDkzgqIWOsx3RQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "67"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T05:17:23.124Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "jq2lgnC5mreLnCGIutYLg8k7kbgLHG0o9qn61WDvZeI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "68"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T20:11:53.498Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 60,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "YwGLautoN8NQWlYuwUHrUVuHjXL7TKZHNjnYEmqkbFY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "69"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T20:11:53.522Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "oj8m491GRGpK6WLrXURzn58jErQLBvAnKTJ3jZJvI3g="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "70"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T20:35:56.346Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "v7bt24elVZSrMbS2UPlykBe0VxqxWGZIQuKXrzihJHw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "71"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-02T20:42:36.098Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.payroll.line.updated",
+    "resourceType": "payroll_line",
+    "resourceId": "d659f48f-6dd4-4743-a763-8350262ea501",
+    "outcome": "success",
+    "correlationId": "98c5cf40-040f-4479-a636-5a55b53e7e29",
+    "metadata": {
+      "fields": [
+        "generated",
+        "count=0"
+      ],
+      "lineId": "d659f48f-6dd4-4743-a763-8350262ea501",
+      "periodId": "d659f48f-6dd4-4743-a763-8350262ea501"
+    },
+    "eventHmac": {
+      "__bytes": "9r2Q0WF1IyNf4V1d5M2GKnWmK+pBYnBkYTGjm8jdncI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "72"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T21:11:22.583Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 64,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "1oY9pZoMt0v8Is2nlRNxdUA18mHPmxXZiDB7LuH2ImQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "73"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T21:11:22.617Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "hpCQXZhzAz+Us0Qpzg++a+YhEwgjJWFmitlSzG7FL94="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "74"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T21:17:51.924Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 66,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "pQaKmWN3QJo4TpqDplD2XuXJ2RIwGAYSyYQi0eSVsCg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "75"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T21:17:51.959Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "d1+luMqCVkiBe61YQRaax9DO7U2vfnZhVGgrLN4uB+s="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "76"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T21:19:46.806Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 68,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "uObmHLSBfdn8uyjShx6dHhqKqYg2h+QfdlnTcBLcoZk="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "77"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T21:19:46.832Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "a8WvkKHjlC8jGcDP4e+tA+Kof+j01S43ENtt69Ri1zg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "78"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T22:57:04.745Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 70,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "vasqZ2nQSL4UvcVTuIlxPUE7qTpZ/M63YQzXsM1oI4c="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "79"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T22:57:04.824Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "lh0uSeIaDA4yxfrnf8V/z0bZ3KeVqXx4Y41yaX5APmI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "80"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-02T22:59:55.136Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.payroll.line.updated",
+    "resourceType": "payroll_line",
+    "resourceId": "d659f48f-6dd4-4743-a763-8350262ea501",
+    "outcome": "success",
+    "correlationId": "b1720d88-66a1-49d9-9542-562e9ee72c58",
+    "metadata": {
+      "fields": [
+        "generated",
+        "count=0"
+      ],
+      "lineId": "d659f48f-6dd4-4743-a763-8350262ea501",
+      "periodId": "d659f48f-6dd4-4743-a763-8350262ea501"
+    },
+    "eventHmac": {
+      "__bytes": "0rZ/zYjht09KeQz4lxuCyK3KZ5LRAR5sATg+D/zMJH4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "81"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T23:13:13.059Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 73,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "0jU5Ox+ZxTM+j6b8CAbWSWDMvXWsynieuRscyZb1dAs="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "82"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-02T23:13:13.084Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "3P3xq6IlhLv0n2aJimO6gQHhR9Txm2vRV+rTBQD/VRI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "83"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T03:46:03.698Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 75,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "WxDdvIgckI3ndRTWsH0oQHTmteLIHgAlfkDnzCspKZE="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "84"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T03:46:03.728Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "tWAldYPcAp9tM+/lEE+MkYCFEfGPyXY+EMORACGmddc="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "85"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T04:01:20.074Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 77,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "xYppsgylb8em7mH5EeUtNKS2sVwcFuRCZn5QV+z4Sfw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "86"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T04:01:20.096Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "cxr5YFB2AiXRggQjU/YTRBwSglWIfiOnbxFv7dFAVDk="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "87"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:10:47.638Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 79,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "7kIqW8xOAJ+wSW7wjxgk3CnBorzi2RrSOdiFG73GcRM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "88"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:10:47.657Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "kzhc8echNP8fh726Ku480SSIPhN4DDfwe2C5nmHIDa4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "89"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:11:01.858Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "rebxLgTJXpVGGkJjzOGZQDPAGY+TU7IMAnadpyGro50="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "90"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:11:06.255Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "ZRHsmHwKqS6csJD9KTC707jNYUntHfF8PMB4WpencBM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "91"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:16:33.979Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 83,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "viJyG3AxyokmkcHZXmKEpItFKxJESErGLUp8Xa8q+TA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "92"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:16:33.995Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Qt+2lradMt8/2dlI0hsOXGQu8FYGpKRJSHhPU5CoH5U="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "93"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:17:33.000Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "0kttIDyBRs0c3vD3Pu4RtEN2iAB/thLxGHMOuZog9zo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "94"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:17:33.030Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "L9/7wT3lURMT7YtjuJb9fgkaYKPc/aLLb7mEs9l6WTg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "95"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:17:57.355Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 87,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "AZfP4M95cF/c4q2q3OftEd3IQC2LinFyr0RPxuSn968="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "96"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:17:57.377Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "2hdphycCMd5LeOw/TgMuSjhQHm7IJbhRk9AusSv5DAo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "97"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:19:49.896Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 89,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "8WeDruJd/qtYQaZGMxVx5Ne4puxGzMfbbsJD9025Ce0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "98"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:19:49.954Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "hEqUvqaIvYCA/fDo5Z/2sNwA80bPMLeY9WeE3/qdX1E="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "99"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:19:55.129Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "EIXeSjZAQPi+262cyFfegOEVTbAhre2clgFzYbAJcso="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "100"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:20:58.328Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "ReuRVrrvs9Cf5wYMaeQ8q0RPl5WwOOnLf/pDlu1K5Kw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "101"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:23:28.531Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "QylG0OogR3zOUlsnH+4xRqulAB2rpWW+YtWJBQp6FxI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "102"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:24:49.941Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 94,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "ZO5eYNZmS08Hs+LzBxg3OlJEPnm0RnIDEgNa2QWoKpg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "103"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:24:49.999Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "i0/Azb80XZ7DhSV0Qj7MU4cCUhqFmmsQf1L/z6mmXyY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "104"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:24:56.799Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "ubAEHPdJ4kp88PSyMojPVlmS43n+rkYFWj4LFlG1hBo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "105"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:35:44.996Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 97,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "gxNKbFcq8YXZ/3t9EOVv3PmQC1XcfcFKELzHxpJnLlY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "106"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:35:45.017Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "64OQMlFti5KUaTdSdD7rIcyRYUcKCmiie9eKZs/fl2c="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "107"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T06:35:51.185Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "nYssUZ9Q1AkuXwt4lEiT1G7VGvHPcsurzcpbhmlaV0Q="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "108"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T07:05:42.787Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 100,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "ThrgamH40tYnHEneAHe1zTePwkan1xCJ9Zb++6D/11c="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "109"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T07:05:42.809Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "JzLeT/ykMdCfYqFfcLwzEIZDnbK+PKfxeZDVquejInE="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "110"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T08:53:18.831Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 102,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "lpNfRoORENvHLfTD0Zquixf3nZQwyRADMwakrqQq+jQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "111"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T08:53:18.854Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "bZmKDbD5Y2sgqC8yxRics5DJzFhVF2jhO2ZQymZTOWA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "112"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T21:15:48.087Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.screening.replaced",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "68a74846-3f08-4137-b3b5-ec5a376d8bd7",
+    "metadata": {
+      "count": 1
+    },
+    "eventHmac": {
+      "__bytes": "Kjuja1EN75iuXzdcxzeDsxx9zjGK15Wp9O9mNqnRkyA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "113"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T21:37:17.952Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.posting.published",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "64682def-3894-4f28-a2d8-ee8dcf49a996",
+    "metadata": {
+      "keyword": "[unsanctioned]"
+    },
+    "eventHmac": {
+      "__bytes": "hJlm/GEhUgYQYCPXRNq66JKV5OoQITT7fQAMe0WT0p4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "114"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T21:39:38.579Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.posting.edited",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "5661e22f-a0ca-48c4-b211-70de787f8db8",
+    "metadata": {
+      "fields": [
+        "wageMin"
+      ],
+      "renotificationsQueued": 0,
+      "renotificationsSuppressed": "[unsanctioned]"
+    },
+    "eventHmac": {
+      "__bytes": "+J5Mgz/aXPY+dZTwBROcVQB2iAm4hlZ4WsBBbhxONSg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "115"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T21:39:38.617Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.screening.replaced",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "06300c12-4afd-463c-9bbb-ac885b8a4188",
+    "metadata": {
+      "count": 1
+    },
+    "eventHmac": {
+      "__bytes": "Ahuy1j9YDgAJatA1niLq9GhRhARGqmSP47JWrtdJs2k="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "116"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T21:46:52.601Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.posting.edited",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "38146b6f-5dc4-4ca7-b3c3-8ea7a3d403a7",
+    "metadata": {
+      "fields": [
+        "wageMax"
+      ],
+      "renotificationsQueued": 1,
+      "renotificationsSuppressed": "[unsanctioned]"
+    },
+    "eventHmac": {
+      "__bytes": "c0C+rtjQQmt/GgDN42cr4oCqkCkONIMcfqgszCiZGF8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "117"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T21:46:52.630Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.screening.replaced",
+    "resourceType": "job_posting",
+    "resourceId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "outcome": "success",
+    "correlationId": "b9e399a9-1df9-4a8e-b23d-faf6cdce5fd8",
+    "metadata": {
+      "count": 1
+    },
+    "eventHmac": {
+      "__bytes": "V5sjrD1w9GdQA3egmNSrPFJWtTDIlCl6W0eZL0k5sjM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "118"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T21:48:32.173Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 110,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "BiWLObyy30wdoDqTArd6GjsQX/inGgT633ytM8uXbsg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "119"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T21:48:32.193Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Vmhp7XP7ZReqB+Fe22uzTCun3oH2xR2OP3KvqEwGNtM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "120"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T21:53:25.433Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 112,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "8NeR+SPzZNiRR0twKxp/MaacjsCqtFAoeZcxUWLAhhA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "121"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T21:53:25.453Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "taQtNgUTV/3IIOTHoZnArIRvYmAcE3gYsugPeRdKm7o="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "122"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T22:00:20.388Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.posting.created",
+    "resourceType": "job_posting",
+    "resourceId": "37b685eb-cacc-4d80-ae9f-fdd36b544903",
+    "outcome": "success",
+    "correlationId": "969671fd-8614-45d6-864f-0f44834b5e41",
+    "metadata": {
+      "wage": "20-25",
+      "title": "Grape harvest crew",
+      "county": "Madera",
+      "wageUnit": "hour"
+    },
+    "eventHmac": {
+      "__bytes": "do7vmrE+moojWV+DuXHGjYaUDHD+Hbzan0tZzsU9CHw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "123"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T22:00:20.467Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.screening.replaced",
+    "resourceType": "job_posting",
+    "resourceId": "37b685eb-cacc-4d80-ae9f-fdd36b544903",
+    "outcome": "success",
+    "correlationId": "091245bd-af74-43a9-a4ee-8abb18c1989b",
+    "metadata": {
+      "count": 0
+    },
+    "eventHmac": {
+      "__bytes": "gKVG8oZ6FPEsMPUHtH1hAil92y6FOPZAxJQUXKVwnFs="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "124"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-03T22:00:20.513Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "job.posting.published",
+    "resourceType": "job_posting",
+    "resourceId": "37b685eb-cacc-4d80-ae9f-fdd36b544903",
+    "outcome": "success",
+    "correlationId": "45e043ca-df56-43af-b254-40dab89386b5",
+    "metadata": {
+      "keyword": "[unsanctioned]"
+    },
+    "eventHmac": {
+      "__bytes": "JmryCKimMlqb2tC4mpD04v8YSh96fhhvVY1YPOlvTwU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "125"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:21:53.816Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "q9MNR1CzdDD0qneYWmy7XzGySDhH0CCLzjNsdwpm1o4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "126"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:22:07.772Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "BLdDxpz/vGbtt9LV8394B8PlSCyyEVc5S971VxGq6Wo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "127"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:22:16.453Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "yOteke4ttykL0/wGkWAtLLaFceXOsZ78JV+JFoqhE1o="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "128"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:14.803Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "z1GVbG6+nCb0UeQvNRqR1B36/fv8XmdPofSG3wsE3Nw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "129"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:15.547Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "YFvfHSLB2Mi0FvC2zLZpbTABCm+Gmb1IiSXPlQw4Shs="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "130"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:15.899Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "lOQV/AXMFnsCqT0KWbY52+XCx4ndcdGpsI7pQYjxVec="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "131"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:16.217Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "6tDfLd6NQ7r30BS4CEaFoTpPESPjM1YDORp8iVI0VRM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "132"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:16.328Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "QrAvhfwkLeW9fsYgNaiCeFwuXV2tSluADo/uFVi8o6M="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "133"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:20.963Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "Lkr0v+7orKNvuEnWe1vVxRjVFHZDO7dbaPi6loHvgYU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "134"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:21.117Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "2DTEEErkTtm6okUmZGikwu664vESQ83ZJG/9QHFEE4I="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "135"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:46.024Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 127,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "c3s7SSIzDfVQ6SK8sFnrif9ficxiXrs2me5P8RLEKwg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "136"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:46.045Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "3tHAZLW+Gx0bcs0B7sOWxPPWpOL/kz4EPst+4sQGxfk="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "137"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:23:50.442Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "YPi9ElRyvb4KXDgjCw7MhjsVGMQZkXIMpafG0xz+QxI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "138"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:00.032Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "jBjxjjcx71XUHGl784bxG5YedatuLsmJ4Dv/lY3ba6Q="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "139"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:03.662Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "9lsRZ7mB98biRIOvpwKzkunmoxN00sJxeCFfNpPKHaQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "140"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:08.368Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "fejjQzEToBEWZxJmCKB/3PJjZvYoUQHsjMa6UXhrME0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "141"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:19.659Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "DCW+zavh/G80y2H56FabV+cftIdvR9PfBZjT7vaJKYY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "142"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:24.065Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 134,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "VhyiuDG94K+Rl9hj8VsBFbesJFQVeub5HHem+q6EYMg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "143"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:24.122Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "SMNrnPILOfEfeksD38/E2r12xyXTjO65vtzleoboQVw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "144"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:28.953Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "7AoBf/IN+P2DOqbUj0TF05H93+G5/yCkRtT5JHz26Qc="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "145"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:25:57.304Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "XHY5Hu+TW0uVLV7TNtW4cQpeTcHe7s6ZVGvvxsyo0qA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "146"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:26:04.263Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 138,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "sV9iTYnRWmAi28kdgVhbtVaFhgZsFZeJMx0dWVJxm20="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "147"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:26:04.285Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "90Ry1mZVjFhN59mKNIYPnt4aeRhbyAmXBku7bwKYcfM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "148"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:26:08.793Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "uMLlR0NQb6kMDGOEWj/n/F8CHQNXeBkw2b3azvh3TB8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "149"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:26:21.319Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientValidationError"
+    },
+    "eventHmac": {
+      "__bytes": "T87XbaNZAQ2XoFs05lWdLB5xD2e23eRltEyvnH7cKPM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "150"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:41:40.249Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 142,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "drkg+NdP+EdVkLaPlX52GdHIGotugqyOSPwo2G7yCVI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "151"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:41:40.270Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "GAKQsXg/PUJB54EGuq+MhBTX+AY2VZIuFo1gnVJO8w0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "152"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:42:38.348Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 144,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "k39vRuAmg+HiWLrGUqXi1qHDhKhbJtGd9kgoB5dWy64="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "153"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T22:42:38.372Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "Kp8DQMKkTqJ2fxqsM6ZvaSFn338XgDcpUduQV6pgEFg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "154"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.532Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "KYMXH/uCLRSQNunUJVqT7SjoeB2SIBgivbPMLLfJlaE="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "155"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.541Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "0Oftk0Vgqu+eKo9v5lvxx4mUE9KWStbdmYmsQJdJPYM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "156"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.552Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "Mn0cskztdQEuOakdCBH/xZIiTz+vf7g29gQzOwVgYJM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "157"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.565Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "FouqIQzJVw1Abr5wfxx2qNJUUKkuyeicnrgb/OgaO3U="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "158"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.577Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "ZNZpuNfz60cO8a2aaoGKAp7ib+RQrX44BwGKEaxW46s="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "159"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.590Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "6IYoJXDQUKdIsfDm5MDI92vaeB3TCCKnR6WnvL4nARk="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "160"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.598Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "h4aO0I/SGedlY0xyPgPvtD9GT8VYuDjt9SoqR5zMYyA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "161"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.607Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "0zF079MmCA7G1fkMZFGDFPkKQfrRE+/mRhwxTBU2pgM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "162"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.616Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "Opst7eLzxE31HF8EUizDszg8Nn4re7tSx16YoCzJ8CM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "163"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-03T23:45:12.630Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "j9cWfsSSlGVFG8LeH0KQYJJhF3B7U0HwbKuKBELbBs8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "164"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:19:35.312Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 156,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "qBLWw/2UvRRgq/K7VcWmDWG08fHUTT4YHix/11EWNYw="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "165"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:19:35.375Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "iaURi6kVsPCART8rPq3PCfLYya45MuXmlA4hoUPFiTI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "166"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:02.953Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "eNxV1zUg/xRfVg3w0dO7Bt33ZIinM8WCHG/edpmvy9k="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "167"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:02.962Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "erYnXhX0hBNUglGmbqCxFDLW2mpq5ZEop00mOSXgm0s="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "168"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:02.973Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "ujGM9bpXHLWkC6Pix+TklETr/mZQl/t9WSheRCsELJo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "169"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:02.983Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "RIQiTYoijOZywSazcb6R0GK9I39v/O4RF2bWkljDFzI="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "170"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:02.997Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "mhnN3+e3gzdZYd18DDH17wzG6kIdUu6RM/JTOPKO8VM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "171"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:03.007Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "K8lY5W77vg5PWyjocTX40afGkQvwm2f0XID+4D3xlgo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "172"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:03.040Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "2PiUF9HZ0TBvBl9Av+jLu5wGFumuM9eU2vKxJovtHW4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "173"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:03.048Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "vZwEtdFBt4qJXigeHsUk1D1kAI2B14N+YzHKPDGLyME="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "174"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:03.057Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "1+DW7lndPMSsbCoQ5ktR2bvZYRSDsAP+AbxkHl6OjLQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "175"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:21:03.074Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "error.unhandled",
+    "resourceType": "request",
+    "resourceId": null,
+    "outcome": "failure",
+    "correlationId": null,
+    "metadata": {
+      "route": "",
+      "method": "",
+      "errorCode": "PrismaClientKnownRequestError"
+    },
+    "eventHmac": {
+      "__bytes": "w8r5rjF9TvVudZ38LIu+G4QGrKgb1+4oPeaPXRM5nT4="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "176"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:23:36.343Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 168,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "v6kHj5NVdqtUmGuVigL3YTjnYx4mQHu6JlXlX1KwsII="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "177"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:23:36.363Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "yDvcAv85fPewfE8slwGtph/r47eO8sPzBmVsUv3+CV0="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "178"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:25:23.073Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.updated",
+    "resourceType": "shift",
+    "resourceId": "c60daef4-c173-470e-8248-5e7bccb2ca50",
+    "outcome": "success",
+    "correlationId": "bd7eb0f2-2240-4b8e-9fdf-4e2a7c244530",
+    "metadata": {
+      "fields": [
+        "crewId",
+        "shiftDate",
+        "startTime",
+        "endTime",
+        "locationLabel",
+        "locationLat",
+        "locationLng",
+        "status",
+        "shiftType",
+        "metadata",
+        "notes",
+        "notifyCrew"
+      ],
+      "shiftId": "c60daef4-c173-470e-8248-5e7bccb2ca50"
+    },
+    "eventHmac": {
+      "__bytes": "EqlyDe8jz3MOyuL1eIZtiF0dfEGKfTsUgvDtXY8O00Q="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "179"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:33:42.123Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 171,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "ndQjzEzBlodrW3ggasDX1mx2+ZdX70e9LJtFL4A3d2c="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "180"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T00:33:42.144Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "8QFW72T9mQTuS9neasXWwRiXB6SMjcN1RLnmxuhxtmY="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "181"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:43:53.412Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.created",
+    "resourceType": "shift",
+    "resourceId": "96b3e75c-0a0c-4e80-879a-6d9c5cfbcec3",
+    "outcome": "success",
+    "correlationId": "6cbf33c8-e55d-48f0-b24c-2bdf18982f77",
+    "metadata": {
+      "shiftId": "96b3e75c-0a0c-4e80-879a-6d9c5cfbcec3",
+      "shiftDate": "2026-05-06",
+      "sourceShiftId": "[unsanctioned]"
+    },
+    "eventHmac": {
+      "__bytes": "L8L0Duyk2H/xIyt9Vsg9+YJJwUQsTkKIFsA+e3iSXrc="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "182"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:44:11.306Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.cancelled",
+    "resourceType": "shift",
+    "resourceId": "96b3e75c-0a0c-4e80-879a-6d9c5cfbcec3",
+    "outcome": "success",
+    "correlationId": "fe5ed2a7-a9a0-4dec-949b-ef823fe9e163",
+    "metadata": {
+      "reason": "deleted",
+      "shiftId": "96b3e75c-0a0c-4e80-879a-6d9c5cfbcec3"
+    },
+    "eventHmac": {
+      "__bytes": "ffJdcgkZhU8/W9ncSXVvV54g4bZkOLEd9wsiNm9wlZM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "183"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:47:15.705Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.assignment.updated",
+    "resourceType": "shift_assignment",
+    "resourceId": "3137102e-9c12-4b22-a65c-5eb2d63bacf5",
+    "outcome": "success",
+    "correlationId": "1e9c65d1-80a3-4781-880e-cd71b5d448ac",
+    "metadata": {
+      "fields": [
+        "status"
+      ],
+      "shiftId": "c60daef4-c173-470e-8248-5e7bccb2ca50",
+      "assignmentId": "3137102e-9c12-4b22-a65c-5eb2d63bacf5"
+    },
+    "eventHmac": {
+      "__bytes": "UcffAJbGobR4r3QQWplV1TjzqZPlsAS/OHFQ1FtysH8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "184"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:47:30.955Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.assignment.updated",
+    "resourceType": "shift_assignment",
+    "resourceId": "3137102e-9c12-4b22-a65c-5eb2d63bacf5",
+    "outcome": "success",
+    "correlationId": "adc0356d-fe5a-4d4c-8df8-8aca8fe839ae",
+    "metadata": {
+      "fields": [
+        "status"
+      ],
+      "shiftId": "c60daef4-c173-470e-8248-5e7bccb2ca50",
+      "assignmentId": "3137102e-9c12-4b22-a65c-5eb2d63bacf5"
+    },
+    "eventHmac": {
+      "__bytes": "/laV7M21zgz/+ORJAtQmsdadIB1cta1kjgetcQsHZSc="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "185"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:58:04.472Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.updated",
+    "resourceType": "shift",
+    "resourceId": "c60daef4-c173-470e-8248-5e7bccb2ca50",
+    "outcome": "success",
+    "correlationId": "3ab4ce94-a4a0-4a67-bc6d-fced2f268d35",
+    "metadata": {
+      "fields": [
+        "crewId",
+        "shiftDate",
+        "startTime",
+        "endTime",
+        "locationLabel",
+        "locationLat",
+        "locationLng",
+        "status",
+        "shiftType",
+        "metadata",
+        "notes",
+        "notifyCrew",
+        "repeatDates"
+      ],
+      "shiftId": "c60daef4-c173-470e-8248-5e7bccb2ca50"
+    },
+    "eventHmac": {
+      "__bytes": "amqjgp2vuw5kuoyUhKUKyauXJ750IA55W/KQSvbTD4o="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "186"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T00:58:04.971Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.sms.sent",
+    "resourceType": "sms_log",
+    "resourceId": "ab019c29-14ad-4fc9-9fb0-9a5eff864808",
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "dryRun": true,
+      "toPhone": "+15551234567",
+      "template": "worker.shift.updated"
+    },
+    "eventHmac": {
+      "__bytes": "oh12vf5/I8FGTZ2B4X9Z4whel+VsW/ovKyiZsJ7JPCo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "187"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T03:46:59.727Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 179,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "eyOCGYbd2N+i3pisZGN30tsf99JfmsAq+3OnwyR2XIQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "188"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T03:46:59.748Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "8vnzAmVEs/tPMmH7ZrwNfv/BKXFua8ABrGDB8dciOgo="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "189"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T03:52:20.281Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 181,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "caym0bRf1DEWNwpi5gT+JTtnzi0oKb+ChgzGTZAkOow="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "190"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T03:52:20.340Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "kAA3T/oQSfXpCQyKgVQZe75ZGB+/jETVuuu5szj95xg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "191"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T03:54:17.657Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 183,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "tWI+Z4t++QgZwFNciMjQt7B+tVNwZnfOD7nXR1gb+RQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "192"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T03:54:17.679Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "zmPPhfngll1S4No0ZeFy4+KPpkYoTu35N+j5xZgriDQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "193"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:13:13.298Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.shift.created",
+    "resourceType": "shift",
+    "resourceId": "6cbf03e8-0d88-4790-aedd-6e311d96ae65",
+    "outcome": "success",
+    "correlationId": "b01aa598-2f35-4c37-918a-8bf8d17b9066",
+    "metadata": {
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+      "shiftId": "6cbf03e8-0d88-4790-aedd-6e311d96ae65",
+      "shiftDate": "2026-05-04"
+    },
+    "eventHmac": {
+      "__bytes": "dcWXQj+89S7fhVhFIHC3lPjMozJjLiqXAwEevlfPYYQ="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "194"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:18:00.987Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.crew.member.added",
+    "resourceType": "crew_member",
+    "resourceId": "3c6904ef-0be1-47a2-a938-440ae5166916",
+    "outcome": "success",
+    "correlationId": "6fb25d65-c30d-416a-8b12-04923461c2fd",
+    "metadata": {
+      "role": "member",
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+      "workerUserId": "test_worker_1777844344062"
+    },
+    "eventHmac": {
+      "__bytes": "/q9hZxpucMVTU2TDSBnJi0Lbu6yzX/n4H0qu8pHeDLA="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "195"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:18:03.989Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.crew.updated",
+    "resourceType": "crew",
+    "resourceId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+    "outcome": "success",
+    "correlationId": "6cb410fe-7fa2-42a8-b21a-3b408de61fe7",
+    "metadata": {
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+      "fields": [
+        "name",
+        "color",
+        "notes"
+      ]
+    },
+    "eventHmac": {
+      "__bytes": "BYPbR8egxLcs9Tq5MFA0fYOb5A0WXDDwMZbcAPl0aeU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "196"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:18:49.805Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.crew.updated",
+    "resourceType": "crew",
+    "resourceId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+    "outcome": "success",
+    "correlationId": "6e9dadb7-77fe-44a9-9e85-57938fbdbcab",
+    "metadata": {
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+      "fields": [
+        "foremanUserId"
+      ]
+    },
+    "eventHmac": {
+      "__bytes": "e8HHQUARLAu59Cf+ZwP0PTWUhzshGwqd/ACg6u7FRso="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "197"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:18:52.187Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.crew.updated",
+    "resourceType": "crew",
+    "resourceId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+    "outcome": "success",
+    "correlationId": "9e1c478b-b620-4379-8b32-4af6637dca0f",
+    "metadata": {
+      "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+      "fields": [
+        "name",
+        "color",
+        "notes"
+      ]
+    },
+    "eventHmac": {
+      "__bytes": "YQr6rLwD+qDSiyrbku4LNTNYzmHXOMtpxoYvZTVjWUM="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "198"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:19:07.524Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.compliance.item.created",
+    "resourceType": "compliance_item",
+    "resourceId": "3563ba37-30cd-40f6-9c51-8373ed63cdd7",
+    "outcome": "success",
+    "correlationId": "1001ad7f-0187-4277-86d9-d774a6a93c41",
+    "metadata": {
+      "itemId": "3563ba37-30cd-40f6-9c51-8373ed63cdd7",
+      "itemKey": "test_compliance_item_release_qa",
+      "category": "documentation"
+    },
+    "eventHmac": {
+      "__bytes": "XAstHmlRQWH7wZv67CZFh870Wo+NEC7vUsaZ9DBiwe8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "199"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:20:25.601Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.payroll.line.updated",
+    "resourceType": "payroll_line",
+    "resourceId": "d659f48f-6dd4-4743-a763-8350262ea501",
+    "outcome": "success",
+    "correlationId": "6095cf73-301c-4712-b444-66ce072a1474",
+    "metadata": {
+      "fields": [
+        "generated",
+        "count=0"
+      ],
+      "lineId": "d659f48f-6dd4-4743-a763-8350262ea501",
+      "periodId": "d659f48f-6dd4-4743-a763-8350262ea501"
+    },
+    "eventHmac": {
+      "__bytes": "ifdyTvqAIRivNdVkOmtKiy399AUcJ4VrSkSXsGyl/zU="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "200"
+    },
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "occurredAt": "2026-05-04T04:22:43.546Z",
+    "actorType": "employer",
+    "actorId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "actorRole": "employer",
+    "actorIp": null,
+    "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "action": "employer.crew.created",
+    "resourceType": "crew",
+    "resourceId": "fc056a59-a4d5-4905-bb06-8bb1f9601056",
+    "outcome": "success",
+    "correlationId": "4d0d46f8-c048-4c03-84fa-4fd834156dd3",
+    "metadata": {
+      "name": "Crew Z · Smoke test",
+      "crewId": "fc056a59-a4d5-4905-bb06-8bb1f9601056"
+    },
+    "eventHmac": {
+      "__bytes": "ZuTRXSCTkpXmKj7EN+3/0MnJcuI99fi3xTc/6q7oSS8="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "201"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T04:41:16.322Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 193,
+      "partition": "2026-05",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "q/afsH1vQZTr3HknOv4fByFQqiA5/hLvPRSvmoi6tpg="
+    },
+    "eventHmacV": 1
+  },
+  {
+    "id": {
+      "__bigint": "202"
+    },
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "occurredAt": "2026-05-04T04:41:16.343Z",
+    "actorType": "system",
+    "actorId": null,
+    "actorRole": "system",
+    "actorIp": null,
+    "actorUserAgent": null,
+    "action": "system.audit.verified",
+    "resourceType": "audit_event",
+    "resourceId": null,
+    "outcome": "success",
+    "correlationId": null,
+    "metadata": {
+      "rowCount": 0,
+      "partition": "2026-04",
+      "mismatchCount": 0
+    },
+    "eventHmac": {
+      "__bytes": "soeH4sFub5IG8qO4PYTtLTUbM7XiNpt0mJCzwMTHjkU="
+    },
+    "eventHmacV": 1
+  }
+]

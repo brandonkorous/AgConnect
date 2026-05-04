@@ -19,6 +19,9 @@ export type {
   AddressValue,
 } from './form/address-autocomplete';
 
+export { MapPreview } from './map/map-preview';
+export type { MapPreviewLabels, MapPreviewProps, MapStyle } from './map/map-preview';
+
 export { Skeleton, SkeletonBlock, SkeletonAvatar } from './skeleton/skeleton';
 export type { SkeletonProps } from './skeleton/skeleton';
 

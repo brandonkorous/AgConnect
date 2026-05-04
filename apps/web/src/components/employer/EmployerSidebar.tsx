@@ -100,7 +100,7 @@ export function EmployerSidebar({
     const current = active ?? derived ?? 'dashboard';
 
     return (
-        <aside className="bg-base-200 border-base-300 sticky top-0 flex min-h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6">
+        <aside className="bg-base-200 border-base-300 sticky top-0 flex h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6 print:hidden">
             <div className="flex items-center justify-between px-2 pb-4 pt-1">
                 <Link href={`/${locale}`} aria-label="AgConn home">
                     <Wordmark size="sm" tone="ink" />
@@ -110,7 +110,7 @@ export function EmployerSidebar({
                 </span>
             </div>
 
-            <nav className="flex flex-col gap-1">
+            <nav className="-mx-4 flex flex-1 flex-col gap-1 overflow-y-auto px-4">
                 {items.map((item) => {
                     const isActive = item.key === current;
                     return (
@@ -145,7 +145,7 @@ export function EmployerSidebar({
                 })}
             </nav>
 
-            <div className="mt-auto pt-6">
+            <div className="pt-6">
                 <UserMenu
                     locale={locale}
                     profileHref={`/${locale}/employer/profile`}

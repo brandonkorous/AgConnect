@@ -12,6 +12,9 @@ export default defineConfig({
     path: path.join('prisma', 'migrations'),
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    // Schema-engine ops (db push, migrate) need a direct connection — pgbouncer
+    // transaction-mode pooling breaks Prisma's prepared statements. Runtime
+    // queries continue to use the pooler via env('DATABASE_URL').
+    url: env('DIRECT_URL') ?? env('DATABASE_URL'),
   },
 });

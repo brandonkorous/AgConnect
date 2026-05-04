@@ -1,0 +1,22 @@
+[
+  {
+    "id": "037ac845-a380-46ce-970e-6aafa59efe0c",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "keyword": "AHCL-KP3",
+    "kind": "job_apply",
+    "entityId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "active": true,
+    "createdAt": "2026-05-03T21:37:17.939Z",
+    "lastUsedAt": null
+  },
+  {
+    "id": "13f1a28e-e8ff-486c-bde3-13379acd4d9e",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "keyword": "GHC-ZRG",
+    "kind": "job_apply",
+    "entityId": "37b685eb-cacc-4d80-ae9f-fdd36b544903",
+    "active": true,
+    "createdAt": "2026-05-03T22:00:20.504Z",
+    "lastUsedAt": null
+  }
+]

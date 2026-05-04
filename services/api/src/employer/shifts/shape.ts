@@ -18,6 +18,8 @@ export function shapeShift(
     locationLat: s.locationLat ? Number(s.locationLat.toString()) : null,
     locationLng: s.locationLng ? Number(s.locationLng.toString()) : null,
     status: s.status,
+    shiftType: s.shiftType,
+    metadata: (s.metadata as Record<string, unknown>) ?? {},
     notes: s.notes,
     assignedCount: extras.assignedCount,
     confirmedCount: extras.confirmedCount,

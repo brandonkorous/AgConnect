@@ -1,0 +1,11 @@
+[
+  {
+    "id": "3c6904ef-0be1-47a2-a938-440ae5166916",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "crewId": "5ba2d896-08db-4978-9378-2747bfcd252e",
+    "workerUserId": "test_worker_1777844344062",
+    "role": "lead",
+    "joinedAt": "2026-05-04T04:18:00.984Z",
+    "leftAt": null
+  }
+]

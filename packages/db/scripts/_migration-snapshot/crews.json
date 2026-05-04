@@ -1,0 +1,15 @@
+[
+  {
+    "id": "5ba2d896-08db-4978-9378-2747bfcd252e",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "employerId": "user_3D9PuMXk8L7oGT5ZUzJcMn7xA44",
+    "foremanUserId": "test_worker_1777844344062",
+    "jobId": null,
+    "name": "Crew A · Almond harvest",
+    "color": "primary",
+    "notes": null,
+    "createdAt": "2026-05-02T03:49:12.391Z",
+    "updatedAt": "2026-05-04T04:18:52.180Z",
+    "deletedAt": null
+  }
+]

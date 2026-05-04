@@ -1,0 +1,13 @@
+[
+  {
+    "id": "be6180f0-41f9-43ec-ba32-b72489c71599",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "jobId": "5b7bc70f-b13c-4b70-9473-388d243ebd65",
+    "editEventId": "b7b7d99b-32ec-43bd-ad95-0d62bf741db0",
+    "applicationId": "37658059-9a13-4be2-a6cd-4e07126c09ea",
+    "channel": "sms",
+    "status": "queued",
+    "sentAt": null,
+    "error": null
+  }
+]

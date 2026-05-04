@@ -5,8 +5,11 @@ import { getEmployerProfile } from '@/lib/api/employer';
 import {
   listComplianceCategories,
   listComplianceActions,
+  getComplianceSummary,
 } from '@/lib/api/employer-ops';
 import { PrintTrigger } from '@/components/employer/compliance/PrintTrigger';
+
+export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -20,16 +23,16 @@ export default async function ComplianceAuditPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.compliance.audit' });
 
-  const [profile, cats, actions] = await Promise.all([
+  const [profile, cats, actions, summary] = await Promise.all([
     getEmployerProfile(),
     listComplianceCategories(),
     listComplianceActions(),
+    getComplianceSummary(),
   ]);
   if (!profile) notFound();
 
-  const overall = Math.round(
-    cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length),
-  );
+  const overall = summary?.overall
+    ?? Math.round(cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length));
   const today = new Date();
   const generatedDate = today.toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', {
     year: 'numeric',
@@ -63,7 +66,7 @@ export default async function ComplianceAuditPage({ params }: Props) {
         <header>
           <div className="flex items-end justify-between border-b border-black pb-3">
             <span className="font-serif text-[26pt] font-semibold leading-none tracking-tight text-black">
-              AG<span style={{ opacity: 0.5 }}>CONN</span>
+              AG<span className="text-black/50">CONN</span>
             </span>
             <span className="meta text-right">
               <span className="block">{t('letterhead_dept')}</span>

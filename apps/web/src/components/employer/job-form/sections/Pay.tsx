@@ -77,23 +77,46 @@ export function PaySection({ state, update }: Props) {
             <span>{t('field_base_rate')}</span>
             <span className="text-base-content/55 text-[11px] font-normal">{t('hint_ca_min')}</span>
           </legend>
-          <label className="input input-bordered flex items-center gap-1.5">
-            <span className="text-base-content/45 font-mono text-sm">$</span>
-            <input
-              type="number"
-              min={0}
-              max={500}
-              step={0.5}
-              required
-              value={state.wageMin || ''}
-              onChange={(e) => {
-                const v = Number(e.target.value) || 0;
-                update({ wageMin: v, wageMax: Math.max(state.wageMax, v) });
-              }}
-              className="grow bg-transparent font-mono font-semibold outline-none"
-            />
-            <span className="text-base-content/55 text-xs">/hr</span>
-          </label>
+          <div className="flex items-center gap-1.5">
+            <label className="input input-bordered flex flex-1 items-center gap-1.5">
+              <span className="text-base-content/45 font-mono text-sm">$</span>
+              <input
+                type="number"
+                min={0}
+                max={500}
+                step={0.5}
+                required
+                aria-label={t('field_base_rate_min')}
+                value={state.wageMin || ''}
+                onChange={(e) => {
+                  const v = Number(e.target.value) || 0;
+                  update({ wageMin: v, wageMax: Math.max(state.wageMax, v) });
+                }}
+                className="grow bg-transparent font-mono font-semibold outline-none"
+              />
+              <span className="text-base-content/55 text-xs">/hr</span>
+            </label>
+            <span className="text-base-content/45 px-1 text-sm" aria-hidden>
+              –
+            </span>
+            <label className="input input-bordered flex flex-1 items-center gap-1.5">
+              <span className="text-base-content/45 font-mono text-sm">$</span>
+              <input
+                type="number"
+                min={state.wageMin || 0}
+                max={500}
+                step={0.5}
+                aria-label={t('field_base_rate_max')}
+                value={state.wageMax || ''}
+                onChange={(e) => {
+                  const v = Number(e.target.value) || 0;
+                  update({ wageMax: Math.max(v, state.wageMin) });
+                }}
+                className="grow bg-transparent font-mono font-semibold outline-none"
+              />
+              <span className="text-base-content/55 text-xs">/hr</span>
+            </label>
+          </div>
         </fieldset>
 
         {state.wageStructure !== 'hourly' && (

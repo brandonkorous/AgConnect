@@ -1,0 +1,172 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { SectionCard } from './SectionCard';
+import { DOW_KEYS, dowOfDate, type ShiftDraft } from './types';
+
+type Props = {
+  draft: ShiftDraft;
+  onChange: (patch: Partial<ShiftDraft>) => void;
+  crewSize: number;
+};
+
+export function DateTimeSection({ draft, onChange, crewSize }: Props) {
+  const t = useTranslations('employer.crews.edit_shift.date_time');
+
+  const hoursPerDay = (() => {
+    if (!draft.endTime) return 0;
+    const [sh = 0, sm = 0] = draft.startTime.split(':').map(Number);
+    const [eh = 0, em = 0] = draft.endTime.split(':').map(Number);
+    return Math.max(0, (eh * 60 + em - (sh * 60 + sm)) / 60);
+  })();
+  const baseDow = dowOfDate(draft.shiftDate);
+  const activeDays =
+    1 + Object.values(draft.repeatDow).filter(Boolean).filter((_, i) => DOW_KEYS[i] !== baseDow).length;
+  const totalCrewHours = Math.round(hoursPerDay * activeDays * Math.max(crewSize, 0));
+
+  return (
+    <SectionCard id="date" title={t('title')} sub={t('sub')}>
+      <div className="grid gap-3.5 md:grid-cols-2">
+        <Field label={t('shift_date_label')}>
+          <input
+            type="date"
+            required
+            value={draft.shiftDate}
+            onChange={(e) => onChange({ shiftDate: e.target.value })}
+            className="input w-full"
+          />
+        </Field>
+        <Field label={t('status_label')}>
+          <select
+            value={draft.status}
+            onChange={(e) =>
+              onChange({ status: e.target.value as ShiftDraft['status'] })
+            }
+            className="select w-full"
+          >
+            {(['scheduled', 'in_progress', 'completed', 'cancelled'] as const).map((s) => (
+              <option key={s} value={s}>
+                {t(`status.${s}`)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label={t('start_time_label')}>
+          <input
+            type="time"
+            required
+            value={draft.startTime}
+            onChange={(e) => onChange({ startTime: e.target.value })}
+            className="input w-full"
+          />
+        </Field>
+        <Field label={t('end_time_label')}>
+          <input
+            type="time"
+            value={draft.endTime}
+            onChange={(e) => onChange({ endTime: e.target.value })}
+            className="input w-full"
+          />
+        </Field>
+      </div>
+
+      <div className="mt-5">
+        <Label>{t('repeat_label')}</Label>
+        <div className="mt-2 flex gap-1.5">
+          {DOW_KEYS.map((d) => {
+            const isBase = d === baseDow;
+            const on = isBase || draft.repeatDow[d];
+            return (
+              <button
+                key={d}
+                type="button"
+                aria-pressed={on}
+                disabled={isBase}
+                onClick={() =>
+                  onChange({
+                    repeatDow: { ...draft.repeatDow, [d]: !on },
+                  })
+                }
+                title={isBase ? t('repeat_base_help') : undefined}
+                className={[
+                  'flex-1 cursor-pointer rounded-xl border py-2.5 text-sm font-semibold transition',
+                  on
+                    ? 'bg-base-content text-base-100 border-base-content'
+                    : 'bg-base-100 border-base-300 text-base-content/70 hover:border-base-content/30',
+                  isBase ? 'cursor-default opacity-90' : '',
+                ].join(' ')}
+              >
+                {t(`dow.${d}`)}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-base-content/60 mt-2 text-[11px]">{t('repeat_help')}</p>
+
+        <div className="bg-base-200/40 mt-3 grid grid-cols-3 gap-3 rounded-xl p-3.5">
+          <Stat label={t('stat.hours_per_day')} value={`${hoursPerDay.toFixed(1)} h`} />
+          <Stat label={t('stat.active_days')} value={String(activeDays)} />
+          <Stat
+            label={t('stat.total_hours')}
+            value={`${totalCrewHours} h`}
+            tone="primary"
+          />
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
+function Field({
+  label,
+  sub,
+  children,
+}: {
+  label: string;
+  sub?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <fieldset className="fieldset">
+      <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
+        {label}
+      </legend>
+      {children}
+      {sub && <p className="text-base-content/60 mt-1.5 text-[11px]">{sub}</p>}
+    </fieldset>
+  );
+}
+
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="text-base-content/60 block font-mono text-[10px] font-bold uppercase tracking-wider">
+      {children}
+    </label>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone?: 'primary';
+}) {
+  return (
+    <div>
+      <div className="text-base-content/60 font-mono text-[10px] font-bold uppercase tracking-wider">
+        {label}
+      </div>
+      <div
+        className={[
+          'mt-1 font-mono text-lg font-bold tabular-nums',
+          tone === 'primary' ? 'text-primary' : '',
+        ].join(' ')}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}

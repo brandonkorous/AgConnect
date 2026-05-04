@@ -10,6 +10,7 @@ export * from './permissions';
 export * from './plans';
 export * from './employer';
 export * from './employer-jobs';
+export * from './skill-slugs';
 export * from './employer-applications';
 export * from './employer-workers';
 export * from './employer-crews';

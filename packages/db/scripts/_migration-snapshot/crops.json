@@ -1,0 +1,123 @@
+[
+  {
+    "id": "af5aa79c-c79b-4036-9dd7-1d2fbde6cc24",
+    "slug": "grape",
+    "labelEn": "Grapes",
+    "labelEs": "Uva",
+    "glyphKey": "grape",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.713Z",
+    "updatedAt": "2026-05-03T21:35:23.807Z"
+  },
+  {
+    "id": "63c68aae-9101-4cdf-bf30-7bb3676bb0a5",
+    "slug": "almond",
+    "labelEn": "Almonds",
+    "labelEs": "Almendra",
+    "glyphKey": "almond",
+    "sortOrder": 1,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.735Z",
+    "updatedAt": "2026-05-03T21:35:23.827Z"
+  },
+  {
+    "id": "f935a329-ef58-444a-9db7-6f521f9c6853",
+    "slug": "citrus",
+    "labelEn": "Citrus",
+    "labelEs": "Cítricos",
+    "glyphKey": "citrus",
+    "sortOrder": 2,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.737Z",
+    "updatedAt": "2026-05-03T21:35:23.829Z"
+  },
+  {
+    "id": "52aa3dd9-9fc7-42c7-8f84-dd58b5b2842c",
+    "slug": "tomato",
+    "labelEn": "Tomatoes",
+    "labelEs": "Tomate",
+    "glyphKey": "tomato",
+    "sortOrder": 3,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.739Z",
+    "updatedAt": "2026-05-03T21:35:23.831Z"
+  },
+  {
+    "id": "f3b2c172-4d0a-4320-8d71-92e2f6306a28",
+    "slug": "lettuce",
+    "labelEn": "Lettuce",
+    "labelEs": "Lechuga",
+    "glyphKey": "lettuce",
+    "sortOrder": 4,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.741Z",
+    "updatedAt": "2026-05-03T21:35:23.833Z"
+  },
+  {
+    "id": "f917a133-a53e-42d1-9813-5e785132b9e7",
+    "slug": "strawberry",
+    "labelEn": "Strawberries",
+    "labelEs": "Fresa",
+    "glyphKey": "strawberry",
+    "sortOrder": 5,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.743Z",
+    "updatedAt": "2026-05-03T21:35:23.835Z"
+  },
+  {
+    "id": "2496fc8c-29ab-40ea-b008-48b5a70305df",
+    "slug": "pistachio",
+    "labelEn": "Pistachios",
+    "labelEs": "Pistacho",
+    "glyphKey": "almond",
+    "sortOrder": 6,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.745Z",
+    "updatedAt": "2026-05-03T21:35:23.837Z"
+  },
+  {
+    "id": "59561cba-883f-4478-bc90-15483bc5a5a9",
+    "slug": "walnut",
+    "labelEn": "Walnuts",
+    "labelEs": "Nuez",
+    "glyphKey": "almond",
+    "sortOrder": 7,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.747Z",
+    "updatedAt": "2026-05-03T21:35:23.839Z"
+  },
+  {
+    "id": "1e68f650-9afb-4a65-bea8-37095a44d579",
+    "slug": "stone_fruit",
+    "labelEn": "Stone fruit",
+    "labelEs": "Fruta de hueso",
+    "glyphKey": "almond",
+    "sortOrder": 8,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.749Z",
+    "updatedAt": "2026-05-03T21:35:23.841Z"
+  },
+  {
+    "id": "a22022ff-7104-4459-af47-8e3c9067f8af",
+    "slug": "leafy_greens",
+    "labelEn": "Leafy greens",
+    "labelEs": "Verdes de hoja",
+    "glyphKey": "lettuce",
+    "sortOrder": 9,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.751Z",
+    "updatedAt": "2026-05-03T21:35:23.843Z"
+  },
+  {
+    "id": "a26714a4-905a-4ec1-a301-79be1dc9ff22",
+    "slug": "other",
+    "labelEn": "Other crop",
+    "labelEs": "Otro cultivo",
+    "glyphKey": "lettuce",
+    "sortOrder": 10,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.753Z",
+    "updatedAt": "2026-05-03T21:35:23.845Z"
+  }
+]

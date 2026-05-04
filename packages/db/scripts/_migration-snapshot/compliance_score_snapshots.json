@@ -1,0 +1,35 @@
+[
+  {
+    "id": "82ef7cfb-8aac-4918-82e4-9363e38bf00e",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "employerProfileId": "1c1c6564-08d2-40d7-9c3f-cd3f5c1989e6",
+    "snapshotDate": "2026-05-04T00:00:00.000Z",
+    "score": 63,
+    "okCount": 3,
+    "warnCount": 9,
+    "failCount": 0,
+    "createdAt": "2026-05-04T03:47:53.500Z"
+  },
+  {
+    "id": "bc018dc1-249a-41e8-8667-cf9caf628ce3",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "employerProfileId": "1c1c6564-08d2-40d7-9c3f-cd3f5c1989e6",
+    "snapshotDate": "2026-05-02T00:00:00.000Z",
+    "score": 59,
+    "okCount": 2,
+    "warnCount": 9,
+    "failCount": 0,
+    "createdAt": "2026-05-02T19:33:05.302Z"
+  },
+  {
+    "id": "67eb70d9-4dad-4d8e-92a5-edd739f098ef",
+    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+    "employerProfileId": "1c1c6564-08d2-40d7-9c3f-cd3f5c1989e6",
+    "snapshotDate": "2026-05-03T00:00:00.000Z",
+    "score": 59,
+    "okCount": 2,
+    "warnCount": 9,
+    "failCount": 0,
+    "createdAt": "2026-05-03T08:59:06.105Z"
+  }
+]

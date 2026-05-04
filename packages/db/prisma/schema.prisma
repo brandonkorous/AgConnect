@@ -199,6 +199,13 @@ enum ShiftStatus {
   cancelled
 }
 
+enum ShiftType {
+  work
+  training
+  off
+  holiday
+}
+
 enum ShiftAssignmentStatus {
   assigned
   confirmed
@@ -980,17 +987,26 @@ model Enrollment {
 // Crew = stable group of workers that move together across shifts.
 // See docs/20-employer/06-crews-shifts/02-data-model.md.
 model Crew {
-  id            String    @id @default(uuid()) @db.Uuid
-  tenantId      String    @map("tenant_id") @db.Uuid
-  employerId    String    @map("employer_id")
-  foremanUserId String?   @map("foreman_user_id")
-  jobId         String?   @map("job_id") @db.Uuid
-  name          String
-  color         String    @default("primary")
-  notes         String?
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
+  id                  String    @id @default(uuid()) @db.Uuid
+  tenantId            String    @map("tenant_id") @db.Uuid
+  employerId          String    @map("employer_id")
+  foremanUserId       String?   @map("foreman_user_id")
+  jobId               String?   @map("job_id") @db.Uuid
+  name                String
+  shortCode           String?   @map("short_code") @db.VarChar(8)
+  crewType            String?   @map("crew_type") @db.VarChar(32)
+  primaryCrop         String?   @map("primary_crop") @db.VarChar(32)
+  color               String    @default("olive")
+  requiredSkills      String[]  @default([]) @map("required_skills")
+  baseWageCents       Int?      @map("base_wage_cents")
+  pieceRateCents      Int?      @map("piece_rate_cents")
+  pieceRateUnit       String?   @map("piece_rate_unit") @db.VarChar(16)
+  foremanPremiumCents Int?      @map("foreman_premium_cents")
+  commsChannels       Json      @default("{}") @map("comms_channels")
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
 
   tenant   Tenant       @relation(fields: [tenantId], references: [id])
   employer User         @relation("CrewEmployer", fields: [employerId], references: [id])
@@ -1038,6 +1054,8 @@ model Shift {
   locationLat   Decimal?    @map("location_lat") @db.Decimal(9, 6)
   locationLng   Decimal?    @map("location_lng") @db.Decimal(9, 6)
   status        ShiftStatus @default(scheduled)
+  shiftType     ShiftType   @default(work) @map("shift_type")
+  metadata      Json        @default("{}")
   notes         String?
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
@@ -1051,6 +1069,7 @@ model Shift {
   @@index([employerId, shiftDate])
   @@index([crewId, shiftDate])
   @@index([status])
+  @@index([shiftType])
   @@map("shifts")
 }
 
@@ -1134,19 +1153,23 @@ model PayrollLine {
 // Compliance — flat item registry per employer.
 // See docs/20-employer/08-compliance/02-data-model.md.
 model ComplianceItem {
-  id          String               @id @default(uuid()) @db.Uuid
-  tenantId    String               @map("tenant_id") @db.Uuid
-  employerId  String               @map("employer_id")
-  category    String // 'documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', custom
-  itemKey     String               @map("item_key")
-  label       String
-  status      ComplianceItemStatus @default(ok)
-  details     String?
-  evidenceUrl String?              @map("evidence_url")
-  dueAt       DateTime?            @map("due_at")
-  resolvedAt  DateTime?            @map("resolved_at")
-  createdAt   DateTime             @default(now()) @map("created_at")
-  updatedAt   DateTime             @updatedAt @map("updated_at")
+  id                  String               @id @default(uuid()) @db.Uuid
+  tenantId            String               @map("tenant_id") @db.Uuid
+  employerId          String               @map("employer_id")
+  category            String // 'documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', custom
+  itemKey             String               @map("item_key")
+  label               String
+  status              ComplianceItemStatus @default(ok)
+  details             String?
+  evidenceUrl         String?              @map("evidence_url")
+  evidenceStorageKey  String?              @map("evidence_storage_key")
+  evidenceFileName    String?              @map("evidence_file_name")
+  evidenceContentType String?              @map("evidence_content_type")
+  evidenceSize        Int?                 @map("evidence_size")
+  dueAt               DateTime?            @map("due_at")
+  resolvedAt          DateTime?            @map("resolved_at")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
 
   tenant   Tenant @relation(fields: [tenantId], references: [id])
   employer User   @relation("ComplianceEmployer", fields: [employerId], references: [id])
@@ -1156,6 +1179,21 @@ model ComplianceItem {
   @@index([employerId, status])
   @@index([dueAt])
   @@map("compliance_items")
+}
+
+// Bilingual instructional content shown in the compliance modal sidebar.
+// One row per `ComplianceItem.itemKey`. JSONB matches the TypeScript
+// `ComplianceItemContent` shape: { why, how, acceptableEvidence, deadline,
+// source, extraSources?, lastVerified }. Owned by compliance ops via the
+// admin surface (not by engineers).
+model ComplianceItemContent {
+  itemKey     String   @id @map("item_key")
+  content     Json
+  publishedAt DateTime @default(now()) @map("published_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  updatedById String?  @map("updated_by_id")
+
+  @@map("compliance_item_content")
 }
 
 // Periodic snapshot of overall compliance score per employer profile.

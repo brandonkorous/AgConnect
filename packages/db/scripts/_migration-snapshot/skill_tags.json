@@ -1,0 +1,211 @@
+[
+  {
+    "id": "28c1da3f-b929-4804-b0ef-b0a0922ac5fd",
+    "slug": "pre_shake",
+    "labelEn": "Pre-shake",
+    "labelEs": "Pre-vareo",
+    "category": "task",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.768Z",
+    "updatedAt": "2026-05-03T21:35:23.861Z"
+  },
+  {
+    "id": "0e95d8a0-caee-467d-b600-f25b500fd36d",
+    "slug": "hand_harvest",
+    "labelEn": "Hand harvest",
+    "labelEs": "Cosecha a mano",
+    "category": "task",
+    "sortOrder": 1,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.770Z",
+    "updatedAt": "2026-05-03T21:35:23.863Z"
+  },
+  {
+    "id": "f32caafe-b59f-4e9f-9736-60339ede941d",
+    "slug": "harvesting",
+    "labelEn": "Harvesting",
+    "labelEs": "Cosecha",
+    "category": "task",
+    "sortOrder": 2,
+    "active": true,
+    "createdAt": "2026-05-03T21:35:23.865Z",
+    "updatedAt": "2026-05-03T21:35:23.865Z"
+  },
+  {
+    "id": "41fb28ba-ab1d-4e27-9386-5ecbe676a970",
+    "slug": "pruning",
+    "labelEn": "Pruning",
+    "labelEs": "Poda",
+    "category": "task",
+    "sortOrder": 3,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.772Z",
+    "updatedAt": "2026-05-03T21:35:23.866Z"
+  },
+  {
+    "id": "4d576f55-d549-44a8-91b8-526b6c0e75e9",
+    "slug": "thinning",
+    "labelEn": "Thinning",
+    "labelEs": "Aclareo",
+    "category": "task",
+    "sortOrder": 4,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.773Z",
+    "updatedAt": "2026-05-03T21:35:23.868Z"
+  },
+  {
+    "id": "858ec0c4-e5a4-4217-bb23-f8020bdae9c5",
+    "slug": "packing",
+    "labelEn": "Packing",
+    "labelEs": "Empaque",
+    "category": "task",
+    "sortOrder": 5,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.774Z",
+    "updatedAt": "2026-05-03T21:35:23.869Z"
+  },
+  {
+    "id": "a1d1664d-0251-47dd-8da4-22dbd83d1988",
+    "slug": "sort_line",
+    "labelEn": "Sort line",
+    "labelEs": "Línea de selección",
+    "category": "task",
+    "sortOrder": 6,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.776Z",
+    "updatedAt": "2026-05-03T21:35:23.871Z"
+  },
+  {
+    "id": "c22911ab-f870-4811-bc4e-4037a41d99c9",
+    "slug": "irrigation",
+    "labelEn": "Irrigation",
+    "labelEs": "Riego",
+    "category": "task",
+    "sortOrder": 7,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.777Z",
+    "updatedAt": "2026-05-03T21:35:23.872Z"
+  },
+  {
+    "id": "31f13f18-0f77-4d58-b060-df604ec58827",
+    "slug": "planting",
+    "labelEn": "Planting",
+    "labelEs": "Plantación",
+    "category": "task",
+    "sortOrder": 8,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.778Z",
+    "updatedAt": "2026-05-03T21:35:23.873Z"
+  },
+  {
+    "id": "b5c141ba-4cd6-4a85-8ca0-4a451670f056",
+    "slug": "crew_leadership",
+    "labelEn": "Crew leadership",
+    "labelEs": "Liderazgo de cuadrilla",
+    "category": "task",
+    "sortOrder": 9,
+    "active": true,
+    "createdAt": "2026-05-03T21:35:23.875Z",
+    "updatedAt": "2026-05-03T21:35:23.875Z"
+  },
+  {
+    "id": "1aad8bbe-48d1-4196-b5f6-9b8e9bb5b05f",
+    "slug": "forklift",
+    "labelEn": "Forklift",
+    "labelEs": "Montacargas",
+    "category": "equipment",
+    "sortOrder": 10,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.780Z",
+    "updatedAt": "2026-05-03T21:35:23.877Z"
+  },
+  {
+    "id": "03a211cf-a47a-48d2-9060-4237c4a92478",
+    "slug": "tractor_op",
+    "labelEn": "Tractor op.",
+    "labelEs": "Operador de tractor",
+    "category": "equipment",
+    "sortOrder": 11,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.782Z",
+    "updatedAt": "2026-05-03T21:35:23.878Z"
+  },
+  {
+    "id": "ab645aba-cfed-45bc-a501-b5ef68afd520",
+    "slug": "ladder_safety",
+    "labelEn": "Ladder safety",
+    "labelEs": "Seguridad en escalera",
+    "category": "equipment",
+    "sortOrder": 12,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.784Z",
+    "updatedAt": "2026-05-03T21:35:23.880Z"
+  },
+  {
+    "id": "65b431d5-36db-4573-894c-e4406f887930",
+    "slug": "wps_cert",
+    "labelEn": "WPS cert",
+    "labelEs": "Cert. WPS",
+    "category": "cert",
+    "sortOrder": 13,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.785Z",
+    "updatedAt": "2026-05-03T21:35:23.881Z"
+  },
+  {
+    "id": "6524d8ae-19c6-495c-a9f9-1f9bf4186ecd",
+    "slug": "heat_illness",
+    "labelEn": "Heat illness",
+    "labelEs": "Enfermedad por calor",
+    "category": "cert",
+    "sortOrder": 14,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.786Z",
+    "updatedAt": "2026-05-03T21:35:23.884Z"
+  },
+  {
+    "id": "17d762c1-aecb-4422-9442-7f61ef84c7ab",
+    "slug": "cdl_a",
+    "labelEn": "CDL-A",
+    "labelEs": "Licencia CDL-A",
+    "category": "cert",
+    "sortOrder": 15,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.788Z",
+    "updatedAt": "2026-05-03T21:35:23.885Z"
+  },
+  {
+    "id": "e1fee86b-2c70-4d49-82f9-6d326efa3a44",
+    "slug": "cdl_b",
+    "labelEn": "CDL-B",
+    "labelEs": "Licencia CDL-B",
+    "category": "cert",
+    "sortOrder": 16,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.790Z",
+    "updatedAt": "2026-05-03T21:35:23.887Z"
+  },
+  {
+    "id": "d8d81230-3e7f-4a36-9a19-316bd58a848e",
+    "slug": "first_aid",
+    "labelEn": "First aid",
+    "labelEs": "Primeros auxilios",
+    "category": "cert",
+    "sortOrder": 17,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.791Z",
+    "updatedAt": "2026-05-03T21:35:23.888Z"
+  },
+  {
+    "id": "220b114c-d4ec-4263-9b92-f61626c94138",
+    "slug": "bilingual_en_es",
+    "labelEn": "Bilingual EN/ES",
+    "labelEs": "Bilingüe EN/ES",
+    "category": "language",
+    "sortOrder": 18,
+    "active": true,
+    "createdAt": "2026-05-03T06:19:37.793Z",
+    "updatedAt": "2026-05-03T21:35:23.890Z"
+  }
+]

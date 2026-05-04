@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@agconn/api-client": "workspace:*",
-    "@agconn/db": "workspace:*",
     "@agconn/schemas": "workspace:*",
     "@agconn/ui": "workspace:*",
     "@clerk/nextjs": "^7.2.9",

@@ -578,8 +578,231 @@ export const employer: TranslationBundle = {
         es: "URL de evidencia (opcional)",
     },
     "compliance.edit_item.resolved_label": {
-        en: "Mark as resolved (sets resolved_at to now)",
-        es: "Marcar como resuelto (establece resolved_at a ahora)",
+        en: "Mark as resolved",
+        es: "Marcar como resuelto",
+    },
+    "compliance.edit_item.invalid_date": {
+        en: "Pick a valid date.",
+        es: "Selecciona una fecha válida.",
+    },
+    "compliance.evidence.label": {
+        en: "Evidence",
+        es: "Evidencia",
+    },
+    "compliance.evidence.upload_cta": {
+        en: "Upload a file",
+        es: "Subir un archivo",
+    },
+    "compliance.evidence.upload_help": {
+        en: "PDF, JPG, PNG up to 25 MB. Stored privately.",
+        es: "PDF, JPG, PNG hasta 25 MB. Guardado en privado.",
+    },
+    "compliance.evidence.uploading": {
+        en: "Uploading…",
+        es: "Subiendo…",
+    },
+    "compliance.evidence.replace": {
+        en: "Replace",
+        es: "Reemplazar",
+    },
+    "compliance.evidence.remove": {
+        en: "Remove",
+        es: "Quitar",
+    },
+    "compliance.evidence.view": {
+        en: "View",
+        es: "Ver",
+    },
+    "compliance.evidence.unnamed_file": {
+        en: "Evidence file",
+        es: "Archivo de evidencia",
+    },
+    "compliance.evidence.too_large": {
+        en: "File is too large. Max 25 MB.",
+        es: "El archivo es demasiado grande. Máx. 25 MB.",
+    },
+    "compliance.evidence.upload_error": {
+        en: "Could not upload the file.",
+        es: "No se pudo subir el archivo.",
+    },
+    "compliance.evidence.remove_error": {
+        en: "Could not remove the file.",
+        es: "No se pudo quitar el archivo.",
+    },
+    "compliance.category.documentation": {
+        en: "Worker documentation",
+        es: "Documentación del trabajador",
+    },
+    "compliance.category.safety": {
+        en: "Worker safety (Cal/OSHA)",
+        es: "Seguridad del trabajador (Cal/OSHA)",
+    },
+    "compliance.category.wage_hour": {
+        en: "Wage & hour",
+        es: "Salario y horas",
+    },
+    "compliance.category.pesticide": {
+        en: "Pesticide records",
+        es: "Registros de pesticidas",
+    },
+    "compliance.category.h2a": {
+        en: "H-2A program",
+        es: "Programa H-2A",
+    },
+    "compliance.category.custom": {
+        en: "Other",
+        es: "Otro",
+    },
+    "compliance.severity_cta.urgent": {
+        en: "Resolve",
+        es: "Resolver",
+    },
+    "compliance.severity_cta.soon": {
+        en: "Schedule",
+        es: "Programar",
+    },
+
+    // Bilingual label/details for seeded compliance items. Custom items
+    // created by employers fall back to the user's own copy.
+    "compliance.seed_item.i9_on_file.label": {
+        en: "I-9 forms on file",
+        es: "Formas I-9 archivadas",
+    },
+    "compliance.seed_item.i9_on_file.details": {
+        en: "Confirm a process for collecting and storing I-9s.",
+        es: "Confirme un proceso para recolectar y guardar las I-9.",
+    },
+    "compliance.seed_item.w4_collected.label": {
+        en: "W-4s collected",
+        es: "W-4 recolectadas",
+    },
+    "compliance.seed_item.w4_collected.details": {
+        en: "Confirm W-4s are collected from every new hire.",
+        es: "Confirme que se recolecta la W-4 de cada nuevo trabajador.",
+    },
+    "compliance.seed_item.i9_expiring.label": {
+        en: "I-9s expiring within 30 days",
+        es: "I-9 que vencen en los próximos 30 días",
+    },
+    "compliance.seed_item.i9_expiring.details": {
+        en: "No expirations on file.",
+        es: "Sin vencimientos en el archivo.",
+    },
+    "compliance.seed_item.heat_plan.label": {
+        en: "Heat illness prevention plan",
+        es: "Plan de prevención de enfermedades por calor",
+    },
+    "compliance.seed_item.heat_plan.details": {
+        en: "Required by Cal/OSHA §3395 — upload your written plan.",
+        es: "Requerido por Cal/OSHA §3395 — suba su plan por escrito.",
+    },
+    "compliance.seed_item.wps_training.label": {
+        en: "Pesticide handler training (WPS)",
+        es: "Capacitación de manejadores de pesticidas (WPS)",
+    },
+    "compliance.seed_item.wps_training.details": {
+        en: "Document training for any pesticide handlers on staff.",
+        es: "Documente la capacitación de cualquier manejador de pesticidas en el equipo.",
+    },
+    "compliance.seed_item.covid_plan.label": {
+        en: "COVID-19 prevention plan",
+        es: "Plan de prevención de COVID-19",
+    },
+    "compliance.seed_item.covid_plan.details": {
+        en: "Upload your written plan or mark as no longer required.",
+        es: "Suba su plan por escrito o marque como ya no requerido.",
+    },
+    "compliance.seed_item.piece_breaks.label": {
+        en: "Piece-rate paid breaks tracked",
+        es: "Descansos pagados a destajo registrados",
+    },
+    "compliance.seed_item.piece_breaks.details": {
+        en: "Confirm AB 1513 paid-rest-period tracking is in place.",
+        es: "Confirme que el registro de descansos pagados de AB 1513 está en su lugar.",
+    },
+    "compliance.seed_item.overtime.label": {
+        en: "Overtime calculations",
+        es: "Cálculo de tiempo extra",
+    },
+    "compliance.seed_item.overtime.details": {
+        en: "Confirm 2025 phase-in: 8h daily / 40h weekly thresholds.",
+        es: "Confirme la fase 2025: límites de 8h diarias / 40h semanales.",
+    },
+    "compliance.seed_item.wage_stmts.label": {
+        en: "Itemized wage statements",
+        es: "Talones de pago detallados",
+    },
+    "compliance.seed_item.wage_stmts.details": {
+        en: "Auto-generated by AgConn payroll.",
+        es: "Generados automáticamente por la nómina de AgConn.",
+    },
+    "compliance.seed_item.pur_records.label": {
+        en: "Application records (PUR)",
+        es: "Registros de aplicaciones (PUR)",
+    },
+    "compliance.seed_item.pur_records.details": {
+        en: "File Pesticide Use Reports monthly with the county Ag Commissioner.",
+        es: "Presente Reportes de Uso de Pesticidas cada mes con el Comisionado Agrícola del condado.",
+    },
+    "compliance.seed_item.noi_filing.label": {
+        en: "Notice of Intent (NOI)",
+        es: "Aviso de Intención (NOI)",
+    },
+    "compliance.seed_item.noi_filing.details": {
+        en: "Submit NOIs to CDPR before restricted-material applications.",
+        es: "Envíe los NOI a CDPR antes de aplicar materiales restringidos.",
+    },
+    "compliance.seed_item.aewr_rate.label": {
+        en: "AEWR rate compliance",
+        es: "Cumplimiento de la tasa AEWR",
+    },
+    "compliance.seed_item.aewr_rate.details": {
+        en: "Adverse Effect Wage Rate — only applies to H-2A program participants.",
+        es: "Tasa de Salario por Efecto Adverso — solo aplica a participantes del programa H-2A.",
+    },
+    "compliance.seed_item.housing_insp.label": {
+        en: "Housing inspection",
+        es: "Inspección de vivienda",
+    },
+    "compliance.seed_item.housing_insp.details": {
+        en: "Annual per 20 CFR 655.122 — only applies to H-2A program participants.",
+        es: "Anual por 20 CFR 655.122 — solo aplica a participantes del programa H-2A.",
+    },
+    "compliance.seed_item.three_quarter.label": {
+        en: "3/4 guarantee tracking",
+        es: "Registro de la garantía de 3/4",
+    },
+    "compliance.seed_item.three_quarter.details": {
+        en: "Only applies to H-2A program participants.",
+        es: "Solo aplica a participantes del programa H-2A.",
+    },
+    "compliance.instructions.empty": {
+        en: "No additional guidance for this item yet. Add a note or evidence URL based on your own records.",
+        es: "Aún no hay orientación adicional para este ítem. Agrega una nota o URL de evidencia según tus propios registros.",
+    },
+    "compliance.instructions.why": {
+        en: "Why this matters",
+        es: "Por qué es importante",
+    },
+    "compliance.instructions.how": {
+        en: "How to comply",
+        es: "Cómo cumplir",
+    },
+    "compliance.instructions.acceptable_evidence": {
+        en: "Acceptable evidence",
+        es: "Evidencia aceptable",
+    },
+    "compliance.instructions.deadline": {
+        en: "Deadline",
+        es: "Plazo",
+    },
+    "compliance.instructions.source": {
+        en: "Sources",
+        es: "Fuentes",
+    },
+    "compliance.instructions.last_verified": {
+        en: "Sources verified {date}",
+        es: "Fuentes verificadas {date}",
     },
     "compliance.edit_item.status_label": {
         en: "Status",
@@ -660,6 +883,10 @@ export const employer: TranslationBundle = {
     "compliance.new_item.error": {
         en: "Could not create item.",
         es: "No se pudo crear el ítem.",
+    },
+    "compliance.new_item.invalid_date": {
+        en: "Pick a valid date.",
+        es: "Selecciona una fecha válida.",
     },
     "compliance.new_item.label_label": {
         en: "What needs to be tracked?",
@@ -767,7 +994,7 @@ export const employer: TranslationBundle = {
     },
     "crews.eyebrow": {
         en: "Operations · Week of {date}",
-        es: "Operaciones · Semana del {date}",
+        es: "Operaciones · Semana de {date}",
     },
     "crews.header_label": {
         en: "Crews / Day",
@@ -841,69 +1068,84 @@ export const employer: TranslationBundle = {
         en: "New crew",
         es: "Nueva cuadrilla",
     },
-    "crews.new_shift": {
+    "crews.new_shift_button": {
         en: "New shift",
         es: "Nuevo turno",
     },
-    "crews.new_shift_form.back": {
-        en: "Back to crews",
-        es: "Volver a cuadrillas",
+    "crews.new_shift.title": {
+        en: "New shift",
+        es: "Nuevo turno",
     },
-    "crews.new_shift_form.cancel": {
-        en: "Cancel",
-        es: "Cancelar",
+    "crews.new_shift.title_a": { en: "New", es: "Nuevo" },
+    "crews.new_shift.title_b": { en: "shift", es: "turno" },
+    "crews.new_shift.eyebrow": {
+        en: "Shift editor · creating",
+        es: "Editor de turno · creando",
     },
-    "crews.new_shift_form.confirm": {
+    "crews.new_shift.subtitle": {
+        en: "{crew} · workers will be assigned after the shift is saved.",
+        es: "{crew} · los trabajadores se asignan después de guardar el turno.",
+    },
+    "crews.new_shift.breadcrumbs_aria": {
+        en: "New shift breadcrumbs",
+        es: "Migas de pan del nuevo turno",
+    },
+    "crews.new_shift.breadcrumb_crews": {
+        en: "Crews & shifts",
+        es: "Cuadrillas y turnos",
+    },
+    "crews.new_shift.breadcrumb_no_crew": {
+        en: "Ad-hoc shift",
+        es: "Turno ad-hoc",
+    },
+    "crews.new_shift.breadcrumb_current": {
+        en: "New shift",
+        es: "Nuevo turno",
+    },
+    "crews.new_shift.jump_to_section": {
+        en: "Jump to section…",
+        es: "Ir a una sección…",
+    },
+    "crews.new_shift.save_bar_complete": {
+        en: "Ready to create",
+        es: "Listo para crear",
+    },
+    "crews.new_shift.save_bar_single": {
+        en: "Saves one shift on the schedule.",
+        es: "Guarda un solo turno en el horario.",
+    },
+    "crews.new_shift.save_bar_repeat": {
+        en: "{count, plural, one {Saves this shift + 1 repeat day} other {Saves this shift + # repeat days}}",
+        es: "{count, plural, one {Guarda este turno + 1 día repetido} other {Guarda este turno + # días repetidos}}",
+    },
+    "crews.new_shift.footer_cancel": { en: "Cancel", es: "Cancelar" },
+    "crews.new_shift.footer_create": {
         en: "Create shift",
         es: "Crear turno",
     },
-    "crews.new_shift_form.crew_help": {
-        en: "If unset, the shift won't appear on the crew row of the weekly grid.",
-        es: "Si lo dejas en blanco, el turno no aparecerá en la fila de cuadrilla del horario.",
-    },
-    "crews.new_shift_form.crew_label": {
-        en: "Crew (optional)",
-        es: "Cuadrilla (opcional)",
-    },
-    "crews.new_shift_form.crew_none": {
-        en: "No crew — ad-hoc shift",
-        es: "Sin cuadrilla — turno ad-hoc",
-    },
-    "crews.new_shift_form.date_label": {
-        en: "Date",
-        es: "Fecha",
-    },
-    "crews.new_shift_form.end_time_label": {
-        en: "End time (optional)",
-        es: "Hora de fin (opcional)",
-    },
-    "crews.new_shift_form.error": {
+    "crews.new_shift.error_save": {
         en: "Could not create shift.",
         es: "No se pudo crear el turno.",
     },
-    "crews.new_shift_form.location_label": {
-        en: "Location",
-        es: "Ubicación",
+    "crews.new_shift.error_no_location": {
+        en: "Add a pickup or block location before creating the shift.",
+        es: "Agrega una ubicación o punto de recogida antes de crear el turno.",
     },
-    "crews.new_shift_form.location_placeholder": {
-        en: "Block 7-North",
-        es: "Block 7-Norte",
+    "crews.new_shift.workers_placeholder.title": {
+        en: "Workers on this shift",
+        es: "Trabajadores en este turno",
     },
-    "crews.new_shift_form.notes_label": {
-        en: "Notes (optional)",
-        es: "Notas (opcional)",
+    "crews.new_shift.workers_placeholder.sub": {
+        en: "Assign workers after the shift exists — the picker shows your active hires.",
+        es: "Asigna trabajadores después de crear el turno — el selector muestra a tus contratados activos.",
     },
-    "crews.new_shift_form.start_time_label": {
-        en: "Start time",
-        es: "Hora de inicio",
+    "crews.new_shift.workers_placeholder.heading": {
+        en: "Assign workers on the next step",
+        es: "Asigna trabajadores en el siguiente paso",
     },
-    "crews.new_shift_form.subtitle": {
-        en: "Schedule a single shift. Optionally tied to a crew so the schedule grid lights up automatically.",
-        es: "Programa un solo turno. Opcionalmente atado a una cuadrilla para que aparezca en la cuadrícula semanal.",
-    },
-    "crews.new_shift_form.title": {
-        en: "New shift",
-        es: "Nuevo turno",
+    "crews.new_shift.workers_placeholder.body": {
+        en: "Save the shift to unlock the worker picker. Crew members appear first, followed by your other active hires.",
+        es: "Guarda el turno para activar el selector. Los miembros de la cuadrilla aparecen primero, seguidos de tus otros contratados activos.",
     },
     "crews.no_foreman": {
         en: "no foreman",
@@ -932,6 +1174,1043 @@ export const employer: TranslationBundle = {
     "crews.title_b": {
         en: "& shifts",
         es: "y turnos",
+    },
+    "crews.cell_cancelled_suffix": {
+        en: "on the schedule",
+        es: "en el horario",
+    },
+    "crews.cell_cancelled_pill": {
+        en: "Cancelled",
+        es: "Cancelado",
+    },
+    "crews.edit_crew_button": {
+        en: "Edit crew",
+        es: "Editar cuadrilla",
+    },
+    "crews.row_edit_aria": {
+        en: "Edit crew {crew}",
+        es: "Editar cuadrilla {crew}",
+    },
+    "crews.cell_edit_aria": {
+        en: "Edit shift on {date}",
+        es: "Editar turno del {date}",
+    },
+    "crews.cell_new_aria": {
+        en: "Schedule a new shift on {date}",
+        es: "Programar un nuevo turno el {date}",
+    },
+    "crews.week_nav.aria": {
+        en: "Week navigation",
+        es: "Navegación de semana",
+    },
+    "crews.week_nav.prev": {
+        en: "Previous week",
+        es: "Semana anterior",
+    },
+    "crews.week_nav.next": {
+        en: "Next week",
+        es: "Semana siguiente",
+    },
+    "crews.week_nav.this_week": {
+        en: "Back to this week",
+        es: "Volver a esta semana",
+    },
+    "crews.week_nav.jump_label": {
+        en: "Jump to a week",
+        es: "Ir a una semana",
+    },
+    "crews.archive_section.helper": {
+        en: "Stop scheduling for this crew. History stays.",
+        es: "Deja de programar para esta cuadrilla. El historial se conserva.",
+    },
+    "crews.archive_section.cta": {
+        en: "Archive this crew",
+        es: "Archivar esta cuadrilla",
+    },
+    "crews.archive_section.confirm": {
+        en: "“{crew}” will be hidden from the weekly schedule. Existing shifts, members, and history are preserved.",
+        es: "“{crew}” se ocultará del horario semanal. Los turnos, miembros e historial existentes se conservan.",
+    },
+    "crews.archive_section.confirm_button": {
+        en: "Archive crew",
+        es: "Archivar cuadrilla",
+    },
+    "crews.archive_section.keep": {
+        en: "Keep it",
+        es: "Conservar",
+    },
+    "crews.archive_section.error": {
+        en: "Could not archive this crew.",
+        es: "No se pudo archivar la cuadrilla.",
+    },
+    "crews.cancel_section.helper": {
+        en: "Tell assigned workers this shift is off.",
+        es: "Avisa a los trabajadores asignados que este turno no va.",
+    },
+    "crews.cancel_section.cta": {
+        en: "Cancel this shift",
+        es: "Cancelar este turno",
+    },
+    "crews.cancel_section.confirm": {
+        en: "Workers on this shift will be notified that it is no longer happening. The shift stays on the schedule, marked cancelled.",
+        es: "A los trabajadores de este turno se les avisará que ya no se realizará. El turno permanece en el horario, marcado como cancelado.",
+    },
+    "crews.cancel_section.confirm_button": {
+        en: "Cancel shift",
+        es: "Cancelar turno",
+    },
+    "crews.cancel_section.keep": {
+        en: "Keep it",
+        es: "Conservar",
+    },
+    "crews.cancel_section.error": {
+        en: "Could not cancel this shift.",
+        es: "No se pudo cancelar el turno.",
+    },
+    // Full-page Crew editor — header, breadcrumbs, sticky save bar, errors.
+    "crews.edit_crew.eyebrow_new": {
+        en: "New crew",
+        es: "Nueva cuadrilla",
+    },
+    "crews.edit_crew.eyebrow_edit": {
+        en: "Crew editor · {count, plural, one {# member} other {# members}}",
+        es: "Editor de cuadrilla · {count, plural, one {# miembro} other {# miembros}}",
+    },
+    "crews.edit_crew.title_new_a": { en: "Build a new", es: "Crea una nueva" },
+    "crews.edit_crew.title_new_b": { en: "crew.", es: "cuadrilla." },
+    "crews.edit_crew.subtitle_edit": {
+        en: "Foreman {foreman} · {count, plural, one {# member} other {# members}}",
+        es: "Capataz {foreman} · {count, plural, one {# miembro} other {# miembros}}",
+    },
+    "crews.edit_crew.no_foreman": { en: "No foreman yet", es: "Sin capataz aún" },
+    "crews.edit_crew.breadcrumbs_aria": { en: "Breadcrumb", es: "Ruta" },
+    "crews.edit_crew.breadcrumb_crews": { en: "Crews & shifts", es: "Cuadrillas y turnos" },
+    "crews.edit_crew.breadcrumb_new": { en: "New crew", es: "Nueva cuadrilla" },
+    "crews.edit_crew.breadcrumb_edit": { en: "Edit crew", es: "Editar cuadrilla" },
+    "crews.edit_crew.action_duplicate": { en: "Duplicate crew", es: "Duplicar cuadrilla" },
+    "crews.edit_crew.action_archive": { en: "Disband", es: "Disolver" },
+    "crews.edit_crew.archive_confirm": {
+        en: "Archive {name}? Members stay hired but the crew is removed from the schedule.",
+        es: "¿Archivar {name}? Los miembros siguen contratados pero la cuadrilla se quita del horario.",
+    },
+    "crews.edit_crew.archive_keep": { en: "Keep crew", es: "Conservar cuadrilla" },
+    "crews.edit_crew.archive_confirm_button": { en: "Archive", es: "Archivar" },
+    "crews.edit_crew.duplicate_name": { en: "{name} (copy)", es: "{name} (copia)" },
+    "crews.edit_crew.jump_to_section": { en: "Jump to section…", es: "Ir a sección…" },
+    "crews.edit_crew.save_bar_new": { en: "Ready to create.", es: "Listo para crear." },
+    "crews.edit_crew.save_bar_edit": { en: "Changes ready to save.", es: "Cambios listos." },
+    "crews.edit_crew.save_bar_help_new": {
+        en: "Roster, foreman role, and member skills will appear after the first save.",
+        es: "El roster, el capataz y las habilidades aparecen después del primer guardado.",
+    },
+    "crews.edit_crew.save_bar_help_edit": {
+        en: "Roster, pay, and channel changes apply immediately.",
+        es: "Roster, pago y canales aplican de inmediato.",
+    },
+    "crews.edit_crew.footer_cancel": { en: "Cancel", es: "Cancelar" },
+    "crews.edit_crew.footer_create": { en: "Create crew", es: "Crear cuadrilla" },
+    "crews.edit_crew.footer_save": { en: "Save crew", es: "Guardar cuadrilla" },
+    "crews.edit_crew.error_save": { en: "Could not save crew.", es: "No se pudo guardar la cuadrilla." },
+    "crews.edit_crew.error_archive": { en: "Could not archive crew.", es: "No se pudo archivar la cuadrilla." },
+    "crews.edit_crew.error_duplicate": { en: "Could not duplicate crew.", es: "No se pudo duplicar la cuadrilla." },
+    "crews.edit_crew.error_name_required": {
+        en: "Crew needs a name (at least 2 characters).",
+        es: "La cuadrilla necesita un nombre (mínimo 2 caracteres).",
+    },
+
+    // Section-rail nav.
+    "crews.edit_crew.section.nav_aria": { en: "Section navigation", es: "Navegación por secciones" },
+    "crews.edit_crew.section.item.basics": { en: "Basics", es: "Datos" },
+    "crews.edit_crew.section.item.foreman": { en: "Foreman", es: "Capataz" },
+    "crews.edit_crew.section.item.roster_count": {
+        en: "Roster · {count}",
+        es: "Roster · {count}",
+    },
+    "crews.edit_crew.section.item.skills": { en: "Required skills", es: "Habilidades requeridas" },
+    "crews.edit_crew.section.item.pay": { en: "Pay defaults", es: "Pago por defecto" },
+    "crews.edit_crew.section.item.comms": { en: "Communication", es: "Comunicación" },
+
+    // Basics section.
+    "crews.edit_crew.basics.title": { en: "Basics", es: "Datos" },
+    "crews.edit_crew.basics.sub": {
+        en: "Crew identity used across schedule, payroll, and the worker app.",
+        es: "Identidad de la cuadrilla usada en horario, nómina y la app del trabajador.",
+    },
+    "crews.edit_crew.basics.name_label": { en: "Crew name", es: "Nombre de la cuadrilla" },
+    "crews.edit_crew.basics.name_placeholder": {
+        en: "Crew A · Grape Harvest",
+        es: "Cuadrilla A · Cosecha de uva",
+    },
+    "crews.edit_crew.basics.name_help": {
+        en: "Workers see this in their app.",
+        es: "Los trabajadores lo ven en su app.",
+    },
+    "crews.edit_crew.basics.short_code_label": { en: "Short code", es: "Clave corta" },
+    "crews.edit_crew.basics.short_code_help": {
+        en: "Used on the schedule grid · max 4 chars.",
+        es: "Aparece en el horario · máx 4 caracteres.",
+    },
+    "crews.edit_crew.basics.crew_type_label": { en: "Crew type", es: "Tipo de cuadrilla" },
+    "crews.edit_crew.basics.crew_type_unset": { en: "Choose a type…", es: "Elige un tipo…" },
+    "crews.edit_crew.basics.crew_type.harvest": { en: "Harvest crew", es: "Cuadrilla de cosecha" },
+    "crews.edit_crew.basics.crew_type.setup": { en: "Vineyard / orchard setup", es: "Preparación de viñedo u huerta" },
+    "crews.edit_crew.basics.crew_type.sort": { en: "Sort line / packing", es: "Línea de sort / empaque" },
+    "crews.edit_crew.basics.crew_type.irrigation": { en: "Irrigation", es: "Riego" },
+    "crews.edit_crew.basics.crew_type.pruning": { en: "Pruning", es: "Poda" },
+    "crews.edit_crew.basics.crew_type.general": { en: "General labor", es: "Labor general" },
+    "crews.edit_crew.basics.primary_crop_label": { en: "Primary crop", es: "Cultivo principal" },
+    "crews.edit_crew.basics.primary_crop_unset": { en: "Choose a crop…", es: "Elige un cultivo…" },
+    "crews.edit_crew.basics.primary_crop.grape": { en: "Grape", es: "Uva" },
+    "crews.edit_crew.basics.primary_crop.almond": { en: "Almond", es: "Almendra" },
+    "crews.edit_crew.basics.primary_crop.citrus": { en: "Citrus", es: "Cítricos" },
+    "crews.edit_crew.basics.primary_crop.tomato": { en: "Tomato", es: "Tomate" },
+    "crews.edit_crew.basics.primary_crop.lettuce": { en: "Leafy greens", es: "Hojas verdes" },
+    "crews.edit_crew.basics.primary_crop.strawberry": { en: "Strawberry", es: "Fresa" },
+    "crews.edit_crew.basics.schedule_color_label": { en: "Schedule color", es: "Color en el horario" },
+    "crews.edit_crew.basics.schedule_color.grape": { en: "Grape", es: "Uva" },
+    "crews.edit_crew.basics.schedule_color.almond": { en: "Almond", es: "Almendra" },
+    "crews.edit_crew.basics.schedule_color.citrus": { en: "Citrus", es: "Cítricos" },
+    "crews.edit_crew.basics.schedule_color.tomato": { en: "Tomato", es: "Tomate" },
+    "crews.edit_crew.basics.schedule_color.lettuce": { en: "Lettuce", es: "Lechuga" },
+    "crews.edit_crew.basics.schedule_color.olive": { en: "Olive", es: "Olivo" },
+    "crews.edit_crew.basics.notes_label": { en: "Notes", es: "Notas" },
+
+    // Foreman section.
+    "crews.edit_crew.foreman.title": { en: "Foreman", es: "Capataz" },
+    "crews.edit_crew.foreman.sub": {
+        en: "The foreman manages the roster, runs the daily huddle, and confirms head count.",
+        es: "El capataz maneja el roster, dirige la junta diaria y confirma asistencia.",
+    },
+    "crews.edit_crew.foreman.empty_no_hires": {
+        en: "No active hires yet — once you hire workers they'll appear here.",
+        es: "Aún no hay contrataciones — al contratar trabajadores aparecerán aquí.",
+    },
+    "crews.edit_crew.foreman.hired": { en: "Active hire", es: "Contratado activo" },
+    "crews.edit_crew.foreman.hire_cta_title": {
+        en: "Hire a foreman",
+        es: "Contratar a un capataz",
+    },
+    "crews.edit_crew.foreman.hire_cta_sub": {
+        en: "Open a job posting from the Jobs page.",
+        es: "Publica un puesto desde la página de Empleos.",
+    },
+
+    // Roster section.
+    "crews.edit_crew.roster.title": { en: "Roster", es: "Roster" },
+    "crews.edit_crew.roster.title_count": {
+        en: "Roster · {count, plural, one {# member} other {# members}}",
+        es: "Roster · {count, plural, one {# miembro} other {# miembros}}",
+    },
+    "crews.edit_crew.roster.sub": {
+        en: "Add or remove crew members. Foreman is locked.",
+        es: "Agrega o quita miembros. El capataz queda fijo.",
+    },
+    "crews.edit_crew.roster.after_save_hint": {
+        en: "Save the crew first — then add members on the next screen.",
+        es: "Guarda la cuadrilla primero — luego agrega miembros en la siguiente pantalla.",
+    },
+    "crews.edit_crew.roster.empty": {
+        en: "No members yet — add a worker below to start building this crew.",
+        es: "Aún sin miembros — agrega un trabajador abajo para comenzar.",
+    },
+    "crews.edit_crew.roster.foreman_pill": { en: "FOREMAN", es: "CAPATAZ" },
+    "crews.edit_crew.roster.role_lead": { en: "Foreman", es: "Capataz" },
+    "crews.edit_crew.roster.role_member": { en: "Member", es: "Miembro" },
+    "crews.edit_crew.roster.make_foreman": { en: "Make foreman", es: "Hacer capataz" },
+    "crews.edit_crew.roster.open_chat": { en: "Open chat", es: "Abrir chat" },
+    "crews.edit_crew.roster.remove": { en: "Remove", es: "Quitar" },
+    "crews.edit_crew.roster.add_label": { en: "Add a worker", es: "Agregar un trabajador" },
+    "crews.edit_crew.roster.error_add": { en: "Could not add member.", es: "No se pudo agregar el miembro." },
+    "crews.edit_crew.roster.error_remove": { en: "Could not remove member.", es: "No se pudo quitar el miembro." },
+    "crews.edit_crew.roster.error_promote": { en: "Could not promote to foreman.", es: "No se pudo asignar como capataz." },
+
+    // Required skills section.
+    "crews.edit_crew.skills.title": { en: "Required skills", es: "Habilidades requeridas" },
+    "crews.edit_crew.skills.sub": {
+        en: "Members without these can't be added — coverage is read from each worker's profile.",
+        es: "No se pueden agregar miembros sin éstas — la cobertura se lee del perfil de cada trabajador.",
+    },
+    "crews.edit_crew.skills.coverage": {
+        en: "{have}/{total} have it",
+        es: "{have}/{total} la tienen",
+    },
+    "crews.edit_crew.skills.coverage_empty": {
+        en: "No members yet to check.",
+        es: "Aún sin miembros para verificar.",
+    },
+    "crews.edit_crew.skills.name.forklift": { en: "Forklift certified", es: "Certificación de montacargas" },
+    "crews.edit_crew.skills.name.cdl": { en: "CDL-A license", es: "Licencia CDL-A" },
+    "crews.edit_crew.skills.name.wps": { en: "WPS pesticide training", es: "Entrenamiento WPS de plaguicidas" },
+    "crews.edit_crew.skills.name.bilingual": { en: "Bilingual EN/ES", es: "Bilingüe EN/ES" },
+    "crews.edit_crew.skills.name.lead": { en: "Crew lead trained", es: "Entrenado como líder" },
+    "crews.edit_crew.skills.name.irrigation": { en: "Drip irrigation cert", es: "Cert. de riego por goteo" },
+
+    // Pay defaults section.
+    "crews.edit_crew.pay.title": { en: "Pay defaults", es: "Pago por defecto" },
+    "crews.edit_crew.pay.sub": {
+        en: "Override per-shift. Used in the take-home estimator and payroll.",
+        es: "Se puede sobreescribir por turno. Usado en la estimación y la nómina.",
+    },
+    "crews.edit_crew.pay.base_wage_label": { en: "Base wage", es: "Salario base" },
+    "crews.edit_crew.pay.piece_rate_label": { en: "Piece rate", es: "Tarifa por pieza" },
+    "crews.edit_crew.pay.piece_rate_unit_label": { en: "Unit", es: "Unidad" },
+    "crews.edit_crew.pay.foreman_premium_label": { en: "Foreman premium", es: "Bono de capataz" },
+    "crews.edit_crew.pay.per_hour": { en: "/hr", es: "/hr" },
+
+    // Communication section.
+    "crews.edit_crew.comms.title": { en: "Communication", es: "Comunicación" },
+    "crews.edit_crew.comms.sub": {
+        en: "How notifications reach this crew. Auto-translates EN ⇄ ES.",
+        es: "Cómo se entregan las notificaciones a esta cuadrilla. Traduce EN ⇄ ES automáticamente.",
+    },
+    "crews.edit_crew.comms.name.groupChat": { en: "Group chat", es: "Chat grupal" },
+    "crews.edit_crew.comms.help.groupChat": {
+        en: "Crew + foreman in one thread.",
+        es: "Cuadrilla y capataz en un solo hilo.",
+    },
+    "crews.edit_crew.comms.name.smsDigest": { en: "Daily SMS digest", es: "Resumen diario por SMS" },
+    "crews.edit_crew.comms.help.smsDigest": {
+        en: "Tomorrow's shift sent at 6 PM.",
+        es: "El turno de mañana se envía a las 6 PM.",
+    },
+    "crews.edit_crew.comms.name.whatsappForeman": {
+        en: "WhatsApp foreman channel",
+        es: "Canal de WhatsApp para capataz",
+    },
+    "crews.edit_crew.comms.help.whatsappForeman": {
+        en: "Foreman manages outside the app.",
+        es: "El capataz lo maneja fuera de la app.",
+    },
+    "crews.edit_crew.comms.name.voiceBroadcast": { en: "Voice call broadcast", es: "Difusión por llamada" },
+    "crews.edit_crew.comms.help.voiceBroadcast": {
+        en: "Recorded message for emergencies.",
+        es: "Mensaje grabado para emergencias.",
+    },
+
+    // Right rail (identity / yield / activity).
+    "crews.edit_crew.rail.untitled_crew": { en: "Untitled crew", es: "Cuadrilla sin nombre" },
+    "crews.edit_crew.rail.no_foreman": { en: "No foreman yet", es: "Sin capataz aún" },
+    "crews.edit_crew.rail.rail_subtitle": {
+        en: "{count, plural, =0 {No members} one {1 member} other {# members}} · {foreman}",
+        es: "{count, plural, =0 {Sin miembros} one {1 miembro} other {# miembros}} · {foreman}",
+    },
+    "crews.edit_crew.rail.members_label": { en: "Members", es: "Miembros" },
+    "crews.edit_crew.rail.skills_label": { en: "Required", es: "Requeridas" },
+    "crews.edit_crew.rail.yield_label": { en: "Last 14 days yield", es: "Rendimiento últimos 14 días" },
+    "crews.edit_crew.rail.yield_empty": {
+        en: "No piecework recorded for this crew yet.",
+        es: "Aún no hay producción registrada para esta cuadrilla.",
+    },
+    "crews.edit_crew.rail.yield_peak": { en: "Peak: {count}", es: "Pico: {count}" },
+    "crews.edit_crew.rail.activity_label": { en: "Activity", es: "Actividad" },
+    "crews.edit_crew.rail.activity_empty": {
+        en: "No activity yet.",
+        es: "Sin actividad aún.",
+    },
+    "crews.edit_crew.rail.activity_action.employer.crew.created": {
+        en: "Crew created",
+        es: "Cuadrilla creada",
+    },
+    "crews.edit_crew.rail.activity_action.employer.crew.updated": {
+        en: "Crew updated",
+        es: "Cuadrilla actualizada",
+    },
+    "crews.edit_crew.rail.activity_action.employer.crew.archived": {
+        en: "Crew archived",
+        es: "Cuadrilla archivada",
+    },
+    "crews.edit_crew.rail.activity_action.employer.crew.member.added": {
+        en: "Member added",
+        es: "Miembro agregado",
+    },
+    "crews.edit_crew.rail.activity_action.employer.crew.member.removed": {
+        en: "Member removed",
+        es: "Miembro quitado",
+    },
+    "crews.manage_members.title": {
+        en: "Members of {crew}",
+        es: "Miembros de {crew}",
+    },
+    "crews.manage_members.empty": {
+        en: "No members yet — add a worker below to start building this crew.",
+        es: "Aún sin miembros — agrega un trabajador abajo para comenzar.",
+    },
+    "crews.manage_members.roster_label": {
+        en: "{count, plural, =0 {No members} one {1 member} other {# members}}",
+        es: "{count, plural, =0 {Sin miembros} one {1 miembro} other {# miembros}}",
+    },
+    "crews.manage_members.role.lead": {
+        en: "Foreman",
+        es: "Capataz",
+    },
+    "crews.manage_members.role.member": {
+        en: "Member",
+        es: "Miembro",
+    },
+    "crews.manage_members.make_foreman": {
+        en: "Make foreman",
+        es: "Hacer capataz",
+    },
+    "crews.manage_members.remove": {
+        en: "Remove",
+        es: "Quitar",
+    },
+    "crews.manage_members.add_label": {
+        en: "Add a worker",
+        es: "Agregar un trabajador",
+    },
+    "crews.manage_members.done": {
+        en: "Done",
+        es: "Listo",
+    },
+    "crews.manage_members.error_add": {
+        en: "Could not add member.",
+        es: "No se pudo agregar el miembro.",
+    },
+    "crews.manage_members.error_remove": {
+        en: "Could not remove member.",
+        es: "No se pudo quitar el miembro.",
+    },
+    "crews.manage_members.error_promote": {
+        en: "Could not promote to foreman.",
+        es: "No se pudo asignar como capataz.",
+    },
+    "crews.edit_shift.title": {
+        en: "Edit shift",
+        es: "Editar turno",
+    },
+    "crews.edit_shift.section_details": {
+        en: "Shift details",
+        es: "Detalles del turno",
+    },
+    "crews.edit_shift.section_workers": {
+        en: "Workers on this shift",
+        es: "Trabajadores en este turno",
+    },
+    "crews.edit_shift.cancel": {
+        en: "Close",
+        es: "Cerrar",
+    },
+    "crews.edit_shift.save": {
+        en: "Save changes",
+        es: "Guardar cambios",
+    },
+    "crews.edit_shift.error": {
+        en: "Could not save shift.",
+        es: "No se pudo guardar el turno.",
+    },
+    "crews.edit_shift.date_label": {
+        en: "Date",
+        es: "Fecha",
+    },
+    "crews.edit_shift.start_time_label": {
+        en: "Start time",
+        es: "Hora de inicio",
+    },
+    "crews.edit_shift.end_time_label": {
+        en: "End time (optional)",
+        es: "Hora de fin (opcional)",
+    },
+    "crews.edit_shift.status_label": {
+        en: "Status",
+        es: "Estado",
+    },
+    "crews.edit_shift.status.scheduled": {
+        en: "Scheduled",
+        es: "Programado",
+    },
+    "crews.edit_shift.status.in_progress": {
+        en: "In progress",
+        es: "En curso",
+    },
+    "crews.edit_shift.status.completed": {
+        en: "Completed",
+        es: "Completado",
+    },
+    "crews.edit_shift.status.cancelled": {
+        en: "Cancelled",
+        es: "Cancelado",
+    },
+    "crews.edit_shift.location_label": {
+        en: "Location",
+        es: "Ubicación",
+    },
+    "crews.edit_shift.location_current": {
+        en: "Current",
+        es: "Actual",
+    },
+    "crews.edit_shift.location_change": {
+        en: "Change location",
+        es: "Cambiar ubicación",
+    },
+    "crews.edit_shift.location_keep": {
+        en: "Keep current location",
+        es: "Conservar ubicación actual",
+    },
+    "crews.edit_shift.location_new_label": {
+        en: "New location",
+        es: "Nueva ubicación",
+    },
+    "crews.edit_shift.notes_label": {
+        en: "Notes (optional)",
+        es: "Notas (opcional)",
+    },
+    "crews.edit_shift.title_a": { en: "Edit", es: "Editar" },
+    "crews.edit_shift.title_b": { en: "shift", es: "turno" },
+    "crews.edit_shift.eyebrow": {
+        en: "Shift editor · existing shift",
+        es: "Editor de turno · turno existente",
+    },
+    "crews.edit_shift.subtitle": {
+        en: "{crew} · {confirmed} confirmed · {open, plural, =0 {no spots open} one {1 spot open} other {# spots open}} · changes notify the crew via SMS",
+        es: "{crew} · {confirmed} confirmados · {open, plural, =0 {sin lugares abiertos} one {1 lugar abierto} other {# lugares abiertos}} · los cambios se avisan por SMS",
+    },
+    "crews.edit_shift.breadcrumbs_aria": {
+        en: "Edit shift breadcrumbs",
+        es: "Migas de pan del editor de turno",
+    },
+    "crews.edit_shift.breadcrumb_crews": {
+        en: "Crews & shifts",
+        es: "Cuadrillas y turnos",
+    },
+    "crews.edit_shift.breadcrumb_no_crew": {
+        en: "Ad-hoc shift",
+        es: "Turno ad-hoc",
+    },
+    "crews.edit_shift.breadcrumb_current": {
+        en: "Edit shift · {date}",
+        es: "Editar turno · {date}",
+    },
+    "crews.edit_shift.action_duplicate": {
+        en: "Duplicate",
+        es: "Duplicar",
+    },
+    "crews.edit_shift.action_cancel": {
+        en: "Cancel shift",
+        es: "Cancelar turno",
+    },
+    "crews.edit_shift.cancel_confirm_message": {
+        en: "Workers assigned to this shift will be notified that it is no longer happening. The shift stays on the schedule, marked cancelled.",
+        es: "A los trabajadores asignados a este turno se les avisará que ya no se realizará. El turno permanece en el horario, marcado como cancelado.",
+    },
+    "crews.edit_shift.cancel_keep": { en: "Keep it", es: "Conservar" },
+    "crews.edit_shift.cancel_confirm_button": {
+        en: "Cancel shift",
+        es: "Cancelar turno",
+    },
+    "crews.edit_shift.jump_to_section": {
+        en: "Jump to section…",
+        es: "Ir a una sección…",
+    },
+    "crews.edit_shift.save_bar_complete": {
+        en: "Editing shift · {date}",
+        es: "Editando turno · {date}",
+    },
+    "crews.edit_shift.save_bar_single": {
+        en: "Saving updates this shift only.",
+        es: "Al guardar se actualiza solo este turno.",
+    },
+    "crews.edit_shift.save_bar_repeat": {
+        en: "{count, plural, one {Saves this shift + 1 repeat day} other {Saves this shift + # repeat days}}",
+        es: "{count, plural, one {Guarda este turno + 1 día repetido} other {Guarda este turno + # días repetidos}}",
+    },
+    "crews.edit_shift.footer_cancel": { en: "Cancel", es: "Cancelar" },
+    "crews.edit_shift.footer_save_quiet": {
+        en: "Save · don't notify",
+        es: "Guardar · sin avisar",
+    },
+    "crews.edit_shift.footer_save_notify": {
+        en: "Save & notify crew",
+        es: "Guardar y avisar a la cuadrilla",
+    },
+    "crews.edit_shift.error_save": {
+        en: "Could not save shift.",
+        es: "No se pudo guardar el turno.",
+    },
+    "crews.edit_shift.error_duplicate": {
+        en: "Could not duplicate shift.",
+        es: "No se pudo duplicar el turno.",
+    },
+    "crews.edit_shift.error_cancel": {
+        en: "Could not cancel this shift.",
+        es: "No se pudo cancelar el turno.",
+    },
+    "crews.edit_shift.section.nav_aria": {
+        en: "Shift editor section navigation",
+        es: "Navegación de secciones del editor",
+    },
+    "crews.edit_shift.section.item.type": { en: "Shift type", es: "Tipo de turno" },
+    "crews.edit_shift.section.item.crew": { en: "Crew", es: "Cuadrilla" },
+    "crews.edit_shift.section.item.date": { en: "Date & time", es: "Fecha y hora" },
+    "crews.edit_shift.section.item.loc": { en: "Location", es: "Ubicación" },
+    "crews.edit_shift.section.item.logistics": { en: "Logistics", es: "Logística" },
+    "crews.edit_shift.section.item.safety": { en: "Safety", es: "Seguridad" },
+    "crews.edit_shift.section.item.notify": { en: "Notifications", es: "Notificaciones" },
+    "crews.edit_shift.section.item.workers": { en: "Workers", es: "Trabajadores" },
+    "crews.edit_shift.shift_type.title": { en: "Shift type", es: "Tipo de turno" },
+    "crews.edit_shift.shift_type.sub": {
+        en: "Used to color-code the schedule grid and route notifications.",
+        es: "Se usa para colorear el horario y dirigir las notificaciones.",
+    },
+    "crews.edit_shift.shift_type.option.work.label": { en: "Work shift", es: "Turno de trabajo" },
+    "crews.edit_shift.shift_type.option.work.desc": {
+        en: "Standard work day for the crew",
+        es: "Día de trabajo estándar para la cuadrilla",
+    },
+    "crews.edit_shift.shift_type.option.training.label": { en: "Training", es: "Capacitación" },
+    "crews.edit_shift.shift_type.option.training.desc": {
+        en: "WPS, heat illness, equipment",
+        es: "WPS, prevención de calor, equipo",
+    },
+    "crews.edit_shift.shift_type.option.off.label": { en: "Day off", es: "Día libre" },
+    "crews.edit_shift.shift_type.option.off.desc": {
+        en: "Block the date for the entire crew",
+        es: "Bloquea la fecha para toda la cuadrilla",
+    },
+    "crews.edit_shift.shift_type.option.holiday.label": { en: "Holiday", es: "Día festivo" },
+    "crews.edit_shift.shift_type.option.holiday.desc": {
+        en: "Federal or company holiday",
+        es: "Festivo federal o de la empresa",
+    },
+    "crews.edit_shift.crew_picker.title": { en: "Assign crew", es: "Asignar cuadrilla" },
+    "crews.edit_shift.crew_picker.sub": {
+        en: "Pick the crew you're scheduling. Foreman and roster are pre-loaded.",
+        es: "Elige la cuadrilla. El capataz y la lista se cargan automáticamente.",
+    },
+    "crews.edit_shift.crew_picker.none_label": {
+        en: "No crew · ad-hoc shift",
+        es: "Sin cuadrilla · turno ad-hoc",
+    },
+    "crews.edit_shift.crew_picker.none_help": {
+        en: "Won't appear on a crew row of the weekly grid.",
+        es: "No aparece en una fila de cuadrilla del horario semanal.",
+    },
+    "crews.edit_shift.crew_picker.hiring_foreman": {
+        en: "— hiring —",
+        es: "— contratando —",
+    },
+    "crews.edit_shift.crew_picker.size_short": { en: "crew", es: "cuadrilla" },
+    "crews.edit_shift.crew_picker.create_crew": {
+        en: "Create a new crew",
+        es: "Crear una cuadrilla nueva",
+    },
+    "crews.edit_shift.date_time.title": { en: "Date & time", es: "Fecha y hora" },
+    "crews.edit_shift.date_time.sub": {
+        en: "Pick the day, the start, and the end. Repeat days spawn sibling shifts on save.",
+        es: "Elige el día, el inicio y el fin. Los días repetidos crean turnos hermanos al guardar.",
+    },
+    "crews.edit_shift.date_time.shift_date_label": { en: "Shift date", es: "Fecha del turno" },
+    "crews.edit_shift.date_time.status_label": { en: "Status", es: "Estado" },
+    "crews.edit_shift.date_time.start_time_label": { en: "Start time", es: "Hora de inicio" },
+    "crews.edit_shift.date_time.end_time_label": {
+        en: "End time (optional)",
+        es: "Hora de fin (opcional)",
+    },
+    "crews.edit_shift.date_time.status.scheduled": { en: "Scheduled", es: "Programado" },
+    "crews.edit_shift.date_time.status.in_progress": { en: "In progress", es: "En curso" },
+    "crews.edit_shift.date_time.status.completed": { en: "Completed", es: "Completado" },
+    "crews.edit_shift.date_time.status.cancelled": { en: "Cancelled", es: "Cancelado" },
+    "crews.edit_shift.date_time.repeat_label": { en: "Repeat days", es: "Repetir días" },
+    "crews.edit_shift.date_time.repeat_help": {
+        en: "Toggling extra days creates sibling shifts in the same week. The shift's own day stays selected.",
+        es: "Al activar más días se crean turnos hermanos en la misma semana. El día del propio turno permanece seleccionado.",
+    },
+    "crews.edit_shift.date_time.repeat_base_help": {
+        en: "This shift's day",
+        es: "Día de este turno",
+    },
+    "crews.edit_shift.date_time.dow.Mon": { en: "Mon", es: "Lun" },
+    "crews.edit_shift.date_time.dow.Tue": { en: "Tue", es: "Mar" },
+    "crews.edit_shift.date_time.dow.Wed": { en: "Wed", es: "Mié" },
+    "crews.edit_shift.date_time.dow.Thu": { en: "Thu", es: "Jue" },
+    "crews.edit_shift.date_time.dow.Fri": { en: "Fri", es: "Vie" },
+    "crews.edit_shift.date_time.dow.Sat": { en: "Sat", es: "Sáb" },
+    "crews.edit_shift.date_time.dow.Sun": { en: "Sun", es: "Dom" },
+    "crews.edit_shift.date_time.stat.hours_per_day": { en: "Hours / day", es: "Horas / día" },
+    "crews.edit_shift.date_time.stat.active_days": { en: "Active days", es: "Días activos" },
+    "crews.edit_shift.date_time.stat.total_hours": {
+        en: "Total crew hours",
+        es: "Horas totales",
+    },
+    "crews.edit_shift.location_section.title": { en: "Location", es: "Ubicación" },
+    "crews.edit_shift.location_section.sub": {
+        en: "Workers see this in their shift card. The map link is sent over SMS.",
+        es: "Los trabajadores lo ven en su tarjeta de turno. El enlace al mapa se envía por SMS.",
+    },
+    "crews.edit_shift.location_section.block_label": {
+        en: "Block / parcel",
+        es: "Bloque / parcela",
+    },
+    "crews.edit_shift.location_section.coords_label": {
+        en: "Coordinates",
+        es: "Coordenadas",
+    },
+    "crews.edit_shift.location_section.coords_empty": {
+        en: "Pick an address to drop a pin",
+        es: "Elige una dirección para colocar un pin",
+    },
+    "crews.edit_shift.location_section.map_alt": {
+        en: "Map preview of {label}",
+        es: "Vista del mapa de {label}",
+    },
+    "crews.edit_shift.location_section.map_style.streets": {
+        en: "Map",
+        es: "Mapa",
+    },
+    "crews.edit_shift.location_section.map_style.satellite": {
+        en: "Satellite",
+        es: "Satélite",
+    },
+    "crews.edit_shift.location_section.map_empty_title": {
+        en: "Pick an address to preview the map",
+        es: "Elige una dirección para ver el mapa",
+    },
+    "crews.edit_shift.location_section.map_empty_help": {
+        en: "Use “Change address” below to search for the parcel or drop a pin on the map.",
+        es: "Usa “Cambiar dirección” abajo para buscar la parcela o colocar un pin en el mapa.",
+    },
+    "crews.edit_shift.location_section.open_in_maps": {
+        en: "Open in Google Maps",
+        es: "Abrir en Google Maps",
+    },
+    "crews.edit_shift.location_section.map_fullscreen_open": {
+        en: "Expand map to full screen",
+        es: "Expandir mapa a pantalla completa",
+    },
+    "crews.edit_shift.location_section.map_fullscreen_close": {
+        en: "Close fullscreen map",
+        es: "Cerrar mapa a pantalla completa",
+    },
+    "crews.edit_shift.location_section.change_address": {
+        en: "Change address",
+        es: "Cambiar dirección",
+    },
+    "crews.edit_shift.location_section.keep_current": {
+        en: "Keep current address",
+        es: "Conservar la dirección actual",
+    },
+    "crews.edit_shift.location_section.new_address_label": {
+        en: "New address",
+        es: "Nueva dirección",
+    },
+    "crews.edit_shift.logistics.title": {
+        en: "Pickup & logistics",
+        es: "Transporte y logística",
+    },
+    "crews.edit_shift.logistics.sub": {
+        en: "Crew transport, equipment, foreman briefing.",
+        es: "Transporte, equipo, instrucciones del capataz.",
+    },
+    "crews.edit_shift.logistics.edit_button": { en: "Edit", es: "Editar" },
+    "crews.edit_shift.logistics.pickup.title": {
+        en: "Pickup point provided",
+        es: "Punto de encuentro provisto",
+    },
+    "crews.edit_shift.logistics.pickup.default_help": {
+        en: "Set a meeting place workers can SMS-confirm",
+        es: "Define un punto de encuentro que los trabajadores puedan confirmar por SMS",
+    },
+    "crews.edit_shift.logistics.pickup.edit_prompt": {
+        en: "Pickup location & time",
+        es: "Lugar y hora de encuentro",
+    },
+    "crews.edit_shift.logistics.equipment.title": {
+        en: "Equipment provided",
+        es: "Equipo provisto",
+    },
+    "crews.edit_shift.logistics.equipment.default_help": {
+        en: "Buckets, crates, gloves provided · workers bring boots & hat",
+        es: "Cubetas, cajas y guantes provistos · trabajadores traen botas y sombrero",
+    },
+    "crews.edit_shift.logistics.equipment.edit_prompt": {
+        en: "Equipment notes",
+        es: "Notas de equipo",
+    },
+    "crews.edit_shift.logistics.lunch.title": {
+        en: "Lunch & snacks provided",
+        es: "Comida y bocadillos provistos",
+    },
+    "crews.edit_shift.logistics.lunch.default_help": {
+        en: "Cold tortas + agua de jamaica · 11:30 AM lunch",
+        es: "Tortas frías + agua de jamaica · almuerzo a las 11:30",
+    },
+    "crews.edit_shift.logistics.lunch.edit_prompt": {
+        en: "Lunch & snack notes",
+        es: "Notas de comida",
+    },
+    "crews.edit_shift.safety.title": { en: "Safety rules", es: "Reglas de seguridad" },
+    "crews.edit_shift.safety.sub": {
+        en: "Cal/OSHA heat illness prevention is automatic when forecast exceeds 95°F.",
+        es: "La prevención de calor de Cal/OSHA se aplica automáticamente sobre 95°F.",
+    },
+    "crews.edit_shift.safety.heat.high_title": {
+        en: "Heat advisory expected — {degF}°F forecast",
+        es: "Aviso por calor — pronóstico de {degF}°F",
+    },
+    "crews.edit_shift.safety.heat.normal_title": {
+        en: "Forecast {degF}°F — normal heat protocol",
+        es: "Pronóstico {degF}°F — protocolo de calor normal",
+    },
+    "crews.edit_shift.safety.heat.high_help": {
+        en: "Auto-applied: 11:30 lunch · 10-min shade breaks at 9 AM and 1 PM · earlier 2 PM stop if temps spike",
+        es: "Aplicado automáticamente: almuerzo a las 11:30 · pausas de 10 min a las 9 AM y 1 PM · cierre antes a las 2 PM si sube la temperatura",
+    },
+    "crews.edit_shift.safety.heat.normal_help": {
+        en: "Standard breaks every two hours. Auto-apply switches on if forecast crosses 95°F.",
+        es: "Pausas cada dos horas. La aplicación automática se activa si el pronóstico cruza 95°F.",
+    },
+    "crews.edit_shift.safety.heat.auto_apply": {
+        en: "Auto-apply",
+        es: "Aplicar automáticamente",
+    },
+    "crews.edit_shift.safety.heat.loading": {
+        en: "Checking weather…",
+        es: "Consultando el clima…",
+    },
+    "crews.edit_shift.safety.heat.loading_help": {
+        en: "Pulling the National Weather Service forecast for this site and date.",
+        es: "Consultando el pronóstico del Servicio Meteorológico Nacional para este sitio y fecha.",
+    },
+    "crews.edit_shift.safety.heat.unavailable": {
+        en: "Forecast unavailable",
+        es: "Pronóstico no disponible",
+    },
+    "crews.edit_shift.safety.heat.unavailable_help": {
+        en: "Could not reach the National Weather Service. Standard heat protocol applies.",
+        es: "No se pudo consultar al Servicio Meteorológico Nacional. Se aplica el protocolo de calor estándar.",
+    },
+    "crews.edit_shift.safety.heat.source": {
+        en: "NWS forecast · {condition}",
+        es: "Pronóstico NWS · {condition}",
+    },
+    "crews.edit_shift.safety.item.wpsCleared.title": {
+        en: "WPS pesticide pre-entry interval cleared",
+        es: "Intervalo previo a la entrada (WPS) verificado",
+    },
+    "crews.edit_shift.safety.item.wpsCleared.help": {
+        en: "Last application logged and the field is safe to enter.",
+        es: "Última aplicación registrada y el campo es seguro para entrar.",
+    },
+    "crews.edit_shift.safety.item.ppeBriefingDone.title": {
+        en: "Required PPE briefing",
+        es: "Reunión de equipo de protección",
+    },
+    "crews.edit_shift.safety.item.ppeBriefingDone.help": {
+        en: "Hat, sunscreen, water bottle confirmed in pre-shift huddle.",
+        es: "Sombrero, protector solar y botella de agua confirmados en la reunión previa.",
+    },
+    "crews.edit_shift.safety.item.emergencyContactsLoaded.title": {
+        en: "Emergency contacts loaded",
+        es: "Contactos de emergencia cargados",
+    },
+    "crews.edit_shift.safety.item.emergencyContactsLoaded.help": {
+        en: "Foreman + 911 + nearest clinic distance available offline.",
+        es: "Capataz + 911 + distancia a la clínica más cercana disponibles sin conexión.",
+    },
+    "crews.edit_shift.safety.item.restroomNearby.title": {
+        en: "Restroom access",
+        es: "Acceso a baños",
+    },
+    "crews.edit_shift.safety.item.restroomNearby.help": {
+        en: "Mobile unit at pickup or within 5 minutes' walk.",
+        es: "Unidad móvil en el punto de encuentro o a menos de 5 minutos a pie.",
+    },
+    "crews.edit_shift.notify.title": { en: "Notifications", es: "Notificaciones" },
+    "crews.edit_shift.notify.sub": {
+        en: "Pick how the crew is reminded — bilingual EN/ES is automatic.",
+        es: "Elige cómo se le recuerda a la cuadrilla — el bilingüe EN/ES es automático.",
+    },
+    "crews.edit_shift.notify.channel.smsEveningBefore.title": {
+        en: "SMS · evening before",
+        es: "SMS · la noche anterior",
+    },
+    "crews.edit_shift.notify.channel.smsEveningBefore.help": {
+        en: "6 PM the day before the shift",
+        es: "6 PM el día antes del turno",
+    },
+    "crews.edit_shift.notify.channel.whatsappMorning.title": {
+        en: "WhatsApp · morning of",
+        es: "WhatsApp · la mañana del turno",
+    },
+    "crews.edit_shift.notify.channel.whatsappMorning.help": {
+        en: "Sends the map link 90 minutes before start",
+        es: "Envía el mapa 90 minutos antes del inicio",
+    },
+    "crews.edit_shift.notify.channel.foremanRollCall.title": {
+        en: "Foreman roll call",
+        es: "Pase de lista del capataz",
+    },
+    "crews.edit_shift.notify.channel.foremanRollCall.help": {
+        en: "Push to the foreman to confirm head count",
+        es: "Aviso al capataz para confirmar la asistencia",
+    },
+    "crews.edit_shift.notify.translate_help": {
+        en: "Auto-translate EN ⇄ ES — covers crew members on either preferred language.",
+        es: "Traducción automática EN ⇄ ES — cubre a la cuadrilla en su idioma preferido.",
+    },
+    "crews.edit_shift.workers.title": {
+        en: "Workers on this shift",
+        es: "Trabajadores en este turno",
+    },
+    "crews.edit_shift.workers.sub": {
+        en: "{count, plural, =0 {No workers assigned yet} one {1 worker assigned} other {# workers assigned}}",
+        es: "{count, plural, =0 {Sin trabajadores asignados} one {1 trabajador asignado} other {# trabajadores asignados}}",
+    },
+    "crews.edit_shift.workers.empty": {
+        en: "No workers assigned yet — assign someone below to start filling this shift.",
+        es: "Aún sin trabajadores asignados — asigna a alguien abajo para empezar.",
+    },
+    "crews.edit_shift.workers.status.assigned": { en: "Assigned", es: "Asignado" },
+    "crews.edit_shift.workers.status.confirmed": { en: "Confirmed", es: "Confirmado" },
+    "crews.edit_shift.workers.status.declined": { en: "Declined", es: "Rechazado" },
+    "crews.edit_shift.workers.status.no_show": { en: "No-show", es: "No se presentó" },
+    "crews.edit_shift.workers.status.completed": { en: "Completed", es: "Completado" },
+    "crews.edit_shift.workers.remove": { en: "Remove", es: "Quitar" },
+    "crews.edit_shift.workers.assign_label": {
+        en: "Assign a worker",
+        es: "Asignar un trabajador",
+    },
+    "crews.edit_shift.workers.error_assign": {
+        en: "Could not assign worker.",
+        es: "No se pudo asignar al trabajador.",
+    },
+    "crews.edit_shift.workers.error_status": {
+        en: "Could not update status.",
+        es: "No se pudo actualizar el estado.",
+    },
+    "crews.edit_shift.preview.rail_label": {
+        en: "Worker preview rail",
+        es: "Panel de vista del trabajador",
+    },
+    "crews.edit_shift.preview.worker_preview": {
+        en: "Worker preview",
+        es: "Vista del trabajador",
+    },
+    "crews.edit_shift.preview.eyebrow": {
+        en: "Worker preview · SMS card",
+        es: "Vista del trabajador · tarjeta SMS",
+    },
+    "crews.edit_shift.preview.badge": { en: "Shift", es: "Turno" },
+    "crews.edit_shift.preview.no_crew": {
+        en: "Ad-hoc shift",
+        es: "Turno ad-hoc",
+    },
+    "crews.edit_shift.preview.row.time": { en: "Time", es: "Hora" },
+    "crews.edit_shift.preview.row.pickup": { en: "Pickup", es: "Recogida" },
+    "crews.edit_shift.preview.row.pickup_default": {
+        en: "Set on the form",
+        es: "Definida en el formulario",
+    },
+    "crews.edit_shift.preview.row.no_pickup": {
+        en: "No pickup point",
+        es: "Sin punto de recogida",
+    },
+    "crews.edit_shift.preview.row.bring": { en: "Bring", es: "Lleva" },
+    "crews.edit_shift.preview.row.bring_minimal": {
+        en: "Boots, hat",
+        es: "Botas, sombrero",
+    },
+    "crews.edit_shift.preview.row.bring_all": {
+        en: "Boots, hat, gloves",
+        es: "Botas, sombrero, guantes",
+    },
+    "crews.edit_shift.preview.row.lunch": { en: "Lunch", es: "Almuerzo" },
+    "crews.edit_shift.preview.row.lunch_provided": {
+        en: "Provided on site",
+        es: "Provisto en el lugar",
+    },
+    "crews.edit_shift.preview.row.lunch_byo": {
+        en: "Bring your own",
+        es: "Trae lo tuyo",
+    },
+    "crews.edit_shift.preview.heat_pill": {
+        en: "{degF}°F forecast — extra shade breaks at 9 AM + 1 PM",
+        es: "Pronóstico {degF}°F — pausas extra a las 9 AM y 1 PM",
+    },
+    "crews.edit_shift.preview.confirm": { en: "Confirm", es: "Confirmar" },
+    "crews.edit_shift.preview.decline": {
+        en: "Can't make it",
+        es: "No puedo",
+    },
+    "crews.edit_shift.preview.footnote": {
+        en: "Sent ahead of the confirmation deadline. Includes the auto-translated Spanish version.",
+        es: "Enviado antes de la fecha límite de confirmación. Incluye la versión en español traducida automáticamente.",
+    },
+    "crews.edit_shift.preview.confirmations_label": {
+        en: "Confirmations",
+        es: "Confirmaciones",
+    },
+    "crews.edit_shift.preview.confirmations_help": {
+        en: "{open, plural, =0 {All confirmed} one {1 spot open · auto-fill from waitlist} other {# spots open · auto-fill from waitlist}}",
+        es: "{open, plural, =0 {Todos confirmados} one {1 lugar abierto · llenado automático} other {# lugares abiertos · llenado automático}}",
+    },
+    "crews.manage_assignments.title": {
+        en: "Workers on this shift",
+        es: "Trabajadores en este turno",
+    },
+    "crews.manage_assignments.empty": {
+        en: "No workers assigned yet — assign someone below to start filling this shift.",
+        es: "Aún sin trabajadores asignados — asigna a alguien abajo para empezar.",
+    },
+    "crews.manage_assignments.roster_label": {
+        en: "{count, plural, =0 {No assignments} one {1 worker} other {# workers}}",
+        es: "{count, plural, =0 {Sin asignaciones} one {1 trabajador} other {# trabajadores}}",
+    },
+    "crews.manage_assignments.assign_label": {
+        en: "Assign a worker",
+        es: "Asignar un trabajador",
+    },
+    "crews.manage_assignments.remove": {
+        en: "Remove",
+        es: "Quitar",
+    },
+    "crews.manage_assignments.done": {
+        en: "Done",
+        es: "Listo",
+    },
+    "crews.manage_assignments.error_assign": {
+        en: "Could not assign worker.",
+        es: "No se pudo asignar al trabajador.",
+    },
+    "crews.manage_assignments.error_status": {
+        en: "Could not update status.",
+        es: "No se pudo actualizar el estado.",
+    },
+    "crews.manage_assignments.status.assigned": {
+        en: "Assigned",
+        es: "Asignado",
+    },
+    "crews.manage_assignments.status.confirmed": {
+        en: "Confirmed",
+        es: "Confirmado",
+    },
+    "crews.manage_assignments.status.declined": {
+        en: "Declined",
+        es: "Rechazado",
+    },
+    "crews.manage_assignments.status.no_show": {
+        en: "No-show",
+        es: "No se presentó",
+    },
+    "crews.manage_assignments.status.completed": {
+        en: "Completed",
+        es: "Completado",
+    },
+    "crews.hires_picker.placeholder": {
+        en: "Search hired workers…",
+        es: "Buscar trabajadores contratados…",
+    },
+    "crews.hires_picker.no_results": {
+        en: "No hires match — only active hires can be assigned.",
+        es: "Ninguna coincidencia — solo se pueden asignar contratados activos.",
+    },
+    "crews.hires_picker.suggested_label": {
+        en: "Suggested · crew members",
+        es: "Sugeridos · miembros de la cuadrilla",
+    },
+    "crews.hires_picker.all_label": {
+        en: "All hires",
+        es: "Todos los contratados",
     },
     "dashboard.active_jobs.applicants": {
         en: "applicants",
@@ -3051,6 +4330,8 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.wage_piece":              { en: "Pure piece rate",                 es: "Solo por unidad" },
     "jobs.form_v2.wage_piece_sub":          { en: "Per-unit only · AB 1513 paid breaks tracked.", es: "Solo por unidad · descansos pagados de AB 1513 registrados." },
     "jobs.form_v2.field_base_rate":         { en: "Base hourly rate",                es: "Tarifa base por hora" },
+    "jobs.form_v2.field_base_rate_min":     { en: "Base hourly rate minimum",        es: "Tarifa por hora mínima" },
+    "jobs.form_v2.field_base_rate_max":     { en: "Base hourly rate maximum",        es: "Tarifa por hora máxima" },
     "jobs.form_v2.hint_ca_min":             { en: "CA minimum: $16.00",              es: "Mínimo de CA: $16.00" },
     "jobs.form_v2.field_piece_rate":        { en: "Piece rate",                      es: "Tarifa por unidad" },
     "jobs.form_v2.field_piece_unit":        { en: "Unit",                            es: "Unidad" },
@@ -3095,7 +4376,15 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.field_pickup":                     { en: "Pickup point (if transport provided)",            es: "Punto de recogida (si se ofrece transporte)" },
     "jobs.form_v2.field_pickup_placeholder":         { en: "Hwy 99 / Cleveland Ave park-and-ride · 5:30 AM",  es: "Hwy 99 / Cleveland Ave park-and-ride · 5:30 AM" },
     "jobs.form_v2.map_alt":                          { en: "Work site map preview",                           es: "Vista previa del mapa del sitio" },
+    "jobs.form_v2.map_alt_template":                 { en: "Work site map preview · {label}",                 es: "Vista previa del mapa del sitio · {label}" },
     "jobs.form_v2.map_placeholder":                  { en: "Add a work site to drop a pin",                   es: "Agrega un sitio para colocar un marcador" },
+    "jobs.form_v2.map_empty_title":                  { en: "Pick an address to preview the map",              es: "Elige una dirección para ver el mapa" },
+    "jobs.form_v2.map_empty_help":                   { en: "Search for the work site above or drop a pin to set the coordinates.", es: "Busca el sitio arriba o coloca un pin para fijar las coordenadas." },
+    "jobs.form_v2.map_style_streets":                { en: "Map",                                             es: "Mapa" },
+    "jobs.form_v2.map_style_satellite":              { en: "Satellite",                                       es: "Satélite" },
+    "jobs.form_v2.map_open_in_maps":                 { en: "Open in Google Maps",                             es: "Abrir en Google Maps" },
+    "jobs.form_v2.map_fullscreen_open":              { en: "Expand map to full screen",                       es: "Expandir mapa a pantalla completa" },
+    "jobs.form_v2.map_fullscreen_close":             { en: "Close fullscreen map",                            es: "Cerrar mapa a pantalla completa" },
     "jobs.form_v2.map_geocoding":                    { en: "Locating…",                                       es: "Ubicando…" },
 
     "jobs.form_v2.sms_apply_with_keyword":  { en: "SMS apply — text {keyword} to (559) 555-0142", es: "Aplicar por SMS — envía {keyword} al (559) 555-0142" },
@@ -3161,6 +4450,10 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.autosave_saved":         { en: "Auto-saved {time}",             es: "Guardado {time}" },
     "jobs.form_v2.autosave_error":         { en: "Auto-save failed",              es: "Error al guardar" },
     "jobs.form_v2.renotify_dispatched":    { en: "{count, plural, one {1 applicant will be re-notified} other {# applicants will be re-notified}} of these changes.", es: "{count, plural, one {1 aplicante será notificado} other {# aplicantes serán notificados}} de estos cambios." },
+    "jobs.form_v2.renotify_suppressed":    { en: "Saved without notifying — {count, plural, one {1 active applicant} other {# active applicants}} will not see these changes.", es: "Guardado sin notificar — {count, plural, one {1 aplicante activo} other {# aplicantes activos}} no verá estos cambios." },
+    "jobs.form_v2.save_draft":             { en: "Save draft",                    es: "Guardar borrador" },
+    "jobs.form_v2.save_no_notify":         { en: "Save & don't notify",           es: "Guardar sin notificar" },
+    "jobs.form_v2.save_notify_crew":       { en: "Save & notify crew",            es: "Guardar y notificar a la cuadrilla" },
 
     // Worker preview rail
     "jobs.form_v2.preview.rail_label":         { en: "Worker preview",            es: "Vista del trabajador" },
