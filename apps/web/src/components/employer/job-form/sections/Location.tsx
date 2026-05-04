@@ -152,7 +152,9 @@ function mapLabels(
     openInMaps: t('map_open_in_maps'),
     emptyTitle: t('map_empty_title'),
     emptyHelp: t('map_empty_help'),
-    alt: t('map_alt_template'),
+    // MapPreview substitutes {label} at render time, so pass the placeholder
+    // verbatim through next-intl rather than letting it format it.
+    alt: t('map_alt_template', { label: '{label}' }),
     fullscreenOpen: t('map_fullscreen_open'),
     fullscreenClose: t('map_fullscreen_close'),
   };
