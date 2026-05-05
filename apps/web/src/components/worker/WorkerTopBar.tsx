@@ -30,7 +30,7 @@ export function WorkerTopBar() {
     }
 
     return (
-        <div className="border-base-300 sticky top-0 z-20 flex h-16 items-center gap-4 border-b px-8 backdrop-blur-md backdrop-saturate-150">
+        <div className="border-base-300 sticky top-0 z-20 hidden h-16 items-center gap-4 border-b px-8 backdrop-blur-md backdrop-saturate-150 md:flex">
             <form
                 onSubmit={handleSearch}
                 role="search"

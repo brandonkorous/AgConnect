@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +10,7 @@ import {
   faImage,
   faTrashCan,
   faArrowUpRightFromSquare,
+  faCloudArrowUp,
 } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
@@ -44,16 +45,19 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
   const [evidence, setEvidence] = useState<ComplianceEvidenceView | null>(initialEvidence);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dragCounter = useRef(0);
 
   async function uploadFile(file: File) {
+    // Client-side max-size pre-check before flipping busy state.
+    if (file.size > MAX_BYTES) {
+      setError(t('too_large'));
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
-      if (file.size > MAX_BYTES) {
-        setError(t('too_large'));
-        return;
-      }
       const fd = new FormData();
       fd.append('file', file);
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
@@ -102,12 +106,56 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
     if (file) void uploadFile(file);
   }
 
+  function onDragEnter(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current += 1;
+    if (e.dataTransfer.types.includes('Files')) setDragActive(true);
+  }
+
+  function onDragLeave(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0;
+      setDragActive(false);
+    }
+  }
+
+  function onDragOver(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function onDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current = 0;
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) void uploadFile(file);
+  }
+
   return (
-    <fieldset className="fieldset">
+    <fieldset
+      className="fieldset w-full min-w-0"
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
       <legend className="fieldset-legend">{t('label')}</legend>
 
       {evidence ? (
-        <div className="bg-base-200 border-base-300 flex items-center gap-3 rounded-lg border p-3">
+        <div
+          className={[
+            'flex items-center gap-3 rounded-lg border p-3 transition-colors',
+            dragActive
+              ? 'border-primary bg-primary/5'
+              : 'bg-base-200 border-base-300',
+          ].join(' ')}
+        >
           <FontAwesomeIcon
             icon={fileIcon(evidence.contentType)}
             className="text-base-content/60 h-4 w-4 shrink-0"
@@ -158,18 +206,34 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
             placeholder="https://…"
             className="input w-full"
           />
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              disabled={busy}
-              className="btn btn-ghost btn-sm gap-1.5"
-            >
-              <FontAwesomeIcon icon={faPaperclip} className="h-3 w-3" />
-              {busy ? t('uploading') : t('upload_cta')}
-            </button>
-            <span className="text-base-content/55 text-[11px]">{t('upload_help')}</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={busy}
+            className={[
+              'flex w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors',
+              dragActive
+                ? 'border-primary bg-primary/5 text-primary'
+                : 'border-base-300 hover:border-base-content/30 hover:bg-base-200/40 text-base-content/70',
+            ].join(' ')}
+          >
+            <FontAwesomeIcon icon={faCloudArrowUp} className="h-5 w-5" />
+            <span className="text-sm font-medium">
+              {dragActive ? t('drop_active') : t('drop_hint')}
+            </span>
+            <span className="text-base-content/55 text-[11px]">
+              {t('upload_help')}
+            </span>
+          </button>
+        </div>
+      )}
+
+      {busy && (
+        <div className="mt-2 flex flex-col gap-1">
+          <progress className="progress progress-primary w-full" />
+          <span className="text-base-content/60 text-[11px]">
+            {t('upload_progress')}
+          </span>
         </div>
       )}
 

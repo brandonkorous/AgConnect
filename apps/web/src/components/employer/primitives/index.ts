@@ -8,3 +8,5 @@ export * from './StatusBadge';
 export * from './FilterChip';
 export * from './ComplianceActionRow';
 export * from './PlanCard';
+export * from './HiringPipelineBoard';
+export * from './ScoreDonut';

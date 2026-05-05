@@ -53,9 +53,11 @@ type Props = {
     /** Override the path-derived active item — kept for legacy callers. */
     active?: WorkerNavKey;
     locale: string;
+    /** 'inline' renders the desktop aside (md+); 'drawer' renders the body for the mobile drawer. */
+    variant?: 'inline' | 'drawer';
 };
 
-export function WorkerSidebar({ active, locale }: Props) {
+export function WorkerSidebar({ active, locale, variant = 'inline' }: Props) {
     const t = useTranslations('worker.dashboard.sidebar');
     const pathname = usePathname();
     const { user } = useUser();
@@ -73,8 +75,13 @@ export function WorkerSidebar({ active, locale }: Props) {
         t('profile_default_name');
     const userInitials = computeInitials(firstName, lastName, email, phone);
 
+    const wrapperClass =
+        variant === 'inline'
+            ? 'bg-base-100 border-base-300 sticky top-0 hidden min-h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6 md:flex'
+            : 'flex h-full w-full flex-col gap-1 p-4 pb-6';
+
     return (
-        <aside className="bg-base-100 border-base-300 sticky top-0 flex min-h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6">
+        <aside className={wrapperClass}>
             <div className="flex items-center px-2 pb-4 pt-1">
                 <Link href={`/${locale}`} aria-label="AgConn home">
                     <Wordmark size="sm" tone="ink" />
@@ -120,11 +127,14 @@ export function WorkerSidebar({ active, locale }: Props) {
                 <UserMenu
                     locale={locale}
                     profileHref={`/${locale}/worker/profile`}
+                    fieldModeHref={`/${locale}/field`}
                     name={fullName}
                     subtext={t('profile_default_location')}
                     initials={userInitials}
                     labels={{
                         profile: t('menu_profile'),
+                        fieldMode: t('menu_field_mode'),
+                        fieldModeHint: t('menu_field_mode_hint'),
                         signOut: t('sign_out'),
                         language: t('menu_language'),
                         languageEn: t('lang_en'),

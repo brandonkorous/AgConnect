@@ -64,7 +64,7 @@ export function LocationSection({ draft, onChange, error }: Props) {
     <SectionCard id="loc" title={t('title')} sub={t('sub')}>
       <div className="grid gap-3.5 md:grid-cols-2">
         <fieldset className="fieldset w-full min-w-0">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
+          <legend className="fieldset-legend">
             {t('block_label')}
           </legend>
           <input
@@ -78,7 +78,7 @@ export function LocationSection({ draft, onChange, error }: Props) {
           {error && <p className="label text-error">{error}</p>}
         </fieldset>
         <fieldset className="fieldset">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
+          <legend className="fieldset-legend">
             {t('coords_label')}
           </legend>
           <input

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { ActiveHireView } from '@/lib/api/employer-ops';
+import { EmptyStateCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 import type { CrewDraft } from './types';
 
@@ -64,18 +65,14 @@ export function ForemanSection({ draft, onChange, hires, locale }: Props) {
         </div>
       )}
 
-      <a
-        href={`/${locale}/employer/jobs`}
-        className="bg-base-200/40 border-base-300 hover:bg-base-200 mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed p-3.5 transition"
-      >
-        <span className="bg-base-200 text-base-content/50 grid h-10 w-10 place-items-center rounded-full">
-          <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold leading-tight">{t('hire_cta_title')}</span>
-          <span className="text-base-content/60 mt-0.5 block text-[11px]">{t('hire_cta_sub')}</span>
-        </span>
-      </a>
+      <div className="mt-3">
+        <EmptyStateCard
+          icon={faPlus}
+          title={t('hire_cta_title')}
+          description={t('hire_cta_sub')}
+          cta={{ label: t('hire_cta_button'), href: `/${locale}/employer/jobs` }}
+        />
+      </div>
     </SectionCard>
   );
 }

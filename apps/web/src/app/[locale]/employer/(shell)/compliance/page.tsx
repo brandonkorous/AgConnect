@@ -12,6 +12,11 @@ import {
     EditComplianceItemButton,
     ComplianceActionCta,
 } from '@/components/employer/compliance/ComplianceItemActions';
+import {
+    ComplianceActionRow,
+    ScoreDonut,
+    StatusBadge,
+} from '@/components/employer/primitives';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,136 +102,136 @@ export default async function CompliancePage({ params }: Props) {
             </div>
 
             <div className="mb-6 grid gap-4 lg:grid-cols-[260px_1fr]">
-                <div className="bg-base-100 border-base-300 grid place-items-center rounded-2xl border p-5 text-center">
-                    <div
-                        className="grid h-[150px] w-[150px] place-items-center rounded-full"
-                        style={{
-                            background: `conic-gradient(var(--color-primary) ${overall * 3.6}deg, var(--color-base-200) 0)`,
-                        }}
-                    >
-                        <div className="bg-base-100 grid h-[124px] w-[124px] place-items-center rounded-full">
-                            <div>
-                                <div className="text-primary font-display text-5xl font-semibold leading-none tracking-tight tabular-nums slashed-zero">
-                                    {overall}
-                                    <span className="text-base-content/40 text-lg">%</span>
-                                </div>
-                                <div className="text-base-content/60 mt-1 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                                    {t('overall_label')}
-                                </div>
-                            </div>
-                        </div>
+                <div className="card card-bordered card-compact bg-base-100">
+                    <div className="card-body items-center text-center">
+                        <ScoreDonut percent={overall} size="lg" label={t('overall_label')} />
+                        <div className="text-base-content/70 mt-3 text-xs">{subtitle}</div>
+                        <div className="text-base-content/55 mt-1 text-[11px]">{inspectionLine}</div>
                     </div>
-                    <div className="text-base-content/70 mt-3 text-xs">{subtitle}</div>
-                    <div className="text-base-content/55 mt-1 text-[11px]">{inspectionLine}</div>
                 </div>
 
-                <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                    <div className="mb-3 flex items-center gap-2">
-                        <FontAwesomeIcon icon={faBell} className="text-warning h-4 w-4" />
-                        <h2 className="font-display text-xl font-semibold tracking-tight tabular-nums slashed-zero">
-                            {actions.length === 0 && overall < 100 && openItems > 0
-                                ? t('actions_title_pending', { open: openItems })
-                                : t('actions_title', { count: actions.length })}
-                        </h2>
-                    </div>
-                    <div className="grid gap-3">
-                        {actions.map((a, i) => {
-                            const tone =
-                                a.severity === 'urgent'
-                                    ? { card: 'bg-error/10 border-error/30', pill: 'bg-error text-error-content' }
-                                    : { card: 'bg-warning/10 border-warning/30', pill: 'bg-warning text-warning-content' };
-                            return (
-                                <div
-                                    key={i}
-                                    className={['flex flex-wrap items-center gap-3 rounded-2xl border p-3.5', tone.card].join(' ')}
-                                >
-                                    <div className="min-w-[260px] flex-1">
-                                        <div className="mb-1 flex flex-wrap items-center gap-2">
-                                            <span
-                                                className={[
-                                                    'rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.18em]',
-                                                    tone.pill,
-                                                ].join(' ')}
-                                            >
-                                                {t(`severity.${a.severity}`)}
-                                            </span>
-                                            <span className="text-sm font-semibold">{a.title}</span>
-                                        </div>
-                                        <div className="text-base-content/70 text-xs">{a.detail}</div>
-                                    </div>
-                                    <ComplianceActionCta action={{ ...a, cta: a.severity === 'urgent' ? t('action_cta.cta_resolve') : t(`severity_cta.${a.severity}`) } as ComplianceAction} />
-                                </div>
-                            );
-                        })}
+                <div className="card card-bordered card-compact bg-base-100">
+                    <div className="card-body">
+                        <div className="mb-3 flex items-center gap-2">
+                            <FontAwesomeIcon icon={faBell} className="text-warning h-4 w-4" />
+                            <h2 className="font-display text-xl font-semibold tracking-tight tabular-nums slashed-zero">
+                                {actions.length === 0 && overall < 100 && openItems > 0
+                                    ? t('actions_title_pending', { open: openItems })
+                                    : t('actions_title', { count: actions.length })}
+                            </h2>
+                        </div>
+                        <div className="grid gap-3">
+                            {actions.map((a, i) => {
+                                const ctaLabel =
+                                    a.severity === 'urgent'
+                                        ? t('action_cta.cta_resolve')
+                                        : t(`severity_cta.${a.severity}`);
+                                const severityLabel = t(`severity.${a.severity}`);
+                                return (
+                                    <ComplianceActionRow
+                                        key={i}
+                                        severity={a.severity}
+                                        title={a.title}
+                                        body={a.detail}
+                                        severityLabel={severityLabel}
+                                        ctaSlot={
+                                            <ComplianceActionCta
+                                                action={{ ...a, cta: ctaLabel } as ComplianceAction}
+                                            />
+                                        }
+                                    />
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
                 {cats.map((c) => (
-                    <div key={c.key} className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                        <div className="mb-3 flex items-center justify-between">
-                            <h2 className="text-sm font-semibold">{t(`category.${c.key}`)}</h2>
-                            <div className="flex items-center gap-2">
-                                <div className="bg-base-200 h-1.5 w-[60px] overflow-hidden rounded-full">
-                                    <div
+                    <div key={c.key} className="card card-bordered card-compact bg-base-100">
+                        <div className="card-body">
+                            <div className="mb-3 flex items-center justify-between">
+                                <h2 className="text-sm font-semibold">{t(`category.${c.key}`)}</h2>
+                                <div className="flex items-center gap-2">
+                                    <progress
                                         className={[
-                                            'h-full',
-                                            c.score >= 95 ? 'bg-success' : c.score >= 85 ? 'bg-warning' : 'bg-error',
+                                            'progress w-[60px]',
+                                            c.score >= 95
+                                                ? 'progress-success'
+                                                : c.score >= 85
+                                                    ? 'progress-warning'
+                                                    : 'progress-error',
                                         ].join(' ')}
-                                        style={{ width: `${c.score}%` }}
+                                        value={c.score}
+                                        max={100}
                                     />
-                                </div>
-                                <span
-                                    className={[
-                                        'text-xs font-bold tabular-nums slashed-zero',
-                                        c.score >= 95 ? 'text-success' : c.score >= 85 ? 'text-warning' : 'text-error',
-                                    ].join(' ')}
-                                >
-                                    {c.score}%
-                                </span>
-                            </div>
-                        </div>
-                        <div className="grid gap-2">
-                            {c.items.map((it) => {
-                                const tone =
-                                    it.status === 'ok'
-                                        ? { dot: 'bg-success text-success-content', icon: faCheck }
-                                        : it.status === 'warn'
-                                            ? { dot: 'bg-warning text-warning-content', icon: faBell }
-                                            : { dot: 'bg-error text-error-content', icon: faMinus };
-                                return (
-                                    <div
-                                        key={it.key}
-                                        className="bg-base-200 flex items-center gap-3 rounded-2xl px-3 py-2"
+                                    <span
+                                        className={[
+                                            'text-xs font-bold tabular-nums slashed-zero',
+                                            c.score >= 95
+                                                ? 'text-success'
+                                                : c.score >= 85
+                                                    ? 'text-warning'
+                                                    : 'text-error',
+                                        ].join(' ')}
                                     >
+                                        {c.score}%
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="grid gap-2">
+                                {c.items.map((it) => {
+                                    const badgeStatus =
+                                        it.status === 'ok' ? 'ok' : it.status === 'warn' ? 'warn' : 'urgent';
+                                    const badgeLabel =
+                                        it.status === 'ok'
+                                            ? t('item_status.ok')
+                                            : it.status === 'warn'
+                                                ? t('item_status.warn')
+                                                : t('item_status.fail');
+                                    const icon =
+                                        it.status === 'ok' ? faCheck : it.status === 'warn' ? faBell : faMinus;
+                                    return (
                                         <div
-                                            className={[
-                                                'grid h-5 w-5 shrink-0 place-items-center rounded-full',
-                                                tone.dot,
-                                            ].join(' ')}
+                                            key={it.key}
+                                            className="bg-base-200 flex items-center gap-3 rounded-2xl px-3 py-2"
                                         >
-                                            <FontAwesomeIcon icon={tone.icon} className="h-2.5 w-2.5" />
+                                            <div
+                                                className={[
+                                                    'grid h-5 w-5 shrink-0 place-items-center rounded-full',
+                                                    it.status === 'ok'
+                                                        ? 'bg-success text-success-content'
+                                                        : it.status === 'warn'
+                                                            ? 'bg-warning text-warning-content'
+                                                            : 'bg-error text-error-content',
+                                                ].join(' ')}
+                                            >
+                                                <FontAwesomeIcon icon={icon} className="h-2.5 w-2.5" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-xs font-medium">{it.label}</div>
+                                                    <StatusBadge status={badgeStatus} label={badgeLabel} />
+                                                </div>
+                                                <div className="text-base-content/60 text-[11px]">{it.details}</div>
+                                            </div>
+                                            {it.id && (
+                                                <EditComplianceItemButton
+                                                    itemId={it.id}
+                                                    status={it.status}
+                                                    details={it.details}
+                                                    evidenceUrl={it.evidenceUrl ?? null}
+                                                    evidence={it.evidence ?? null}
+                                                    instructions={it.instructions ?? null}
+                                                    dueAt={it.dueAt}
+                                                    label={it.label}
+                                                />
+                                            )}
                                         </div>
-                                        <div className="min-w-0 flex-1">
-                                            <div className="text-xs font-medium">{it.label}</div>
-                                            <div className="text-base-content/60 text-[11px]">{it.details}</div>
-                                        </div>
-                                        {it.id && (
-                                            <EditComplianceItemButton
-                                                itemId={it.id}
-                                                status={it.status}
-                                                details={it.details}
-                                                evidenceUrl={it.evidenceUrl ?? null}
-                                                evidence={it.evidence ?? null}
-                                                instructions={it.instructions ?? null}
-                                                dueAt={it.dueAt}
-                                                label={it.label}
-                                            />
-                                        )}
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -234,3 +239,4 @@ export default async function CompliancePage({ params }: Props) {
         </div>
     );
 }
+

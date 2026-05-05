@@ -82,38 +82,32 @@ export function DateTimeSection({ draft, onChange, crewSize, errors }: Props) {
         </Field>
       </div>
 
-      <div className="mt-5">
-        <Label>{t('repeat_label')}</Label>
-        <div className="mt-2 flex gap-1.5">
+      <fieldset className="fieldset mt-5 w-full min-w-0">
+        <legend className="fieldset-legend">{t('repeat_label')}</legend>
+        <div className="join w-full">
           {DOW_KEYS.map((d) => {
             const isBase = d === baseDow;
             const on = isBase || draft.repeatDow[d];
             return (
-              <button
+              <input
                 key={d}
-                type="button"
+                type="checkbox"
+                className="btn btn-sm join-item flex-1"
+                aria-label={t(`dow.${d}`)}
                 aria-pressed={on}
+                checked={on}
                 disabled={isBase}
-                onClick={() =>
+                title={isBase ? t('repeat_base_help') : undefined}
+                onChange={() =>
                   onChange({
                     repeatDow: { ...draft.repeatDow, [d]: !on },
                   })
                 }
-                title={isBase ? t('repeat_base_help') : undefined}
-                className={[
-                  'flex-1 cursor-pointer rounded-xl border py-2.5 text-sm font-semibold transition',
-                  on
-                    ? 'bg-base-content text-base-100 border-base-content'
-                    : 'bg-base-100 border-base-300 text-base-content/70 hover:border-base-content/30',
-                  isBase ? 'cursor-default opacity-90' : '',
-                ].join(' ')}
-              >
-                {t(`dow.${d}`)}
-              </button>
+              />
             );
           })}
         </div>
-        <p className="text-base-content/60 mt-2 text-[11px]">{t('repeat_help')}</p>
+        <p className="label">{t('repeat_help')}</p>
 
         <div className="bg-base-200/40 mt-3 grid grid-cols-3 gap-3 rounded-xl p-3.5">
           <Stat label={t('stat.hours_per_day')} value={`${hoursPerDay.toFixed(1)} h`} />
@@ -142,24 +136,14 @@ function Field({
 }) {
   return (
     <fieldset className="fieldset w-full min-w-0">
-      <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-        {label}
-      </legend>
+      <legend className="fieldset-legend">{label}</legend>
       {children}
       {error ? (
         <p className="label text-error">{error}</p>
       ) : sub ? (
-        <p className="text-base-content/60 mt-1.5 text-[11px]">{sub}</p>
+        <p className="label">{sub}</p>
       ) : null}
     </fieldset>
-  );
-}
-
-function Label({ children }: { children: React.ReactNode }) {
-  return (
-    <label className="text-base-content/60 block font-mono text-[10px] font-bold uppercase tracking-wider">
-      {children}
-    </label>
   );
 }
 

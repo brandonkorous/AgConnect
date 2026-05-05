@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 type Translator = (key: string) => string;
 import type { CrewInsightsView } from '@/lib/api/employer-ops';
+import { DarkHeroCard } from '@/components/employer/primitives';
 import { CREW_COLORS, type CrewDraft } from './types';
 
 type Props = {
@@ -25,50 +26,45 @@ export function RightRail({ draft, foremanName, memberCount, insights, locale }:
 
   return (
     <div className="grid gap-3.5">
-      {/* Identity card. Color comes from the schedule-color palette. */}
-      <div
-        className="relative overflow-hidden rounded-2xl p-5 text-white"
-        style={{ background: swatch.cssVar }}
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%)',
-          }}
-        />
-        <div className="relative">
+      {/* Identity card. De-emphasized neutral surface with ambient olive glow;
+          a small swatch keeps the crew color readable as identity, not chrome. */}
+      <DarkHeroCard glow="olive">
+        <div className="flex items-start justify-between gap-3">
           <div className="font-display text-6xl font-light leading-none tracking-tight">
             {initial}
           </div>
-          <div className="mt-2 text-sm font-semibold">{draft.name || t('untitled_crew')}</div>
-          <div className="mt-0.5 text-[11px] opacity-80">
-            {t('rail_subtitle', {
-              count: memberCount,
-              foreman: foremanName ?? t('no_foreman'),
-            })}
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-3">
-            <div>
-              <div className="font-mono text-[10px] font-bold uppercase tracking-wider opacity-70">
-                {t('members_label')}
-              </div>
-              <div className="mt-0.5 font-mono text-base font-bold tabular-nums">
-                {memberCount}
-              </div>
+          <span
+            aria-hidden
+            className="mt-2 h-3 w-3 shrink-0 rounded-full ring-2 ring-white/20"
+            style={{ background: swatch.cssVar }}
+          />
+        </div>
+        <div className="mt-2 text-sm font-semibold">{draft.name || t('untitled_crew')}</div>
+        <div className="mt-0.5 text-[11px] opacity-70">
+          {t('rail_subtitle', {
+            count: memberCount,
+            foreman: foremanName ?? t('no_foreman'),
+          })}
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/15 pt-3">
+          <div>
+            <div className="font-mono text-[10px] font-bold uppercase tracking-wider opacity-60">
+              {t('members_label')}
             </div>
-            <div>
-              <div className="font-mono text-[10px] font-bold uppercase tracking-wider opacity-70">
-                {t('skills_label')}
-              </div>
-              <div className="mt-0.5 font-mono text-base font-bold tabular-nums">
-                {draft.requiredSkills.size}
-              </div>
+            <div className="mt-0.5 font-mono text-base font-bold tabular-nums">
+              {memberCount}
+            </div>
+          </div>
+          <div>
+            <div className="font-mono text-[10px] font-bold uppercase tracking-wider opacity-60">
+              {t('skills_label')}
+            </div>
+            <div className="mt-0.5 font-mono text-base font-bold tabular-nums">
+              {draft.requiredSkills.size}
             </div>
           </div>
         </div>
-      </div>
+      </DarkHeroCard>
 
       {/* Yield (last 14 days). Real piecework data from shift assignments. */}
       <section className="bg-base-100 border-base-300 rounded-2xl border p-4">
@@ -119,9 +115,12 @@ export function RightRail({ draft, foremanName, memberCount, insights, locale }:
                   <div className="text-base-content/80 leading-tight">
                     {actionLabel(t, a.action)}
                   </div>
-                  <div className="text-base-content/50 mt-0.5 font-mono text-[10px] tabular-nums">
+                  <span
+                    className="tooltip tooltip-left text-base-content/50 mt-0.5 block font-mono text-[10px] tabular-nums"
+                    data-tip={absoluteTime(a.occurredAt, locale)}
+                  >
                     {relTime(a.occurredAt, locale)}
-                  </div>
+                  </span>
                 </div>
               </li>
             ))}
@@ -137,6 +136,14 @@ export function RightRail({ draft, foremanName, memberCount, insights, locale }:
 // next-intl's error handler at the layout level.
 function actionLabel(t: ReturnType<typeof useTranslations>, action: string): string {
   return (t as unknown as Translator)(`activity_action.${action}`);
+}
+
+function absoluteTime(iso: string, locale: string): string {
+  const d = new Date(iso);
+  return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(d);
 }
 
 function relTime(iso: string, locale: string): string {

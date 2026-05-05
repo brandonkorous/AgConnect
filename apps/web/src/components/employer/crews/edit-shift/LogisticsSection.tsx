@@ -1,6 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import {
+  faVanShuttle,
+  faToolbox,
+  faUtensils,
+  type IconDefinition,
+} from '@fortawesome/free-solid-svg-icons';
+import { CheckboxCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 import type { ShiftDraft } from './types';
 
@@ -19,20 +26,15 @@ export function LogisticsSection({ draft, onChange }: Props) {
 
   return (
     <SectionCard id="logistics" title={t('title')} sub={t('sub')}>
-      <div className="flex flex-col gap-2.5">
-        <ToggleRow
+      <div className="grid gap-2.5 md:grid-cols-3">
+        <ToggleWithEdit
+          icon={faVanShuttle}
           checked={Boolean(md.pickup?.enabled)}
           title={t('pickup.title')}
-          help={md.pickup?.label || t('pickup.default_help')}
+          description={md.pickup?.label || t('pickup.default_help')}
           editLabel={t('edit_button')}
-          inputName="pickup"
           onToggle={(on) =>
-            setMeta({
-              pickup: {
-                enabled: on,
-                label: md.pickup?.label,
-              },
-            })
+            setMeta({ pickup: { enabled: on, label: md.pickup?.label } })
           }
           onEdit={() => {
             const next = window.prompt(t('pickup.edit_prompt'), md.pickup?.label ?? '');
@@ -45,12 +47,12 @@ export function LogisticsSection({ draft, onChange }: Props) {
             });
           }}
         />
-        <ToggleRow
+        <ToggleWithEdit
+          icon={faToolbox}
           checked={Boolean(md.equipmentProvided)}
           title={t('equipment.title')}
-          help={md.equipmentDetail || t('equipment.default_help')}
+          description={md.equipmentDetail || t('equipment.default_help')}
           editLabel={t('edit_button')}
-          inputName="equipment"
           onToggle={(on) => setMeta({ equipmentProvided: on })}
           onEdit={() => {
             const next = window.prompt(t('equipment.edit_prompt'), md.equipmentDetail ?? '');
@@ -58,12 +60,12 @@ export function LogisticsSection({ draft, onChange }: Props) {
             setMeta({ equipmentDetail: next.trim() || undefined });
           }}
         />
-        <ToggleRow
+        <ToggleWithEdit
+          icon={faUtensils}
           checked={Boolean(md.lunchProvided)}
           title={t('lunch.title')}
-          help={md.lunchDetail || t('lunch.default_help')}
+          description={md.lunchDetail || t('lunch.default_help')}
           editLabel={t('edit_button')}
-          inputName="lunch"
           onToggle={(on) => setMeta({ lunchProvided: on })}
           onEdit={() => {
             const next = window.prompt(t('lunch.edit_prompt'), md.lunchDetail ?? '');
@@ -76,46 +78,40 @@ export function LogisticsSection({ draft, onChange }: Props) {
   );
 }
 
-function ToggleRow({
+function ToggleWithEdit({
+  icon,
   checked,
   title,
-  help,
+  description,
   editLabel,
-  inputName,
   onToggle,
   onEdit,
 }: {
+  icon: IconDefinition;
   checked: boolean;
   title: string;
-  help: string;
+  description: string;
   editLabel: string;
-  inputName: string;
   onToggle: (next: boolean) => void;
   onEdit: () => void;
 }) {
   return (
-    <label className="border-base-300 hover:border-base-content/30 flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition">
-      <input
-        type="checkbox"
-        name={inputName}
+    <div className="flex flex-col gap-2">
+      <CheckboxCard
+        variant="toggle"
+        icon={icon}
         checked={checked}
-        onChange={(e) => onToggle(e.target.checked)}
-        className="checkbox checkbox-primary checkbox-sm"
+        onChange={onToggle}
+        title={title}
+        description={description}
       />
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold leading-tight">{title}</div>
-        <div className="text-base-content/60 mt-0.5 text-[11px]">{help}</div>
-      </div>
       <button
         type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          onEdit();
-        }}
-        className="border-base-300 hover:bg-base-200 inline-flex shrink-0 items-center rounded-lg border bg-base-100 px-2.5 py-1 text-[11px] font-semibold"
+        onClick={onEdit}
+        className="link link-hover text-base-content/60 self-end text-[11px] font-semibold"
       >
         {editLabel}
       </button>
-    </label>
+    </div>
   );
 }

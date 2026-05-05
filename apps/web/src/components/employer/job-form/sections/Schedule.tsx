@@ -20,7 +20,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
   return (
     <SectionShell num={2} id="s-schedule" title={t('schedule_title')} subtitle={t('schedule_sub')}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_start_date')}
           </legend>
@@ -33,7 +33,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
           />
           {err('startDate') && <p className="label text-error">{t(`validation_reason_${err('startDate')!.reason}`)}</p>}
         </fieldset>
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_end_date')}
             <span className="text-base-content/55 ml-1.5 font-normal">{t('optional')}</span>
@@ -46,7 +46,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
           />
           {err('endDate') && <p className="label text-error">{t(`validation_reason_${err('endDate')!.reason}`)}</p>}
         </fieldset>
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_daily_start')}
           </legend>
@@ -58,7 +58,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
           />
           {err('dailyStartTime') && <p className="label text-error">{t(`validation_reason_${err('dailyStartTime')!.reason}`)}</p>}
         </fieldset>
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_daily_end')}
           </legend>
@@ -72,7 +72,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
         </fieldset>
       </div>
 
-      <fieldset className="fieldset mt-4">
+      <fieldset className="fieldset mt-4 w-full min-w-0">
         <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
           {t('field_working_days')}
         </legend>
@@ -82,15 +82,12 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
         />
       </fieldset>
 
-      <div
-        role="note"
-        className="bg-base-200 border-base-300 mt-4 flex items-start gap-2.5 rounded-xl border border-dashed p-3.5 text-sm"
-      >
+      <div role="note" className="alert alert-info alert-soft mt-4 items-start text-sm">
         <FontAwesomeIcon icon={faSun} className="text-warning mt-0.5 h-4 w-4" />
-        <p className="text-base-content/70 leading-relaxed">
-          <strong className="text-base-content">{t('heat_advisory_title')}</strong>{' '}
-          {t('heat_advisory_body')}
-        </p>
+        <div>
+          <div className="font-semibold">{t('heat_advisory_title')}</div>
+          <div className="text-base-content/70 mt-0.5 leading-relaxed">{t('heat_advisory_body')}</div>
+        </div>
       </div>
     </SectionShell>
   );

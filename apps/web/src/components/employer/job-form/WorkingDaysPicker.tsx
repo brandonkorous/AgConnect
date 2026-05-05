@@ -11,7 +11,7 @@ type Props = {
 export function WorkingDaysPicker({ value, onChange }: Props) {
   const t = useTranslations('employer.jobs.form_v2.weekday_short');
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="join flex-wrap">
       {WEEKDAYS.map((d) => {
         const on = isDayOn(value, d);
         return (
@@ -20,12 +20,7 @@ export function WorkingDaysPicker({ value, onChange }: Props) {
             type="button"
             aria-pressed={on}
             onClick={() => onChange(toggleDay(value, d))}
-            className={[
-              'min-w-[60px] rounded-lg border px-3 py-2 text-xs font-semibold transition-colors',
-              on
-                ? 'bg-primary/10 text-primary border-primary'
-                : 'bg-base-100 text-base-content/60 border-base-300 hover:border-base-content/30',
-            ].join(' ')}
+            className={`btn btn-sm join-item ${on ? 'btn-primary' : 'btn-outline'}`}
           >
             {t(d as Weekday)}
           </button>

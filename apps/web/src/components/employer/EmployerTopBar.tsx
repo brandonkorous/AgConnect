@@ -15,7 +15,7 @@ export function EmployerTopBar({ locale, canPublish }: Props) {
     const t = useTranslations('employer.shell.topbar');
 
     return (
-        <div className="border-base-200 bg-base-300 border-b sticky top-0 z-20 flex h-16 items-center gap-4 px-8">
+        <div className="border-base-200 bg-base-300 border-b sticky top-0 z-20 hidden h-16 items-center gap-4 px-8 md:flex">
             <EmployerSearchBox locale={locale} />
 
             <Link

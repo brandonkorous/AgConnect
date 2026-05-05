@@ -80,22 +80,24 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                 </div>
             </div>
 
-            <div className="mb-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="stats stats-vertical lg:stats-horizontal bg-base-100 border-base-300 mb-6 w-full rounded-2xl border shadow-[var(--shadow-card)]">
                 {data.kpis.map((k) => {
                     const label = t(`kpi.${k.key}.label`);
                     const subCount = parseSubCount(k.sub);
                     const sub = t(`kpi.${k.key}.sub`, { count: subCount });
                     const showSub = !(k.key === 'hires' && k.value === '0');
                     return (
-                        <div key={k.key} className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                            <div className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+                        <div key={k.key} className="stat">
+                            <div className="stat-title text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
                                 {label}
                             </div>
-                            <div className="text-primary font-display mt-2 text-4xl font-light leading-none tracking-tight">
+                            <div className="stat-value text-primary font-display text-4xl font-light tracking-tight tabular-nums slashed-zero">
                                 {k.value === '—' ? '0' : k.value}
                             </div>
-                            <div className="text-success mt-2 font-mono text-xs font-bold">{k.delta}</div>
-                            {showSub && <div className="text-base-content/60 mt-1 text-xs">{sub}</div>}
+                            <div className="stat-desc text-success mt-2 font-mono text-xs font-bold">{k.delta}</div>
+                            {showSub && (
+                                <div className="stat-desc text-base-content/60 mt-1 text-xs">{sub}</div>
+                            )}
                         </div>
                     );
                 })}

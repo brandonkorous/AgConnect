@@ -34,7 +34,7 @@ export default async function EditJobPage({ params }: Props) {
   const canPublish = profile ? verificationStatus(profile) === 'verified' : false;
 
   return (
-    <div className="pb-16 pt-8">
+    <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
       <JobForm
         locale={locale}
         mode="edit"

@@ -8,8 +8,6 @@ import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { CrewColor, CrewView } from '@/lib/api/employer-ops';
 import { SectionCard } from './SectionCard';
 
-// Schedule-color swatches. Mirrors edit-crew/types.ts CREW_COLORS so a crew
-// reads the same wherever it appears.
 const COLOR_BG: Record<CrewColor, string> = {
   grape: 'bg-[#6B2B5E]',
   almond: 'bg-[#C58A5A]',
@@ -32,50 +30,34 @@ export function CrewPickerSection({ crews, value, onChange, locale }: Props) {
   return (
     <SectionCard id="crew" title={t('title')} sub={t('sub')}>
       <div className="grid gap-2.5 md:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => onChange(null)}
-          className={[
-            'relative cursor-pointer rounded-2xl p-3.5 text-left transition',
-            value === null
-              ? 'border-primary bg-primary/10 border-2'
-              : 'border-base-300 hover:border-base-content/30 hover:bg-base-200/40 border bg-base-100',
-          ].join(' ')}
-        >
-          <div className="flex items-center gap-3">
+        <CrewCardOption
+          name="crew"
+          value=""
+          checked={value === null}
+          onChange={() => onChange(null)}
+          title={t('none_label')}
+          description={t('none_help')}
+          chip={
             <span className="bg-base-200 border-base-300 grid h-9 w-9 place-items-center rounded-xl border font-mono text-xs font-bold">
               —
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">{t('none_label')}</span>
-              <span className="text-base-content/60 block text-[11px]">{t('none_help')}</span>
-            </span>
-            {value === null && (
-              <span className="bg-primary text-primary-content grid h-5 w-5 place-items-center rounded-full">
-                <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
-              </span>
-            )}
-          </div>
-        </button>
+          }
+        />
         {crews.map((c) => {
-          const sel = c.id === value;
           const initial =
             c.shortCode?.charAt(0).toUpperCase() ||
             c.name.replace(/^Crew\s+/i, '').charAt(0).toUpperCase() ||
             c.name.charAt(0).toUpperCase();
           return (
-            <button
+            <CrewCardOption
               key={c.id}
-              type="button"
-              onClick={() => onChange(c.id)}
-              className={[
-                'relative cursor-pointer rounded-2xl p-3.5 text-left transition',
-                sel
-                  ? 'border-primary bg-primary/10 border-2'
-                  : 'border-base-300 hover:border-base-content/30 hover:bg-base-200/40 border bg-base-100',
-              ].join(' ')}
-            >
-              <div className="flex items-center gap-3">
+              name="crew"
+              value={c.id}
+              checked={c.id === value}
+              onChange={() => onChange(c.id)}
+              title={c.name}
+              description={`${c.foremanName ?? t('hiring_foreman')} · ${c.memberCount} ${t('size_short')}`}
+              chip={
                 <span
                   className={[
                     'grid h-9 w-9 place-items-center rounded-xl font-display text-base font-light text-white',
@@ -84,19 +66,8 @@ export function CrewPickerSection({ crews, value, onChange, locale }: Props) {
                 >
                   {initial}
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold leading-snug">{c.name}</span>
-                  <span className="text-base-content/60 mt-0.5 block text-[11px] leading-snug">
-                    {c.foremanName ?? t('hiring_foreman')} · {c.memberCount} {t('size_short')}
-                  </span>
-                </span>
-                {sel && (
-                  <span className="bg-primary text-primary-content grid h-5 w-5 place-items-center rounded-full">
-                    <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
-                  </span>
-                )}
-              </div>
-            </button>
+              }
+            />
           );
         })}
       </div>
@@ -110,5 +81,58 @@ export function CrewPickerSection({ crews, value, onChange, locale }: Props) {
         </Link>
       </div>
     </SectionCard>
+  );
+}
+
+function CrewCardOption({
+  name,
+  value,
+  checked,
+  onChange,
+  title,
+  description,
+  chip,
+}: {
+  name: string;
+  value: string;
+  checked: boolean;
+  onChange: () => void;
+  title: string;
+  description: string;
+  chip: React.ReactNode;
+}) {
+  const stateClasses = checked
+    ? 'border-primary ring-2 ring-primary/30 bg-primary/5'
+    : 'border-base-300 bg-base-100 hover:border-base-content/30';
+  return (
+    <label
+      className={[
+        'flex items-center gap-3 rounded-2xl border p-3.5 transition-colors',
+        'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2',
+        'cursor-pointer',
+        stateClasses,
+      ].join(' ')}
+    >
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={checked}
+        onChange={onChange}
+        className="sr-only"
+      />
+      {chip}
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold leading-snug">{title}</span>
+        <span className="text-base-content/60 mt-0.5 block text-[11px] leading-snug">
+          {description}
+        </span>
+      </span>
+      {checked && (
+        <span className="bg-primary text-primary-content grid h-5 w-5 place-items-center rounded-full">
+          <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
+        </span>
+      )}
+    </label>
   );
 }

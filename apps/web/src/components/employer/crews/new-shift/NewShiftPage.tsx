@@ -201,7 +201,7 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
   const repeatDates = repeatDatesForDraft(draft.shiftDate, draft.repeatDow);
 
   return (
-    <div className="px-5 pb-16 pt-8">
+    <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
       <nav
         aria-label={t('breadcrumbs_aria')}
         className="text-base-content/60 mb-3 flex flex-wrap items-center gap-1.5 text-xs"

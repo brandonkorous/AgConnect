@@ -48,13 +48,13 @@ export const SECTION_IDS = [
 ] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
 
-export const CREW_COLORS: { key: CrewColor; cssVar: string; chip: string }[] = [
-  { key: 'grape', cssVar: '#6B2B5E', chip: 'bg-[#6B2B5E]' },
-  { key: 'almond', cssVar: '#C58A5A', chip: 'bg-[#C58A5A]' },
-  { key: 'citrus', cssVar: '#E07A1F', chip: 'bg-[#E07A1F]' },
-  { key: 'tomato', cssVar: '#C73E2A', chip: 'bg-[#C73E2A]' },
-  { key: 'lettuce', cssVar: '#4A8C3A', chip: 'bg-[#4A8C3A]' },
-  { key: 'olive', cssVar: 'var(--color-primary)', chip: 'bg-primary' },
+export const CREW_COLORS: { key: CrewColor; cssVar: string; hex: string; chip: string }[] = [
+  { key: 'grape', cssVar: '#6B2B5E', hex: '#6B2B5E', chip: 'bg-[#6B2B5E]' },
+  { key: 'almond', cssVar: '#C58A5A', hex: '#C58A5A', chip: 'bg-[#C58A5A]' },
+  { key: 'citrus', cssVar: '#E07A1F', hex: '#E07A1F', chip: 'bg-[#E07A1F]' },
+  { key: 'tomato', cssVar: '#C73E2A', hex: '#C73E2A', chip: 'bg-[#C73E2A]' },
+  { key: 'lettuce', cssVar: '#4A8C3A', hex: '#4A8C3A', chip: 'bg-[#4A8C3A]' },
+  { key: 'olive', cssVar: 'var(--color-primary)', hex: '#5B6E2E', chip: 'bg-primary' },
 ];
 
 export const CREW_TYPES: CrewType[] = [

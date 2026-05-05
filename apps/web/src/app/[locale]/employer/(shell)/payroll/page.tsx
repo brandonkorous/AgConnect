@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     getCurrentPayrollPeriod,
     getPayrollSeasonToDate,
@@ -8,6 +7,7 @@ import {
 } from '@/lib/api/employer-ops';
 import { PayrollActions } from '@/components/employer/payroll/PayrollActions';
 import { PayrollLineRow } from '@/components/employer/payroll/PayrollLineRow';
+import { DarkHeroCard } from '@/components/employer/primitives';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -66,35 +66,31 @@ export default async function PayrollPage({ params }: Props) {
             </div>
 
             <div className="mb-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-                <section className="bg-base-content text-base-100 relative overflow-hidden rounded-2xl p-7">
-                    <div
-                        aria-hidden
-                        className="absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_100%_0%,rgba(245,158,11,0.25),transparent_60%)]"
-                    />
-                    <div className="relative">
-                        <div className="text-accent font-mono text-[11px] uppercase tracking-wider">
-                            {t('hero_eyebrow')}
-                        </div>
-                        <div className="font-display mt-3 text-6xl font-light leading-none tracking-tight">
-                            {fmtCents(period.totals.netCents)}
-                        </div>
-                        <div className="border-base-100/20 mt-6 grid grid-cols-4 gap-4 border-t pt-5">
-                            {[
-                                { l: t('stat.gross'), v: fmtCents(period.totals.grossCents) },
-                                { l: t('stat.bonuses'), v: fmtCents(period.totals.bonusCents) },
-                                { l: t('stat.taxes'), v: fmtCents(-period.totals.taxesCents, true) },
-                                { l: t('stat.hours'), v: period.totals.hours.toLocaleString() },
-                            ].map((c, i) => (
-                                <div key={i}>
-                                    <div className="text-base-100/60 font-mono text-[10px] font-bold uppercase tracking-wider">
-                                        {c.l}
-                                    </div>
-                                    <div className="font-display mt-1 text-xl font-light tracking-tight">{c.v}</div>
-                                </div>
-                            ))}
-                        </div>
+                <DarkHeroCard glow="gold">
+                    <div className="text-accent font-mono text-[11px] uppercase tracking-wider">
+                        {t('hero_eyebrow')}
                     </div>
-                </section>
+                    <div className="font-display mt-3 text-6xl font-light leading-none tracking-tight tabular-nums slashed-zero">
+                        {fmtCents(period.totals.netCents)}
+                    </div>
+                    <div className="border-base-100/20 mt-6 grid grid-cols-4 gap-4 border-t pt-5">
+                        {[
+                            { l: t('stat.gross'), v: fmtCents(period.totals.grossCents) },
+                            { l: t('stat.bonuses'), v: fmtCents(period.totals.bonusCents) },
+                            { l: t('stat.taxes'), v: fmtCents(-period.totals.taxesCents, true) },
+                            { l: t('stat.hours'), v: period.totals.hours.toLocaleString() },
+                        ].map((c, i) => (
+                            <div key={i}>
+                                <div className="text-base-100/60 font-mono text-[10px] font-bold uppercase tracking-wider">
+                                    {c.l}
+                                </div>
+                                <div className="font-display mt-1 text-xl font-light tracking-tight tabular-nums slashed-zero">
+                                    {c.v}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </DarkHeroCard>
                 <div className="grid grid-rows-2 gap-4">
                     <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
                         <div className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">

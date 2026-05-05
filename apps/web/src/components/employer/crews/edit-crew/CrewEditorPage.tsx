@@ -195,7 +195,7 @@ export function CrewEditorPage({
   }
 
   return (
-    <div className="px-5 pb-16 pt-8">
+    <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
       {/* Breadcrumbs */}
       <nav
         aria-label={t('breadcrumbs_aria')}

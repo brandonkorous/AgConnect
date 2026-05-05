@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import type { SkillLookupView } from '@/lib/api/employer';
+import { CheckboxCard } from '@/components/employer/primitives';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';
 import type { ErrorMap } from '../validation';
@@ -56,7 +57,7 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
 
   return (
     <SectionShell num={4} id="s-requirements" title={t('req_title')} subtitle={t('req_sub')}>
-      <fieldset className="fieldset">
+      <fieldset className="fieldset w-full min-w-0">
         <legend className="fieldset-legend text-base-content/80 flex w-full items-baseline justify-between text-sm font-semibold">
           <span>{t('field_skills')}</span>
           <span className="text-base-content/55 text-[11px] font-normal">{t('hint_skills')}</span>
@@ -71,12 +72,7 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
                 type="button"
                 onClick={() => toggleSkill(s.slug)}
                 aria-pressed={on}
-                className={[
-                  'inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors',
-                  on
-                    ? 'bg-base-content text-base-100 border-base-content'
-                    : 'bg-base-100 text-base-content/70 border-base-300 hover:border-base-content/40',
-                ].join(' ')}
+                className={`badge badge-lg ${on ? 'badge-neutral' : 'badge-outline'} cursor-pointer gap-1`}
               >
                 {on && <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />}
                 {label}
@@ -86,17 +82,14 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
           {customSkills.map((slug) => {
             const label = slug.slice(CUSTOM_PREFIX.length);
             return (
-              <span
-                key={slug}
-                className="bg-base-content text-base-100 border-base-content inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold"
-              >
+              <span key={slug} className="badge badge-lg badge-neutral gap-1">
                 <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
                 {label}
                 <button
                   type="button"
                   onClick={() => removeCustom(slug)}
                   aria-label={t('skill_custom_remove')}
-                  className="text-base-100/70 hover:text-base-100 ml-0.5"
+                  className="ml-0.5 opacity-70 hover:opacity-100"
                 >
                   <FontAwesomeIcon icon={faXmark} className="h-2.5 w-2.5" />
                 </button>
@@ -106,7 +99,7 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
           <button
             type="button"
             onClick={() => setShowCustom((v) => !v)}
-            className="border-base-300 text-base-content/70 hover:border-base-content/40 hover:text-base-content inline-flex items-center gap-1 rounded-full border border-dashed px-3 py-1.5 text-xs font-semibold transition-colors"
+            className="badge badge-lg badge-outline border-dashed gap-1 cursor-pointer"
           >
             <FontAwesomeIcon icon={faPlus} className="h-2.5 w-2.5" />
             {t('skill_custom_add')}
@@ -143,7 +136,7 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
       </fieldset>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_min_experience')}
           </legend>
@@ -161,7 +154,7 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
             ))}
           </select>
         </fieldset>
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_min_age')}
           </legend>
@@ -179,18 +172,15 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
         </fieldset>
       </div>
 
-      <label className="bg-base-200 border-base-300 mt-4 flex cursor-pointer items-start gap-3 rounded-xl border p-3.5">
-        <input
-          type="checkbox"
+      <div className="mt-4">
+        <CheckboxCard
+          variant="toggle"
           checked={state.autoMatchEnabled}
-          onChange={(e) => update({ autoMatchEnabled: e.target.checked })}
-          className="toggle toggle-primary toggle-sm mt-0.5"
+          onChange={(v) => update({ autoMatchEnabled: v })}
+          title={t('automatch_label')}
+          description={t('automatch_sub')}
         />
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold">{t('automatch_label')}</div>
-          <div className="text-base-content/55 mt-0.5 text-xs">{t('automatch_sub')}</div>
-        </div>
-      </label>
+      </div>
     </SectionShell>
   );
 }

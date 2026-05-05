@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faChevronDown, faDownload, faPlus, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faChevronDown, faPlus, faRotate, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { pushToast } from '@agconn/ui';
 import { getApiClient } from '@/lib/api/client';
@@ -81,17 +81,6 @@ export function PayrollActions({ periodId, status, workers = 0, netCents = 0 }: 
 
   return (
     <div className="flex flex-wrap gap-2">
-      {status === 'draft' && (
-        <button
-          type="button"
-          onClick={generate}
-          disabled={busy !== 'none'}
-          className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
-        >
-          <FontAwesomeIcon icon={faRotate} className="h-3 w-3" />
-          {busy === 'gen' ? '…' : t('generate_from_shifts')}
-        </button>
-      )}
       <button
         type="button"
         onClick={() => setNewOpen(true)}
@@ -100,21 +89,29 @@ export function PayrollActions({ periodId, status, workers = 0, netCents = 0 }: 
         <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
         {t('new_period')}
       </button>
-      <div className="dropdown dropdown-end">
-        <div
-          tabIndex={0}
-          role="button"
-          aria-label={t('export_menu_label')}
+      <details className="dropdown dropdown-end">
+        <summary
+          aria-label={t('tools_label')}
           className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
         >
-          <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
-          {t('export_forms')}
+          <FontAwesomeIcon icon={faWrench} className="h-3 w-3" />
+          {t('tools_label')}
           <FontAwesomeIcon icon={faChevronDown} className="h-2.5 w-2.5 opacity-60" />
-        </div>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu bg-base-100 border-base-300 rounded-box z-[1] mt-2 w-56 border p-2 shadow-[var(--shadow-pop)]"
-        >
+        </summary>
+        <ul className="dropdown-content menu bg-base-100 border-base-300 rounded-box z-[1] mt-2 w-60 border p-2 shadow-[var(--shadow-pop)]">
+          {status === 'draft' && (
+            <li>
+              <button
+                type="button"
+                onClick={generate}
+                disabled={busy !== 'none'}
+                className="flex items-center gap-2"
+              >
+                <FontAwesomeIcon icon={faRotate} className="h-3 w-3" />
+                {busy === 'gen' ? '…' : t('generate_from_shifts')}
+              </button>
+            </li>
+          )}
           <li>
             <DownloadButton
               path={`/v1/employer/payroll/periods/${periodId}/export?form=941`}
@@ -132,7 +129,7 @@ export function PayrollActions({ periodId, status, workers = 0, netCents = 0 }: 
             />
           </li>
         </ul>
-      </div>
+      </details>
       {status === 'draft' && (
         <button
           type="button"

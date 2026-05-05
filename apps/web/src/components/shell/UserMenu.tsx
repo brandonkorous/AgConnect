@@ -13,6 +13,7 @@ import {
   faCircleQuestion,
   faGlobe,
   faRightFromBracket,
+  faSun,
 } from '@fortawesome/free-solid-svg-icons';
 
 type Props = {
@@ -21,6 +22,8 @@ type Props = {
   /** Optional second profile-style entry, e.g. employer's personal Clerk account distinct from the company profile. */
   accountHref?: string;
   helpHref?: string;
+  /** Optional Field Mode entry — only worker shells pass this. */
+  fieldModeHref?: string;
   name: string;
   subtext?: string;
   initials: string;
@@ -28,6 +31,8 @@ type Props = {
     profile: string;
     account?: string;
     help?: string;
+    fieldMode?: string;
+    fieldModeHint?: string;
     signOut: string;
     language: string;
     languageEn: string;
@@ -42,6 +47,7 @@ export function UserMenu({
   profileHref,
   accountHref,
   helpHref,
+  fieldModeHref,
   name,
   subtext,
   initials,
@@ -207,6 +213,32 @@ export function UserMenu({
               </Link>
             </li>
           </ul>
+
+          {fieldModeHref && labels.fieldMode && (
+            <div className="border-base-300 border-t">
+              <Link
+                href={fieldModeHref as Route}
+                onClick={() => setOpen(false)}
+                role="menuitem"
+                className="hover:bg-base-200 active:bg-base-300 group flex items-start gap-2.5 px-4 py-2.5"
+              >
+                <FontAwesomeIcon
+                  icon={faSun}
+                  className="text-primary mt-0.5 h-3.5 w-3.5"
+                />
+                <span className="flex-1 min-w-0">
+                  <span className="text-base-content block text-sm font-semibold">
+                    {labels.fieldMode}
+                  </span>
+                  {labels.fieldModeHint && (
+                    <span className="text-base-content/55 mt-0.5 block text-xs leading-snug">
+                      {labels.fieldModeHint}
+                    </span>
+                  )}
+                </span>
+              </Link>
+            </div>
+          )}
 
           <div className="border-base-300 border-t">
             <button

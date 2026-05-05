@@ -1,14 +1,22 @@
 'use client';
 
-import { useEffect, useId, useRef } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
+type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 type Props = {
   title: string;
   onClose: () => void;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: Size;
   /**
    * Optional right-rail content (e.g., compliance instructions). When set on
    * `xl` size, the modal renders form/content on the left and the sidebar on
@@ -18,135 +26,113 @@ type Props = {
   sidebar?: React.ReactNode;
 };
 
-const FOCUSABLE =
-  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+export type ModalHandle = {
+  open: () => void;
+  close: () => void;
+};
 
-export function Modal({ title, children, onClose, size = 'md', sidebar }: Props) {
+const SIZE_CLASS: Record<Size, string> = {
+  sm: 'max-w-sm',
+  md: 'max-w-[560px]',
+  lg: 'max-w-2xl',
+  xl: 'max-w-5xl',
+};
+
+export const Modal = forwardRef<ModalHandle, Props>(function Modal(
+  { title, children, onClose, size = 'md', sidebar },
+  ref,
+) {
   const titleId = useId();
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const previouslyFocused = useRef<Element | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // ─── Mount: capture prior focus, lock body scroll, focus first element.
-  // Unmount: restore. Effect deps intentionally empty — runs once per modal.
+  useImperativeHandle(
+    ref,
+    () => ({
+      open: () => dialogRef.current?.showModal(),
+      close: () => dialogRef.current?.close(),
+    }),
+    [],
+  );
+
+  // Mount-on-render usage (`{open && <Modal/>}`): show the native dialog as a
+  // top-layer modal on first paint, and tear it down on unmount.
   useEffect(() => {
-    previouslyFocused.current = document.activeElement;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const focusFirst = () => {
-      const el = dialogRef.current;
-      if (!el) return;
-      const focusable = el.querySelectorAll<HTMLElement>(FOCUSABLE);
-      const target = focusable[0];
-      if (target) target.focus();
-      else el.focus(); // fallback to dialog itself (tabIndex=-1)
-    };
-    // Defer to next frame so refs/portals are settled.
-    const raf = requestAnimationFrame(focusFirst);
-
+    const el = dialogRef.current;
+    if (!el) return;
+    if (!el.open) {
+      try {
+        el.showModal();
+      } catch {
+        /* already open or detached */
+      }
+    }
     return () => {
-      cancelAnimationFrame(raf);
-      document.body.style.overflow = prevOverflow;
-      const prev = previouslyFocused.current;
-      if (prev instanceof HTMLElement) prev.focus();
+      if (el.open) el.close();
     };
   }, []);
 
-  // ─── Keyboard: ESC closes, Tab/Shift-Tab traps focus inside the dialog.
+  // Native <dialog> emits `close` when ESC is pressed or close() is called.
+  // We forward that to the caller's onClose so the parent can unmount.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        onClose();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const el = dialogRef.current;
-      if (!el) return;
-      const focusable = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-        (n) => !n.hasAttribute('disabled') && n.offsetParent !== null,
-      );
-      if (focusable.length === 0) {
-        e.preventDefault();
-        el.focus();
-        return;
-      }
-      const first = focusable[0]!;
-      const last = focusable[focusable.length - 1]!;
-      const active = document.activeElement;
-      if (e.shiftKey) {
-        if (active === first || !el.contains(active)) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (active === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const el = dialogRef.current;
+    if (!el) return;
+    const handler = () => onClose();
+    el.addEventListener('close', handler);
+    return () => el.removeEventListener('close', handler);
   }, [onClose]);
 
-  const sizeClass =
-    size === 'sm'
-      ? 'max-w-sm'
-      : size === 'lg'
-        ? 'max-w-2xl'
-        : size === 'xl'
-          ? 'max-w-5xl'
-          : 'max-w-[560px]'; // brand default per docs/brand/06-components.md
+  // Backdrop click: when the user clicks the dialog element directly (not its
+  // inner content), close. The native ::backdrop pseudo-element receives clicks
+  // through to the dialog itself.
+  function onBackdropClick(e: React.MouseEvent<HTMLDialogElement>) {
+    if (e.target === e.currentTarget) {
+      dialogRef.current?.close();
+    }
+  }
 
   return (
-    <div
-      // Per brand: backdrop is neutral @ 60%.
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral/60 p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onClick={onBackdropClick}
+      className="modal bg-neutral/60 backdrop:bg-neutral/60"
     >
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
         className={[
-          'bg-base-100 w-full rounded-2xl p-8 max-h-[90vh] overflow-y-auto outline-none',
-          // Brand shadow token (see globals.css / docs/brand/04-spacing-layout.md)
+          'modal-box bg-base-100 relative w-full rounded-2xl p-8',
           'shadow-[var(--shadow-pop)]',
-          sizeClass,
+          SIZE_CLASS[size],
         ].join(' ')}
       >
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2
-            id={titleId}
-            className="font-display text-2xl font-semibold tracking-tight tabular-nums slashed-zero"
-          >
-            {title}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="text-base-content/50 hover:text-base-content focus-visible:ring-primary focus-visible:ring-2 grid h-11 w-11 shrink-0 place-items-center rounded-full"
-          >
-            <FontAwesomeIcon icon={faXmark} className="h-4 w-4" />
-          </button>
+        <button
+          type="button"
+          onClick={() => dialogRef.current?.close()}
+          aria-label="Close"
+          className="text-base-content/50 hover:text-base-content focus-visible:ring-primary focus-visible:ring-2 absolute right-3 top-3 grid h-11 w-11 shrink-0 place-items-center rounded-full"
+        >
+          <FontAwesomeIcon icon={faXmark} className="h-4 w-4" />
+        </button>
+
+        <h2
+          id={titleId}
+          className="font-display pr-12 text-2xl font-semibold tracking-tight tabular-nums slashed-zero"
+        >
+          {title}
+        </h2>
+
+        <div className="mt-4">
+          {sidebar ? (
+            <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+              <div className="min-w-0">{children}</div>
+              <aside className="lg:border-base-300 lg:border-l lg:pl-6">
+                {sidebar}
+              </aside>
+            </div>
+          ) : (
+            children
+          )}
         </div>
-        {sidebar ? (
-          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-            <div className="min-w-0">{children}</div>
-            <aside className="lg:border-base-300 lg:border-l lg:pl-6">
-              {sidebar}
-            </aside>
-          </div>
-        ) : (
-          children
-        )}
       </div>
-    </div>
+    </dialog>
   );
-}
+});

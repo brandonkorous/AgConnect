@@ -3,14 +3,40 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import { getWorkerDetail, listEmployerJobs } from '@/lib/api/employer';
+import {
+    getWorkerDetail,
+    listEmployerJobs,
+    getEmployerProfile,
+    verificationStatus,
+} from '@/lib/api/employer';
 import { InviteWorkerButton } from '@/components/employer/workers/InviteWorkerButton';
+import { LockedCard } from '@/components/employer/primitives';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
 export default async function WorkerPreviewPage({ params }: Props) {
     const { locale, id } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.workers' });
+
+    const profile = await getEmployerProfile();
+    const isProPlus = profile?.plan === 'pro' || profile?.plan === 'enterprise';
+    if (!isProPlus) {
+        const vStatus = profile ? verificationStatus(profile) : 'pending';
+        const verificationPending = vStatus === 'pending' || vStatus === 'rejected';
+        return (
+            <div className="px-5 pb-16 pt-8">
+                <LockedCard
+                    title={t('plan_gate.title')}
+                    description={t('plan_gate.body')}
+                    cta={{
+                        label: t('plan_gate.upgrade'),
+                        href: `/${locale}/employer/billing`,
+                    }}
+                    hint={verificationPending ? t('plan_gate.verification_hint') : undefined}
+                />
+            </div>
+        );
+    }
 
     const [worker, jobs] = await Promise.all([getWorkerDetail(id), listEmployerJobs()]);
     if (!worker) notFound();

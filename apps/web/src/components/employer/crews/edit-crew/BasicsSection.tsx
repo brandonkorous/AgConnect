@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { ColorSwatchPicker } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 import {
   CREW_COLORS,
@@ -19,13 +20,17 @@ type Props = {
 export function BasicsSection({ draft, onChange, nameError }: Props) {
   const t = useTranslations('employer.crews.edit_crew.basics');
 
+  const swatches = CREW_COLORS.map((c) => ({
+    value: c.key,
+    label: t(`schedule_color.${c.key}`),
+    hex: c.hex,
+  }));
+
   return (
     <SectionCard id="basics" title={t('title')} sub={t('sub')}>
       <div className="grid gap-3.5 md:grid-cols-2">
         <fieldset className="fieldset w-full min-w-0">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-            {t('name_label')}
-          </legend>
+          <legend className="fieldset-legend">{t('name_label')}</legend>
           <input
             type="text"
             value={draft.name}
@@ -38,14 +43,12 @@ export function BasicsSection({ draft, onChange, nameError }: Props) {
           {nameError ? (
             <p className="label text-error">{nameError}</p>
           ) : (
-            <p className="text-base-content/60 mt-1.5 text-[11px]">{t('name_help')}</p>
+            <p className="label">{t('name_help')}</p>
           )}
         </fieldset>
 
-        <fieldset className="fieldset">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-            {t('short_code_label')}
-          </legend>
+        <fieldset className="fieldset w-full min-w-0">
+          <legend className="fieldset-legend">{t('short_code_label')}</legend>
           <input
             type="text"
             value={draft.shortCode}
@@ -53,13 +56,11 @@ export function BasicsSection({ draft, onChange, nameError }: Props) {
             onChange={(e) => onChange({ shortCode: e.target.value.toUpperCase() })}
             className="input w-full font-mono font-bold"
           />
-          <p className="text-base-content/60 mt-1.5 text-[11px]">{t('short_code_help')}</p>
+          <p className="label">{t('short_code_help')}</p>
         </fieldset>
 
-        <fieldset className="fieldset">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-            {t('crew_type_label')}
-          </legend>
+        <fieldset className="fieldset w-full min-w-0">
+          <legend className="fieldset-legend">{t('crew_type_label')}</legend>
           <select
             value={draft.crewType}
             onChange={(e) => onChange({ crewType: e.target.value as CrewType | '' })}
@@ -74,10 +75,8 @@ export function BasicsSection({ draft, onChange, nameError }: Props) {
           </select>
         </fieldset>
 
-        <fieldset className="fieldset">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-            {t('primary_crop_label')}
-          </legend>
+        <fieldset className="fieldset w-full min-w-0">
+          <legend className="fieldset-legend">{t('primary_crop_label')}</legend>
           <select
             value={draft.primaryCrop}
             onChange={(e) => onChange({ primaryCrop: e.target.value as CrewCrop | '' })}
@@ -93,37 +92,18 @@ export function BasicsSection({ draft, onChange, nameError }: Props) {
         </fieldset>
       </div>
 
-      <div className="mt-5">
-        <div className="text-base-content/60 mb-2 font-mono text-[10px] font-bold uppercase tracking-wider">
-          {t('schedule_color_label')}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {CREW_COLORS.map((c) => {
-            const sel = draft.color === c.key;
-            return (
-              <button
-                key={c.key}
-                type="button"
-                title={t(`schedule_color.${c.key}`)}
-                aria-pressed={sel}
-                onClick={() => onChange({ color: c.key as CrewColor })}
-                className={[
-                  'h-9 w-9 cursor-pointer rounded-xl transition',
-                  c.chip,
-                  sel
-                    ? 'ring-base-content ring-offset-base-100 ring-2 ring-offset-2'
-                    : 'border-base-300 border',
-                ].join(' ')}
-              />
-            );
-          })}
-        </div>
-      </div>
+      <fieldset className="fieldset mt-5 w-full min-w-0">
+        <legend className="fieldset-legend">{t('schedule_color_label')}</legend>
+        <ColorSwatchPicker
+          swatches={swatches}
+          value={draft.color}
+          onChange={(v) => onChange({ color: v as CrewColor })}
+          ariaLabel={t('schedule_color_label')}
+        />
+      </fieldset>
 
-      <fieldset className="fieldset mt-5">
-        <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-          {t('notes_label')}
-        </legend>
+      <fieldset className="fieldset mt-5 w-full min-w-0">
+        <legend className="fieldset-legend">{t('notes_label')}</legend>
         <textarea
           rows={2}
           maxLength={500}

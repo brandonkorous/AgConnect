@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
+import { RadioCard, CheckboxCard } from '@/components/employer/primitives';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';
 import type { ErrorMap } from '../validation';
@@ -27,55 +28,33 @@ export function PaySection({ state, update, errors = {} }: Props) {
 
   return (
     <SectionShell num={3} id="s-pay" title={t('pay_title')} subtitle={t('pay_sub')}>
-      <fieldset className="fieldset">
+      <fieldset className="fieldset w-full min-w-0">
         <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
           {t('field_wage_structure')}
         </legend>
         <div className="grid gap-2 sm:grid-cols-3">
-          {STRUCTURES.map((k) => {
-            const on = state.wageStructure === k;
-            return (
-              <button
-                key={k}
-                type="button"
-                onClick={() =>
-                  update({
-                    wageStructure: k,
-                    pieceRate: k === 'hourly' ? null : state.pieceRate,
-                    pieceUnit: k === 'hourly' ? null : state.pieceUnit ?? 'lb',
-                  })
-                }
-                aria-pressed={on}
-                className={[
-                  'rounded-xl border p-3.5 text-left transition-colors',
-                  on
-                    ? 'bg-primary/10 border-primary'
-                    : 'bg-base-100 border-base-300 hover:border-base-content/30',
-                ].join(' ')}
-              >
-                <div className="flex items-center gap-2">
-                  <span
-                    className={[
-                      'h-3.5 w-3.5 rounded-full border-2',
-                      on
-                        ? 'border-primary bg-primary'
-                        : 'border-base-content/30 bg-base-100',
-                    ].join(' ')}
-                    aria-hidden
-                  />
-                  <span className="text-sm font-semibold">{t(`wage_${k}`)}</span>
-                </div>
-                <p className="text-base-content/55 mt-1 text-xs leading-snug">
-                  {t(`wage_${k}_sub`)}
-                </p>
-              </button>
-            );
-          })}
+          {STRUCTURES.map((k) => (
+            <RadioCard
+              key={k}
+              name="wageStructure"
+              value={k}
+              checked={state.wageStructure === k}
+              onChange={(v) =>
+                update({
+                  wageStructure: v,
+                  pieceRate: v === 'hourly' ? null : state.pieceRate,
+                  pieceUnit: v === 'hourly' ? null : state.pieceUnit ?? 'lb',
+                })
+              }
+              title={t(`wage_${k}`)}
+              description={t(`wage_${k}_sub`)}
+            />
+          ))}
         </div>
       </fieldset>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 flex w-full items-baseline justify-between text-sm font-semibold">
             <span>{t('field_base_rate')}</span>
             <span className="text-base-content/55 text-[11px] font-normal">{t('hint_ca_min')}</span>
@@ -128,7 +107,7 @@ export function PaySection({ state, update, errors = {} }: Props) {
         </fieldset>
 
         {state.wageStructure !== 'hourly' && (
-          <fieldset className="fieldset">
+          <fieldset className="fieldset w-full min-w-0">
             <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
               {t('field_piece_rate')}
             </legend>
@@ -159,7 +138,7 @@ export function PaySection({ state, update, errors = {} }: Props) {
           </fieldset>
         )}
 
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_pay_frequency')}
           </legend>
@@ -196,66 +175,43 @@ export function PaySection({ state, update, errors = {} }: Props) {
         </div>
       )}
 
-      <fieldset className="fieldset mt-5">
+      <fieldset className="fieldset mt-5 w-full min-w-0">
         <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
           {t('field_benefits')}
         </legend>
         <div className="grid gap-2 sm:grid-cols-2">
-          <BenefitToggle
-            on={state.transport}
+          <CheckboxCard
+            variant="toggle"
+            checked={state.transport}
             onChange={(v) => update({ transport: v })}
-            label={t('benefit_transport')}
-            sub={state.pickupPoint || undefined}
+            title={t('benefit_transport')}
+            description={state.pickupPoint || undefined}
           />
-          <BenefitToggle
-            on={state.housing}
+          <CheckboxCard
+            variant="toggle"
+            checked={state.housing}
             onChange={(v) => update({ housing: v })}
-            label={t('benefit_housing')}
-            sub={t('benefit_housing_sub')}
+            title={t('benefit_housing')}
+            description={t('benefit_housing_sub')}
           />
-          <BenefitToggle
-            on={state.mealsProvided}
+          <CheckboxCard
+            variant="toggle"
+            checked={state.mealsProvided}
             onChange={(v) => update({ mealsProvided: v })}
-            label={t('benefit_meals')}
+            title={t('benefit_meals')}
           />
-          <BenefitToggle
-            on={(state.endOfSeasonBonusCents ?? 0) > 0}
+          <CheckboxCard
+            variant="toggle"
+            checked={(state.endOfSeasonBonusCents ?? 0) > 0}
             onChange={(v) =>
               update({ endOfSeasonBonusCents: v ? state.endOfSeasonBonusCents ?? 40000 : null })
             }
-            label={t('benefit_bonus')}
-            sub={t('benefit_bonus_sub')}
+            title={t('benefit_bonus')}
+            description={t('benefit_bonus_sub')}
           />
         </div>
       </fieldset>
     </SectionShell>
-  );
-}
-
-function BenefitToggle({
-  on,
-  onChange,
-  label,
-  sub,
-}: {
-  on: boolean;
-  onChange: (v: boolean) => void;
-  label: string;
-  sub?: string;
-}) {
-  return (
-    <label className="bg-base-200 border-base-300 flex cursor-pointer items-start gap-3 rounded-xl border p-3.5">
-      <input
-        type="checkbox"
-        checked={on}
-        onChange={(e) => onChange(e.target.checked)}
-        className="toggle toggle-primary toggle-sm mt-0.5"
-      />
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold">{label}</div>
-        {sub && <div className="text-base-content/55 mt-0.5 text-xs">{sub}</div>}
-      </div>
-    </label>
   );
 }
 

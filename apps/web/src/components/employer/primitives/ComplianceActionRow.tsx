@@ -1,14 +1,19 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { StatusBadge } from './StatusBadge';
+
+type CtaConfig = { label: string; onClick?: () => void; href?: string };
 
 type ComplianceActionRowProps = {
     severity: 'urgent' | 'soon';
     title: string;
     body: string;
-    cta: { label: string; onClick?: () => void; href?: string };
+    severityLabel?: string;
+    cta?: CtaConfig;
+    ctaSlot?: ReactNode;
     className?: string;
 };
 
@@ -16,13 +21,18 @@ export function ComplianceActionRow({
     severity,
     title,
     body,
+    severityLabel,
     cta,
+    ctaSlot,
     className,
 }: ComplianceActionRowProps) {
     const alertClass =
         severity === 'urgent' ? 'alert alert-error alert-soft' : 'alert alert-warning alert-soft';
-    const ctaClass = severity === 'urgent' ? 'btn btn-sm btn-error' : 'btn btn-sm btn-warning';
+    const ctaClass =
+        severity === 'urgent' ? 'btn btn-sm btn-error rounded-full' : 'btn btn-sm btn-warning rounded-full';
     const renderCta = () => {
+        if (ctaSlot) return ctaSlot;
+        if (!cta) return null;
         if (cta.href) {
             const isInternal = cta.href.startsWith('/');
             return isInternal ? (
@@ -53,7 +63,7 @@ export function ComplianceActionRow({
             <div className="shrink-0">
                 <StatusBadge
                     status={severity}
-                    label={severity === 'urgent' ? 'URGENT' : 'SOON'}
+                    label={severityLabel ?? (severity === 'urgent' ? 'URGENT' : 'SOON')}
                 />
             </div>
             <div className="min-w-0 flex-1">

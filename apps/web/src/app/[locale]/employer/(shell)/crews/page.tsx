@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPlus,
     faDownload,
-    faComments,
     faUsers,
     faChevronLeft,
     faChevronRight,
@@ -18,9 +17,10 @@ import {
 } from '@/lib/api/employer-ops';
 import { NewCrewButton } from '@/components/employer/crews/NewCrewButton';
 import { DownloadButton } from '@/components/employer/primitives/DownloadButton';
-import { CrewEditTrigger } from '@/components/employer/crews/CrewEditTrigger';
-import { ShiftEditTrigger } from '@/components/employer/crews/ShiftEditTrigger';
+import { EmptyStateCard } from '@/components/employer/primitives';
 import { WeekJumper } from '@/components/employer/crews/WeekJumper';
+import { WeekScheduleTable } from '@/components/employer/crews/WeekScheduleTable';
+import { CrewLeaderCard } from '@/components/employer/crews/CrewLeaderCard';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -68,7 +68,7 @@ export default async function CrewsPage({ params, searchParams }: Props) {
     const basePath = `/${locale}/employer/crews`;
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -138,214 +138,36 @@ export default async function CrewsPage({ params, searchParams }: Props) {
                 <WeekJumper value={weekIso} basePath={basePath} />
             </nav>
 
-            <section className="bg-base-100 border-base-300 mb-7 overflow-hidden rounded-2xl border">
-                <div className="border-base-300 grid grid-cols-[180px_repeat(7,minmax(0,1fr))] border-b">
-                    <div className="bg-base-200 border-base-300 text-base-content/60 border-r px-5 py-4 font-mono text-[11px] font-bold uppercase tracking-wider">
-                        {t('header_label')}
-                    </div>
-                    {days.map((d, i) => (
-                        <div
-                            key={i}
-                            className={[
-                                'border-base-300 border-r px-4 py-3 last:border-r-0',
-                                i === 0 && isCurrentWeek ? 'bg-primary/10' : 'bg-base-200',
-                            ].join(' ')}
-                        >
-                            <div className="text-base-content/60 font-mono text-[10px] font-bold uppercase tracking-wider">
-                                {weekday(d, locale)}
-                            </div>
-                            <div className="font-display mt-0.5 text-xl font-light tracking-tight">
-                                {monthDay(d, locale)}
-                            </div>
-                        </div>
-                    ))}
+            {crews.length === 0 ? (
+                <div className="mb-7">
+                    <EmptyStateCard
+                        icon={faUsers}
+                        title={t('empty_no_crews_title')}
+                        description={t('empty_no_crews')}
+                        cta={{ label: t('new_crew_label'), href: `${basePath}/new` }}
+                    />
                 </div>
+            ) : (
+                <WeekScheduleTable
+                    crews={crews}
+                    days={days}
+                    shiftsByCrewByDate={shiftsByCrewByDate}
+                    locale={locale}
+                    isCurrentWeek={isCurrentWeek}
+                    t={t}
+                />
+            )}
 
-                {crews.length === 0 ? (
-                    <div className="text-base-content/60 p-8 text-center text-sm">
-                        {t('empty_no_crews')}
+            {crews.length > 0 && (
+                <>
+                    <h2 className="font-display mb-3 text-2xl font-light tracking-tight">{t('crew_leaders')}</h2>
+                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                        {crews.map((cr) => (
+                            <CrewLeaderCard key={cr.id} cr={cr} locale={locale} t={t} />
+                        ))}
                     </div>
-                ) : (
-                    crews.map((cr, ci) => (
-                        <div
-                            key={cr.id}
-                            className={[
-                                'grid min-h-[110px] grid-cols-[180px_repeat(7,minmax(0,1fr))]',
-                                ci < crews.length - 1 ? 'border-base-300 border-b' : '',
-                            ].join(' ')}
-                        >
-                            <CrewEditTrigger
-                                crew={cr}
-                                ariaLabel={t('row_edit_aria', { crew: cr.name })}
-                                className="border-base-300 hover:bg-base-200/40 group flex flex-col justify-center border-r p-4 text-left transition"
-                            >
-                                <div className="text-sm font-semibold leading-tight">{cr.name}</div>
-                                <div className="text-base-content/60 mt-1 text-[11px]">
-                                    {cr.foremanName ?? t('no_foreman')} · {cr.memberCount} {t('crew_size_short')}
-                                </div>
-                                {cr.jobTitle && (
-                                    <div className="text-base-content/50 mt-0.5 text-[11px]">{cr.jobTitle}</div>
-                                )}
-                            </CrewEditTrigger>
-                            {days.map((d, di) => {
-                                const dateStr = d.toISOString().slice(0, 10);
-                                const slot = shiftsByCrewByDate.get(cr.id)?.get(dateStr) ?? null;
-                                return (
-                                    <div
-                                        key={di}
-                                        className={[
-                                            'border-base-300 border-r p-2.5 last:border-r-0',
-                                            di === 0 && isCurrentWeek ? 'bg-primary/5' : '',
-                                        ].join(' ')}
-                                    >
-                                        {slot ? (
-                                            <ShiftEditTrigger
-                                                shift={slot}
-                                                locale={locale}
-                                                ariaLabel={t('cell_edit_aria', { date: dateStr })}
-                                                className="text-left"
-                                            >
-                                                <ShiftCellContent shift={slot} t={t} />
-                                            </ShiftEditTrigger>
-                                        ) : (
-                                            <Link
-                                                href={
-                                                    `/${locale}/employer/crews/new-shift?crewId=${cr.id}&date=${dateStr}` as Route
-                                                }
-                                                aria-label={t('cell_new_aria', { date: dateStr })}
-                                                className="border-base-300 hover:border-base-content/40 hover:bg-base-200 text-base-content/40 hover:text-base-content/70 grid h-full min-h-[60px] place-items-center rounded-lg border border-dashed text-[11px] transition"
-                                            >
-                                                {t('cell_off')}
-                                            </Link>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ))
-                )}
-            </section>
-
-            <h2 className="font-display mb-3 text-2xl font-light tracking-tight">{t('crew_leaders')}</h2>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-                {crews.map((cr) => (
-                    <article key={cr.id} className="bg-base-100 border-base-300 rounded-2xl border p-4">
-                        <div className="flex items-center gap-2.5">
-                            <div className="bg-primary text-primary-content grid h-9 w-9 place-items-center rounded-full font-mono text-xs font-bold">
-                                {(cr.foremanName ?? '—').split(' ').map((p) => p[0]).slice(0, 2).join('') || '—'}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                                <div className="text-sm font-semibold">{cr.foremanName ?? t('hiring_foreman')}</div>
-                                <div className="text-base-content/60 text-[11px]">
-                                    {cr.name.split('·')[0]?.trim() ?? cr.name}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="border-base-300 mt-3 grid grid-cols-2 gap-2 border-t border-dashed pt-3 text-[11px]">
-                            <div>
-                                <div className="text-base-content/60">{t('size')}</div>
-                                <div className="font-mono text-sm font-bold">{cr.memberCount}</div>
-                            </div>
-                            <div>
-                                <div className="text-base-content/60">{t('rating')}</div>
-                                <div className="text-base-content/40 font-mono text-sm font-bold">—</div>
-                            </div>
-                        </div>
-                        <div className="mt-3 flex flex-col gap-1.5">
-                            <CrewEditTrigger
-                                crew={cr}
-                                ariaLabel={t('row_edit_aria', { crew: cr.name })}
-                                className="border-base-300 hover:bg-base-200 inline-flex w-full items-center justify-center rounded-full border bg-transparent px-3 py-2 text-xs font-semibold"
-                            >
-                                {t('edit_crew_button')}
-                            </CrewEditTrigger>
-                            {cr.foremanUserId ? (
-                                <Link
-                                    href={`/${locale}/employer/messages?worker=${cr.foremanUserId}`}
-                                    className="bg-base-content text-base-100 hover:bg-base-content/90 inline-flex w-full items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold"
-                                >
-                                    <FontAwesomeIcon icon={faComments} className="h-3 w-3 shrink-0" />
-                                    <span className="truncate">
-                                        {t('message_foreman', { firstName: cr.foremanName?.split(' ')[0] ?? '' })}
-                                    </span>
-                                </Link>
-                            ) : (
-                                <span className="bg-base-200 border-base-300 text-base-content/40 inline-flex w-full items-center justify-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold">
-                                    <FontAwesomeIcon icon={faComments} className="h-3 w-3 shrink-0" />
-                                    <span className="truncate">{t('hiring_foreman')}</span>
-                                </span>
-                            )}
-                        </div>
-                    </article>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-function ShiftCellContent({
-    shift,
-    t,
-}: {
-    shift: ShiftView;
-    t: Awaited<ReturnType<typeof getTranslations>>;
-}) {
-    const isCancelled = shift.status === 'cancelled';
-    const isPending = !isCancelled && shift.confirmedCount < shift.assignedCount;
-    const tone = isCancelled
-        ? {
-            bg: 'bg-base-200/60',
-            body: 'text-base-content/55',
-            time: 'text-base-content/70',
-            bar: 'border-l-base-content/30',
-        }
-        : isPending
-            ? {
-                bg: 'bg-warning/10',
-                body: 'text-base-content/80',
-                time: 'text-warning',
-                bar: 'border-l-warning',
-            }
-            : {
-                bg: 'bg-primary/10',
-                body: 'text-base-content/80',
-                time: 'text-primary',
-                bar: 'border-l-primary',
-            };
-
-    return (
-        <div
-            className={[
-                'rounded-lg border-l-4 p-2.5 transition',
-                tone.bg,
-                tone.body,
-                tone.bar,
-                'group-hover:brightness-[0.97]',
-            ].join(' ')}
-        >
-            <div className="flex items-baseline justify-between gap-1">
-                <div className={`text-[11px] font-bold tabular-nums ${tone.time}`}>
-                    {shift.startTime}
-                    {shift.endTime ? `–${shift.endTime}` : ''}
-                </div>
-                {isCancelled && (
-                    <span className="text-[9px] font-mono uppercase tracking-wider opacity-70">
-                        {t('cell_cancelled_pill')}
-                    </span>
-                )}
-            </div>
-            <div className="mt-0.5 truncate text-[11px]">{shift.locationLabel}</div>
-            <div className="mt-1.5 flex items-start gap-1 font-mono text-[10px] leading-tight tabular-nums">
-                <FontAwesomeIcon icon={faUsers} className="mt-0.5 h-2.5 w-2.5 shrink-0" />
-                <span className="min-w-0 break-words">
-                    {shift.confirmedCount}/{shift.assignedCount}{' '}
-                    {isCancelled
-                        ? t('cell_cancelled_suffix')
-                        : isPending
-                            ? t('cell_pending_suffix')
-                            : t('cell_confirmed_suffix')}
-                </span>
-            </div>
+                </>
+            )}
         </div>
     );
 }
@@ -370,21 +192,6 @@ function estimateHours(start: string, end: string | null): number {
     const [sh = 0, sm = 0] = start.split(':').map((x) => Number(x));
     const [eh = 0, em = 0] = end.split(':').map((x) => Number(x));
     return Math.max(0, eh + em / 60 - (sh + sm / 60));
-}
-
-function weekday(d: Date, locale: string): string {
-    return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
-        weekday: 'short',
-        timeZone: 'UTC',
-    }).format(d);
-}
-
-function monthDay(d: Date, locale: string): string {
-    return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
-        month: 'short',
-        day: 'numeric',
-        timeZone: 'UTC',
-    }).format(d);
 }
 
 function formatWeekRange(start: Date, locale: string): string {

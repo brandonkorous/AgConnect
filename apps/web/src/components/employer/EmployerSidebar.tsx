@@ -52,6 +52,8 @@ type Props = {
     jobsCount?: number;
     complianceCount?: number;
     messagesCount?: number;
+    /** 'inline' renders the desktop aside (md+); 'drawer' renders the body for the mobile drawer. */
+    variant?: 'inline' | 'drawer';
 };
 
 export function EmployerSidebar({
@@ -63,6 +65,7 @@ export function EmployerSidebar({
     jobsCount,
     complianceCount,
     messagesCount,
+    variant = 'inline',
 }: Props) {
     const t = useTranslations('employer.shell.nav');
     const tMenu = useTranslations('employer.shell.user_menu');
@@ -99,8 +102,13 @@ export function EmployerSidebar({
     const derived = items.find((it) => pathname.startsWith(`/${locale}${it.path}`))?.key;
     const current = active ?? derived ?? 'dashboard';
 
+    const wrapperClass =
+        variant === 'inline'
+            ? 'bg-base-200 border-base-300 sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6 print:hidden md:flex'
+            : 'bg-base-200 flex h-full w-full flex-col gap-1 p-4 pb-6';
+
     return (
-        <aside className="bg-base-200 border-base-300 sticky top-0 flex h-screen w-[248px] shrink-0 flex-col gap-1 border-r p-4 pb-6 print:hidden">
+        <aside className={wrapperClass}>
             <div className="flex items-center justify-between px-2 pb-4 pt-1">
                 <Link href={`/${locale}`} aria-label="AgConn home">
                     <Wordmark size="sm" tone="ink" />

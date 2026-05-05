@@ -33,6 +33,338 @@ export const employer: TranslationBundle = {
         en: "Deleting your account will permanently remove your business profile, postings, and payroll history. This cannot be undone.",
         es: "Al eliminar tu cuenta se borrarán de forma permanente tu perfil de negocio, publicaciones e historial de nómina. Esta acción no se puede deshacer.",
     },
+    "account.connected.connect_apple": {
+        en: "Connect Apple",
+        es: "Conectar Apple",
+    },
+    "account.connected.connect_google": {
+        en: "Connect Google",
+        es: "Conectar Google",
+    },
+    "account.connected.connect_microsoft": {
+        en: "Connect Microsoft",
+        es: "Conectar Microsoft",
+    },
+    "account.connected.connected_at": {
+        en: "Connected as {label}",
+        es: "Conectado como {label}",
+    },
+    "account.connected.disconnect": {
+        en: "Disconnect",
+        es: "Desconectar",
+    },
+    "account.connected.empty": {
+        en: "No accounts connected yet.",
+        es: "Aún no hay cuentas conectadas.",
+    },
+    "account.connected.error": {
+        en: "We couldn't reach that provider. Try again in a moment.",
+        es: "No pudimos contactar a ese proveedor. Inténtalo en un momento.",
+    },
+    "account.connected.heading": {
+        en: "Connected accounts",
+        es: "Cuentas conectadas",
+    },
+    "account.connected.subtitle": {
+        en: "Sign in faster with Google, Microsoft, or Apple.",
+        es: "Inicia sesión más rápido con Google, Microsoft o Apple.",
+    },
+    "account.danger.delete_button": {
+        en: "Delete account permanently",
+        es: "Eliminar la cuenta de forma permanente",
+    },
+    "account.danger.delete_cta": {
+        en: "Delete this account",
+        es: "Eliminar esta cuenta",
+    },
+    "account.danger.delete_modal_body": {
+        en: "Type the legal name of your business to confirm. This will permanently remove your profile, postings, payroll history, and all messages.",
+        es: "Escribe el nombre legal de tu negocio para confirmar. Esto eliminará de forma permanente tu perfil, publicaciones, historial de nómina y todos los mensajes.",
+    },
+    "account.danger.delete_modal_confirm_label": {
+        en: "Type {name} to confirm",
+        es: "Escribe {name} para confirmar",
+    },
+    "account.danger.delete_modal_confirm_placeholder": {
+        en: "Business name",
+        es: "Nombre del negocio",
+    },
+    "account.danger.delete_modal_title": {
+        en: "Delete account permanently",
+        es: "Eliminar la cuenta permanentemente",
+    },
+    "account.danger.heading": {
+        en: "Danger zone",
+        es: "Zona de riesgo",
+    },
+    "account.devices.current_label": {
+        en: "Current session",
+        es: "Sesión actual",
+    },
+    "account.devices.empty": {
+        en: "No other active sessions.",
+        es: "No hay otras sesiones activas.",
+    },
+    "account.devices.heading": {
+        en: "Active devices",
+        es: "Dispositivos activos",
+    },
+    "account.devices.last_active": {
+        en: "Last active {when}",
+        es: "Última actividad {when}",
+    },
+    "account.devices.signout_other": {
+        en: "Sign out",
+        es: "Cerrar sesión",
+    },
+    "account.devices.subtitle": {
+        en: "Devices currently signed in to your account. Sign out any you don't recognize.",
+        es: "Dispositivos con sesión iniciada en tu cuenta. Cierra cualquiera que no reconozcas.",
+    },
+    "account.devices.unknown_browser": {
+        en: "Unknown browser",
+        es: "Navegador desconocido",
+    },
+    "account.devices.unknown_location": {
+        en: "Unknown location",
+        es: "Ubicación desconocida",
+    },
+    "account.emails.add": {
+        en: "Add email",
+        es: "Añadir correo",
+    },
+    "account.emails.add_placeholder": {
+        en: "name@example.com",
+        es: "nombre@ejemplo.com",
+    },
+    "account.emails.empty": {
+        en: "No email addresses on file.",
+        es: "No hay correos registrados.",
+    },
+    "account.emails.heading": {
+        en: "Email addresses",
+        es: "Correos electrónicos",
+    },
+    "account.emails.invalid": {
+        en: "Enter a valid email address.",
+        es: "Escribe un correo válido.",
+    },
+    "account.emails.primary_badge": {
+        en: "PRIMARY",
+        es: "PRINCIPAL",
+    },
+    "account.emails.remove": {
+        en: "Remove",
+        es: "Eliminar",
+    },
+    "account.emails.resend": {
+        en: "Resend",
+        es: "Reenviar",
+    },
+    "account.emails.set_primary": {
+        en: "Set as primary",
+        es: "Marcar como principal",
+    },
+    "account.emails.subtitle": {
+        en: "Where we send sign-in links and account notices.",
+        es: "Dónde enviamos enlaces de inicio de sesión y avisos de cuenta.",
+    },
+    "account.emails.unverified_badge": {
+        en: "UNVERIFIED",
+        es: "SIN VERIFICAR",
+    },
+    "account.emails.verified_badge": {
+        en: "VERIFIED",
+        es: "VERIFICADO",
+    },
+    "account.emails.verify_check_inbox": {
+        en: "Check your inbox to verify this address.",
+        es: "Revisa tu bandeja para verificar este correo.",
+    },
+    "account.error_generic": {
+        en: "Something went wrong. Please try again.",
+        es: "Algo salió mal. Inténtalo de nuevo.",
+    },
+    "account.password.confirm": {
+        en: "Confirm new password",
+        es: "Confirma la contraseña nueva",
+    },
+    "account.password.current": {
+        en: "Current password",
+        es: "Contraseña actual",
+    },
+    "account.password.heading": {
+        en: "Password",
+        es: "Contraseña",
+    },
+    "account.password.mismatch": {
+        en: "New passwords don't match.",
+        es: "Las contraseñas nuevas no coinciden.",
+    },
+    "account.password.new": {
+        en: "New password",
+        es: "Contraseña nueva",
+    },
+    "account.password.subtitle": {
+        en: "Use at least 8 characters. Mix letters, numbers, and a symbol.",
+        es: "Usa al menos 8 caracteres. Mezcla letras, números y un símbolo.",
+    },
+    "account.password.too_short": {
+        en: "Use at least 8 characters.",
+        es: "Usa al menos 8 caracteres.",
+    },
+    "account.password.update": {
+        en: "Update password",
+        es: "Actualizar contraseña",
+    },
+    "account.password.update_success": {
+        en: "Password updated.",
+        es: "Contraseña actualizada.",
+    },
+    "account.personal_info.first_name": {
+        en: "First name",
+        es: "Nombre",
+    },
+    "account.personal_info.heading": {
+        en: "Personal info",
+        es: "Datos personales",
+    },
+    "account.personal_info.last_name": {
+        en: "Last name",
+        es: "Apellido",
+    },
+    "account.personal_info.save": {
+        en: "Save changes",
+        es: "Guardar cambios",
+    },
+    "account.personal_info.save_success": {
+        en: "Saved.",
+        es: "Guardado.",
+    },
+    "account.personal_info.subtitle": {
+        en: "Your name as it appears to applicants and on payroll documents.",
+        es: "Tu nombre tal como aparece para los solicitantes y en documentos de nómina.",
+    },
+    "account.personal_info.too_long": {
+        en: "Keep this under 64 characters.",
+        es: "Mantén esto en menos de 64 caracteres.",
+    },
+    "account.phones.add": {
+        en: "Add phone",
+        es: "Añadir teléfono",
+    },
+    "account.phones.add_placeholder": {
+        en: "+1 555 555 5555",
+        es: "+1 555 555 5555",
+    },
+    "account.phones.empty": {
+        en: "No phone numbers on file.",
+        es: "No hay teléfonos registrados.",
+    },
+    "account.phones.heading": {
+        en: "Phone numbers",
+        es: "Teléfonos",
+    },
+    "account.phones.invalid": {
+        en: "Enter a valid phone number with country code.",
+        es: "Escribe un teléfono válido con código de país.",
+    },
+    "account.phones.send_code": {
+        en: "Send code",
+        es: "Enviar código",
+    },
+    "account.phones.subtitle": {
+        en: "For SMS sign-in and urgent account alerts.",
+        es: "Para iniciar sesión por SMS y avisos urgentes.",
+    },
+    "account.phones.verify": {
+        en: "Verify",
+        es: "Verificar",
+    },
+    "account.phones.verify_code_label": {
+        en: "Six-digit code",
+        es: "Código de seis dígitos",
+    },
+    "account.profile_photo.change": {
+        en: "Change photo",
+        es: "Cambiar foto",
+    },
+    "account.profile_photo.heading": {
+        en: "Profile photo",
+        es: "Foto de perfil",
+    },
+    "account.profile_photo.remove": {
+        en: "Remove photo",
+        es: "Quitar foto",
+    },
+    "account.profile_photo.subtitle": {
+        en: "Square images work best. JPG, PNG, or WebP up to 5 MB.",
+        es: "Las imágenes cuadradas funcionan mejor. JPG, PNG o WebP hasta 5 MB.",
+    },
+    "account.profile_photo.upload_too_large": {
+        en: "Photo is over 5 MB. Pick a smaller file.",
+        es: "La foto supera 5 MB. Elige un archivo más pequeño.",
+    },
+    "account.tab_profile": {
+        en: "Profile",
+        es: "Perfil",
+    },
+    "account.tab_security": {
+        en: "Security",
+        es: "Seguridad",
+    },
+    "account.tsv.add_cta": {
+        en: "Add 2-step verification",
+        es: "Activar verificación en 2 pasos",
+    },
+    "account.tsv.backup_codes_save": {
+        en: "Save these codes somewhere safe — each one works once.",
+        es: "Guarda estos códigos en un lugar seguro — cada uno funciona una vez.",
+    },
+    "account.tsv.backup_codes_title": {
+        en: "Backup codes",
+        es: "Códigos de respaldo",
+    },
+    "account.tsv.code_label": {
+        en: "Code from your authenticator app",
+        es: "Código de tu aplicación de autenticación",
+    },
+    "account.tsv.disabled": {
+        en: "2-step verification is off.",
+        es: "La verificación en 2 pasos está desactivada.",
+    },
+    "account.tsv.enabled": {
+        en: "2-step verification is on.",
+        es: "La verificación en 2 pasos está activada.",
+    },
+    "account.tsv.heading": {
+        en: "Two-step verification",
+        es: "Verificación en dos pasos",
+    },
+    "account.tsv.qr_instructions": {
+        en: "Scan this QR code with your authenticator app, then enter the code it shows.",
+        es: "Escanea este código QR con tu app de autenticación y luego ingresa el código que muestra.",
+    },
+    "account.tsv.regenerate_codes": {
+        en: "Regenerate backup codes",
+        es: "Regenerar códigos de respaldo",
+    },
+    "account.tsv.remove_cta": {
+        en: "Turn off 2-step verification",
+        es: "Desactivar verificación en 2 pasos",
+    },
+    "account.tsv.secret_label": {
+        en: "Or enter this secret manually",
+        es: "O ingresa este secreto manualmente",
+    },
+    "account.tsv.subtitle": {
+        en: "Add a code from an authenticator app on top of your password.",
+        es: "Agrega un código de una app de autenticación además de tu contraseña.",
+    },
+    "account.tsv.verify": {
+        en: "Verify and enable",
+        es: "Verificar y activar",
+    },
     "applicant_detail.agconn_verified": {
         en: "AgConn-verified",
         es: "Verificado por AgConn",
@@ -649,6 +981,18 @@ export const employer: TranslationBundle = {
         en: "Evidence file",
         es: "Archivo de evidencia",
     },
+    "compliance.item_status.ok": {
+        en: "OK",
+        es: "OK",
+    },
+    "compliance.item_status.warn": {
+        en: "Attention",
+        es: "Atención",
+    },
+    "compliance.item_status.fail": {
+        en: "Action needed",
+        es: "Acción necesaria",
+    },
     "compliance.evidence.too_large": {
         en: "File is too large. Max 25 MB.",
         es: "El archivo es demasiado grande. Máx. 25 MB.",
@@ -660,6 +1004,18 @@ export const employer: TranslationBundle = {
     "compliance.evidence.remove_error": {
         en: "Could not remove the file.",
         es: "No se pudo quitar el archivo.",
+    },
+    "compliance.evidence.drop_hint": {
+        en: "Drop a file here or click to browse.",
+        es: "Suelta un archivo aquí o haz clic para buscar.",
+    },
+    "compliance.evidence.drop_active": {
+        en: "Release to upload.",
+        es: "Suelta para subir.",
+    },
+    "compliance.evidence.upload_progress": {
+        en: "Uploading evidence…",
+        es: "Subiendo evidencia…",
     },
     "compliance.category.documentation": {
         en: "Worker documentation",
@@ -2612,6 +2968,10 @@ export const employer: TranslationBundle = {
         en: "Growers must provide an EIN and county.",
         es: "Los productores deben proporcionar un EIN y un condado.",
     },
+    "errors.legal_name_required": {
+        en: "Enter your legal business name (at least 2 characters).",
+        es: "Ingresa el nombre legal del negocio (al menos 2 caracteres).",
+    },
     "errors.dol_mspa_format": {
         en: "MSPA registration must be 4–32 letters, digits, or dashes.",
         es: "El registro MSPA debe tener entre 4 y 32 letras, dígitos o guiones.",
@@ -2968,6 +3328,54 @@ export const employer: TranslationBundle = {
         en: "Duplicate to new draft",
         es: "Duplicar como borrador",
     },
+    "jobs.list_head.actions.close": {
+        en: "Close posting",
+        es: "Cerrar publicación",
+    },
+    "jobs.list_head.actions.discard": {
+        en: "Discard draft",
+        es: "Descartar borrador",
+    },
+    "jobs.list_head.actions.pause_renotify": {
+        en: "Pause renotifications",
+        es: "Pausar reavisos",
+    },
+    "jobs.list_head.actions.pause_renotify_soon": {
+        en: "Coming soon",
+        es: "Próximamente",
+    },
+    "jobs.list_head.confirm_cancel": {
+        en: "Cancel",
+        es: "Cancelar",
+    },
+    "jobs.list_head.confirm_discard.title": {
+        en: "Discard draft?",
+        es: "¿Descartar borrador?",
+    },
+    "jobs.list_head.confirm_discard.body": {
+        en: "This draft will be removed. You can't undo this.",
+        es: "Este borrador se eliminará. No podrás deshacer esto.",
+    },
+    "jobs.list_head.confirm_discard.cta": {
+        en: "Discard",
+        es: "Descartar",
+    },
+    "jobs.list_head.confirm_close.title": {
+        en: "Close this posting?",
+        es: "¿Cerrar esta publicación?",
+    },
+    "jobs.list_head.confirm_close.body": {
+        en: "Workers will no longer see this posting and SMS apply will stop. Existing applicants stay on the posting.",
+        es: "Los trabajadores ya no verán esta publicación y se detendrá la aplicación por SMS. Los aplicantes actuales permanecen.",
+    },
+    "jobs.list_head.confirm_close.cta": {
+        en: "Close posting",
+        es: "Cerrar publicación",
+    },
+    "jobs.list_head.empty_title": {
+        en: "No postings yet",
+        es: "Sin publicaciones",
+    },
     "jobs.list_head.duplicate_empty": {
         en: "Post a job first to enable duplication",
         es: "Publica un empleo primero para habilitar la duplicación",
@@ -3199,6 +3607,10 @@ export const employer: TranslationBundle = {
     "kanban.cancel": {
         en: "Cancel",
         es: "Cancelar",
+    },
+    "kanban.empty_stage": {
+        en: "No applicants in this stage",
+        es: "Sin postulantes en esta etapa",
     },
     "kanban.hired": {
         en: "Hired",
@@ -3608,9 +4020,25 @@ export const employer: TranslationBundle = {
         en: "Farm Labor Contractor",
         es: "Contratista de mano de obra agrícola",
     },
+    "onboarding.type.flc_help": {
+        en: "Licensed FLC placing crews with growers.",
+        es: "FLC con licencia que coloca cuadrillas con productores.",
+    },
     "onboarding.type.grower": {
         en: "Grower (direct farm)",
         es: "Productor (granja directa)",
+    },
+    "onboarding.type.grower_help": {
+        en: "Farm or ranch hiring workers directly.",
+        es: "Granja o rancho que contrata trabajadores directamente.",
+    },
+    "onboarding.type.labor_contractor": {
+        en: "Labor contractor (other)",
+        es: "Contratista de mano de obra (otro)",
+    },
+    "onboarding.type.labor_contractor_help": {
+        en: "Packing, hauling, or other ag labor services.",
+        es: "Servicios de empaque, transporte u otra mano de obra agrícola.",
     },
     "onboarding.type.label": {
         en: "Business type",
@@ -3867,6 +4295,10 @@ export const employer: TranslationBundle = {
     "payroll.title": {
         en: "Payroll",
         es: "Nómina",
+    },
+    "payroll.tools_label": {
+        en: "Tools",
+        es: "Herramientas",
     },
     "payroll.title_a": {
         en: "Payroll",
@@ -4364,6 +4796,10 @@ export const employer: TranslationBundle = {
         en: "Upgrade to Pro",
         es: "Mejorar a Pro",
     },
+    "workers.plan_gate.verification_hint": {
+        en: "Available after verification",
+        es: "Disponible después de la verificación",
+    },
     "workers.preview.certifications": {
         en: "Certifications",
         es: "Certificaciones",
@@ -4627,6 +5063,7 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.header_meta_starts":     { en: "Live · starts {date}",          es: "Activa · inicia {date}" },
     "jobs.form_v2.header_meta_live":       { en: "Live for today · {applicants, plural, =0 {no applicants} one {1 applicant} other {# applicants}}", es: "Activa · {applicants, plural, =0 {sin aplicantes} one {1 aplicante} other {# aplicantes}}" },
     "jobs.form_v2.header_meta_closed":     { en: "Closed",                        es: "Cerrada" },
+    "jobs.form_v2.header_meta_filled":     { en: "Filled",                        es: "Lleno" },
     "jobs.form_v2.close_modal_title":      { en: "Close this posting?",           es: "¿Cerrar esta publicación?" },
     "jobs.form_v2.close_modal_body":       { en: "Workers will no longer see it. You can duplicate it later if you need to repost.", es: "Los trabajadores ya no la verán. Puedes duplicarla más tarde si necesitas volver a publicarla." },
     "jobs.form_v2.close_modal_keep":       { en: "Keep open",                     es: "Mantener abierta" },
@@ -4648,6 +5085,11 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.save_draft":             { en: "Save draft",                    es: "Guardar borrador" },
     "jobs.form_v2.save_no_notify":         { en: "Save & don't notify",           es: "Guardar sin notificar" },
     "jobs.form_v2.save_notify_crew":       { en: "Save & notify crew",            es: "Guardar y notificar a la cuadrilla" },
+    "jobs.form_v2.save_changes":           { en: "Save changes",                  es: "Guardar cambios" },
+    "jobs.form_v2.diff_modal_title":       { en: "Notify the crew of these changes?", es: "¿Notificar a la cuadrilla de estos cambios?" },
+    "jobs.form_v2.diff_modal_body":        { en: "Workers who have already applied will receive an SMS summarizing what changed.", es: "Los trabajadores que ya aplicaron recibirán un SMS con un resumen de los cambios." },
+    "jobs.form_v2.diff_modal_no_changes":  { en: "Nothing tracked has changed since the last save.", es: "Nada rastreado ha cambiado desde el último guardado." },
+    "jobs.form_v2.diff_modal_send":        { en: "Send notification",             es: "Enviar notificación" },
 
     // Worker preview rail
     "jobs.form_v2.preview.rail_label":         { en: "Worker preview",            es: "Vista del trabajador" },

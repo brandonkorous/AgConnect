@@ -42,7 +42,7 @@ export default async function NewJobPage({ params, searchParams }: Props) {
     : undefined;
 
   return (
-    <div className="pb-16 pt-8">
+    <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
       <JobForm
         locale={locale}
         mode="create"

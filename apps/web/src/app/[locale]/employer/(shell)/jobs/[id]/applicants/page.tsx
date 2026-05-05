@@ -30,8 +30,12 @@ export default async function JobApplicantsPage({ params }: Props) {
         hired: forJob.filter((a) => a.status === 'hired'),
     };
 
+    const title = locale === 'es' ? job.titleEs : job.titleEn;
+    const wageLabel = formatWage(job.wageMin, job.wageMax, locale);
+    const eyebrow = `${title.toUpperCase()} · #${job.humanId ?? ''}`.trim();
+
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
             <div className="mb-6">
                 <Link
                     href={`/${locale}/employer/jobs`}
@@ -40,11 +44,18 @@ export default async function JobApplicantsPage({ params }: Props) {
                     <FontAwesomeIcon icon={faChevronLeft} className="mr-2 h-3 w-3" />
                     {tForm('back')}
                 </Link>
-                <h1 className="font-display mt-2 text-3xl font-light">
-                    {locale === 'es' ? job.titleEs : job.titleEn}
+                <div className="text-base-content/55 mt-3 font-mono text-[11px] font-bold uppercase tracking-wider">
+                    {eyebrow}
+                </div>
+                <h1 className="font-display mt-1.5 text-4xl font-light leading-tight tracking-tight md:text-5xl">
+                    {t('applied')}{' '}
+                    <em className="text-primary font-light italic">{title}</em>
                 </h1>
-                <p className="text-base-content/60 text-sm">
-                    {job.county} · ${job.wageMin}–${job.wageMax}/hr · {job.hireCount}/{job.positionsTotal}
+                <p className="text-base-content/60 mt-2 text-sm">
+                    {job.county}
+                    {wageLabel ? ` · ${wageLabel}` : ''}
+                    {' · '}
+                    {job.hireCount}/{job.positionsTotal}
                 </p>
             </div>
 
@@ -57,7 +68,15 @@ export default async function JobApplicantsPage({ params }: Props) {
     );
 }
 
-function Column({
+function formatWage(min: number, max: number, locale: string): string {
+    if (!(min > 0) && !(max > 0)) {
+        return locale === 'es' ? 'Sueldo por confirmar' : 'Wage TBD';
+    }
+    if (min === max) return `$${min}/hr`;
+    return `$${min}–$${max}/hr`;
+}
+
+async function Column({
     title,
     apps,
     locale,
@@ -66,6 +85,7 @@ function Column({
     apps: Awaited<ReturnType<typeof listInbox>>;
     locale: string;
 }) {
+    const tKan = await getTranslations({ locale, namespace: 'employer.kanban' });
     return (
         <section className="bg-base-100 border-base-300 rounded-2xl border p-4">
             <div className="mb-3 flex items-center justify-between">
@@ -99,7 +119,9 @@ function Column({
                     </Link>
                 ))}
                 {apps.length === 0 && (
-                    <div className="text-base-content/40 py-8 text-center text-xs">—</div>
+                    <div className="text-base-content/45 py-8 text-center text-xs italic">
+                        {tKan('empty_stage')}
+                    </div>
                 )}
             </div>
         </section>

@@ -29,7 +29,7 @@ export default async function EmployerOnboardingPage({ params }: Props) {
       />
 
       <div className="container mx-auto flex flex-1 flex-col px-5 md:px-8 lg:px-20">
-        <header className="mx-auto flex w-full max-w-2xl items-center justify-between">
+        <header className="mx-auto flex w-full max-w-xl items-center justify-between">
           <Link
             href={`/${locale}`}
             className="text-base-content no-underline"

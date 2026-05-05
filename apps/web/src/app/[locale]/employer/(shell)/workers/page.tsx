@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faLock,
     faFilter,
     faMagnifyingGlass,
     faCircleCheck,
@@ -12,9 +11,11 @@ import {
     getEmployerProfile,
     searchWorkers,
     listEmployerJobs,
+    verificationStatus,
     type WorkerCardView,
 } from '@/lib/api/employer';
 import { InviteWorkerButton } from '@/components/employer/workers/InviteWorkerButton';
+import { LockedCard } from '@/components/employer/primitives';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -37,22 +38,19 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
     const isProPlus = profile?.plan === 'pro' || profile?.plan === 'enterprise';
 
     if (!isProPlus) {
+        const vStatus = profile ? verificationStatus(profile) : 'pending';
+        const verificationPending = vStatus === 'pending' || vStatus === 'rejected';
         return (
             <div className="px-5 pb-16 pt-8">
-                <div className="bg-base-100 border-base-300 rounded-2xl border p-10 text-center">
-                    <div className="bg-primary/10 text-primary mx-auto grid h-14 w-14 place-items-center rounded-full">
-                        <FontAwesomeIcon icon={faLock} className="h-6 w-6" />
-                    </div>
-                    <h1 className="font-display mt-5 text-3xl font-light tracking-tight">
-                        {t('plan_gate.title')}
-                    </h1>
-                    <p className="text-base-content/70 mx-auto mt-3 max-w-md text-sm">
-                        {t('plan_gate.body')}
-                    </p>
-                    <Link href={`/${locale}/employer/billing`} className="btn btn-primary mt-6">
-                        {t('plan_gate.upgrade')}
-                    </Link>
-                </div>
+                <LockedCard
+                    title={t('plan_gate.title')}
+                    description={t('plan_gate.body')}
+                    cta={{
+                        label: t('plan_gate.upgrade'),
+                        href: `/${locale}/employer/billing`,
+                    }}
+                    hint={verificationPending ? t('plan_gate.verification_hint') : undefined}
+                />
             </div>
         );
     }
