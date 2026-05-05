@@ -4,7 +4,7 @@ import { JobStatus } from '@agconn/db';
 import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
 
 export const featuredJobsRoutes = new Hono<{ Variables: TenantVars }>();
-featuredJobsRoutes.use('*', publicTenantMiddleware);
+featuredJobsRoutes.use('*', publicTenantMiddleware('landing'));
 
 const TAKE = 4;
 

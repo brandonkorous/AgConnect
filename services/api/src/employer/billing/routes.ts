@@ -19,7 +19,7 @@ import { getStripe, webUrl } from './stripe';
 // double-count.
 
 export const employerBillingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerBillingRoutes.use('*', requireAuth);
+employerBillingRoutes.use('*', requireAuth('employer'));
 employerBillingRoutes.use('*', requireRole('employer'));
 employerBillingRoutes.use('*', requireTenant);
 

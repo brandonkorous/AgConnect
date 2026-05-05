@@ -86,13 +86,19 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                     const subCount = parseSubCount(k.sub);
                     const sub = t(`kpi.${k.key}.sub`, { count: subCount });
                     const showSub = !(k.key === 'hires' && k.value === '0');
+                    const isEmpty =
+                        k.value == null ||
+                        k.value === '' ||
+                        k.value === '0' ||
+                        k.value === '—';
+                    const displayValue = k.key === 'hires' ? (k.value ?? '0') : isEmpty ? '—' : k.value;
                     return (
                         <div key={k.key} className="stat">
                             <div className="stat-title text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
                                 {label}
                             </div>
                             <div className="stat-value text-primary font-display text-4xl font-light tracking-tight tabular-nums slashed-zero">
-                                {k.value === '—' ? '0' : k.value}
+                                {displayValue}
                             </div>
                             <div className="stat-desc text-success mt-2 font-mono text-xs font-bold">{k.delta}</div>
                             {showSub && (
@@ -173,6 +179,7 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                                                     : 'bg-error',
                                         ].join(' ')}
                                         style={{ width: `${j.fillPct}%` }}
+                                        title={j.fillPct === 100 ? t('featured_posting') : undefined}
                                     />
                                 </div>
                             </div>
@@ -188,6 +195,11 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                         <div className="font-display text-lg font-light tracking-tight">{t('top_workers')}</div>
                         <span className="text-base-content/60 text-xs">{t('top_workers_sub')}</span>
                     </div>
+                    {data.topWorkers.length === 0 && (
+                        <div className="text-base-content/55 py-4 text-sm">
+                            {t('top_workers_empty')}
+                        </div>
+                    )}
                     {data.topWorkers.map((p, i) => (
                         <div
                             key={p.rank}

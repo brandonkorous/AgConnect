@@ -17,8 +17,7 @@
 
 ## Edge cases (must pass)
 
-- [ ] Phone number already exists in another tenant → `409 phone_already_registered_other_tenant` with helpful message ("Use another number or contact support").
-- [ ] Phone number exists in same tenant under different Clerk user → `409 phone_collision_same_tenant` with admin merge instructions.
+- [ ] Phone number already exists on another worker User row → `409 phone_collision` with helpful message ("Use another number or contact support") and admin-merge fallback path.
 - [ ] Resume parse takes > 60s → UI offers manual fallback; pg-boss job continues server-side and resume populates on next visit if it eventually completes.
 - [ ] User uploads a 12 MB resume → `413 resume_too_large` with size guidance, no upload happens.
 - [ ] User uploads an image (.jpg) → `415 resume_unsupported` with format guidance.

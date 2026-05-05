@@ -17,7 +17,7 @@ const ReplaceBody = z
   .strict();
 
 export const employerJobScreeningRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerJobScreeningRoutes.use('*', requireAuth);
+employerJobScreeningRoutes.use('*', requireAuth('employer'));
 employerJobScreeningRoutes.use('*', requireRole('employer'));
 employerJobScreeningRoutes.use('*', requireTenant);
 

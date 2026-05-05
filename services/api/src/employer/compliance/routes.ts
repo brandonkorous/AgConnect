@@ -23,7 +23,7 @@ import {
 const MAX_EVIDENCE_BYTES = 25 * 1024 * 1024;
 
 export const employerComplianceRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerComplianceRoutes.use('*', requireAuth);
+employerComplianceRoutes.use('*', requireAuth('employer'));
 employerComplianceRoutes.use('*', requireRole('employer'));
 employerComplianceRoutes.use('*', requireTenant);
 

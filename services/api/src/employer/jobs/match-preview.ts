@@ -18,12 +18,11 @@ const TOP_MATCH_CAP = 30;
 export const employerJobMatchPreviewRoutes = new Hono<{
   Variables: AuthVars & AuditCtxVars;
 }>();
-employerJobMatchPreviewRoutes.use('*', requireAuth);
+employerJobMatchPreviewRoutes.use('*', requireAuth('employer'));
 employerJobMatchPreviewRoutes.use('*', requireRole('employer'));
 employerJobMatchPreviewRoutes.use('*', requireTenant);
 
 employerJobMatchPreviewRoutes.get('/', validate('query', MatchPreviewQuery), async (c) => {
-  const tenantId = c.var.tenantId!;
   const q = c.var.body;
   const wantedSkills = (q.skills ?? []).map((s) => s.toLowerCase());
   const radius = q.radiusMiles;
@@ -38,7 +37,6 @@ employerJobMatchPreviewRoutes.get('/', validate('query', MatchPreviewQuery), asy
   // thousands at most.
   const workers = await c.var.db.workerProfile.findMany({
     where: {
-      tenantId,
       ...(q.county ? { county: q.county } : {}),
       deletedAt: null,
     },

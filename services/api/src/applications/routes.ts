@@ -9,13 +9,13 @@ import type { AuditCtxVars } from '../middleware/audit';
 
 export const applicationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
-applicationsRoutes.use('*', requireAuth);
+applicationsRoutes.use('*', requireAuth('applications'));
 applicationsRoutes.use('*', requireRole('worker'));
 
 // Worker apply — POST /v1/jobs/:jobId/apply (mounted under /v1/jobs but
 // scoped to worker role and lives in this domain).
 export const jobApplyRoute = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-jobApplyRoute.use('*', requireAuth);
+jobApplyRoute.use('*', requireAuth('applications'));
 jobApplyRoute.use('*', requireRole('worker'));
 
 jobApplyRoute.post('/:jobId/apply', async (c) => {

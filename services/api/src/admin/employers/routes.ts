@@ -16,7 +16,7 @@ import { enqueueEmployerEmail } from '@agconn/email';
 import { shapeEmployer } from '../../employer/shared';
 
 export const adminEmployersRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-adminEmployersRoutes.use('*', requireAuth);
+adminEmployersRoutes.use('*', requireAuth('admin'));
 adminEmployersRoutes.use('*', requireAdmin);
 
 adminEmployersRoutes.get('/pending', async (c) => {

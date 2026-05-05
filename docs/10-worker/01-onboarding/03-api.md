@@ -2,7 +2,7 @@
 
 All endpoints under `/v1/onboarding/*` unless noted. All require Clerk auth EXCEPT phone-OTP send/verify (handled entirely by Clerk's hosted SMS OTP — we don't proxy it).
 
-Tenant resolution: standard `tenantMiddleware` runs on every request. For users mid-onboarding who don't yet have a `users` row, the middleware uses the fallback path described in [00-foundation/01-multi-tenancy/08-edge-cases.md](../../00-foundation/01-multi-tenancy/08-edge-cases.md).
+Workers are platform-level (bucket 2 in the three-bucket tenancy model — see [00-foundation/01-multi-tenancy](../../00-foundation/01-multi-tenancy/)). Worker `User` rows have `tenantId = null`; the standard `tenantMiddleware` does not need to resolve a tenant for these endpoints.
 
 ## POST /v1/onboarding/start
 
@@ -13,11 +13,10 @@ Request body: empty (Clerk session has all needed data).
 Server logic:
 
 1. Get `userId`, `phoneNumber` from Clerk session.
-2. Resolve `tenantId` (Clerk org metadata → URL slug → default).
-3. `INSERT ... ON CONFLICT (id) DO NOTHING` into `users` with `role = worker`, `preferred_lang = es`.
-4. If conflict on `(tenantId, phone)` from a different `id`, return 409 (account merge or restore flow needed — admin support).
-5. Compute `phoneHash` and store.
-6. Return current user state.
+2. `INSERT ... ON CONFLICT (id) DO NOTHING` into `users` with `role = worker`, `tenantId = null`, `preferred_lang = es`.
+3. If a different worker `User` row already holds the same `phone` (platform-wide, scoped to `role = 'worker'`), return `409 phone_collision` (account merge or restore flow needed — admin support).
+4. Compute `phoneHash` and store.
+5. Return current user state.
 
 Response:
 
@@ -163,8 +162,7 @@ const CompleteErrorResponse = z.object({
 | code | http | when |
 |---|---|---|
 | `unauthenticated` | 401 | No Clerk session |
-| `phone_already_registered_other_tenant` | 409 | Phone exists under a different tenant |
-| `phone_collision_same_tenant` | 409 | Phone exists in same tenant under a different Clerk user (admin merge needed) |
+| `phone_collision` | 409 | Phone exists on a different worker User row (admin merge needed; workers are platform-level — uniqueness is checked across all `role = 'worker'`) |
 | `resume_too_large` | 413 | Upload > 10 MB |
 | `resume_unsupported` | 415 | Not PDF or DOCX |
 | `resume_parse_failed` | 422 | Parser returned no usable data — fallback to manual |

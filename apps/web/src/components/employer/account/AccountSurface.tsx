@@ -70,10 +70,7 @@ export function AccountSurface({ locale, activeTab, firstName, businessName }: P
             </div>
 
             {!isLoaded || !user ? (
-                <div className="border-base-300 bg-base-100 max-w-3xl rounded-2xl border p-6">
-                    <div className="bg-base-200 mb-3 h-4 w-40 animate-pulse rounded" />
-                    <div className="bg-base-200 h-4 w-72 animate-pulse rounded" />
-                </div>
+                <AccountSkeleton activeTab={activeTab} />
             ) : activeTab === 'profile' ? (
                 <div className="grid max-w-3xl gap-5">
                     <ProfilePhotoSection user={user} />
@@ -95,5 +92,71 @@ export function AccountSurface({ locale, activeTab, firstName, businessName }: P
                 </div>
             )}
         </div>
+    );
+}
+
+function AccountSkeleton({ activeTab }: { activeTab: 'profile' | 'security' }) {
+    if (activeTab === 'profile') {
+        return (
+            <div className="grid max-w-3xl gap-5">
+                <SectionSkeleton>
+                    <div className="flex items-center gap-4">
+                        <div className="skeleton h-20 w-20 rounded-full"></div>
+                        <div className="flex flex-1 flex-col gap-2">
+                            <div className="skeleton h-4 w-40"></div>
+                            <div className="skeleton h-3 w-24"></div>
+                        </div>
+                    </div>
+                </SectionSkeleton>
+                <SectionSkeleton>
+                    <div className="grid gap-3">
+                        <div className="skeleton h-3 w-24"></div>
+                        <div className="skeleton h-10 w-full"></div>
+                        <div className="skeleton h-3 w-24"></div>
+                        <div className="skeleton h-10 w-full"></div>
+                    </div>
+                </SectionSkeleton>
+                <SectionSkeleton>
+                    <div className="grid gap-3">
+                        <div className="skeleton h-3 w-20"></div>
+                        <div className="skeleton h-10 w-full"></div>
+                    </div>
+                </SectionSkeleton>
+                <SectionSkeleton>
+                    <div className="grid gap-3">
+                        <div className="skeleton h-3 w-28"></div>
+                        <div className="skeleton h-10 w-full"></div>
+                    </div>
+                </SectionSkeleton>
+            </div>
+        );
+    }
+    return (
+        <div className="grid max-w-3xl gap-5">
+            <SectionSkeleton>
+                <div className="grid gap-3">
+                    <div className="skeleton h-3 w-24"></div>
+                    <div className="skeleton h-10 w-full"></div>
+                </div>
+            </SectionSkeleton>
+            <SectionSkeleton>
+                <div className="grid gap-3">
+                    <div className="skeleton h-3 w-32"></div>
+                    <div className="skeleton h-10 w-full"></div>
+                </div>
+            </SectionSkeleton>
+            <SectionSkeleton>
+                <div className="grid gap-3">
+                    <div className="skeleton h-3 w-24"></div>
+                    <div className="skeleton h-12 w-full"></div>
+                </div>
+            </SectionSkeleton>
+        </div>
+    );
+}
+
+function SectionSkeleton({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="border-base-300 bg-base-100 rounded-2xl border p-6">{children}</div>
     );
 }

@@ -21,7 +21,7 @@ import type { AuditCtxVars } from '../../middleware/audit';
 // during onboarding and are scoped to that tenant for all employer queries.
 
 export const employerWorkersRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerWorkersRoutes.use('*', requireAuth);
+employerWorkersRoutes.use('*', requireAuth('employer'));
 employerWorkersRoutes.use('*', requireRole('employer'));
 employerWorkersRoutes.use('*', requireTenant);
 
@@ -40,7 +40,6 @@ employerWorkersRoutes.get('/', validate('query', WorkerSearchQuery), async (c) =
 
   const rows = await c.var.db.workerProfile.findMany({
     where: {
-      tenantId,
       onboardedAt: { not: null },
       deletedAt: null,
       ...(counties ? { county: { in: counties } } : {}),
@@ -142,7 +141,7 @@ employerWorkersRoutes.get('/:id', async (c) => {
   }
 
   const worker = await c.var.db.workerProfile.findFirst({
-    where: { id, tenantId, onboardedAt: { not: null }, deletedAt: null },
+    where: { id, onboardedAt: { not: null }, deletedAt: null },
     include: { user: { select: { id: true, phone: true, email: true } } },
   });
   if (!worker) return err(c, 404, 'not_found');
@@ -180,7 +179,7 @@ employerWorkersRoutes.post('/:id/invite', validate('json', InviteWorkerBody), as
   }
 
   const worker = await c.var.db.workerProfile.findFirst({
-    where: { id: workerId, tenantId, onboardedAt: { not: null }, deletedAt: null },
+    where: { id: workerId, onboardedAt: { not: null }, deletedAt: null },
   });
   if (!worker) return err(c, 422, 'validation_failed', 'worker_not_eligible');
 
@@ -235,7 +234,7 @@ employerWorkersRoutes.post('/:id/invite', validate('json', InviteWorkerBody), as
 });
 
 export const employerInvitationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerInvitationsRoutes.use('*', requireAuth);
+employerInvitationsRoutes.use('*', requireAuth('employer'));
 employerInvitationsRoutes.use('*', requireRole('employer'));
 employerInvitationsRoutes.use('*', requireTenant);
 

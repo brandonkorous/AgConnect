@@ -8,7 +8,7 @@ import type { AuditCtxVars } from '../middleware/audit';
 // (the join row) and surfaces the parent Shift + employer name.
 
 export const meShiftsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-meShiftsRoutes.use('*', requireAuth);
+meShiftsRoutes.use('*', requireAuth('me'));
 meShiftsRoutes.use('*', requireRole('worker'));
 
 meShiftsRoutes.get('/', async (c) => {

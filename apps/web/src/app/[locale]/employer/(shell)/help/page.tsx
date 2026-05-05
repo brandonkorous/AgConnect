@@ -27,43 +27,43 @@ export default async function EmployerHelpPage({ params }: Props) {
 
     const topics: Array<{
         icon: typeof faBriefcase;
-        href: string;
+        slug: string;
         titleKey: string;
         bodyKey: string;
     }> = [
             {
                 icon: faBriefcase,
-                href: `/${locale}/employer/jobs/new`,
+                slug: 'posting-a-job',
                 titleKey: 'topic.post_job.title',
                 bodyKey: 'topic.post_job.body',
             },
             {
                 icon: faUsers,
-                href: `/${locale}/employer/inbox`,
+                slug: 'review-applicants',
                 titleKey: 'topic.review_applicants.title',
                 bodyKey: 'topic.review_applicants.body',
             },
             {
                 icon: faCoins,
-                href: `/${locale}/employer/payroll`,
+                slug: 'payroll',
                 titleKey: 'topic.payroll.title',
                 bodyKey: 'topic.payroll.body',
             },
             {
                 icon: faShield,
-                href: `/${locale}/employer/compliance`,
+                slug: 'compliance',
                 titleKey: 'topic.compliance.title',
                 bodyKey: 'topic.compliance.body',
             },
             {
                 icon: faChartLine,
-                href: `/${locale}/employer/reports`,
+                slug: 'reports',
                 titleKey: 'topic.reports.title',
                 bodyKey: 'topic.reports.body',
             },
             {
                 icon: faBookOpen,
-                href: `/${locale}/employer/profile`,
+                slug: 'company-profile',
                 titleKey: 'topic.profile.title',
                 bodyKey: 'topic.profile.body',
             },
@@ -92,7 +92,7 @@ export default async function EmployerHelpPage({ params }: Props) {
                     {topics.map((topic) => (
                         <Link
                             key={topic.titleKey}
-                            href={topic.href as Route}
+                            href={`/${locale}/help/${topic.slug}` as Route}
                             className="bg-base-100 border-base-300 hover:border-primary/40 group rounded-2xl border p-5 transition"
                         >
                             <div className="bg-primary/10 text-primary mb-3 grid h-9 w-9 place-items-center rounded-xl">
@@ -119,7 +119,7 @@ export default async function EmployerHelpPage({ params }: Props) {
                 <div className="flex flex-col gap-2">
                     <a
                         href="mailto:support@agconn.com"
-                        className="btn btn-primary btn-sm rounded-full"
+                        className="btn btn-ghost btn-sm border-base-300 rounded-full border"
                     >
                         <FontAwesomeIcon icon={faEnvelope} className="h-3.5 w-3.5" />
                         support@agconn.com

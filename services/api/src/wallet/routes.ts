@@ -6,7 +6,7 @@ import type { AuditCtxVars } from '../middleware/audit';
 
 export const walletRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
-walletRoutes.use('*', requireAuth);
+walletRoutes.use('*', requireAuth('wallet'));
 walletRoutes.use('*', requireRole('worker'));
 
 walletRoutes.get('/', async (c) => {

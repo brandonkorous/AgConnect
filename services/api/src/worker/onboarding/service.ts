@@ -2,7 +2,7 @@
 // layer (worker/onboarding/routes.ts emits worker.profile.updated and
 // worker.resume.uploaded); duplicating the call in service.ts would log twice.
 import { createHash } from 'node:crypto';
-import { County, Lang, type Tx, type User, type WorkerProfile } from '@agconn/db';
+import { County, Lang, UserRole, type Tx, type User, type WorkerProfile } from '@agconn/db';
 import type { OnboardingNextStep, PatchOnboardingProfileBody } from '@agconn/schemas';
 
 const PHONE_PEPPER = process.env.PHONE_HASH_PEPPER ?? 'dev-pepper-rotate-me';
@@ -39,38 +39,36 @@ export type StartContext = {
   phone: string | null;
   email: string | null;
   preferredLang: 'en' | 'es';
-  tenantId: string;
 };
 
 export async function startOnboarding(db: Tx, ctx: StartContext) {
-  // Idempotent upsert of the User row.
+  // Workers are platform-level (bucket 2): User.tenantId stays null.
   const existing = await db.user.findUnique({ where: { id: ctx.userId } });
 
-  if (existing && existing.tenantId && existing.tenantId !== ctx.tenantId) {
-    throw new OnboardingError('phone_already_registered_other_tenant', 409);
-  }
-
-  // Phone collision check within this tenant.
+  // Phone uniqueness for workers is platform-wide — the same phone can't be
+  // registered to two different worker accounts.
   if (ctx.phone) {
     const collision = await db.user.findFirst({
-      where: { tenantId: ctx.tenantId, phone: ctx.phone, NOT: { id: ctx.userId } },
+      where: {
+        role: UserRole.worker,
+        phone: ctx.phone,
+        NOT: { id: ctx.userId },
+      },
     });
     if (collision) {
-      throw new OnboardingError('phone_collision_same_tenant', 409);
+      throw new OnboardingError('phone_collision', 409);
     }
   }
 
   const user = await db.user.upsert({
     where: { id: ctx.userId },
     update: {
-      tenantId: ctx.tenantId,
       phone: ctx.phone ?? existing?.phone ?? null,
       email: ctx.email ?? existing?.email ?? null,
       preferredLang: existing?.preferredLang ?? (ctx.preferredLang === 'en' ? Lang.en : Lang.es),
     },
     create: {
       id: ctx.userId,
-      tenantId: ctx.tenantId,
       role: 'worker',
       phone: ctx.phone,
       email: ctx.email,
@@ -100,7 +98,6 @@ export async function setLanguage(db: Tx, userId: string, lang: 'en' | 'es') {
 export async function patchOnboardingProfile(
   db: Tx,
   userId: string,
-  tenantId: string,
   body: PatchOnboardingProfileBody,
 ) {
   const existingProfile = await db.workerProfile.findUnique({ where: { id: userId } });
@@ -131,7 +128,6 @@ export async function patchOnboardingProfile(
     where: { id: userId },
     create: {
       id: userId,
-      tenantId,
       firstName,
       lastName,
       zipCode: body.zipCode ?? null,

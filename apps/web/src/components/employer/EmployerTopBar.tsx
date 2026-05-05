@@ -2,16 +2,15 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComments, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { EmployerSearchBox } from '@/components/employer/EmployerSearchBox';
 import { ThemeToggle } from '@/components/primitives/ThemeToggle';
 
 type Props = {
     locale: string;
-    canPublish: boolean;
 };
 
-export function EmployerTopBar({ locale, canPublish }: Props) {
+export function EmployerTopBar({ locale }: Props) {
     const t = useTranslations('employer.shell.topbar');
 
     return (
@@ -26,16 +25,7 @@ export function EmployerTopBar({ locale, canPublish }: Props) {
                 {t('help')}
             </Link>
 
-            {canPublish && (
-                <Link
-                    href={`/${locale}/employer/jobs/new`}
-                    className="btn btn-primary btn-sm"
-                >
-                    <FontAwesomeIcon icon={faPlus} className="h-3.5 w-3.5" />
-                    {t('post_job')}
-                </Link>
-            )}
-            <ThemeToggle ariaLabel={t('theme_label')} />
+            <ThemeToggle ariaLabel={t('theme_toggle_aria')} />
         </div>
     );
 }

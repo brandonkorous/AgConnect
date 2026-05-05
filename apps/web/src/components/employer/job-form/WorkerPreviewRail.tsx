@@ -118,8 +118,9 @@ export function WorkerPreviewRail({
         <div className="mockup-phone-camera" />
         <div className="mockup-phone-display bg-base-100 overflow-y-auto">
           <div className="flex flex-col gap-3 px-4 pt-10 pb-5">
-            <PhoneStatusBar />
+            <PhoneStatusBar lang={lang} />
             <JobPreviewCard
+              lang={lang}
               title={title}
               employer={employerName}
               county={state.county}
@@ -169,16 +170,22 @@ export function WorkerPreviewRail({
   );
 }
 
-function PhoneStatusBar() {
+function PhoneStatusBar({ lang }: { lang: 'en' | 'es' }) {
+  const now = new Date();
+  const time = now.toLocaleTimeString(lang === 'es' ? 'es-MX' : 'en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
   return (
     <div className="text-base-content/50 mb-3.5 flex items-center justify-between font-mono text-[10.5px]">
-      <span>9:41</span>
+      <span>{time}</span>
       <span>● ● ●</span>
     </div>
   );
 }
 
 function JobPreviewCard(props: {
+  lang: 'en' | 'es';
   title: string;
   employer: string;
   county: string;
@@ -201,7 +208,8 @@ function JobPreviewCard(props: {
   dailyLabel: string;
 }) {
   const t = useTranslations('employer.jobs.form_v2.preview');
-  const startLabel = props.startDate ? formatLocalDate(props.startDate) : '—';
+  const startLabel = props.startDate ? formatLocalDate(props.startDate, props.lang) : '—';
+  const wage = formatHourly(props.wageMin, props.lang);
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-sm">
       <div className="bg-warning relative grid h-[86px] place-items-center">
@@ -209,7 +217,7 @@ function JobPreviewCard(props: {
         <div className="bg-base-content/40 text-base-100 absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
           {t('hero_meta', { spots: props.positionsTotal, start: startLabel })}
         </div>
-        <div className="bg-error text-error-content absolute right-2.5 top-2.5 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
+        <div className="bg-base-content/70 text-base-100 absolute right-2.5 top-2.5 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
           {t('spots_open', { count: props.positionsTotal })}
         </div>
       </div>
@@ -224,12 +232,12 @@ function JobPreviewCard(props: {
           <div className="font-mono text-[10px] font-bold uppercase tracking-wider opacity-80">
             {t('takehome_label')}
           </div>
-          <div className="font-display mt-0.5 text-lg tracking-tight">
+          <div className="font-display mt-0.5 text-lg tracking-tight tabular-nums">
             ${Math.round(props.dailyTakeMin)} – ${Math.round(props.dailyTakeMax)}
           </div>
-          <div className="text-[10px] opacity-85">
-            ${props.wageMin}/hr
-            {props.pieceRate ? ` + $${props.pieceRate}/${props.pieceUnit ?? 'lb'} piece` : ''}
+          <div className="text-[10px] opacity-85 tabular-nums">
+            {wage}/hr
+            {props.pieceRate ? ` + ${formatHourly(props.pieceRate, props.lang)}/${props.pieceUnit ?? 'lb'} piece` : ''}
           </div>
         </div>
         {props.skills.length > 0 && (
@@ -300,16 +308,27 @@ function computeDailyHours(state: JobFormState): number {
   return mins > 0 ? mins / 60 : 8;
 }
 
-function formatLocalDate(yyyymmdd: string): string {
+function formatLocalDate(yyyymmdd: string, lang: 'en' | 'es'): string {
   // `new Date('2026-05-15')` parses as UTC midnight, then toLocaleDateString
   // shifts to the user's TZ — off by one day in PDT/PST. Build from local
-  // components instead.
+  // components instead. Use the worker-preview language so AUG localizes to AGO.
   const [y, m, d] = yyyymmdd.split('-').map(Number);
   if (!y || !m || !d) return yyyymmdd;
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
+  return new Date(y, m - 1, d).toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
     month: 'short',
     day: 'numeric',
   });
+}
+
+function formatHourly(value: number, lang: 'en' | 'es'): string {
+  // Two-decimal currency for hourly + piece rates. $19.5 reads as a typo;
+  // $19.50 is the polished form workers expect on a job posting.
+  return new Intl.NumberFormat(lang === 'es' ? 'es-MX' : 'en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function fmtTimeRange(start: string, end: string): string {

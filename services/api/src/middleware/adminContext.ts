@@ -1,7 +1,7 @@
 import { createMiddleware } from 'hono/factory';
 import { getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
-import { prisma, rlsClient, runWithRlsContext, type Tx } from '@agconn/db';
+import { prisma, dbClients, runWithRlsContext, type PoolName, type Tx } from '@agconn/db';
 
 // Admin gate. Two acceptable paths:
 //   1. Clerk session with publicMetadata.role === 'admin' (preferred)
@@ -26,8 +26,8 @@ const readBearer = (header: string | undefined): string | null => {
   return m && m[1] ? m[1] : null;
 };
 
-export const adminMiddleware = createMiddleware<{ Variables: AdminVars }>(
-  async (c, next) => {
+export const adminMiddleware = (poolName: PoolName) =>
+  createMiddleware<{ Variables: AdminVars }>(async (c, next) => {
     let userId: string | null = null;
 
     const clerkAuth = getAuth(c);
@@ -50,11 +50,10 @@ export const adminMiddleware = createMiddleware<{ Variables: AdminVars }>(
       return err(c, 403, 'forbidden', 'Admin access required');
     }
 
-    c.set('db', rlsClient);
+    c.set('db', dbClients[poolName]);
     c.set('tenantId', '00000000-0000-0000-0000-000000000000');
     c.set('role', 'admin');
     c.set('userId', userId);
 
     await runWithRlsContext({ role: 'admin', userId }, () => next());
-  },
-);
+  });

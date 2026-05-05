@@ -10,7 +10,7 @@ import type { AuditCtxVars } from '../middleware/audit';
 // the paystub table.
 
 export const mePayRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-mePayRoutes.use('*', requireAuth);
+mePayRoutes.use('*', requireAuth('me'));
 mePayRoutes.use('*', requireRole('worker'));
 
 mePayRoutes.get('/', async (c) => {

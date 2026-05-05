@@ -493,6 +493,10 @@ export const employer: TranslationBundle = {
         en: "payment method on file",
         es: "método de pago guardado",
     },
+    "billing.enterprise_includes_pro": {
+        en: "Everything in Pro, plus:",
+        es: "Todo en Pro, además:",
+    },
     "billing.pitch.enterprise": {
         en: "Scale — multi-user, custom counties, branded grant reports.",
         es: "Escala — multi-usuario, condados personalizados, reportes con marca.",
@@ -1409,8 +1413,8 @@ export const employer: TranslationBundle = {
         es: "Cuadrillas / Día",
     },
     "crews.hiring_foreman": {
-        en: "— hiring —",
-        es: "— contratando —",
+        en: "Hiring leader",
+        es: "Contratando capataz",
     },
     "crews.message_foreman": {
         en: "Message {firstName}",
@@ -1582,6 +1586,10 @@ export const employer: TranslationBundle = {
     "crews.summary": {
         en: "{crews, plural, =0 {No crews} one {1 crew} other {# crews}} · {confirmed} confirmed · {filling, plural, =0 {all filled} one {1 still filling} other {# still filling}} · {hours} hours scheduled",
         es: "{crews, plural, =0 {Sin cuadrillas} one {1 cuadrilla} other {# cuadrillas}} · {confirmed} confirmados · {filling, plural, =0 {todas llenas} one {1 todavía completándose} other {# todavía completándose}} · {hours} horas programadas",
+    },
+    "crews.summary_unscheduled": {
+        en: "{crews, plural, =0 {No crews yet} one {1 crew} other {# crews}} · not yet staffed",
+        es: "{crews, plural, =0 {Aún sin cuadrillas} one {1 cuadrilla} other {# cuadrillas}} · sin personal aún",
     },
     "crews.title": {
         en: "Crews & shifts",
@@ -1853,6 +1861,10 @@ export const employer: TranslationBundle = {
     "crews.edit_crew.foreman.hire_cta_sub": {
         en: "Open a job posting from the Jobs page.",
         es: "Publica un puesto desde la página de Empleos.",
+    },
+    "crews.edit_crew.foreman.hire_cta_button": {
+        en: "Post a foreman job",
+        es: "Publicar puesto de capataz",
     },
 
     // Roster section.
@@ -2246,8 +2258,8 @@ export const employer: TranslationBundle = {
         es: "No aparece en una fila de cuadrilla del horario semanal.",
     },
     "crews.edit_shift.crew_picker.hiring_foreman": {
-        en: "— hiring —",
-        es: "— contratando —",
+        en: "Hiring leader",
+        es: "Contratando capataz",
     },
     "crews.edit_shift.crew_picker.size_short": { en: "crew", es: "cuadrilla" },
     "crews.edit_shift.crew_picker.create_crew": {
@@ -2800,6 +2812,14 @@ export const employer: TranslationBundle = {
         en: "all positions filled",
         es: "todas las posiciones llenas",
     },
+    "dashboard.hero.slot_filled_aria": {
+        en: "Position filled",
+        es: "Puesto cubierto",
+    },
+    "dashboard.hero.slot_open_aria": {
+        en: "Open position",
+        es: "Puesto abierto",
+    },
     "dashboard.hero.fill_spot": {
         en: "Fill last spot",
         es: "Llenar último puesto",
@@ -3085,8 +3105,8 @@ export const employer: TranslationBundle = {
         es: "El correo recibe respuesta el mismo día en horario laboral. El teléfono es lo más rápido para problemas urgentes como un error de nómina o un aplicante faltante.",
     },
     "help.contact_hours": {
-        en: "Mon–Fri · 7:00 a.m. – 6:00 p.m. PT",
-        es: "Lun–Vie · 7:00 a.m. – 6:00 p.m. PT",
+        en: "Mon–Fri · 7:00 AM – 6:00 PM PT",
+        es: "Lun–Vie · 7:00 AM – 6:00 PM PT",
     },
     "help.contact_title": {
         en: "Talk to a person",
@@ -3712,6 +3732,14 @@ export const employer: TranslationBundle = {
         en: "No conversations in this folder yet.",
         es: "Aún no hay conversaciones en esta carpeta.",
     },
+    "messages.empty_pane_title": {
+        en: "Start your first thread",
+        es: "Comienza tu primer hilo",
+    },
+    "messages.empty_pane_body": {
+        en: "Send a message to a candidate, crew member, or foreman.",
+        es: "Envía un mensaje a un candidato, miembro de cuadrilla o capataz.",
+    },
     "messages.eyebrow": {
         en: "Inbox",
         es: "Buzón",
@@ -4013,8 +4041,8 @@ export const employer: TranslationBundle = {
         es: "Contratamos trabajadores H-2A",
     },
     "onboarding.programs.h2a_help": {
-        en: "Turns on H-2A compliance tracking (AEWR, housing inspection, 3/4 guarantee).",
-        es: "Activa el seguimiento de cumplimiento H-2A (AEWR, inspección de vivienda, garantía 3/4).",
+        en: "Turns on H-2A compliance tracking (Adverse Effect Wage Rate, three-quarters guarantee).",
+        es: "Activa el seguimiento de cumplimiento H-2A (tarifa AEWR de impacto adverso, garantía de tres cuartos).",
     },
     "onboarding.submit": {
         en: "Submit",
@@ -4039,6 +4067,10 @@ export const employer: TranslationBundle = {
     "onboarding.title": {
         en: "Set up your business",
         es: "Configura tu negocio",
+    },
+    "onboarding.locale_switch_aria": {
+        en: "Switch language",
+        es: "Cambiar idioma",
     },
     "onboarding.type.flc": {
         en: "Farm Labor Contractor",
@@ -4233,8 +4265,8 @@ export const employer: TranslationBundle = {
         es: "Acumulado de temporada",
     },
     "payroll.season_to_date_sub": {
-        en: "Across {periods} pay periods · {workers} unique workers",
-        es: "A través de {periods} periodos · {workers} trabajadores únicos",
+        en: "{periods, plural, one {Across 1 pay period} other {Across # pay periods}} · {workers, plural, one {1 unique worker} other {# unique workers}}",
+        es: "{periods, plural, one {A través de 1 periodo} other {A través de # periodos}} · {workers, plural, one {1 trabajador único} other {# trabajadores únicos}}",
     },
     "payroll.stat.bonuses": {
         en: "Bonuses",
@@ -4255,6 +4287,10 @@ export const employer: TranslationBundle = {
     "payroll.status_approved": {
         en: "Approved",
         es: "Aprobado",
+    },
+    "payroll.status_no_timesheets": {
+        en: "No timesheets",
+        es: "Sin partes de horas",
     },
     "payroll.status_paid": {
         en: "Paid",
@@ -4332,6 +4368,10 @@ export const employer: TranslationBundle = {
         en: "· runs Friday",
         es: "· corre el viernes",
     },
+    "profile.address.cancel": {
+        en: "Cancel",
+        es: "Cancelar",
+    },
     "profile.address.help": {
         en: "Used for FLC verification and official documents. Never shown publicly.",
         es: "Se usa para la verificación FLC y documentos oficiales. Nunca se muestra al público.",
@@ -4343,6 +4383,10 @@ export const employer: TranslationBundle = {
     "profile.address.missing": {
         en: "Not on file — add an address.",
         es: "No registrada — agrega una dirección.",
+    },
+    "profile.errors.required": {
+        en: "This field is required.",
+        es: "Este campo es obligatorio.",
     },
     "profile.eyebrow": {
         en: "Account",
@@ -4596,6 +4640,14 @@ export const employer: TranslationBundle = {
         en: "by piece-rate yield",
         es: "por rendimiento de destajo",
     },
+    "reports.top_workers_empty": {
+        en: "No worker hires yet.",
+        es: "Aún no hay contrataciones.",
+    },
+    "reports.featured_posting": {
+        en: "Featured posting",
+        es: "Publicación destacada",
+    },
     "shell.badges.surface_hire": {
         en: "HIRE",
         es: "HIRE",
@@ -4604,13 +4656,17 @@ export const employer: TranslationBundle = {
         en: "PRO",
         es: "PRO",
     },
+    "shell.badges.active_postings_title": {
+        en: "Active postings",
+        es: "Publicaciones activas",
+    },
     "shell.nav.billing": {
         en: "Billing",
         es: "Facturación",
     },
     "shell.nav.candidates": {
-        en: "Candidates",
-        es: "Candidatos",
+        en: "Inbox",
+        es: "Bandeja",
     },
     "shell.nav.compliance": {
         en: "Compliance",
@@ -4671,6 +4727,10 @@ export const employer: TranslationBundle = {
     "shell.topbar.theme_label": {
         en: "Theme",
         es: "Tema",
+    },
+    "shell.topbar.theme_toggle_aria": {
+        en: "Toggle dark mode",
+        es: "Cambiar modo oscuro",
     },
     "shell.user_menu.account": {
         en: "My account",
@@ -5147,9 +5207,9 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.preview.worker_preview":     { en: "Worker preview",            es: "Vista del trabajador" },
     "jobs.form_v2.preview.match_preview":      { en: "Match preview",             es: "Vista previa de coincidencias" },
     "jobs.form_v2.preview.match_preview_body": { en: "With these requirements, <n>{n}</n> workers within {radius} mi qualify. Auto-match will SMS the top {top}.", es: "Con estos requisitos, <n>{n}</n> trabajadores en {radius} millas califican. El auto-emparejamiento enviará SMS a los {top} mejores." },
-    "jobs.form_v2.preview.hero_meta":          { en: "{spots} SPOTS · STARTS {start}", es: "{spots} CUPOS · INICIA {start}" },
+    "jobs.form_v2.preview.hero_meta":          { en: "{spots, plural, one {1 SPOT} other {# SPOTS}} · STARTS {start}", es: "{spots, plural, one {1 CUPO} other {# CUPOS}} · INICIA {start}" },
     "jobs.form_v2.preview.spots_open":         { en: "{count, plural, =0 {FILLED} one {1 SPOT OPEN} other {# SPOTS OPEN}}", es: "{count, plural, =0 {LLENO} one {1 CUPO} other {# CUPOS}}" },
-    "jobs.form_v2.preview.takehome_label":     { en: "Take-home / day",           es: "Ganancia diaria" },
+    "jobs.form_v2.preview.takehome_label":     { en: "Est. gross / day",          es: "Estimado bruto / día" },
     "jobs.form_v2.preview.schedule_label":     { en: "Schedule",                  es: "Horario" },
     "jobs.form_v2.preview.transport_label":    { en: "Transport",                 es: "Transporte" },
     "jobs.form_v2.preview.transport_provided": { en: "Pickup provided",           es: "Recogida incluida" },

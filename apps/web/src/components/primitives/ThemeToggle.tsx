@@ -57,6 +57,7 @@ export function ThemeToggle({ ariaLabel, className }: Props) {
                     setTheme(next);
                     applyTheme(next);
                 }}
+                aria-label={ariaLabel}
                 suppressHydrationWarning
             />
             <FontAwesomeIcon icon={faSun} size="xs" className="swap-on m-auto text-yellow-500" />

@@ -5,10 +5,11 @@ import { err } from '@agconn/api-client/server';
 import {
     Lang,
     prisma,
-    rlsClient,
+    dbClients,
     runWithRlsContext,
     getRlsContext,
     UserRole,
+    type PoolName,
     type Tx,
 } from '@agconn/db';
 import { hasPermission, type Permission } from '@agconn/schemas';
@@ -83,36 +84,40 @@ async function provisionFromClerk(c: Context, userId: string) {
     }
 }
 
-export const requireAuth = createMiddleware<{ Variables: AuthVars }>(async (c, next) => {
-    const auth = getAuth(c);
-    if (!auth?.userId) {
-        return err(c, 401, 'unauthenticated');
-    }
-
-    let user = await prisma.user.findUnique({ where: { id: auth.userId } });
-    if (!user) {
-        user = await provisionFromClerk(c, auth.userId);
-        if (!user) {
-            return err(c, 403, 'no_tenant');
+// Factory: each domain's route file calls `requireAuth('worker')`,
+// `requireAuth('employer')`, etc. so handlers receive a domain-scoped Prisma
+// client via c.var.db. Pool isolation prevents one domain from starving others.
+export const requireAuth = (poolName: PoolName) =>
+    createMiddleware<{ Variables: AuthVars }>(async (c, next) => {
+        const auth = getAuth(c);
+        if (!auth?.userId) {
+            return err(c, 401, 'unauthenticated');
         }
-    }
 
-    c.set('db', rlsClient);
-    c.set('userId', user.id);
-    c.set('userRole', user.role);
-    c.set('permissions', user.permissions);
-    c.set('tenantId', user.tenantId);
-    c.set('role', 'authenticated');
+        let user = await prisma.user.findUnique({ where: { id: auth.userId } });
+        if (!user) {
+            user = await provisionFromClerk(c, auth.userId);
+            if (!user) {
+                return err(c, 403, 'no_tenant');
+            }
+        }
 
-    await runWithRlsContext(
-        {
-            role: 'authenticated',
-            userId: user.id,
-            tenantId: user.tenantId ?? undefined,
-        },
-        () => next(),
-    );
-});
+        c.set('db', dbClients[poolName]);
+        c.set('userId', user.id);
+        c.set('userRole', user.role);
+        c.set('permissions', user.permissions);
+        c.set('tenantId', user.tenantId);
+        c.set('role', 'authenticated');
+
+        await runWithRlsContext(
+            {
+                role: 'authenticated',
+                userId: user.id,
+                tenantId: user.tenantId ?? undefined,
+            },
+            () => next(),
+        );
+    });
 
 export const requireRole =
     (...allowed: UserRole[]) =>

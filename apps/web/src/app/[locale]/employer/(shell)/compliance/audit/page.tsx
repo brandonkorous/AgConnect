@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ComplianceAuditPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'employer.compliance.audit' });
+  const tc = await getTranslations({ locale, namespace: 'employer.compliance' });
 
   const [profile, cats, actions, summary] = await Promise.all([
     getEmployerProfile(),
@@ -136,7 +137,7 @@ export default async function ComplianceAuditPage({ params }: Props) {
 
         {/* ─────────────────── Category sections (§2 onwards) */}
         {cats.map((c, idx) => (
-          <Section key={c.key} number={idx + 2} heading={c.label}>
+          <Section key={c.key} number={idx + 2} heading={tc(`category.${c.key}`)}>
             <div className="mt-1 flex items-baseline justify-between">
               <div className="meta">
                 {t('category_score', { score: c.score })}

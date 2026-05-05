@@ -43,7 +43,7 @@ export async function EmployerKpiRow({
         },
         {
             key: 'time_to_fill',
-            value: stats.avgTimeToFillDays != null ? `${stats.avgTimeToFillDays}d` : '—',
+            value: stats.avgTimeToFillDays ? `${stats.avgTimeToFillDays}d` : '—',
             sub: t('time_to_fill_sub'),
             accent: 'primary',
         },

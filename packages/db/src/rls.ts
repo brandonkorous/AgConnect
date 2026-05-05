@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { Prisma, PrismaClient } from '@prisma/client';
-import { prisma } from './index.js';
+import { pools, type PoolName } from './pools.js';
 
 export type RlsRole =
   | 'authenticated'
@@ -61,18 +61,19 @@ export async function applyRlsToTx(
 const RAW_OPS = new Set(['$queryRaw', '$queryRawUnsafe', '$executeRaw', '$executeRawUnsafe']);
 const PASSTHROUGH_OPS = new Set(['$connect', '$disconnect', '$on', '$use', '$extends']);
 
-// Per-query short-transaction wrapper. Every model operation, raw query, or
-// $transaction(callback) routed through this client opens a Prisma transaction,
-// applies the current ALS RlsContext, runs the work, and commits — releasing
-// the pooled connection immediately. This replaces the prior pattern of
-// holding one transaction open for an entire HTTP request, which exhausted the
-// connection pool under any real concurrency.
-function makeRlsClient(): PrismaClient {
+// Wraps a PrismaClient with a per-query short-transaction proxy. Every model
+// operation, raw query, or $transaction(callback) routed through the returned
+// client opens a Prisma transaction on `prisma`, applies the current ALS
+// RlsContext (if any), runs the work, and commits — releasing the pooled
+// connection immediately. This keeps a connection pinned only for the duration
+// of one statement (or one explicit handler-level transaction) instead of for
+// an entire HTTP request.
+export function makeRlsClient(prisma: PrismaClient): PrismaClient {
   const handler: ProxyHandler<PrismaClient> = {
     get(_target, prop, _receiver) {
       if (typeof prop !== 'string') return undefined;
 
-      // Prevent accidental thenable behavior (e.g. `await c.var.db`).
+      // Prevent accidental thenable behavior (e.g. `await db`).
       if (prop === 'then') return undefined;
 
       if (prop === '$transaction') {
@@ -134,4 +135,9 @@ function makeRlsClient(): PrismaClient {
   return new Proxy({} as PrismaClient, handler);
 }
 
-export const rlsClient: PrismaClient = makeRlsClient();
+// Pre-built RLS-aware proxies, one per pool. Routes import the one that matches
+// their domain (e.g. `dbClients.worker`, `dbClients.employer`, …) and pass it
+// through the auth middleware factory.
+export const dbClients: Record<PoolName, PrismaClient> = Object.fromEntries(
+  (Object.keys(pools) as PoolName[]).map((name) => [name, makeRlsClient(pools[name])]),
+) as Record<PoolName, PrismaClient>;

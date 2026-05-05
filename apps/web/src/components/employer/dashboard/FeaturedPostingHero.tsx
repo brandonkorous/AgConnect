@@ -7,6 +7,8 @@ import {
   faLocationDot,
   faPlus,
   faComments,
+  faCheck,
+  faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import type { EmployerJobView, ApplicantCardView } from '@/lib/api/employer';
 
@@ -55,9 +57,10 @@ export async function FeaturedPostingHero({ locale, job, applicants }: Props) {
               <FontAwesomeIcon icon={faUsers} className="h-3.5 w-3.5" />
               {filled}/{total} {t('filled')}
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <FontAwesomeIcon icon={faCoins} className="h-3.5 w-3.5" />${job.wageMin}
-              {job.wageMax !== job.wageMin ? `–$${job.wageMax}` : ''}/hr
+            <span className="inline-flex items-center gap-1.5 tabular-nums">
+              <FontAwesomeIcon icon={faCoins} className="h-3.5 w-3.5" />
+              {formatHourly(job.wageMin, locale)}
+              {job.wageMax !== job.wageMin ? `–${formatHourly(job.wageMax, locale)}` : ''}/hr
             </span>
             <span className="inline-flex items-center gap-1.5">
               <FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" />
@@ -74,8 +77,15 @@ export async function FeaturedPostingHero({ locale, job, applicants }: Props) {
                     ? 'bg-primary text-primary-content'
                     : 'bg-base-100/10 text-base-100/50 border-base-100/30 border border-dashed',
                 ].join(' ')}
+                aria-label={i < filled ? t('slot_filled_aria') : t('slot_open_aria')}
               >
-                {i < filled ? hiredInits[i] ?? '✓' : '?'}
+                {i < filled ? (
+                  hiredInits[i] ?? (
+                    <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
+                  )
+                ) : (
+                  <FontAwesomeIcon icon={faUserPlus} className="h-3 w-3" />
+                )}
               </div>
             ))}
           </div>
@@ -130,11 +140,24 @@ function initials(first: string, lastInit: string): string {
 }
 
 function formatStartsAt(startDate: string, locale: string): string {
+  // Parse YYYY-MM-DD as local components, not UTC, so dates render the same
+  // day everyone agreed to — matches /employer/jobs list rendering.
+  const [y, m, d] = startDate.split('-').map(Number);
+  if (!y || !m || !d) return startDate;
   return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-  }).format(new Date(startDate));
+  }).format(new Date(y, m - 1, d));
+}
+
+function formatHourly(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale === 'es' ? 'es-MX' : 'en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function durationLabel(startDate: string, endDate: string | null, locale: string): string {

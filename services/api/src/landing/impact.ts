@@ -4,7 +4,7 @@ import { AppStatus, EnrollmentStatus } from '@agconn/db';
 import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
 
 export const impactRoutes = new Hono<{ Variables: TenantVars }>();
-impactRoutes.use('*', publicTenantMiddleware);
+impactRoutes.use('*', publicTenantMiddleware('landing'));
 
 const SUPPRESSION_THRESHOLD = 25;
 const WINDOW_MONTHS = 12;

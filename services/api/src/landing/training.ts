@@ -7,7 +7,7 @@ import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantCon
 // /[locale]/training and /[locale]/training/[slug].
 
 export const publicTrainingRoutes = new Hono<{ Variables: TenantVars }>();
-publicTrainingRoutes.use('*', publicTenantMiddleware);
+publicTrainingRoutes.use('*', publicTenantMiddleware('landing'));
 
 const PAGE_SIZE = 20;
 

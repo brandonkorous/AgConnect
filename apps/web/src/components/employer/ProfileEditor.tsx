@@ -7,9 +7,17 @@ import { isOk } from '@agconn/api-client';
 import { AddressAutocomplete, type AddressLabels, type AddressValue } from '@agconn/ui';
 import { useAddressPinDropFallback } from '@/components/ui/useAddressPinDropFallback';
 import { getApiClient } from '@/lib/api/client';
+import {
+  FieldError,
+  useFormErrors,
+} from '@/components/employer/primitives/FormErrorSummary';
 
+// TODO(lookups): replace hardcoded counties with a lookups API call once
+// the /v1/employer/lookups/counties endpoint exposes the full CA list.
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 const CV_PROXIMITY: [number, number] = [-119.78, 36.74];
+// California-statewide bounding box: [minLng, minLat, maxLng, maxLat].
+const CA_BBOX: [number, number, number, number] = [-124.5, 32.5, -114.0, 42.0];
 
 type Initial = {
   legalName: string;
@@ -37,6 +45,7 @@ export function ProfileEditor({ initial }: Props) {
   const [participatesInH2a, setParticipatesInH2a] = useState(initial.participatesInH2a);
   const [address, setAddress] = useState<AddressValue | null>(initial.address);
   const pinDrop = useAddressPinDropFallback(CV_PROXIMITY);
+  const fieldErrors = useFormErrors(t('profile.errors.required'));
 
   const labels: AddressLabels = {
     placeholder: tShared('placeholder'),
@@ -47,6 +56,8 @@ export function ProfileEditor({ initial }: Props) {
     pinFallback: tShared('dropPin.fallbackLink'),
     edit: tShared('edit'),
   };
+
+  const showAddressCancel = address === null && initial.address !== null;
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -87,6 +98,9 @@ export function ProfileEditor({ initial }: Props) {
   return (
     <form
       onSubmit={onSubmit}
+      onInvalidCapture={fieldErrors.formProps.onInvalidCapture}
+      onChangeCapture={fieldErrors.formProps.onChangeCapture}
+      onSubmitCapture={fieldErrors.formProps.onSubmitCapture}
       className="bg-base-100 border-base-300 rounded-2xl border p-6 sm:p-7"
     >
       {error && (
@@ -101,7 +115,11 @@ export function ProfileEditor({ initial }: Props) {
       )}
 
       <div className="grid gap-5">
-        <Field label={t('onboarding.legal_name.label')} help={t('onboarding.legal_name.help')}>
+        <Field
+          label={t('onboarding.legal_name.label')}
+          help={t('onboarding.legal_name.help')}
+          error={fieldErrors.errors.legalName}
+        >
           <input
             name="legalName"
             type="text"
@@ -125,7 +143,11 @@ export function ProfileEditor({ initial }: Props) {
         </Field>
 
         {initial.licenseType === 'flc' ? (
-          <Field label={t('onboarding.flc_license.label')} help={t('onboarding.flc_license.help')}>
+          <Field
+            label={t('onboarding.flc_license.label')}
+            help={t('onboarding.flc_license.help')}
+            error={fieldErrors.errors.flcLicenseNum}
+          >
             <input
               name="flcLicenseNum"
               type="text"
@@ -136,7 +158,11 @@ export function ProfileEditor({ initial }: Props) {
           </Field>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <Field label={t('onboarding.ein.label')} help={t('onboarding.ein.help')}>
+            <Field
+              label={t('onboarding.ein.label')}
+              help={t('onboarding.ein.help')}
+              error={fieldErrors.errors.ein}
+            >
               <input
                 name="ein"
                 type="text"
@@ -145,7 +171,10 @@ export function ProfileEditor({ initial }: Props) {
                 className="input input-bordered w-full"
               />
             </Field>
-            <Field label={t('onboarding.county.label')}>
+            <Field
+              label={t('onboarding.county.label')}
+              error={fieldErrors.errors.county}
+            >
               <select
                 name="county"
                 defaultValue={initial.county}
@@ -189,15 +218,29 @@ export function ProfileEditor({ initial }: Props) {
             labels={labels}
             hint={t('profile.address.help')}
             proximity={CV_PROXIMITY}
+            country="us"
+            bbox={CA_BBOX}
             language={locale === 'es' ? 'es' : 'en'}
             value={address}
             onChange={setAddress}
             onPinDropRequested={pinDrop.request}
           />
+          {showAddressCancel && (
+            <button
+              type="button"
+              className="link link-primary mt-1 self-start text-xs"
+              onClick={() => setAddress(initial.address)}
+            >
+              {t('profile.address.cancel')}
+            </button>
+          )}
         </div>
 
         <div className="border-base-300 mt-1 grid grid-cols-1 gap-5 border-t pt-5 sm:grid-cols-2">
-          <Field label={t('onboarding.contact_email.label')}>
+          <Field
+            label={t('onboarding.contact_email.label')}
+            error={fieldErrors.errors.contactEmail}
+          >
             <input
               name="contactEmail"
               type="email"
@@ -207,7 +250,10 @@ export function ProfileEditor({ initial }: Props) {
               className="input input-bordered w-full"
             />
           </Field>
-          <Field label={t('onboarding.contact_phone.label')}>
+          <Field
+            label={t('onboarding.contact_phone.label')}
+            error={fieldErrors.errors.contactPhone}
+          >
             <input
               name="contactPhone"
               type="tel"
@@ -223,9 +269,10 @@ export function ProfileEditor({ initial }: Props) {
       <button
         type="submit"
         disabled={busy}
+        aria-busy={busy}
         className="btn btn-primary mt-6 rounded-full font-semibold"
       >
-        {busy && <span className="loading loading-spinner loading-sm" />}
+        {busy && <span className="loading loading-spinner loading-xs" />}
         {t('profile.save')}
       </button>
       {pinDrop.modal}
@@ -236,10 +283,12 @@ export function ProfileEditor({ initial }: Props) {
 function Field({
   label,
   help,
+  error,
   children,
 }: {
   label: string;
   help?: string;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -248,7 +297,10 @@ function Field({
         {label}
       </legend>
       {children}
-      {help && <p className="label text-base-content/55 text-[11px]">{help}</p>}
+      <FieldError message={error} />
+      {help && !error && (
+        <p className="label text-base-content/55 text-[11px]">{help}</p>
+      )}
     </fieldset>
   );
 }

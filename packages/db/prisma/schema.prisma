@@ -314,12 +314,9 @@ model Tenant {
   employerProfiles            EmployerProfile[]
   authEvents                  AuthEvent[]
   smsLogs                     SmsLog[]
-  workerProfiles              WorkerProfile[]
   jobPostings                 JobPosting[]
   applications                Application[]
   applicationEvents           ApplicationEvent[]
-  savedSearches               SavedSearch[]
-  searchViews                 SearchView[]
   trainingPrograms            TrainingProgram[]
   enrollments                 Enrollment[]
   verificationLogs            VerificationLog[]
@@ -704,7 +701,6 @@ model AuthEvent {
 // See docs/10-worker/01-onboarding/02-data-model.md.
 model WorkerProfile {
   id             String        @id // matches User.id (Clerk userId)
-  tenantId       String        @map("tenant_id") @db.Uuid
   firstName      String        @map("first_name")
   lastName       String        @map("last_name")
   zipCode        String?       @map("zip_code")
@@ -721,10 +717,8 @@ model WorkerProfile {
   updatedAt      DateTime      @updatedAt @map("updated_at")
   deletedAt      DateTime?     @map("deleted_at")
 
-  user   User   @relation(fields: [id], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
 
-  @@index([tenantId])
   @@index([county])
   @@index([phoneHash])
   @@map("worker_profiles")
@@ -879,7 +873,6 @@ model ApplicationEvent {
 // See docs/10-worker/03-job-discovery/02-data-model.md.
 model SavedSearch {
   id             String       @id @default(uuid()) @db.Uuid
-  tenantId       String       @map("tenant_id") @db.Uuid
   workerId       String       @map("worker_id")
   name           String?
   filters        Json
@@ -890,10 +883,8 @@ model SavedSearch {
   updatedAt      DateTime     @updatedAt @map("updated_at")
   deletedAt      DateTime?    @map("deleted_at")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  worker User   @relation(fields: [workerId], references: [id])
+  worker User @relation(fields: [workerId], references: [id])
 
-  @@index([tenantId])
   @@index([workerId])
   @@index([alertActive])
   @@map("saved_searches")
@@ -903,15 +894,12 @@ model SavedSearch {
 // admin reports + zero-result detection.
 model SearchView {
   id          String   @id @default(uuid()) @db.Uuid
-  tenantId    String   @map("tenant_id") @db.Uuid
   workerId    String?  @map("worker_id")
   filters     Json
   resultCount Int      @map("result_count")
   createdAt   DateTime @default(now()) @map("created_at")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-
-  @@index([tenantId, createdAt])
+  @@index([workerId, createdAt])
   @@map("search_views")
 }
 

@@ -78,12 +78,14 @@ export default async function CrewsPage({ params, searchParams }: Props) {
                         {t('title_a')} <em className="text-primary not-italic font-light">{t('title_b')}</em>
                     </h1>
                     <div className="text-base-content/70 mt-2 text-sm">
-                        {t('summary', {
-                            crews: crews.length,
-                            confirmed: totals.confirmed,
-                            filling: totals.filling,
-                            hours: totals.hours,
-                        })}
+                        {totals.assigned === 0
+                            ? t('summary_unscheduled', { crews: crews.length })
+                            : t('summary', {
+                                  crews: crews.length,
+                                  confirmed: totals.confirmed,
+                                  filling: totals.filling,
+                                  hours: totals.hours,
+                              })}
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -184,7 +186,7 @@ function computeTotals(shifts: ShiftView[]) {
     const hours = shifts
         .filter((s) => s.status !== 'cancelled')
         .reduce((sum, s) => sum + estimateHours(s.startTime, s.endTime) * s.assignedCount, 0);
-    return { confirmed, filling, hours: Math.round(hours) };
+    return { confirmed, filling, assigned, hours: Math.round(hours) };
 }
 
 function estimateHours(start: string, end: string | null): number {

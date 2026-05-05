@@ -80,7 +80,7 @@ export default async function CompliancePage({ params }: Props) {
                         {t('title')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-semibold leading-tight tracking-tight tabular-nums slashed-zero md:text-5xl">
-                        <span className="text-primary">{overall}%</span> {t('headline_suffix')}
+                        {t('headline_suffix')}
                     </h1>
                     <div className="text-base-content/70 mt-2 text-sm">
                         {overall < 100 && actions.length === 0 && openItems > 0
@@ -123,8 +123,15 @@ export default async function CompliancePage({ params }: Props) {
                         </div>
                         <div className="grid gap-3">
                             {actions.map((a, i) => {
+                                const dueSoon = (() => {
+                                    if (!a.dueAt) return false;
+                                    const due = new Date(a.dueAt).getTime();
+                                    const endOfToday = new Date();
+                                    endOfToday.setHours(23, 59, 59, 999);
+                                    return due <= endOfToday.getTime();
+                                })();
                                 const ctaLabel =
-                                    a.severity === 'urgent'
+                                    a.severity === 'urgent' || dueSoon
                                         ? t('action_cta.cta_resolve')
                                         : t(`severity_cta.${a.severity}`);
                                 const severityLabel = t(`severity.${a.severity}`);

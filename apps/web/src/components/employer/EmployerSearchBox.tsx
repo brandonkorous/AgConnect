@@ -22,8 +22,8 @@ export function EmployerSearchBox({ locale }: Props) {
       e.preventDefault();
       inputRef.current?.focus();
     }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, []);
 
   function submit(e: React.FormEvent) {

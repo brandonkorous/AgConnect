@@ -1,18 +1,12 @@
 # 01 — Worker Onboarding: Edge Cases & Risks
 
-## Phone collision across tenants
+## Phone collision
 
-**Scenario:** Worker registers in Tenant A (Central Valley), later attempts to register in Tenant B (Salinas) with the same phone.
+**Scenario:** Phone already exists on a different worker `User` row (e.g., user re-registered after support deleted their account, or Clerk session was lost and they signed up again).
 
-**Behavior:** Clerk allows the OTP (Clerk users are global). Our `POST /v1/onboarding/start` checks `users.phone` within the resolving tenant; if found in another tenant, return `409 phone_already_registered_other_tenant`. UI shows the i18n string `phone.collision_other_tenant`.
+**Behavior:** Workers are platform-level — `User.tenantId` is null for every worker — so phone uniqueness is enforced platform-wide across `role = 'worker'`. `POST /v1/onboarding/start` returns `409 phone_collision`. UI shows the i18n string `phone.collision`. Admin tooling for merge is out of scope for MVP; in practice this requires support ticket → manual DB stitch.
 
-> **Inferred:** No automatic cross-tenant transfer in MVP. Manual via admin tool. Revisit if Salinas launches and we see > 5% of signups hit this case.
-
-## Phone collision within the same tenant
-
-**Scenario:** Phone exists in `users` for the same tenant but different Clerk `userId` (e.g., user re-registered after support deleted their account, or Clerk session was lost).
-
-**Behavior:** `409 phone_collision_same_tenant` with admin merge instructions. Admin tooling out of scope for MVP; in practice this requires support ticket → manual DB stitch.
+> **Inferred:** Phone uniqueness is not enforced between a worker and an employer-user with the same number — the two live in different tenancy buckets and the collision check is scoped to `role = 'worker'`. Revisit if support tickets show employers and their workers re-using a single phone in confusing ways.
 
 ## Resume parser hallucination
 

@@ -44,16 +44,16 @@ export async function ActiveJobsBoard({ locale, jobs }: Props) {
         const filled = j.hireCount;
         const total = j.positionsTotal;
         const pct = total > 0 ? (filled / total) * 100 : 0;
-        const urgency = j.status === 'filled' ? 'success' : pct >= 50 ? 'warning' : 'danger';
+        const urgency = j.status === 'filled' ? 'success' : pct >= 50 ? 'warning' : 'open';
         const urgencyTone = {
           success: 'bg-success/15 text-success',
           warning: 'bg-warning/15 text-warning',
-          danger: 'bg-error/15 text-error',
+          open: 'bg-base-200 text-base-content/70',
         }[urgency];
         const barColor = {
           success: 'bg-success',
           warning: 'bg-accent',
-          danger: 'bg-error',
+          open: 'bg-primary',
         }[urgency];
         const status = j.status === 'filled' ? t('status_filled') : t('status_open', { n: total - filled });
 

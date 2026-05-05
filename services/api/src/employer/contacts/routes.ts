@@ -8,7 +8,7 @@ import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../mi
 import type { AuditCtxVars } from '../../middleware/audit';
 
 export const employerContactsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerContactsRoutes.use('*', requireAuth);
+employerContactsRoutes.use('*', requireAuth('employer'));
 employerContactsRoutes.use('*', requireRole('employer'));
 employerContactsRoutes.use('*', requireTenant);
 

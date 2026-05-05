@@ -36,7 +36,6 @@ async function tick(): Promise<void> {
       const filters = (s.filters as Record<string, unknown>) ?? {};
 
       const where = {
-        tenantId: s.tenantId,
         status: JobStatus.active,
         deletedAt: null,
         publishedAt: { gt: since },
@@ -51,8 +50,11 @@ async function tick(): Promise<void> {
 
       if (!match || !match.seoSlug) continue;
 
+      // Saved searches are platform-level (worker-owned, bucket 2); the SMS is
+      // attributed to the matched job's tenant so smsLog/auditEvent rows land
+      // on the employer who triggered the alert.
       await enqueueSms({
-        tenantId: s.tenantId,
+        tenantId: match.tenantId,
         userId: s.workerId,
         template: 'job.alert',
         vars: {

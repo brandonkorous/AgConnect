@@ -41,7 +41,6 @@ Out of scope:
 - ≥ 80% of users who start onboarding complete it in one session.
 - Median time-to-complete < 5 minutes (excludes resume parser latency).
 - Spanish completion rate equals or exceeds English (i.e., translations don't bottleneck).
-- Zero workers complete onboarding without `users.tenantId` set.
 - Zero workers complete onboarding without at least one skill, county, and availability slot.
 
 ## Roles
@@ -51,7 +50,7 @@ Only role created by this flow: `worker`. Employer and training-org onboarding a
 ## Dependencies
 
 - [02-auth](../../00-foundation/02-auth/) — Clerk SMS OTP
-- [01-multi-tenancy](../../00-foundation/01-multi-tenancy/) — tenant assignment on signup
+- [01-multi-tenancy](../../00-foundation/01-multi-tenancy/) — workers are platform-level (bucket 2); `User.tenantId` stays null
 - [04-i18n](../../00-foundation/04-i18n/) — bilingual strings infrastructure
 - [05-sms-pipeline](../../00-foundation/05-sms-pipeline/) — welcome SMS + quiet hours
 - [06-email-pipeline](../../00-foundation/06-email-pipeline/) — welcome email (optional)

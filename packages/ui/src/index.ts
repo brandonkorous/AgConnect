@@ -30,8 +30,12 @@ export type { EmptyStateProps } from './empty-state/empty-state';
 
 export { ErrorBoundary } from './error-boundary/error-boundary';
 export type { ErrorBoundaryProps } from './error-boundary/error-boundary';
-export { PageError } from './error-boundary/page-error';
-export type { PageErrorProps } from './error-boundary/page-error';
+export { ErrorState } from './error-state/error-state';
+export type {
+  ErrorStateAction,
+  ErrorStateProps,
+  ErrorStateSuggestion,
+} from './error-state/error-state';
 
 export { ConsentProvider, useConsent } from './consent/consent-provider';
 export { ConsentBanner } from './consent/consent-banner';

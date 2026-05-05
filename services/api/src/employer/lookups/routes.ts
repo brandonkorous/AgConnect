@@ -8,7 +8,7 @@ import { requireAuth, requireRole, type AuthVars } from '../../middleware/authCo
 import type { AuditCtxVars } from '../../middleware/audit';
 
 export const employerLookupsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerLookupsRoutes.use('*', requireAuth);
+employerLookupsRoutes.use('*', requireAuth('employer'));
 employerLookupsRoutes.use('*', requireRole('employer'));
 
 employerLookupsRoutes.get('/crops', async (c) => {

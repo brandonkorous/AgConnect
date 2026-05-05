@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { validateTwilioSignature, enqueueSms } from '@agconn/sms';
-import { prisma, SmsStatus, AppStatus } from '@agconn/db';
+import { pools, SmsStatus, AppStatus } from '@agconn/db';
 import { emitSystemAudit } from '../middleware/audit';
 
 // Twilio webhook contracts:
@@ -63,7 +63,7 @@ twilioWebhookRoutes.post('/status', async (c) => {
   }
 
   const now = new Date();
-  await prisma.$transaction(async (tx) => {
+  await pools.webhooks.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
     await tx.smsLog.update({
       where: { id: logId },
@@ -96,7 +96,7 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
   const from = params.From ?? '';
 
   if (from && STOP_KEYWORDS.has(text)) {
-    await prisma.$transaction(async (tx) => {
+    await pools.webhooks.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
       await tx.smsOptOut.upsert({
         where: { phone: from },
@@ -119,7 +119,7 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
   const tokens = text.split(/\s+/);
   for (const token of tokens) {
     if (token.length < 4 || token.length > 24) continue;
-    const keyword = await prisma.smsKeyword.findFirst({
+    const keyword = await pools.webhooks.smsKeyword.findFirst({
       where: { keyword: { equals: token, mode: 'insensitive' }, active: true },
     });
     if (!keyword || keyword.kind !== 'job_apply') continue;
@@ -138,7 +138,7 @@ async function handleJobApply(args: {
   const { keyword, fromPhone } = args;
   if (!fromPhone) return;
 
-  const job = await prisma.jobPosting.findFirst({
+  const job = await pools.webhooks.jobPosting.findFirst({
     where: { id: keyword.entityId, deletedAt: null, status: 'active' },
     include: { employer: { include: { employerProfile: true } } },
   });
@@ -146,7 +146,7 @@ async function handleJobApply(args: {
 
   // Resolve worker by phone. If unknown, send a "we couldn't find your
   // account" reply — onboarding flow handles registration separately.
-  const worker = await prisma.user.findFirst({
+  const worker = await pools.webhooks.user.findFirst({
     where: { phone: fromPhone, role: 'worker', deletedAt: null },
   });
   if (!worker) {
@@ -160,13 +160,13 @@ async function handleJobApply(args: {
   }
 
   // Idempotent: skip if this worker already applied to this job.
-  const existing = await prisma.application.findFirst({
+  const existing = await pools.webhooks.application.findFirst({
     where: { jobId: job.id, workerId: worker.id },
   });
 
   let applicationId = existing?.id;
   if (!existing) {
-    const created = await prisma.application.create({
+    const created = await pools.webhooks.application.create({
       data: {
         tenantId: job.tenantId,
         jobId: job.id,
@@ -180,7 +180,7 @@ async function handleJobApply(args: {
   }
 
   // Bump keyword usage so the employer can see SMS-apply traffic.
-  await prisma.smsKeyword.update({
+  await pools.webhooks.smsKeyword.update({
     where: { id: keyword.id },
     data: { lastUsedAt: new Date() },
   });

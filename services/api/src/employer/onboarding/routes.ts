@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { LicenseType, UserRole, VerificationAction, type Tx } from '@agconn/db';
+import { dbClients, LicenseType, UserRole, VerificationAction, type Tx } from '@agconn/db';
 import {
   EmployerOnboardingBody,
   PatchEmployerBody,
@@ -13,7 +13,7 @@ import { shapeEmployer, verificationStatus } from '../shared';
 import { seedDefaultComplianceItems, seedInitialPayrollPeriod } from './seed-defaults';
 
 export const employerOnboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerOnboardingRoutes.use('*', requireAuth);
+employerOnboardingRoutes.use('*', requireAuth('employer'));
 employerOnboardingRoutes.use('*', requireRole('employer'));
 // requireTenant is applied only to routes that mutate or read an existing
 // tenant. POST / is the bootstrap that *creates* the tenant for a brand-new
@@ -28,7 +28,10 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
     return err(c, 409, 'conflict', 'already_onboarded');
   }
 
-  const profile = await c.var.db.$transaction(async (tx) => {
+  // Cross-domain bootstrap (tenants × users × employer_profiles × verification_logs ×
+  // compliance_items × payroll_periods). Routed through the shared pool so the
+  // employer pool isn't held while we seed compliance and billing rows.
+  const profile = await dbClients.shared.$transaction(async (tx) => {
     let tenantId = c.var.tenantId;
 
     // Elevate to 'admin' for the bootstrapping writes: 'authenticated' has no

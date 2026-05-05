@@ -7,7 +7,7 @@ import type { AuditCtxVars } from '../../middleware/audit';
 
 export const profileRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
-profileRoutes.use('*', requireAuth);
+profileRoutes.use('*', requireAuth('worker'));
 profileRoutes.use('*', requireRole('worker'));
 
 profileRoutes.get('/', async (c) => {
@@ -21,8 +21,6 @@ profileRoutes.get('/', async (c) => {
 
 profileRoutes.patch('/', validate('json', PatchProfileBody), async (c) => {
   const userId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
   const body = c.var.body;
 
   const existing = await c.var.db.workerProfile.findUnique({ where: { id: userId } });

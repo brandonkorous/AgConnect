@@ -20,22 +20,19 @@ import {
 
 export const onboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
-onboardingRoutes.use('*', requireAuth);
+onboardingRoutes.use('*', requireAuth('worker'));
 onboardingRoutes.use('*', requireRole('worker'));
 
 onboardingRoutes.post('/start', async (c) => {
   const userId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
 
   // Phone + email come from the User row populated by the Clerk webhook.
   const user = await c.var.db.user.findUnique({ where: { id: userId } });
-  if (!user) return err(c, 403, 'no_tenant');
+  if (!user) return err(c, 403, 'forbidden', 'user_missing');
 
   try {
     const result = await startOnboarding(c.var.db, {
       userId,
-      tenantId,
       phone: user.phone ?? null,
       email: user.email ?? null,
       preferredLang: user.preferredLang === Lang.en ? 'en' : 'es',
@@ -46,7 +43,6 @@ onboardingRoutes.post('/start', async (c) => {
         where: { id: userId },
         create: {
           id: userId,
-          tenantId,
           firstName: '',
           lastName: '',
           phoneHash: hashPhone(result.user.phone),
@@ -76,12 +72,9 @@ onboardingRoutes.patch(
   '/profile',
   validate('json', PatchOnboardingProfileBody),
   async (c) => {
-    const tenantId = c.var.tenantId;
-    if (!tenantId) return err(c, 403, 'no_tenant');
     const result = await patchOnboardingProfile(
       c.var.db,
       c.var.userId,
-      tenantId,
       c.var.body,
     );
     await c.var.audit.log({
@@ -165,7 +158,7 @@ onboardingRoutes.get('/resume/status', async (c) => {
 // Public-ish waitlist for unsupported counties. Reuses the landing waitlist
 // shape so the same EmailLog + welcome pipeline kicks in.
 export const onboardingWaitlistRoute = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-onboardingWaitlistRoute.use('*', requireAuth);
+onboardingWaitlistRoute.use('*', requireAuth('worker'));
 onboardingWaitlistRoute.post('/waitlist', validate('json', WaitlistBody), async (c) => {
   const tenantId = c.var.tenantId;
   if (!tenantId) return err(c, 403, 'no_tenant');

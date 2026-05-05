@@ -15,7 +15,7 @@ export const jobsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 // All worker-facing job routes require auth. Public/anonymous browsing
 // is served via Next.js RSC reading directly through the service-role tenant
 // middleware (separate router); not built here.
-jobsRoutes.use('*', requireAuth);
+jobsRoutes.use('*', requireAuth('jobs'));
 
 jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
   const q = c.var.body;
@@ -137,7 +137,6 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
   // Lightweight analytics for content-gap detection.
   await c.var.db.searchView.create({
     data: {
-      tenantId,
       workerId: c.var.userId,
       filters: q as object,
       resultCount: slice.length,
@@ -213,7 +212,7 @@ jobsRoutes.get('/:slug', async (c) => {
 // Saved searches -----------------------------------------------------------
 
 export const savedSearchRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-savedSearchRoutes.use('*', requireAuth);
+savedSearchRoutes.use('*', requireAuth('jobs'));
 
 savedSearchRoutes.get('/', async (c) => {
   const rows = await c.var.db.savedSearch.findMany({
@@ -226,8 +225,6 @@ savedSearchRoutes.get('/', async (c) => {
 });
 
 savedSearchRoutes.post('/', validate('json', CreateSavedSearchBody), async (c) => {
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
   const body = c.var.body;
 
   if (body.alertChannel === 'sms' || body.alertChannel === 'both') {
@@ -237,7 +234,6 @@ savedSearchRoutes.post('/', validate('json', CreateSavedSearchBody), async (c) =
 
   const created = await c.var.db.savedSearch.create({
     data: {
-      tenantId,
       workerId: c.var.userId,
       name: body.name ?? null,
       filters: body.filters as object,

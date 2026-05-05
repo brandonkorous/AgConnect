@@ -35,10 +35,7 @@ export function NewConversationButton({ variant = 'thread' }: Props) {
 
   const cta = variant === 'broadcast' ? t('cta_broadcast') : t('cta_thread');
   const icon = variant === 'broadcast' ? faBullhorn : faPlus;
-  const className =
-    variant === 'broadcast'
-      ? 'btn btn-sm btn-primary rounded-full'
-      : 'btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium';
+  const className = 'btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium';
 
   return (
     <>

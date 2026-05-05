@@ -40,11 +40,13 @@ export const CloseJobDialog = forwardRef<HTMLDialogElement, Props>(function Clos
                 <h3 className="font-display text-xl font-normal">{t('close_modal_title')}</h3>
                 <p className="text-base-content/70 mt-2 text-sm">{t('close_modal_body')}</p>
                 <div className="modal-action">
-                    <form method="dialog">
-                        <button className="btn btn-sm border-base-300 rounded-full border bg-transparent">
-                            {t('close_modal_keep')}
-                        </button>
-                    </form>
+                    <button
+                        type="button"
+                        onClick={() => innerRef.current?.close()}
+                        className="btn btn-sm border-base-300 rounded-full border bg-transparent"
+                    >
+                        {t('close_modal_keep')}
+                    </button>
                     <button
                         type="button"
                         disabled={closing}
@@ -55,9 +57,12 @@ export const CloseJobDialog = forwardRef<HTMLDialogElement, Props>(function Clos
                     </button>
                 </div>
             </div>
-            <form method="dialog" className="modal-backdrop">
-                <button>close</button>
-            </form>
+            <button
+                type="button"
+                aria-label="close"
+                onClick={() => innerRef.current?.close()}
+                className="modal-backdrop"
+            />
         </dialog>
     );
 });

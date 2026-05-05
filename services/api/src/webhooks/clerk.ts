@@ -4,7 +4,7 @@
 import { Hono } from 'hono';
 import { Webhook } from 'svix';
 import { ok, err } from '@agconn/api-client/server';
-import { Lang, UserRole, prisma, type Tx } from '@agconn/db';
+import { Lang, UserRole, pools, type Tx } from '@agconn/db';
 import { webhookMiddleware, type TenantVars } from '../middleware/tenantContext';
 
 // Clerk → DB mirror. Per docs/00-foundation/02-auth/03-api.md the contract is:
@@ -179,7 +179,7 @@ clerkWebhookRoutes.post('/', async (c) => {
   // Audit + apply happen inside the same transaction so a failure in either
   // rolls both back. Replay with the same Svix id is idempotent because
   // applyEvent uses upsert on user id.
-  await prisma.$transaction(async (tx) => {
+  await pools.webhooks.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
     const recorded = await tx.authEvent.create({
       data: {

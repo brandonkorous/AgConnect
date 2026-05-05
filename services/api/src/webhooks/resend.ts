@@ -146,7 +146,7 @@ resendWebhookRoutes.post('/', async (c) => {
 
   // Verification done OUTSIDE the tx-bound middleware so an invalid signature
   // doesn't open a transaction. Now run the DB work inside webhook role.
-  await webhookMiddleware(c, async () => {
+  await webhookMiddleware('webhooks')(c, async () => {
     await applyEvent(c.var.db, event);
   });
 

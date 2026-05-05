@@ -21,7 +21,7 @@ landingRoutes.route('/featured-jobs', featuredJobsRoutes);
 landingRoutes.route('/featured-training', featuredTrainingRoutes);
 landingRoutes.route('/impact', impactRoutes);
 
-landingRoutes.use('*', publicTenantMiddleware);
+landingRoutes.use('*', publicTenantMiddleware('landing'));
 
 landingRoutes.post(
   '/waitlist',

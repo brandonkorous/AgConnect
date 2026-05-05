@@ -306,8 +306,12 @@ export const shell: TranslationBundle = {
         es: "Intentar de nuevo",
     },
     "page_error.404.description": {
-        en: "The link may be old or the page may have moved.",
-        es: "El enlace puede ser antiguo o la página pudo haberse movido.",
+        en: "The link may be old, or the page may have moved.",
+        es: "El enlace puede ser antiguo, o la página pudo haberse movido.",
+    },
+    "page_error.404.eyebrow": {
+        en: "Page not found",
+        es: "Página no encontrada",
     },
     "page_error.404.title": {
         en: "We couldn't find that page",
@@ -317,21 +321,246 @@ export const shell: TranslationBundle = {
         en: "We've been notified. Please try again.",
         es: "Ya nos enteramos. Intenta de nuevo por favor.",
     },
+    "page_error.500.eyebrow": {
+        en: "Server error",
+        es: "Error del servidor",
+    },
     "page_error.500.title": {
         en: "Something went wrong",
         es: "Algo salió mal",
+    },
+    "page_error.attempted_label": {
+        en: "You tried",
+        es: "Intentaste",
     },
     "page_error.error_id": {
         en: "Error ID: {id}",
         es: "ID de error: {id}",
     },
+    "page_error.go_back": {
+        en: "Go back",
+        es: "Volver",
+    },
     "page_error.go_home": {
         en: "Back to home",
         es: "Volver al inicio",
     },
+    "page_error.suggestions_label": {
+        en: "You might be looking for",
+        es: "Quizás buscas",
+    },
     "page_error.try_again": {
         en: "Try again",
         es: "Intentar de nuevo",
+    },
+    // Marketing section (general locale fallback + marketing chrome)
+    "page_error.section.marketing.suggestions.jobs.label": {
+        en: "Browse open jobs",
+        es: "Ver trabajos disponibles",
+    },
+    "page_error.section.marketing.suggestions.jobs.hint": {
+        en: "Today's openings across the Central Valley",
+        es: "Ofertas de hoy en el Valle Central",
+    },
+    "page_error.section.marketing.suggestions.employers.label": {
+        en: "For employers",
+        es: "Para empleadores",
+    },
+    "page_error.section.marketing.suggestions.employers.hint": {
+        en: "Post jobs and find verified workers",
+        es: "Publica trabajos y encuentra trabajadores verificados",
+    },
+    "page_error.section.marketing.suggestions.contact.label": {
+        en: "Contact us",
+        es: "Contáctanos",
+    },
+    "page_error.section.marketing.suggestions.contact.hint": {
+        en: "Tell us what you were looking for",
+        es: "Cuéntanos qué buscabas",
+    },
+    "page_error.section.marketing.action.home": {
+        en: "Back to home",
+        es: "Volver al inicio",
+    },
+    "page_error.section.marketing.action.jobs": {
+        en: "Browse jobs",
+        es: "Ver trabajos",
+    },
+    // Worker section
+    "page_error.section.worker.404.description": {
+        en: "It may have been removed, or the link is out of date.",
+        es: "Pudo haberse retirado, o el enlace ya no está vigente.",
+    },
+    "page_error.section.worker.suggestions.shifts.label": {
+        en: "Today's shifts",
+        es: "Turnos de hoy",
+    },
+    "page_error.section.worker.suggestions.shifts.hint": {
+        en: "Where you're working this week",
+        es: "Dónde trabajas esta semana",
+    },
+    "page_error.section.worker.suggestions.jobs.label": {
+        en: "Browse open jobs",
+        es: "Ver trabajos disponibles",
+    },
+    "page_error.section.worker.suggestions.jobs.hint": {
+        en: "Openings near you, in your language",
+        es: "Ofertas cerca de ti, en tu idioma",
+    },
+    "page_error.section.worker.suggestions.applications.label": {
+        en: "Your applications",
+        es: "Tus solicitudes",
+    },
+    "page_error.section.worker.suggestions.applications.hint": {
+        en: "Track the jobs you've applied to",
+        es: "Da seguimiento a los trabajos que aplicaste",
+    },
+    "page_error.section.worker.suggestions.pay.label": {
+        en: "Pay",
+        es: "Pago",
+    },
+    "page_error.section.worker.suggestions.pay.hint": {
+        en: "Paystubs, hours worked, deposits",
+        es: "Talones de pago, horas trabajadas, depósitos",
+    },
+    "page_error.section.worker.suggestions.messages.label": {
+        en: "Messages",
+        es: "Mensajes",
+    },
+    "page_error.section.worker.suggestions.messages.hint": {
+        en: "Conversations with employers and crew leaders",
+        es: "Conversaciones con empleadores y líderes de cuadrilla",
+    },
+    "page_error.section.worker.suggestions.training.label": {
+        en: "Training",
+        es: "Capacitación",
+    },
+    "page_error.section.worker.suggestions.training.hint": {
+        en: "Courses, certificates, and your skills wallet",
+        es: "Cursos, certificados, y tu billetera de habilidades",
+    },
+    "page_error.section.worker.cards_label": {
+        en: "Or pick up where you left off",
+        es: "O continúa donde lo dejaste",
+    },
+    "page_error.section.worker.action.dashboard": {
+        en: "Back to dashboard",
+        es: "Volver al panel",
+    },
+    "page_error.section.worker.action.home": {
+        en: "Worker dashboard",
+        es: "Panel del trabajador",
+    },
+    "page_error.section.worker.action.jobs": {
+        en: "Browse jobs",
+        es: "Ver trabajos",
+    },
+    // Employer section
+    "page_error.section.employer.404.description": {
+        en: "It may have been removed, archived, or the link is out of date.",
+        es: "Pudo haberse retirado, archivado, o el enlace ya no está vigente.",
+    },
+    "page_error.section.employer.suggestions.jobs.label": {
+        en: "Your job postings",
+        es: "Tus publicaciones",
+    },
+    "page_error.section.employer.suggestions.jobs.hint": {
+        en: "Active and draft postings",
+        es: "Publicaciones activas y borradores",
+    },
+    "page_error.section.employer.suggestions.inbox.label": {
+        en: "Candidate inbox",
+        es: "Solicitantes",
+    },
+    "page_error.section.employer.suggestions.inbox.hint": {
+        en: "New applications waiting for review",
+        es: "Nuevas solicitudes esperando revisión",
+    },
+    "page_error.section.employer.suggestions.dashboard.label": {
+        en: "Employer dashboard",
+        es: "Panel del empleador",
+    },
+    "page_error.section.employer.suggestions.dashboard.hint": {
+        en: "Today's hiring at a glance",
+        es: "Contrataciones de hoy de un vistazo",
+    },
+    "page_error.section.employer.suggestions.workers.label": {
+        en: "Find workers",
+        es: "Buscar trabajadores",
+    },
+    "page_error.section.employer.suggestions.workers.hint": {
+        en: "Search verified workers by skill and county",
+        es: "Buscar trabajadores verificados por habilidad y condado",
+    },
+    "page_error.section.employer.suggestions.crews.label": {
+        en: "Crews and shifts",
+        es: "Cuadrillas y turnos",
+    },
+    "page_error.section.employer.suggestions.crews.hint": {
+        en: "This week's schedule and assignments",
+        es: "Horario y asignaciones de esta semana",
+    },
+    "page_error.section.employer.suggestions.compliance.label": {
+        en: "Compliance",
+        es: "Cumplimiento",
+    },
+    "page_error.section.employer.suggestions.compliance.hint": {
+        en: "FLC verification, audits, and required forms",
+        es: "Verificación FLC, auditorías y formularios requeridos",
+    },
+    "page_error.section.employer.suggestions.reports.label": {
+        en: "Reports",
+        es: "Reportes",
+    },
+    "page_error.section.employer.suggestions.reports.hint": {
+        en: "Hiring metrics and grant exports",
+        es: "Métricas de contratación y exportaciones de subvenciones",
+    },
+    "page_error.section.employer.cards_label": {
+        en: "Or jump to a section",
+        es: "O ve a otra sección",
+    },
+    "page_error.section.employer.action.dashboard": {
+        en: "Back to dashboard",
+        es: "Volver al panel",
+    },
+    "page_error.section.employer.action.home": {
+        en: "Dashboard",
+        es: "Panel",
+    },
+    "page_error.section.employer.action.jobs": {
+        en: "Your jobs",
+        es: "Tus trabajos",
+    },
+    // Field mode (minimal)
+    "page_error.section.field.404.title": {
+        en: "Not in field mode",
+        es: "No está en modo de campo",
+    },
+    "page_error.section.field.404.description": {
+        en: "Switch to full view to find this page.",
+        es: "Cambia a vista completa para encontrar esta página.",
+    },
+    "page_error.section.field.action.home": {
+        en: "Field home",
+        es: "Inicio del campo",
+    },
+    "page_error.section.field.action.full_view": {
+        en: "Switch to full view",
+        es: "Cambiar a vista completa",
+    },
+    // Admin
+    "page_error.section.admin.404.title": {
+        en: "Page not found",
+        es: "Página no encontrada",
+    },
+    "page_error.section.admin.404.description": {
+        en: "This admin page doesn't exist or you don't have access to it.",
+        es: "Esta página de administración no existe o no tienes acceso.",
+    },
+    "page_error.section.admin.action.home": {
+        en: "Admin home",
+        es: "Inicio de administración",
     },
     "toast.region": {
         en: "Notifications",

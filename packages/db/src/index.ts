@@ -1,25 +1,15 @@
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient, type Prisma as PrismaNS } from '@prisma/client';
+import type { PrismaClient, Prisma as PrismaNS } from '@prisma/client';
+import { pools } from './pools.js';
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
-
-function createPrisma(): PrismaClient {
-  const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error('DATABASE_URL is not set — required for @agconn/db');
-  }
-  const adapter = new PrismaPg({ connectionString: url });
-  return new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
-  });
-}
-
-export const prisma: PrismaClient = globalForPrisma.prisma ?? createPrisma();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+// `prisma` is the cross-cutting client used for work that doesn't belong to a
+// specific domain pool: provisioning users from Clerk, audit writes, the four
+// known cross-domain transactions, migration scripts, seed scripts. It is the
+// `shared` pool — this gives those operations their own bounded connection
+// budget so they cannot starve domain-specific traffic.
+//
+// Domain code should import a domain pool (e.g. `dbClients.worker`) instead
+// of `prisma`. Reach for `prisma` only when the work is genuinely cross-cutting.
+export const prisma: PrismaClient = pools.shared;
 
 export type { Prisma } from '@prisma/client';
 // Re-export the Prisma namespace value too so callers can use `Prisma.sql` /
@@ -116,8 +106,10 @@ export type {
 export type Db = PrismaClient;
 export type Tx = PrismaNS.TransactionClient;
 
+export { pools, type PoolName } from './pools.js';
 export {
-  rlsClient,
+  dbClients,
+  makeRlsClient,
   runWithRlsContext,
   getRlsContext,
   applyRlsToTx,

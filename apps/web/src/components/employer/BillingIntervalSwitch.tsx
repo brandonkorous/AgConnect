@@ -17,8 +17,7 @@ export function PlanCheckoutControls({ tier, disabled }: Props) {
   const monthly = price.monthly;
   const yearly = price.yearly;
 
-  const tooltip = disabled ? t('upgrade_unavailable_tooltip') : undefined;
-  const wrapperProps = tooltip ? { 'data-tip': tooltip, className: 'tooltip tooltip-top w-full' } : { className: 'w-full' };
+  const wrapperProps = { className: 'w-full' };
 
   return (
     <div>

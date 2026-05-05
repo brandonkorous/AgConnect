@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
-import { AppStatus, JobStatus, UserRole } from '@agconn/db';
+import { AppStatus, dbClients, JobStatus, UserRole } from '@agconn/db';
 import { requireAuth, requireRole, requireTenant, type AuthVars } from '../middleware/authContext';
 import type { AuditCtxVars } from '../middleware/audit';
 
 export const meInvitationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-meInvitationsRoutes.use('*', requireAuth);
+meInvitationsRoutes.use('*', requireAuth('me'));
 meInvitationsRoutes.use('*', requireRole('worker'));
 meInvitationsRoutes.use('*', requireTenant);
 
@@ -54,7 +54,9 @@ meInvitationsRoutes.post('/:id/accept', async (c) => {
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
-  const result = await c.var.db.$transaction(async (tx) => {
+  // Cross-domain transaction (worker_invitations × applications × application_events).
+  // Routed through the shared pool so it doesn't pin a connection on either domain.
+  const result = await dbClients.shared.$transaction(async (tx) => {
     const invitation = await tx.workerInvitation.findFirst({
       where: { id, workerId: userId, acceptedAt: null, declinedAt: null, expiredAt: null },
       include: { job: true },

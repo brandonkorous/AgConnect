@@ -56,7 +56,7 @@ export default async function EmployerShellLayout({ children, params }: Props) {
                         candidatesCount={inboxNew}
                         jobsCount={jobsActive}
                     />
-                    <EmployerTopBar locale={locale} canPublish={status === 'verified'} />
+                    <EmployerTopBar locale={locale} />
                     <VerificationBanner
                         status={status}
                         rejectionReason={profile.rejectionReason}

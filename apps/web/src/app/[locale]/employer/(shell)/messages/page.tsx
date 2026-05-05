@@ -66,7 +66,12 @@ export default async function MessagesPage({ params, searchParams }: Props) {
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
                         {t('title_a')}{' '}
-                        <em className="text-primary not-italic font-light">
+                        <em
+                            className={[
+                                'not-italic font-light',
+                                unread === 0 ? 'text-base-content/40' : 'text-primary',
+                            ].join(' ')}
+                        >
                             {t('title_b', { unread })}
                         </em>
                     </h1>
@@ -262,8 +267,20 @@ function Conversation({
 }) {
     if (!thread) {
         return (
-            <div className="text-base-content/60 grid place-items-center text-sm">
-                {t('no_thread')}
+            <div className="grid place-items-center p-6">
+                <div className="w-full max-w-md rounded-2xl border-2 border-dashed border-base-300 bg-base-100 p-8 text-center">
+                    <FontAwesomeIcon
+                        icon={faComments}
+                        className="mx-auto mb-3 h-10 w-10 text-base-content/40"
+                    />
+                    <p className="text-base font-semibold text-base-content">
+                        {t('empty_pane_title')}
+                    </p>
+                    <p className="mt-1 text-sm text-base-content/70">{t('empty_pane_body')}</p>
+                    <div className="mt-4 inline-flex">
+                        <NewConversationButton variant="thread" />
+                    </div>
+                </div>
             </div>
         );
     }

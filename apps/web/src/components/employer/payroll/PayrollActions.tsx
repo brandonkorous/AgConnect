@@ -16,9 +16,16 @@ type Props = {
   status: 'draft' | 'approved' | 'paid';
   workers?: number;
   netCents?: number;
+  timesheetCount?: number;
 };
 
-export function PayrollActions({ periodId, status, workers = 0, netCents = 0 }: Props) {
+export function PayrollActions({
+  periodId,
+  status,
+  workers = 0,
+  netCents = 0,
+  timesheetCount = 0,
+}: Props) {
   const t = useTranslations('employer.payroll');
   const locale = useLocale();
   const router = useRouter();
@@ -141,9 +148,14 @@ export function PayrollActions({ periodId, status, workers = 0, netCents = 0 }: 
           {t('approve')}
         </button>
       )}
-      {status === 'approved' && (
+      {status === 'approved' && timesheetCount > 0 && (
         <span className="bg-success/15 text-success rounded-full px-3 py-1.5 font-mono text-xs font-bold">
           {t('status_approved')}
+        </span>
+      )}
+      {status === 'approved' && timesheetCount === 0 && (
+        <span className="bg-base-200 text-base-content/60 rounded-full px-3 py-1.5 font-mono text-xs font-bold">
+          {t('status_no_timesheets')}
         </span>
       )}
       {status === 'paid' && (

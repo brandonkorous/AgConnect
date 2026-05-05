@@ -8,7 +8,7 @@ import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantCon
 // can read; no auth required.
 
 export const publicJobsRoutes = new Hono<{ Variables: TenantVars }>();
-publicJobsRoutes.use('*', publicTenantMiddleware);
+publicJobsRoutes.use('*', publicTenantMiddleware('landing'));
 
 const PAGE_SIZE = 20;
 

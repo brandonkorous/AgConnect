@@ -41,6 +41,7 @@ type NavItem = {
     icon: IconDefinition;
     path: string;
     count?: number;
+    countTitle?: string;
     accent?: boolean;
     pro?: boolean;
 };
@@ -84,7 +85,13 @@ export function EmployerSidebar({
 
     const items: NavItem[] = [
         { key: 'dashboard', icon: faChartLine, path: '/employer/dashboard' },
-        { key: 'jobs', icon: faBriefcase, path: '/employer/jobs', count: jobsCount },
+        {
+            key: 'jobs',
+            icon: faBriefcase,
+            path: '/employer/jobs',
+            count: jobsCount,
+            countTitle: tBadge('active_postings_title'),
+        },
         {
             key: 'candidates',
             icon: faUsers,
@@ -142,6 +149,7 @@ export function EmployerSidebar({
                                             'badge badge-sm',
                                             item.accent ? 'badge-accent' : 'badge-neutral',
                                         ].join(' ')}
+                                        title={item.countTitle}
                                     >
                                         {item.count}
                                     </span>

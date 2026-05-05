@@ -15,7 +15,7 @@ import {
 import type { AuditCtxVars } from '../../middleware/audit';
 
 export const employerPayrollRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerPayrollRoutes.use('*', requireAuth);
+employerPayrollRoutes.use('*', requireAuth('crews'));
 employerPayrollRoutes.use('*', requireRole('employer'));
 employerPayrollRoutes.use('*', requireTenant);
 

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -80,13 +81,9 @@ export default async function LocaleLayout({ children, params }: Props) {
             suppressHydrationWarning
         >
             <head>
-                {/* Pre-hydration theme bootstrap. Plain inline <script> rather
-                    than next/script — beforeInteractive next/script tags are
-                    not supported inside App Router <head>. */}
-                <script
-                    id="tierra-theme-init"
-                    dangerouslySetInnerHTML={{ __html: themeInitScript }}
-                />
+                <Script id="tierra-theme-init" strategy="beforeInteractive">
+                    {themeInitScript}
+                </Script>
             </head>
             <body className="bg-base-300 text-base-content antialiased">
                 <MaybeClerkProvider locale={locale}>

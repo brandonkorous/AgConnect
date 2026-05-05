@@ -12,7 +12,7 @@ import type { AuditCtxVars } from '../middleware/audit';
 
 export const meRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
-meRoutes.use('*', requireAuth);
+meRoutes.use('*', requireAuth('me'));
 
 // Returns user role + tenant if any. Unlike /tenant below, this does NOT 403
 // when tenantId is null — a freshly-created employer has no tenant yet, and

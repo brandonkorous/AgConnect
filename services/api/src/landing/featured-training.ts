@@ -4,7 +4,7 @@ import { ProgramStatus } from '@agconn/db';
 import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
 
 export const featuredTrainingRoutes = new Hono<{ Variables: TenantVars }>();
-featuredTrainingRoutes.use('*', publicTenantMiddleware);
+featuredTrainingRoutes.use('*', publicTenantMiddleware('landing'));
 
 const TAKE = 4;
 

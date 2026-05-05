@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { Route } from 'next';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { OnboardingForm } from '@/components/employer/OnboardingForm';
 import { Wordmark } from '@/components/primitives/Wordmark';
+import { getEmployerProfile, verificationStatus } from '@/lib/api/employer';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -15,6 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EmployerOnboardingPage({ params }: Props) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'employer.onboarding' });
+  const profile = await getEmployerProfile();
+  if (profile && verificationStatus(profile) === 'verified') {
+    redirect(`/${locale}/employer/dashboard`);
+  }
   const altLocale = locale === 'es' ? 'en' : 'es';
   const altHref = `/${altLocale}/employer/onboarding` as Route;
   return (
@@ -39,8 +48,10 @@ export default async function EmployerOnboardingPage({ params }: Props) {
         <Link
           href={altHref}
           prefetch={false}
-          className="bg-base-100 border-base-300 text-base-content/70 hover:text-base-content rounded-full border px-3 py-1 font-mono text-[11px] font-bold tracking-wider no-underline"
+          aria-label={t('locale_switch_aria')}
+          className="bg-base-100 border-base-300 text-base-content/70 hover:text-base-content inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[11px] font-bold tracking-wider no-underline"
         >
+          <FontAwesomeIcon icon={faGlobe} className="h-3 w-3" />
           {altLocale.toUpperCase()}
         </Link>
       </header>

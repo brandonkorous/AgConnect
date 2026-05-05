@@ -21,7 +21,7 @@ import { employerJobPhotosRoutes } from './photos';
 import { employerJobScreeningRoutes } from './screening';
 
 export const employerJobsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerJobsRoutes.use('*', requireAuth);
+employerJobsRoutes.use('*', requireAuth('employer'));
 employerJobsRoutes.use('*', requireRole('employer'));
 employerJobsRoutes.use('*', requireTenant);
 

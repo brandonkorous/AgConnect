@@ -10,7 +10,7 @@ import {
 import type { AuditCtxVars } from '../../middleware/audit';
 
 export const employerMessagesRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerMessagesRoutes.use('*', requireAuth);
+employerMessagesRoutes.use('*', requireAuth('employer'));
 employerMessagesRoutes.use('*', requireRole('employer'));
 employerMessagesRoutes.use('*', requireTenant);
 

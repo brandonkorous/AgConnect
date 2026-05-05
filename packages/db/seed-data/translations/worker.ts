@@ -1629,9 +1629,9 @@ export const worker: TranslationBundle = {
         en: "Resend in {seconds}s",
         es: "Reenviar en {seconds}s",
     },
-    "onboarding.phone.collision_other_tenant": {
-        en: "This number is registered in another region. Contact support to transfer your account.",
-        es: "Este número está registrado en otra región. Contacta a soporte para transferir tu cuenta.",
+    "onboarding.phone.collision": {
+        en: "This number is already registered. Use another number or contact support.",
+        es: "Este número ya está registrado. Usa otro número o contacta a soporte.",
     },
     "onboarding.phone.cta": {
         en: "Send code",

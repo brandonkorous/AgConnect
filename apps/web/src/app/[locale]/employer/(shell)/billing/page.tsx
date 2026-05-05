@@ -162,64 +162,51 @@ function PlanTierCard({
     if (features.customCounties) featureLines.push(t('feature.custom_counties'));
     if (features.brandedReports) featureLines.push(t('feature.branded_reports'));
 
-    if (isFree || isCurrent) {
-        const price = PLAN_DISPLAY_PRICE[tier];
-        const priceMonthly =
-            price.monthly !== null ? `$${price.monthly}` : t('feature.active_postings_unlimited');
-        return (
-            <div
-                data-tier={tier}
-                className={[
-                    'card card-bordered card-compact bg-base-100 relative',
-                    isCurrent ? 'border-primary ring-primary/30 ring-2' : '',
-                ].join(' ')}
-            >
-                <div className="card-body">
-                    {isCurrent && (
-                        <div className="bg-primary text-primary-content absolute -top-2 right-4 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
-                            {t('current')}
-                        </div>
-                    )}
-                    <h3 className="font-display text-2xl font-light tracking-tight">{t(tier)}</h3>
-                    <p className="text-base-content/60 mt-1 text-xs">{t(`pitch.${tier}`)}</p>
-                    {price.monthly !== null && !isFree && (
-                        <p className="text-base-content mt-3 flex items-baseline gap-2">
-                            <span className="font-display text-3xl font-light tracking-tight tabular-nums slashed-zero">
-                                {priceMonthly}
-                            </span>
-                            <span className="text-base-content/60 text-xs">{t('per_month')}</span>
-                            {price.yearly !== null && (
-                                <span className="text-base-content/55 ml-auto font-mono text-[11px]">
-                                    {t('or_yearly', { price: price.yearly })}
-                                </span>
-                            )}
-                        </p>
-                    )}
-                    <ul className="mt-5 flex flex-col gap-2 text-sm">
-                        {featureLines.map((line) => (
-                            <li key={line} className="flex items-center gap-2">
-                                <FontAwesomeIcon
-                                    icon={faCheck}
-                                    className="text-success h-3 w-3 shrink-0"
-                                />
-                                <span className="text-base-content">{line}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        );
-    }
+    const price = PLAN_DISPLAY_PRICE[tier];
+    const priceMonthly =
+        price.monthly !== null ? `$${price.monthly}` : t('feature.active_postings_unlimited');
+    const isEnterprise = tier === 'enterprise';
 
     return (
         <div
             data-tier={tier}
-            className="card card-bordered card-compact bg-base-100 relative"
+            className={[
+                'card card-bordered card-compact bg-base-100 relative',
+                isCurrent ? 'border-primary ring-primary/30 ring-2' : '',
+            ].join(' ')}
         >
             <div className="card-body">
+                {isCurrent && (
+                    <div className="bg-primary text-primary-content absolute -top-2 right-4 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
+                        {t('current')}
+                    </div>
+                )}
                 <h3 className="font-display text-2xl font-light tracking-tight">{t(tier)}</h3>
                 <p className="text-base-content/60 mt-1 text-xs">{t(`pitch.${tier}`)}</p>
-                <ul className="mt-5 flex flex-col gap-2 text-sm">
+                {!isFree && price.monthly !== null && (
+                    <p className="text-base-content mt-3 flex items-baseline gap-2">
+                        <span className="font-display text-3xl font-light tracking-tight tabular-nums slashed-zero">
+                            {priceMonthly}
+                        </span>
+                        <span className="text-base-content/60 text-xs">{t('per_month')}</span>
+                        {price.yearly !== null && (
+                            <span className="text-base-content/55 ml-auto font-mono text-[11px]">
+                                {t('or_yearly', { price: price.yearly })}
+                            </span>
+                        )}
+                    </p>
+                )}
+                {isEnterprise && (
+                    <p className="text-base-content/70 mt-4 text-xs font-semibold">
+                        {t('enterprise_includes_pro')}
+                    </p>
+                )}
+                <ul
+                    className={[
+                        'flex flex-col gap-2 text-sm',
+                        isEnterprise ? 'mt-2' : 'mt-5',
+                    ].join(' ')}
+                >
                     {featureLines.map((line) => (
                         <li key={line} className="flex items-center gap-2">
                             <FontAwesomeIcon
@@ -230,17 +217,14 @@ function PlanTierCard({
                         </li>
                     ))}
                 </ul>
-                <div className="mt-5">
-                    <PlanCheckoutControls
-                        tier={tier as 'pro' | 'enterprise'}
-                        disabled={!stripeConfigured}
-                    />
-                    {!stripeConfigured && (
-                        <p className="text-base-content/55 mt-2 text-[11px]">
-                            {t('stripe_unavailable')}
-                        </p>
-                    )}
-                </div>
+                {!isFree && !isCurrent && (
+                    <div className="mt-5">
+                        <PlanCheckoutControls
+                            tier={tier as 'pro' | 'enterprise'}
+                            disabled={!stripeConfigured}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

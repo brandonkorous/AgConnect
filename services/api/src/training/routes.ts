@@ -15,7 +15,7 @@ import type { AuditCtxVars } from '../middleware/audit';
 // Worker-facing training browse/enroll routes.
 export const trainingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
-trainingRoutes.use('*', requireAuth);
+trainingRoutes.use('*', requireAuth('training'));
 
 function decodeCursor(s: string): { startDate: Date; id: string } | null {
   try {
@@ -271,7 +271,7 @@ trainingRoutes.post('/:id/unenroll', requireRole('worker'), async (c) => {
 
 // Worker enrollments list (under /v1/me/enrollments — mounted separately).
 export const enrollmentsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-enrollmentsRoutes.use('*', requireAuth);
+enrollmentsRoutes.use('*', requireAuth('training'));
 enrollmentsRoutes.use('*', requireRole('worker'));
 
 enrollmentsRoutes.get('/', async (c) => {
@@ -311,7 +311,7 @@ enrollmentsRoutes.get('/', async (c) => {
 
 // Org-side: create program + manage roster + mark completion.
 export const orgTrainingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-orgTrainingRoutes.use('*', requireAuth);
+orgTrainingRoutes.use('*', requireAuth('training'));
 orgTrainingRoutes.use('*', requireRole('training_org'));
 
 orgTrainingRoutes.post('/training', validate('json', CreateProgramBody), async (c) => {

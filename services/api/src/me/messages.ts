@@ -10,7 +10,7 @@ import type { AuditCtxVars } from '../middleware/audit';
 // conversation channel is sms/whatsapp; otherwise the message stays in-app.
 
 export const meMessagesRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-meMessagesRoutes.use('*', requireAuth);
+meMessagesRoutes.use('*', requireAuth('me'));
 meMessagesRoutes.use('*', requireRole('worker'));
 
 meMessagesRoutes.get('/', async (c) => {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { AppStatus, JobStatus, UserRole } from '@agconn/db';
+import { AppStatus, dbClients, JobStatus, UserRole } from '@agconn/db';
 import {
   InboxQuery,
   TransitionBody,
@@ -12,7 +12,7 @@ import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../mi
 import type { AuditCtxVars } from '../../middleware/audit';
 
 export const employerInboxRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerInboxRoutes.use('*', requireAuth);
+employerInboxRoutes.use('*', requireAuth('employer'));
 employerInboxRoutes.use('*', requireRole('employer'));
 employerInboxRoutes.use('*', requireTenant);
 
@@ -69,7 +69,7 @@ employerInboxRoutes.get('/inbox', validate('query', InboxQuery), async (c) => {
 });
 
 export const employerJobApplicantsRoute = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerJobApplicantsRoute.use('*', requireAuth);
+employerJobApplicantsRoute.use('*', requireAuth('employer'));
 employerJobApplicantsRoute.use('*', requireRole('employer'));
 employerJobApplicantsRoute.use('*', requireTenant);
 
@@ -112,7 +112,7 @@ employerJobApplicantsRoute.get('/:jobId/applicants', async (c) => {
 });
 
 export const employerApplicationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerApplicationsRoutes.use('*', requireAuth);
+employerApplicationsRoutes.use('*', requireAuth('employer'));
 employerApplicationsRoutes.use('*', requireRole('employer'));
 employerApplicationsRoutes.use('*', requireTenant);
 
@@ -190,7 +190,9 @@ employerApplicationsRoutes.post(
     const id = c.req.param('id');
     const body = c.var.body;
 
-    const result = await c.var.db.$transaction(async (tx) => {
+    // Cross-domain transaction (applications × application_events × job_postings
+    // hire counter). Routed through the shared pool.
+    const result = await dbClients.shared.$transaction(async (tx) => {
       const app = await tx.application.findFirst({
         where: { id, deletedAt: null, job: { employerId: userId } },
         include: { job: true },
@@ -363,7 +365,9 @@ employerApplicationsRoutes.post(
     });
     if (!app) return err(c, 404, 'not_found');
 
-    const result = await c.var.db.$transaction(async (tx) => {
+    // Cross-domain transaction (applications context × conversations × messages).
+    // Routed through the shared pool.
+    const result = await dbClients.shared.$transaction(async (tx) => {
       const existing = await tx.conversation.findFirst({
         where: {
           tenantId,

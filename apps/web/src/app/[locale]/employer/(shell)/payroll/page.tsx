@@ -62,6 +62,7 @@ export default async function PayrollPage({ params }: Props) {
                     status={period.status}
                     workers={period.totals.workers}
                     netCents={period.totals.netCents}
+                    timesheetCount={lines.length}
                 />
             </div>
 
@@ -71,7 +72,7 @@ export default async function PayrollPage({ params }: Props) {
                         {t('hero_eyebrow')}
                     </div>
                     <div className="font-display mt-3 text-6xl font-light leading-none tracking-tight tabular-nums slashed-zero">
-                        {fmtCents(period.totals.netCents)}
+                        {hasLines ? fmtCents(period.totals.netCents) : '—'}
                     </div>
                     <div className="border-base-100/20 mt-6 grid grid-cols-4 gap-4 border-t pt-5">
                         {[

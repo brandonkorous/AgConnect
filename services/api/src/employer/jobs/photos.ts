@@ -18,7 +18,7 @@ const MAX_PHOTOS_PER_JOB = 6;
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export const employerJobPhotosRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerJobPhotosRoutes.use('*', requireAuth);
+employerJobPhotosRoutes.use('*', requireAuth('employer'));
 employerJobPhotosRoutes.use('*', requireRole('employer'));
 employerJobPhotosRoutes.use('*', requireTenant);
 

@@ -15,7 +15,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { prisma, Lang, TranslationStatus } from '@agconn/db';
+import { pools, Lang, TranslationStatus } from '@agconn/db';
 
 export const i18nRoutes = new Hono();
 
@@ -64,7 +64,7 @@ i18nRoutes.get('/messages', validate('query', messagesQuerySchema), async (c) =>
   const { locale, tenantId } = c.var.body;
 
   try {
-    const messages = await prisma.$transaction(
+    const messages = await pools.i18n.$transaction(
       async (tx) => {
         await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
         if (!tenantId) {

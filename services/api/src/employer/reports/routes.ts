@@ -14,7 +14,7 @@ import type { AuditCtxVars } from '../../middleware/audit';
 // payroll/application data; the underlying GETs are themselves not mutations.
 
 export const employerReportsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerReportsRoutes.use('*', requireAuth);
+employerReportsRoutes.use('*', requireAuth('employer'));
 employerReportsRoutes.use('*', requireRole('employer'));
 employerReportsRoutes.use('*', requireTenant);
 

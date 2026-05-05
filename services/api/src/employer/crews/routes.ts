@@ -17,7 +17,7 @@ import type { AuditCtxVars } from '../../middleware/audit';
 import { shapeCrew, shapeMember } from './shape';
 
 export const employerCrewsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
-employerCrewsRoutes.use('*', requireAuth);
+employerCrewsRoutes.use('*', requireAuth('crews'));
 employerCrewsRoutes.use('*', requireRole('employer'));
 employerCrewsRoutes.use('*', requireTenant);
 

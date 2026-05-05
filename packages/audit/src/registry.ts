@@ -86,7 +86,7 @@ export const auditRegistry = {
   'job.posting.edited': {
     resourceType: 'job_posting',
     retentionDays: 1460,
-    metadata: ['fields', 'renotificationsQueued'],
+    metadata: ['fields', 'renotificationsQueued', 'renotificationsSuppressed'],
   },
   'job.posting.republished': {
     resourceType: 'job_posting',

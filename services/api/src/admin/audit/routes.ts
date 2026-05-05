@@ -15,7 +15,7 @@ import { listAuditQuery, redactBody } from './schemas';
 
 export const adminAuditRoutes = new Hono<{ Variables: AdminVars & AuditCtxVars }>();
 
-adminAuditRoutes.use('*', adminMiddleware);
+adminAuditRoutes.use('*', adminMiddleware('admin'));
 
 adminAuditRoutes.get('/events', validate('query', listAuditQuery), async (c) => {
   const q = c.var.body;

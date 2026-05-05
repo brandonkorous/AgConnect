@@ -15,7 +15,7 @@ import type { AuditCtxVars } from '../../middleware/audit';
 export const employerWeatherRoutes = new Hono<{
   Variables: AuthVars & AuditCtxVars;
 }>();
-employerWeatherRoutes.use('*', requireAuth);
+employerWeatherRoutes.use('*', requireAuth('employer'));
 employerWeatherRoutes.use('*', requireRole('employer'));
 employerWeatherRoutes.use('*', requireTenant);
 

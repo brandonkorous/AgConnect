@@ -46,6 +46,8 @@ type CommonProps = {
   proximity?: [number, number];
   country?: string;
   language?: 'en' | 'es';
+  /** Bias and restrict suggestions to a bounding box: [minLng, minLat, maxLng, maxLat]. */
+  bbox?: [number, number, number, number];
   onPinDropRequested?: () => Promise<AddressValue | null>;
 };
 
@@ -181,6 +183,7 @@ function AddressAutocompleteInner({
   proximity,
   country,
   language,
+  bbox,
   value,
   onChange,
   onBlur,
@@ -229,6 +232,7 @@ function AddressAutocompleteInner({
         limit: '6',
       });
       if (proximity) params.set('proximity', `${proximity[0]},${proximity[1]}`);
+      if (bbox) params.set('bbox', bbox.join(','));
       fetch(`${SEARCH_HOST}/suggest?${params.toString()}`, { signal: controller.signal })
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`mapbox_${r.status}`))))
         .then((body: { suggestions?: Suggestion[] }) => {
@@ -241,7 +245,7 @@ function AddressAutocompleteInner({
         })
         .finally(() => setLoading(false));
     },
-    [country, language, proximity, types],
+    [bbox, country, language, proximity, types],
   );
 
   const onQueryChange = useCallback(
