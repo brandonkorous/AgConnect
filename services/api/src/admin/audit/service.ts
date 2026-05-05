@@ -2,7 +2,7 @@
 // admin.audit.redacted on the same call path; double-logging would conflate
 // the original write with the redaction.
 import { canonicalize, computeHmac, hmacKeys, verifyHmac } from '@agconn/audit';
-import type { Tx } from '@agconn/db';
+import { getRlsContext, runWithRlsContext, type Tx } from '@agconn/db';
 import type { ListAuditQuery } from './schemas';
 
 export type AuditEventDto = {
@@ -199,8 +199,23 @@ export async function redactActor(
     return { redactedCount: matching.length, previousHmacs: [] };
   }
 
-  await db.$executeRawUnsafe(`SET LOCAL app.role = 'audit_redact'`);
+  // Elevate to the audit_redact RLS role for the update phase. The reads
+  // above ran under the caller's role (typically admin); only audit_redact
+  // satisfies the audit_update_redact policy.
+  const ctx = getRlsContext();
+  if (!ctx) {
+    throw new Error('redactActor: RLS context missing — must run inside an RLS-scoped request');
+  }
+  return runWithRlsContext({ ...ctx, role: 'audit_redact' }, () =>
+    redactActorEntries(db, input, matching),
+  );
+}
 
+async function redactActorEntries(
+  db: Tx,
+  input: { tenantId: string; actorId: string; reason: string; requestId: string; dryRun?: boolean },
+  matching: Array<{ id: bigint; eventHmac: Uint8Array; occurredAt: Date; metadata: unknown }>,
+): Promise<{ redactedCount: number; previousHmacs: string[] }> {
   const { key, version } = hmacKeys.current();
   const previousHmacs: string[] = [];
   let count = 0;

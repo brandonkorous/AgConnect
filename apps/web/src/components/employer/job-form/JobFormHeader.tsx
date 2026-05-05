@@ -9,6 +9,7 @@ import { faChevronRight, faCopy, faEye } from '@fortawesome/free-solid-svg-icons
 import { StatusBadge } from '@/components/employer/primitives';
 import { AutosaveBadge, type AutosaveStatus } from './AutosaveBadge';
 import { CloseJobDialog } from './CloseJobDialog';
+import { JobStatusActions } from './JobStatusActions';
 
 type Mode = 'create' | 'edit';
 type JobStatus = 'draft' | 'active' | 'closed' | 'filled';
@@ -26,6 +27,7 @@ type Props = {
     autosaveStatus: AutosaveStatus;
     savedAt: string | null;
     locale: string;
+    renotifyPaused: boolean;
 };
 
 export function JobFormHeader({
@@ -41,6 +43,7 @@ export function JobFormHeader({
     autosaveStatus,
     savedAt,
     locale,
+    renotifyPaused,
 }: Props) {
     const t = useTranslations('employer.jobs.form_v2');
     const tList = useTranslations('employer.jobs.list');
@@ -89,7 +92,15 @@ export function JobFormHeader({
                     )}
                 </div>
                 {mode === 'edit' && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        {jobId && (status === 'active' || status === 'closed') && (
+                            <JobStatusActions
+                                locale={locale}
+                                jobId={jobId}
+                                status={status}
+                                renotifyPaused={renotifyPaused}
+                            />
+                        )}
                         {showDuplicate && (
                             <button
                                 type="button"

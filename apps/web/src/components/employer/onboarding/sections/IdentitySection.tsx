@@ -14,7 +14,7 @@ export function IdentitySection({ state, actions }: Props) {
   const t = useTranslations('employer.onboarding');
 
   return (
-    <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-5">
       <fieldset className="fieldset w-full min-w-0">
         <legend className="fieldset-legend">{t('legal_name.label')}</legend>
         <input

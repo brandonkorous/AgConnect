@@ -40,7 +40,7 @@ export async function HiringPipelineBoard({ locale, applicants }: Props) {
                 appliedAt: a.appliedAt,
                 jobTitle: locale === 'es' ? a.job.titleEs : a.job.titleEn,
                 href: `/${locale}/employer/applications/${a.id}`,
-                status: a.status,
+                status: key,
                 matchLabel: `${a.worker.skillsMatchCount} ${t('match')}`,
             }));
         return {

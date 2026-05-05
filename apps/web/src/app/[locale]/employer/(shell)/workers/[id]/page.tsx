@@ -24,7 +24,7 @@ export default async function WorkerPreviewPage({ params }: Props) {
         const vStatus = profile ? verificationStatus(profile) : 'pending';
         const verificationPending = vStatus === 'pending' || vStatus === 'rejected';
         return (
-            <div className="px-5 pb-16 pt-8">
+            <div className=" px-5 pb-16 pt-8">
                 <LockedCard
                     title={t('plan_gate.title')}
                     description={t('plan_gate.body')}
@@ -45,7 +45,7 @@ export default async function WorkerPreviewPage({ params }: Props) {
     const alreadyInvited = worker.relationship === 'invited' || worker.relationship === 'hired';
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <Link
                 href={`/${locale}/employer/workers`}
                 className="text-base-content/60 hover:text-base-content mb-6 inline-block text-sm"

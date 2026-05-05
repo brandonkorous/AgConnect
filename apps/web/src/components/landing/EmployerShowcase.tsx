@@ -19,7 +19,7 @@ export function EmployerShowcase() {
                 <div className="flex flex-col gap-8">
                     <div className="flex items-center gap-3.5">
                         <span className="bg-accent h-px w-8 shrink-0" aria-hidden />
-                        <span className="text-accent label">{t('eyebrow')}</span>
+                        <span className="text-accent eyebrow">{t('eyebrow')}</span>
                     </div>
                     <h2 className="font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
                         {t('headline')}

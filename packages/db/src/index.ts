@@ -116,6 +116,15 @@ export type {
 export type Db = PrismaClient;
 export type Tx = PrismaNS.TransactionClient;
 
+export {
+  rlsClient,
+  runWithRlsContext,
+  getRlsContext,
+  applyRlsToTx,
+  type RlsRole,
+  type RlsContext,
+} from './rls.js';
+
 // Compliance instruction content lives in the DB (table:
 // compliance_item_content). The TS seed file is retained for re-seeding
 // fresh environments and is exported as `_COMPLIANCE_CONTENT_SEED` for the

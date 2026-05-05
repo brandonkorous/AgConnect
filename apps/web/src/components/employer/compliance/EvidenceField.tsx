@@ -106,14 +106,14 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
     if (file) void uploadFile(file);
   }
 
-  function onDragEnter(e: DragEvent<HTMLDivElement>) {
+  function onDragEnter(e: DragEvent<HTMLFieldSetElement>) {
     e.preventDefault();
     e.stopPropagation();
     dragCounter.current += 1;
     if (e.dataTransfer.types.includes('Files')) setDragActive(true);
   }
 
-  function onDragLeave(e: DragEvent<HTMLDivElement>) {
+  function onDragLeave(e: DragEvent<HTMLFieldSetElement>) {
     e.preventDefault();
     e.stopPropagation();
     dragCounter.current -= 1;
@@ -123,12 +123,12 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
     }
   }
 
-  function onDragOver(e: DragEvent<HTMLDivElement>) {
+  function onDragOver(e: DragEvent<HTMLFieldSetElement>) {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  function onDrop(e: DragEvent<HTMLDivElement>) {
+  function onDrop(e: DragEvent<HTMLFieldSetElement>) {
     e.preventDefault();
     e.stopPropagation();
     dragCounter.current = 0;

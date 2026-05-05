@@ -125,6 +125,7 @@ export function JobForm({
                 autosaveStatus={autosaveStatus}
                 savedAt={savedAt}
                 locale={locale}
+                renotifyPaused={initial?.renotifyPaused ?? false}
             />
 
             <FormAlerts fieldErrors={fieldErrors} error={error} renotifyMsg={renotifyMsg} />

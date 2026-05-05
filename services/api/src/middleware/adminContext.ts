@@ -1,7 +1,7 @@
 import { createMiddleware } from 'hono/factory';
 import { getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
-import { prisma, type Tx } from '@agconn/db';
+import { prisma, rlsClient, runWithRlsContext, type Tx } from '@agconn/db';
 
 // Admin gate. Two acceptable paths:
 //   1. Clerk session with publicMetadata.role === 'admin' (preferred)
@@ -9,7 +9,9 @@ import { prisma, type Tx } from '@agconn/db';
 //      retained while Clerk admin onboarding is bootstrapped — remove once
 //      every operator has a Clerk admin account).
 //
-// RLS bypass is enforced by SET LOCAL app.role = 'admin'.
+// RLS bypass is enforced by stamping app.role = 'admin' on the per-request
+// AsyncLocalStorage context; the rlsClient applies it inside each query's
+// short transaction.
 
 export type AdminVars = {
   db: Tx;
@@ -48,17 +50,11 @@ export const adminMiddleware = createMiddleware<{ Variables: AdminVars }>(
       return err(c, 403, 'forbidden', 'Admin access required');
     }
 
-    await prisma.$transaction(
-      async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
-        await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${userId}'`);
-        c.set('db', tx);
-        c.set('tenantId', '00000000-0000-0000-0000-000000000000');
-        c.set('role', 'admin');
-        c.set('userId', userId);
-        await next();
-      },
-      { timeout: 30_000, maxWait: 5_000 },
-    );
+    c.set('db', rlsClient);
+    c.set('tenantId', '00000000-0000-0000-0000-000000000000');
+    c.set('role', 'admin');
+    c.set('userId', userId);
+
+    await runWithRlsContext({ role: 'admin', userId }, () => next());
   },
 );

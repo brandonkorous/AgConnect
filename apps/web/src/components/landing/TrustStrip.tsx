@@ -9,7 +9,7 @@ export function TrustStrip() {
     <section className="bg-base-200 border-base-300 w-full border-y">
       <div className="mx-auto flex flex-col gap-8 px-5 py-12 md:px-8 lg:px-20">
         <div className="flex items-center gap-4">
-          <span className="text-primary label">{t('eyebrow')}</span>
+          <span className="text-primary eyebrow">{t('eyebrow')}</span>
           <span className="bg-secondary h-px flex-1 shrink basis-0" aria-hidden />
           <span className="text-secondary font-sans text-sm font-semibold tracking-widest uppercase">
             {t('subtitle')}

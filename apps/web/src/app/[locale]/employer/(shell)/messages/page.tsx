@@ -9,7 +9,7 @@ import {
     faUsers,
     faShieldHalved,
     faIdBadge,
-    faBolt,
+    faBullhorn,
     faThumbtack,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -58,7 +58,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
     const unread = counts.all > 0 ? threads.reduce((sum, t) => sum + t.unread, 0) : 0;
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -79,7 +79,13 @@ export default async function MessagesPage({ params, searchParams }: Props) {
             </div>
 
             <div className="bg-base-100 border-base-300 grid h-[720px] grid-cols-[220px_340px_1fr] overflow-hidden rounded-2xl border">
-                <FoldersColumn locale={locale} folder={folder} counts={counts} t={t} />
+                <FoldersColumn
+                    locale={locale}
+                    folder={folder}
+                    counts={counts}
+                    hasActiveThread={Boolean(activeThread)}
+                    t={t}
+                />
                 <ThreadList
                     threads={threads}
                     activeId={activeThread?.id ?? null}
@@ -97,11 +103,13 @@ function FoldersColumn({
     locale,
     folder,
     counts,
+    hasActiveThread,
     t,
 }: {
     locale: string;
     folder: FolderKey;
     counts: FolderCounts;
+    hasActiveThread: boolean;
     t: Awaited<ReturnType<typeof getTranslations>>;
 }) {
     const folders: Array<{
@@ -113,56 +121,48 @@ function FoldersColumn({
             { key: 'candidates', icon: faUsers },
             { key: 'crew', icon: faIdBadge, dot: true },
             { key: 'foremen', icon: faShieldHalved },
-            { key: 'broadcasts', icon: faBolt },
+            { key: 'broadcasts', icon: faBullhorn },
         ];
 
     return (
         <div className="bg-base-200 border-base-300 border-r p-3">
-            {folders.map((f) => {
-                const active = f.key === folder;
-                const count = counts[f.key];
-                return (
-                    <Link
-                        key={f.key}
-                        href={`/${locale}/employer/messages?folder=${f.key}`}
-                        className={[
-                            'mb-1 flex items-center gap-2.5 rounded-lg border px-2.5 py-2 transition-colors',
-                            active
-                                ? 'bg-base-100 border-base-300 font-semibold'
-                                : 'border-transparent hover:bg-base-100/50 font-medium',
-                        ].join(' ')}
-                    >
-                        <FontAwesomeIcon
-                            icon={f.icon}
-                            className={[
-                                'h-3.5 w-3.5',
-                                active ? 'text-primary' : 'text-base-content/70',
-                            ].join(' ')}
-                        />
-                        <span className="flex-1 text-xs">{t(`folders.${f.key}`)}</span>
-                        {count > 0 && (
-                            <span
-                                className={[
-                                    'rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold',
-                                    f.dot && f.key === 'crew'
-                                        ? 'bg-accent text-accent-content'
-                                        : 'bg-base-100 text-base-content/60',
-                                ].join(' ')}
+            <ul className="menu menu-sm w-full p-0">
+                {folders.map((f) => {
+                    const active = f.key === folder;
+                    const count = counts[f.key];
+                    return (
+                        <li key={f.key}>
+                            <Link
+                                href={`/${locale}/employer/messages?folder=${f.key}`}
+                                className={active ? 'menu-active' : ''}
                             >
-                                {count}
-                            </span>
-                        )}
-                    </Link>
-                );
-            })}
-            <div className="border-base-300 mt-4 border-t pt-3">
-                <div className="text-base-content/60 mb-2 font-mono text-[10px] font-bold uppercase tracking-wider">
-                    {t('templates_label')}
+                                <FontAwesomeIcon icon={f.icon} className="w-3.5" />
+                                <span className="flex-1">{t(`folders.${f.key}`)}</span>
+                                {count > 0 && (
+                                    <span
+                                        className={[
+                                            'badge badge-sm',
+                                            f.dot && f.key === 'crew' ? 'badge-accent' : 'badge-neutral',
+                                        ].join(' ')}
+                                    >
+                                        {count}
+                                    </span>
+                                )}
+                            </Link>
+                        </li>
+                    );
+                })}
+            </ul>
+            {hasActiveThread && (
+                <div className="border-base-300 mt-4 border-t pt-3">
+                    <div className="text-base-content/60 mb-2 font-mono text-[10px] font-bold uppercase tracking-wider">
+                        {t('templates_label')}
+                    </div>
+                    <p className="text-base-content/50 text-[10px] leading-relaxed">
+                        {t('templates_help')}
+                    </p>
                 </div>
-                <p className="text-base-content/50 text-[10px] leading-relaxed">
-                    {t('templates_help')}
-                </p>
-            </div>
+            )}
         </div>
     );
 }

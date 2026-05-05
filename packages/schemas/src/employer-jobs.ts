@@ -289,6 +289,7 @@ export const EmployerJobDetailSchema = EmployerJobCardSchema.extend({
   minAge: MinAgeEnum,
   autoMatchEnabled: z.boolean(),
   autoTranslateEnabled: z.boolean(),
+  renotifyPaused: z.boolean(),
   smsApplyEnabled: z.boolean(),
   smsApplyKeyword: z.string().nullable(),
   applicationDeadlineAt: z.string().datetime().nullable(),

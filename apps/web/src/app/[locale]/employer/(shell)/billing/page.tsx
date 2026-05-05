@@ -41,7 +41,7 @@ export default async function BillingPage({ params }: Props) {
         : null;
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -151,10 +151,9 @@ function PlanTierCard({
     const isFree = tier === 'free';
 
     const featureLines: string[] = [
-        `${t('feature.active_postings')}: ${
-            Number.isFinite(features.activePostings)
-                ? String(features.activePostings)
-                : t('feature.active_postings_unlimited')
+        `${t('feature.active_postings')}: ${Number.isFinite(features.activePostings)
+            ? String(features.activePostings)
+            : t('feature.active_postings_unlimited')
         }`,
     ];
     if (features.workerSearch) featureLines.push(t('feature.worker_search'));

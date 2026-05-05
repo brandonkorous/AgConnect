@@ -36,7 +36,7 @@ function WorkerCard({ locale }: { locale: string }) {
     return (
         <div className="card bg-base-100">
             <div className="card-body p-8 gap-4">
-                <p className="text-secondary label">{t('eyebrow')}</p>
+                <p className="text-secondary eyebrow">{t('eyebrow')}</p>
                 <p className="card-title text-base-content font-serif text-2xl font-semibold tracking-tight leading-tight">
                     {t('headline')}
                 </p>
@@ -65,7 +65,7 @@ function EmployerCard({ locale }: { locale: string }) {
     return (
         <div className="card card-bordered bg-neutral text-neutral-content border-secondary">
             <div className="card-body p-8 gap-4">
-                <p className="text-accent label">{t('eyebrow')}</p>
+                <p className="text-accent eyebrow">{t('eyebrow')}</p>
                 <div className='flex'>
                     <p className="card-title text-neutral-content font-serif text-2xl font-semibold tracking-tight leading-tight">
                         {t('headline')}

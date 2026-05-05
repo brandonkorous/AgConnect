@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
@@ -41,6 +42,7 @@ type NavItem = {
     path: string;
     count?: number;
     accent?: boolean;
+    pro?: boolean;
 };
 
 type Props = {
@@ -68,6 +70,7 @@ export function EmployerSidebar({
     variant = 'inline',
 }: Props) {
     const t = useTranslations('employer.shell.nav');
+    const tBadge = useTranslations('employer.shell.badges');
     const tMenu = useTranslations('employer.shell.user_menu');
     const pathname = usePathname();
     const { user } = useUser();
@@ -89,7 +92,7 @@ export function EmployerSidebar({
             count: candidatesCount,
             accent: (candidatesCount ?? 0) > 0,
         },
-        { key: 'workers', icon: faMagnifyingGlass, path: '/employer/workers' },
+        { key: 'workers', icon: faMagnifyingGlass, path: '/employer/workers', pro: true },
         { key: 'crews', icon: faCalendarDays, path: '/employer/crews' },
         { key: 'payroll', icon: faCoins, path: '/employer/payroll' },
         { key: 'compliance', icon: faShieldHalved, path: '/employer/compliance', count: complianceCount },
@@ -98,9 +101,6 @@ export function EmployerSidebar({
         { key: 'billing', icon: faCreditCard, path: '/employer/billing' },
         { key: 'profile', icon: faIdBadge, path: '/employer/profile' },
     ];
-
-    const derived = items.find((it) => pathname.startsWith(`/${locale}${it.path}`))?.key;
-    const current = active ?? derived ?? 'dashboard';
 
     const wrapperClass =
         variant === 'inline'
@@ -113,45 +113,44 @@ export function EmployerSidebar({
                 <Link href={`/${locale}`} aria-label="AgConn home">
                     <Wordmark size="sm" tone="ink" />
                 </Link>
-                <span className="bg-base-content text-base-100 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wider">
-                    HIRE
+                <span className="badge badge-neutral badge-sm font-mono tracking-wider">
+                    {tBadge('surface_hire')}
                 </span>
             </div>
 
-            <nav className="-mx-4 flex flex-1 flex-col gap-1 overflow-y-auto px-4">
+            <ul className="menu menu-md w-full flex-1 flex-nowrap overflow-y-auto p-0 gap-2">
                 {items.map((item) => {
-                    const isActive = item.key === current;
+                    const href = `/${locale}${item.path}`;
+                    const isActive = pathname.startsWith(href) ||
+                        (item.key === active);
                     return (
-                        <Link
-                            key={item.key}
-                            href={`/${locale}${item.path}`}
-                            className={[
-                                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
-                                isActive
-                                    ? 'bg-primary/10 text-primary font-semibold'
-                                    : 'text-base-content/70 hover:bg-base-200 font-medium',
-                            ].join(' ')}
-                        >
-                            <FontAwesomeIcon icon={item.icon} className="h-4 w-4" />
-                            <span className="flex-1">{t(item.key)}</span>
-                            {item.count !== undefined && item.count > 0 && (
-                                <span
-                                    className={[
-                                        'rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold',
-                                        item.accent
-                                            ? 'bg-accent text-accent-content'
-                                            : isActive
-                                                ? 'bg-base-100 text-primary'
-                                                : 'bg-base-200 text-base-content/60',
-                                    ].join(' ')}
-                                >
-                                    {item.count}
-                                </span>
-                            )}
-                        </Link>
+                        <li key={item.key}>
+                            <Link
+                                href={href as Route}
+                                className={isActive ? 'menu-active' : ''}
+                            >
+                                <FontAwesomeIcon icon={item.icon} className="w-4" />
+                                <span className="flex-1">{t(item.key)}</span>
+                                {item.pro && (
+                                    <span className="badge badge-warning badge-sm">
+                                        {tBadge('pro')}
+                                    </span>
+                                )}
+                                {item.count !== undefined && item.count > 0 && (
+                                    <span
+                                        className={[
+                                            'badge badge-sm',
+                                            item.accent ? 'badge-accent' : 'badge-neutral',
+                                        ].join(' ')}
+                                    >
+                                        {item.count}
+                                    </span>
+                                )}
+                            </Link>
+                        </li>
                     );
                 })}
-            </nav>
+            </ul>
 
             <div className="pt-6">
                 <UserMenu

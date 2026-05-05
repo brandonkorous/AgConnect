@@ -21,7 +21,7 @@ export function Faq() {
                     </p>
                     <div className="card bg-base-300 mt-4">
                         <div className="card-body p-5 gap-2">
-                            <p className="text-secondary label">{grantT('eyebrow')}</p>
+                            <p className="text-secondary eyebrow">{grantT('eyebrow')}</p>
                             <p className="card-title text-base-content font-serif text-lg font-medium leading-tight">
                                 {grantT('headline')}
                             </p>

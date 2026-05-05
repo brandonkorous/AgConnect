@@ -780,6 +780,7 @@ model JobPosting {
   minAge                MinAge        @default(eighteen) @map("min_age")
   autoMatchEnabled      Boolean       @default(true) @map("auto_match_enabled")
   autoTranslateEnabled  Boolean       @default(true) @map("auto_translate_enabled")
+  renotifyPaused        Boolean       @default(false) @map("renotify_paused")
   smsApplyEnabled       Boolean       @default(true) @map("sms_apply_enabled")
   smsApplyKeyword       String?       @map("sms_apply_keyword")
   applicationDeadlineAt DateTime?     @map("application_deadline_at")

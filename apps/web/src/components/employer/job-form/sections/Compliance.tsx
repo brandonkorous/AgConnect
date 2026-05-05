@@ -135,7 +135,7 @@ export function ComplianceSection({ state, profile, locale }: Props) {
             </div>
             {it.status !== 'ok' && (
               <Link
-                href={`/${locale}/employer/compliance`}
+                href={`/${locale}/employer/compliance#item-${it.key}`}
                 className="btn btn-ghost btn-xs border-base-300 rounded-full border whitespace-nowrap"
               >
                 {t('compliance_attest_link')}

@@ -54,6 +54,10 @@ export type EditEventArgs = {
   // suppress queue even when material diff exists. Wired from the save-bar's
   // "Save & don't notify" / "Save & notify crew" choice.
   notifyApplicants?: boolean;
+  // When true, the posting has renotifications paused via the
+  // /pause-renotify endpoint. Treated like notifyApplicants === false but
+  // surfaces a distinct telemetry signal.
+  renotifyPaused?: boolean;
 };
 
 export type EditEventResult = {
@@ -121,7 +125,7 @@ export async function recordEditAndMaybeRenotify(args: EditEventArgs): Promise<E
     };
   }
 
-  if (args.notifyApplicants === false) {
+  if (args.notifyApplicants === false || args.renotifyPaused) {
     return {
       changedFields: changed,
       eventId: event.id,

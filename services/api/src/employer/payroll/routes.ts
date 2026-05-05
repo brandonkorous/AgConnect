@@ -109,7 +109,12 @@ employerPayrollRoutes.patch('/periods/:id', validate('json', PatchPayrollPeriodB
     }
   }
 
-  const updated = await c.var.db.payrollPeriod.update({ where: { id }, data });
+  const updateResult = await c.var.db.payrollPeriod.updateMany({
+    where: { id, tenantId, employerId: userId },
+    data,
+  });
+  if (updateResult.count !== 1) return err(c, 404, 'not_found');
+  const updated = await c.var.db.payrollPeriod.findUniqueOrThrow({ where: { id } });
 
   if (body.status && body.status !== existing.status) {
     await c.var.audit.log({
@@ -203,7 +208,12 @@ employerPayrollRoutes.patch(
     if (body.notes !== undefined) data.notes = body.notes;
     if (body.approved) data.approvedAt = new Date();
 
-    const updated = await c.var.db.payrollLine.update({ where: { id: lineId }, data });
+    const updateResult = await c.var.db.payrollLine.updateMany({
+      where: { id: lineId, tenantId, periodId: id },
+      data,
+    });
+    if (updateResult.count !== 1) return err(c, 404, 'not_found');
+    const updated = await c.var.db.payrollLine.findUniqueOrThrow({ where: { id: lineId } });
 
     await c.var.audit.log({
       action: 'employer.payroll.line.updated',

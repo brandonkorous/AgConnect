@@ -82,7 +82,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
         />
       </fieldset>
 
-      <div role="note" className="alert alert-info alert-soft mt-4 items-start text-sm">
+      <div role="status" className="alert alert-info alert-soft mt-4 items-start text-sm">
         <FontAwesomeIcon icon={faSun} className="text-warning mt-0.5 h-4 w-4" />
         <div>
           <div className="font-semibold">{t('heat_advisory_title')}</div>

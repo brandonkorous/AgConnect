@@ -17,7 +17,7 @@ export default async function ApplicantDetailPage({ params }: Props) {
     if (!app) notFound();
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <Link
                 href={`/${locale}/employer/inbox`}
                 className="text-base-content/60 hover:text-base-content mb-6 inline-flex items-center text-sm"

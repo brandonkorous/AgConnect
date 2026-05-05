@@ -4,8 +4,9 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { CrewColor, CrewView } from '@/lib/api/employer-ops';
+import { RadioCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 
 const COLOR_BG: Record<CrewColor, string> = {
@@ -30,7 +31,7 @@ export function CrewPickerSection({ crews, value, onChange, locale }: Props) {
   return (
     <SectionCard id="crew" title={t('title')} sub={t('sub')}>
       <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
-        <CrewCardOption
+        <RadioCard<string>
           name="crew"
           value=""
           checked={value === null}
@@ -49,7 +50,7 @@ export function CrewPickerSection({ crews, value, onChange, locale }: Props) {
             c.name.replace(/^Crew\s+/i, '').charAt(0).toUpperCase() ||
             c.name.charAt(0).toUpperCase();
           return (
-            <CrewCardOption
+            <RadioCard<string>
               key={c.id}
               name="crew"
               value={c.id}
@@ -81,58 +82,5 @@ export function CrewPickerSection({ crews, value, onChange, locale }: Props) {
         </Link>
       </div>
     </SectionCard>
-  );
-}
-
-function CrewCardOption({
-  name,
-  value,
-  checked,
-  onChange,
-  title,
-  description,
-  chip,
-}: {
-  name: string;
-  value: string;
-  checked: boolean;
-  onChange: () => void;
-  title: string;
-  description: string;
-  chip: React.ReactNode;
-}) {
-  const stateClasses = checked
-    ? 'border-primary ring-2 ring-primary/30 bg-primary/5'
-    : 'border-base-300 bg-base-100 hover:border-base-content/30';
-  return (
-    <label
-      className={[
-        'flex items-center gap-3 rounded-2xl border p-3.5 transition-colors',
-        'focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2',
-        'cursor-pointer',
-        stateClasses,
-      ].join(' ')}
-    >
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        className="sr-only"
-      />
-      {chip}
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold leading-snug">{title}</span>
-        <span className="text-base-content/60 mt-0.5 block text-[11px] leading-snug">
-          {description}
-        </span>
-      </span>
-      {checked && (
-        <span className="bg-primary text-primary-content grid h-5 w-5 place-items-center rounded-full">
-          <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
-        </span>
-      )}
-    </label>
   );
 }

@@ -18,7 +18,7 @@ export function HeroDesktopMockup() {
 
             <div className="grid grid-cols-[180px_1fr]">
                 <div className="border-base-300 flex flex-col gap-4 border-r p-4" aria-hidden>
-                    <span className="label text-secondary">Counties</span>
+                    <span className="eyebrow text-secondary">Counties</span>
                     <ul className="menu menu-sm gap-1 p-0">
                         <li>
                             <a className="bg-primary text-primary-content active rounded-none">Fresno · 48</a>
@@ -37,7 +37,7 @@ export function HeroDesktopMockup() {
                         </li>
                     </ul>
                     <div className="border-base-300 border-t pt-3">
-                        <span className="label text-secondary">Verified</span>
+                        <span className="eyebrow text-secondary">Verified</span>
                         <ul className="mt-2 flex flex-col gap-2">
                             <li>
                                 <label className="flex items-center gap-2">

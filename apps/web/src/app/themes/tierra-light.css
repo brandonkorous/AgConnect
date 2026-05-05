@@ -12,7 +12,7 @@
   --color-accent:            #D9B441; /*oklch(83% 0.13 88);   /* #D9B441 gold */
   --color-accent-content:    #f9f8f5;
   --color-neutral:           #1C1C1A; /*oklch(20% 0.005 80);   /* #1C1C1A */
-  --color-neutral-content:   ##f9f8f5;
+  --color-neutral-content:   #f9f8f5;
   --color-base-100:          #FFFFFF; /*oklch(98% 0.005 95);   /* #FAFAF8 */
   --color-base-200:          #F7F7F3;/*oklch(94% 0.012 80);   /* #F3EFE6 */
   --color-base-300:          #EFEFE7;

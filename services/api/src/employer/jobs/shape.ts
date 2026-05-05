@@ -47,6 +47,7 @@ export type JobRowFull = {
   minAge: 'sixteen' | 'eighteen' | 'twenty_one';
   autoMatchEnabled: boolean;
   autoTranslateEnabled: boolean;
+  renotifyPaused: boolean;
   smsApplyEnabled: boolean;
   smsApplyKeyword: string | null;
   applicationDeadlineAt: Date | null;
@@ -141,6 +142,7 @@ export function shapeJob(j: JobRowFull, counts: Record<string, number>) {
     minAge: j.minAge,
     autoMatchEnabled: j.autoMatchEnabled,
     autoTranslateEnabled: j.autoTranslateEnabled,
+    renotifyPaused: j.renotifyPaused,
     smsApplyEnabled: j.smsApplyEnabled,
     smsApplyKeyword: j.smsApplyKeyword,
     applicationDeadlineAt: j.applicationDeadlineAt?.toISOString() ?? null,

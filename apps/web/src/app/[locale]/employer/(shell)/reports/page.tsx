@@ -44,7 +44,7 @@ export default async function ReportsPage({ params, searchParams }: Props) {
     }
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -155,9 +155,12 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                             <div>
                                 <div className="text-base-content/60 flex justify-between font-mono text-[10px]">
                                     <span>
-                                        {j.applied} applied · {j.hired} hired
+                                        {t('by_job_type_row.applied_hired', {
+                                            applied: j.applied,
+                                            hired: j.hired,
+                                        })}
                                     </span>
-                                    <span>{j.fillPct}% filled</span>
+                                    <span>{t('by_job_type_row.fill_pct', { pct: j.fillPct })}</span>
                                 </div>
                                 <div className="bg-base-200 mt-1 h-1.5 overflow-hidden rounded-full">
                                     <div

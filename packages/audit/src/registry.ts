@@ -88,6 +88,26 @@ export const auditRegistry = {
     retentionDays: 1460,
     metadata: ['fields', 'renotificationsQueued'],
   },
+  'job.posting.republished': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: ['enqueued', 'autoMatchEnabled'],
+  },
+  'job.posting.reopened': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: [],
+  },
+  'job.posting.renotify.paused': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: [],
+  },
+  'job.posting.renotify.resumed': {
+    resourceType: 'job_posting',
+    retentionDays: 1460,
+    metadata: [],
+  },
   'job.photo.uploaded': {
     resourceType: 'job_posting',
     retentionDays: 1460,

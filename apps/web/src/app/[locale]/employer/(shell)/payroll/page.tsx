@@ -37,7 +37,7 @@ export default async function PayrollPage({ params }: Props) {
     const hasLines = lines.length > 0;
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">

@@ -31,6 +31,25 @@ export default async function ComplianceAuditPage({ params }: Props) {
   ]);
   if (!profile) notFound();
 
+  if (cats.length === 0) {
+    return (
+      <div className="bg-white text-black min-h-screen">
+        <div className="screen-only mx-auto flex max-w-[7in] items-center justify-between px-6 pb-4 pt-6">
+          <a
+            href={`/${locale}/employer/compliance`}
+            className="text-base-content/60 hover:text-base-content text-sm"
+          >
+            ← {t('back')}
+          </a>
+        </div>
+        <article className="mx-auto max-w-[7in] px-[0.5in] py-[0.75in]">
+          <h1 className="mt-2 text-[20pt] font-semibold leading-tight">{t('title')}</h1>
+          <p className="mt-4 text-sm">{t('empty')}</p>
+        </article>
+      </div>
+    );
+  }
+
   const overall = summary?.overall
     ?? Math.round(cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length));
   const today = new Date();

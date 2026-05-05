@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBolt,
+  faBullhorn,
   faPlus,
   faXmark,
   faMagnifyingGlass,
@@ -34,7 +34,7 @@ export function NewConversationButton({ variant = 'thread' }: Props) {
   const [open, setOpen] = useState(false);
 
   const cta = variant === 'broadcast' ? t('cta_broadcast') : t('cta_thread');
-  const icon = variant === 'broadcast' ? faBolt : faPlus;
+  const icon = variant === 'broadcast' ? faBullhorn : faPlus;
   const className =
     variant === 'broadcast'
       ? 'btn btn-sm btn-primary rounded-full'

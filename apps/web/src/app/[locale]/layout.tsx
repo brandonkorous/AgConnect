@@ -4,9 +4,6 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import { ClerkProvider } from '@clerk/nextjs';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error — @clerk/localizations is added to package.json; module may
-// not be installed locally yet. Run `pnpm install` before typechecking.
 import { esES, enUS } from '@clerk/localizations';
 import { routing } from '@/i18n/routing';
 import { inter, interTight, dmMono } from '@/lib/fonts';

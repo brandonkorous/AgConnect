@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory';
-import { prisma, type Tx } from '@agconn/db';
+import { rlsClient, runWithRlsContext, type Tx } from '@agconn/db';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -20,46 +20,36 @@ function readPublicTenantId(): string {
 }
 
 /**
- * Wraps every request in a Postgres transaction with `SET LOCAL app.role = 'service'`
- * and `SET LOCAL app.tenant_id = <PUBLIC_TENANT_ID>`. Hands a tx-pinned Prisma client
- * to handlers via `c.var.db`. RLS policies enforce tenant scoping; bypassing the
- * middleware reads/writes nothing.
+ * Stamps the request with `app.role = 'service'` and `app.tenant_id = <PUBLIC_TENANT_ID>`
+ * via AsyncLocalStorage. The rlsClient handed to handlers as `c.var.db` opens a short
+ * Postgres transaction around each query and applies the context inside it, so a
+ * pooled connection is held only for the duration of one statement (not the request).
+ * RLS policies enforce tenant scoping; bypassing the middleware reads/writes nothing.
  */
 export const publicTenantMiddleware = createMiddleware<{ Variables: TenantVars }>(
   async (c, next) => {
     const tenantId = readPublicTenantId();
 
-    await prisma.$transaction(
-      async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
-        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-        c.set('db', tx);
-        c.set('tenantId', tenantId);
-        c.set('role', 'service');
-        await next();
-      },
-      { timeout: 15_000, maxWait: 5_000 },
-    );
+    c.set('db', rlsClient);
+    c.set('tenantId', tenantId);
+    c.set('role', 'service');
+
+    await runWithRlsContext({ role: 'service', tenantId }, () => next());
   },
 );
 
 /**
- * Webhook role middleware — runs after Svix signature verification. Pins
+ * Webhook role middleware — runs after Svix signature verification. Stamps
  * `app.role = 'webhook'`, which RLS allows narrow cross-tenant access on
  * `email_log` and `email_suppression`. No tenant_id is set; the webhook
  * resolves tenant per-row from the looked-up email_log.
  */
 export const webhookMiddleware = createMiddleware<{ Variables: TenantVars }>(
   async (c, next) => {
-    await prisma.$transaction(
-      async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-        c.set('db', tx);
-        c.set('tenantId', '');
-        c.set('role', 'webhook');
-        await next();
-      },
-      { timeout: 15_000, maxWait: 5_000 },
-    );
+    c.set('db', rlsClient);
+    c.set('tenantId', '');
+    c.set('role', 'webhook');
+
+    await runWithRlsContext({ role: 'webhook' }, () => next());
   },
 );

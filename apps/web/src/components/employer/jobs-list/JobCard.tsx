@@ -28,7 +28,7 @@ type Strings = {
         close: string;
         discard: string;
         pauseRenotify: string;
-        pauseRenotifyComingSoon: string;
+        resumeRenotify: string;
         confirmDiscardTitle: string;
         confirmDiscardBody: string;
         confirmCloseTitle: string;
@@ -85,6 +85,7 @@ export function JobCard({ job, locale, startsLabel, durationLabel, strings }: Pr
                         jobId={job.id}
                         locale={locale}
                         status={job.status}
+                        renotifyPaused={job.renotifyPaused ?? false}
                         labels={strings.actionLabels}
                     />
                 </div>

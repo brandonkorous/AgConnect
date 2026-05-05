@@ -70,7 +70,7 @@ export default async function EmployerHelpPage({ params }: Props) {
         ];
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-7 max-w-3xl">
                 <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
                     {t('eyebrow')}

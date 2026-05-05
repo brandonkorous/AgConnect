@@ -68,7 +68,7 @@ export default async function CrewsPage({ params, searchParams }: Props) {
     const basePath = `/${locale}/employer/crews`;
 
     return (
-        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">

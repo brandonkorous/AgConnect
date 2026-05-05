@@ -315,7 +315,7 @@ function AddressAutocompleteInner({
 
   if (value) {
     return (
-      <fieldset className="fieldset">
+      <fieldset className="fieldset w-full min-w-0">
         <legend className="fieldset-legend">
           {label}
         </legend>
@@ -348,11 +348,11 @@ function AddressAutocompleteInner({
   const showNoMatches = open && !loading && suggestions.length === 0 && query.trim().length >= MIN_QUERY;
 
   return (
-    <fieldset className="fieldset">
+    <fieldset className="fieldset w-full min-w-0">
       <legend className="fieldset-legend" id={`${inputId}-label`}>
         {label}
       </legend>
-      <div className="relative">
+      <div className="relative w-full min-w-0">
         <input
           id={inputId}
           type="text"
@@ -366,7 +366,7 @@ function AddressAutocompleteInner({
           }
           aria-invalid={errorMessage ? true : undefined}
           placeholder={labels.placeholder}
-          className={`input w-full ${errorMessage ? 'input-error' : ''}`}
+          className={`input w-full max-w-full min-w-0 ${errorMessage ? 'input-error' : ''}`}
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           onKeyDown={onKeyDown}

@@ -12,6 +12,7 @@ import {
     CandidateRowActions,
     RowCheckbox,
 } from '@/components/employer/candidates/RowActions';
+import { FilterChip } from '@/components/employer/primitives';
 
 type TabKey = 'all' | 'new' | 'reviewed' | 'hired' | 'archived';
 
@@ -97,7 +98,7 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
     }
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
@@ -230,24 +231,17 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
                 </div>
             )}
 
-            <div className="bg-base-100 border-base-300 mb-5 inline-flex w-fit gap-1 rounded-full border p-1">
-                {tabs.map((tabItem) => {
-                    const isActive = tabItem.key === tab;
-                    const className = [
-                        'rounded-full px-3.5 py-1.5 text-xs font-semibold',
-                        isActive ? 'bg-base-content text-base-100' : 'text-base-content/70',
-                    ].join(' ');
-                    return (
-                        <Link
-                            key={tabItem.key}
-                            href={buildHref({ tab: tabItem.key }) as Route}
-                            className={className}
-                        >
-                            {t(`tab.${tabItem.key}`)}{' '}
-                            <span className="opacity-60 font-mono">{tabItem.n}</span>
-                        </Link>
-                    );
-                })}
+            <div className="mb-5 flex flex-wrap gap-1.5">
+                {tabs.map((tabItem) => (
+                    <FilterChip
+                        key={tabItem.key}
+                        active={tabItem.key === tab}
+                        href={buildHref({ tab: tabItem.key })}
+                        count={tabItem.n}
+                    >
+                        {t(`tab.${tabItem.key}`)}
+                    </FilterChip>
+                ))}
             </div>
 
             {apps.length === 0 ? (

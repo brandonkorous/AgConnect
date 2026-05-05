@@ -6,7 +6,11 @@ import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-import { closeJobPostingAction, discardDraftJobAction } from '@/lib/api/jobs-actions';
+import {
+    closeJobPostingAction,
+    discardDraftJobAction,
+    setJobRenotifyPausedAction,
+} from '@/lib/api/jobs-actions';
 
 type Labels = {
     label: string;
@@ -16,7 +20,7 @@ type Labels = {
     close: string;
     discard: string;
     pauseRenotify: string;
-    pauseRenotifyComingSoon: string;
+    resumeRenotify: string;
     confirmDiscardTitle: string;
     confirmDiscardBody: string;
     confirmCloseTitle: string;
@@ -30,10 +34,12 @@ type Props = {
     jobId: string;
     locale: string;
     status: 'draft' | 'active' | 'closed' | 'filled';
+    renotifyPaused: boolean;
     labels: Labels;
 };
 
-export function JobActionMenu({ jobId, locale, status, labels }: Props) {
+export function JobActionMenu({ jobId, locale, status, renotifyPaused, labels }: Props) {
+    const [paused, setPaused] = useState(renotifyPaused);
     const router = useRouter();
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const [pending, start] = useTransition();
@@ -80,6 +86,18 @@ export function JobActionMenu({ jobId, locale, status, labels }: Props) {
         });
     };
 
+    const onTogglePause = () => {
+        closeMenu();
+        const next = !paused;
+        start(async () => {
+            const res = await setJobRenotifyPausedAction(jobId, next);
+            if (res.ok) {
+                setPaused(res.data.renotifyPaused);
+                router.refresh();
+            }
+        });
+    };
+
     return (
         <>
             <details ref={detailsRef} className="dropdown dropdown-end">
@@ -121,11 +139,10 @@ export function JobActionMenu({ jobId, locale, status, labels }: Props) {
                             <li>
                                 <button
                                     type="button"
-                                    disabled
-                                    title={labels.pauseRenotifyComingSoon}
-                                    className="opacity-50 cursor-not-allowed"
+                                    onClick={onTogglePause}
+                                    disabled={pending}
                                 >
-                                    {labels.pauseRenotify}
+                                    {paused ? labels.resumeRenotify : labels.pauseRenotify}
                                 </button>
                             </li>
                         </>

@@ -15,6 +15,11 @@ import type { AuditCtxVars } from '../../middleware/audit';
 // Invitation creates are audited via the GET /v1/employer/invitations
 // surface and the worker-side accept event.
 
+// Note on tenant scoping: WorkerProfile carries tenantId per the three-bucket
+// tenancy migration (20260504200000_three_bucket_tenancy). The where clauses
+// below intentionally filter by tenantId — workers seed-bound to a tenant
+// during onboarding and are scoped to that tenant for all employer queries.
+
 export const employerWorkersRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerWorkersRoutes.use('*', requireAuth);
 employerWorkersRoutes.use('*', requireRole('employer'));

@@ -121,6 +121,7 @@ export type EmployerJobView = {
   minAge?: MinAge;
   autoMatchEnabled?: boolean;
   autoTranslateEnabled?: boolean;
+  renotifyPaused?: boolean;
   smsApplyEnabled?: boolean;
   smsApplyKeyword?: string | null;
   applicationDeadlineAt?: string | null;

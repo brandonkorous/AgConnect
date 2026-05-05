@@ -41,7 +41,7 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
         const vStatus = profile ? verificationStatus(profile) : 'pending';
         const verificationPending = vStatus === 'pending' || vStatus === 'rejected';
         return (
-            <div className="px-5 pb-16 pt-8">
+            <div className=" px-5 pb-16 pt-8">
                 <LockedCard
                     title={t('plan_gate.title')}
                     description={t('plan_gate.body')}
@@ -62,7 +62,7 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
     const activeJobs = jobs.filter((j) => j.status === 'active');
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">

@@ -2,13 +2,28 @@ import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { clerkMiddleware, getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
-import { Lang, prisma, UserRole, type Tx } from '@agconn/db';
+import {
+    Lang,
+    prisma,
+    rlsClient,
+    runWithRlsContext,
+    getRlsContext,
+    UserRole,
+    type Tx,
+} from '@agconn/db';
 import { hasPermission, type Permission } from '@agconn/schemas';
 
 // Per docs/00-foundation/02-auth/* the API authenticates via Clerk, then
 // reads role + permissions from the local users row. RLS uses app.role
 // ('authenticated' | 'admin' | 'service' | 'webhook') for coarse cuts;
 // permission scopes are enforced at the application layer.
+//
+// RLS context (app.role / app.user_id / app.tenant_id) is propagated via
+// AsyncLocalStorage and applied on a per-query basis by the rlsClient proxy
+// in @agconn/db. Earlier versions of this middleware held a single Prisma
+// transaction open for the entire request lifetime to keep SET LOCAL alive,
+// which pinned a pooled connection per request and exhausted the pool under
+// any concurrency.
 
 export type AuthVars = {
     db: Tx;
@@ -82,25 +97,20 @@ export const requireAuth = createMiddleware<{ Variables: AuthVars }>(async (c, n
         }
     }
 
-    await prisma.$transaction(
-        async (tx) => {
-            await tx.$executeRawUnsafe(`SET LOCAL app.role = 'authenticated'`);
-            // Parameterize via set_config rather than string-interpolating into SET LOCAL,
-            // since user.id and user.tenantId originate from external auth and a malformed
-            // value would break out of the SQL string.
-            await tx.$executeRaw`SELECT set_config('app.user_id', ${user.id}, true)`;
-            if (user.tenantId) {
-                await tx.$executeRaw`SELECT set_config('app.tenant_id', ${user.tenantId}, true)`;
-            }
-            c.set('db', tx);
-            c.set('userId', user.id);
-            c.set('userRole', user.role);
-            c.set('permissions', user.permissions);
-            c.set('tenantId', user.tenantId);
-            c.set('role', 'authenticated');
-            await next();
+    c.set('db', rlsClient);
+    c.set('userId', user.id);
+    c.set('userRole', user.role);
+    c.set('permissions', user.permissions);
+    c.set('tenantId', user.tenantId);
+    c.set('role', 'authenticated');
+
+    await runWithRlsContext(
+        {
+            role: 'authenticated',
+            userId: user.id,
+            tenantId: user.tenantId ?? undefined,
         },
-        { timeout: 30_000, maxWait: 5_000 },
+        () => next(),
     );
 });
 
@@ -126,10 +136,13 @@ export const requireAdmin = createMiddleware<{ Variables: AuthVars }>(async (c, 
     if (c.var.userRole !== 'admin') {
         return err(c, 403, 'not_admin');
     }
-    // Elevate the connection role so admin RLS policies apply. Without this,
-    // admin endpoints can't read across tenants even when the user is an admin.
-    await c.var.db.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
-    await next();
+    // Elevate the RLS role so admin policies apply. Without this, admin
+    // endpoints can't read across tenants even when the user is an admin.
+    const ctx = getRlsContext();
+    if (!ctx) {
+        return err(c, 500, 'rls_context_missing', 'requireAdmin must run after requireAuth');
+    }
+    await runWithRlsContext({ ...ctx, role: 'admin' }, () => next());
 });
 
 export const requireTenant = createMiddleware<{ Variables: AuthVars }>(async (c, next) => {

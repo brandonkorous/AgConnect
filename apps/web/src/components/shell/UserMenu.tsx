@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import type { Route } from 'next';
 import { useClerk } from '@clerk/nextjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -56,6 +56,7 @@ export function UserMenu({
 }: Props) {
   const { signOut } = useClerk();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -80,11 +81,11 @@ export function UserMenu({
   const otherLocale: 'en' | 'es' = locale === 'es' ? 'en' : 'es';
   const localeSwitchHref = (() => {
     const segments = pathname.split('/');
-    if (segments[1] === 'en' || segments[1] === 'es') {
-      segments[1] = otherLocale;
-      return segments.join('/') || `/${otherLocale}`;
-    }
-    return `/${otherLocale}${pathname}`;
+    const basePath = (segments[1] === 'en' || segments[1] === 'es')
+      ? (segments[1] = otherLocale, segments.join('/') || `/${otherLocale}`)
+      : `/${otherLocale}${pathname}`;
+    const qs = searchParams?.toString() ?? '';
+    return qs ? `${basePath}?${qs}` : basePath;
   })();
 
   return (
@@ -205,10 +206,14 @@ export function UserMenu({
                   className="text-base-content/50 h-3.5 w-3.5"
                 />
                 <span className="flex-1">{labels.language}</span>
-                <span className="text-base-content/55 font-mono text-[10px] uppercase">
-                  {locale === 'es' ? labels.languageEs : labels.languageEn}
-                  {' → '}
-                  {locale === 'es' ? labels.languageEn : labels.languageEs}
+                <span className="font-mono text-[10px] uppercase">
+                  <span className={locale === 'es' ? 'text-base-content' : 'text-base-content/40'}>
+                    {labels.languageEs}
+                  </span>
+                  <span className="text-base-content/30 mx-1.5">·</span>
+                  <span className={locale === 'en' ? 'text-base-content' : 'text-base-content/40'}>
+                    {labels.languageEn}
+                  </span>
                 </span>
               </Link>
             </li>

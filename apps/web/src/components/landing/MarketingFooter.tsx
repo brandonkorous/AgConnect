@@ -75,7 +75,7 @@ export function MarketingFooter() {
                             {t('description')}
                         </p>
                         <div className="flex flex-col gap-2 pt-2">
-                            <p className="text-accent label">{t('counties_label')}</p>
+                            <p className="text-accent eyebrow">{t('counties_label')}</p>
                             <ul className="flex flex-wrap gap-1.5">
                                 {counties.map((c) => (
                                     <li key={c}>
@@ -90,7 +90,7 @@ export function MarketingFooter() {
 
                     {cols.map((col) => (
                         <div key={col.key} className="flex flex-col gap-3.5">
-                            <h3 className="text-accent label">{t(`col.${col.key}.title`)}</h3>
+                            <h3 className="text-accent eyebrow">{t(`col.${col.key}.title`)}</h3>
                             <ul className="menu menu-sm gap-2 p-0">
                                 {col.items.map((item) => (
                                     <li key={item.key}>

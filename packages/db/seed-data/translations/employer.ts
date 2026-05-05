@@ -606,8 +606,8 @@ export const employer: TranslationBundle = {
         es: "Etapa",
     },
     "candidates.empty": {
-        en: "No candidates yet — share your posting to start receiving applications.",
-        es: "Aún sin candidatos — comparte tu publicación para empezar a recibir solicitudes.",
+        en: "Once your posting goes live, applicants land here.",
+        es: "En cuanto tu publicación esté activa, los postulantes aparecerán aquí.",
     },
     "candidates.eyebrow": {
         en: "Pipeline",
@@ -796,6 +796,10 @@ export const employer: TranslationBundle = {
     "compliance.audit.actions_due": {
         en: "Open actions",
         es: "Acciones abiertas",
+    },
+    "compliance.audit.empty": {
+        en: "Compliance items are still loading. Refresh in a moment to generate the binder.",
+        es: "Los puntos de cumplimiento siguen cargándose. Actualiza en un momento para generar la carpeta.",
     },
     "compliance.audit.category_score": {
         en: "Category score: {score}%",
@@ -992,6 +996,10 @@ export const employer: TranslationBundle = {
     "compliance.item_status.fail": {
         en: "Action needed",
         es: "Acción necesaria",
+    },
+    "compliance.item_pinned_in_actions": {
+        en: "In actions",
+        es: "En acciones",
     },
     "compliance.evidence.too_large": {
         en: "File is too large. Max 25 MB.",
@@ -1707,6 +1715,14 @@ export const employer: TranslationBundle = {
     },
     "crews.edit_crew.archive_keep": { en: "Keep crew", es: "Conservar cuadrilla" },
     "crews.edit_crew.archive_confirm_button": { en: "Archive", es: "Archivar" },
+    "crews.edit_crew.archive_typed_confirm_label": {
+        en: "Type the crew name to confirm",
+        es: "Escribe el nombre de la cuadrilla para confirmar",
+    },
+    "crews.edit_crew.archive_typed_confirm_hint": {
+        en: "Members stay hired but the crew is removed from the schedule.",
+        es: "Los miembros siguen contratados pero la cuadrilla se quita del horario.",
+    },
     "crews.edit_crew.duplicate_name": { en: "{name} (copy)", es: "{name} (copia)" },
     "crews.edit_crew.jump_to_section": { en: "Jump to section…", es: "Ir a sección…" },
     "crews.edit_crew.save_bar_new": { en: "Ready to create.", es: "Listo para crear." },
@@ -3340,9 +3356,9 @@ export const employer: TranslationBundle = {
         en: "Pause renotifications",
         es: "Pausar reavisos",
     },
-    "jobs.list_head.actions.pause_renotify_soon": {
-        en: "Coming soon",
-        es: "Próximamente",
+    "jobs.list_head.actions.resume_renotify": {
+        en: "Resume renotifications",
+        es: "Reanudar reavisos",
     },
     "jobs.list_head.confirm_cancel": {
         en: "Cancel",
@@ -4484,6 +4500,14 @@ export const employer: TranslationBundle = {
         en: "By job type · season",
         es: "Por tipo de empleo · temporada",
     },
+    "reports.by_job_type_row.applied_hired": {
+        en: "{applied} applied · {hired} hired",
+        es: "{applied} postulados · {hired} contratados",
+    },
+    "reports.by_job_type_row.fill_pct": {
+        en: "{pct}% filled",
+        es: "{pct}% cubierto",
+    },
     "reports.kpi.hires.label": {
         en: "Hires this season",
         es: "Contrataciones esta temporada",
@@ -4571,6 +4595,14 @@ export const employer: TranslationBundle = {
     "reports.top_workers_sub": {
         en: "by piece-rate yield",
         es: "por rendimiento de destajo",
+    },
+    "shell.badges.surface_hire": {
+        en: "HIRE",
+        es: "HIRE",
+    },
+    "shell.badges.pro": {
+        en: "PRO",
+        es: "PRO",
     },
     "shell.nav.billing": {
         en: "Billing",
@@ -5098,6 +5130,17 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.diff_modal_body":        { en: "Workers who have already applied will receive an SMS summarizing what changed.", es: "Los trabajadores que ya aplicaron recibirán un SMS con un resumen de los cambios." },
     "jobs.form_v2.diff_modal_no_changes":  { en: "Nothing tracked has changed since the last save.", es: "Nada rastreado ha cambiado desde el último guardado." },
     "jobs.form_v2.diff_modal_send":        { en: "Send notification",             es: "Enviar notificación" },
+    "jobs.form_v2.republish_button":       { en: "Resend auto-match",             es: "Reenviar emparejamiento" },
+    "jobs.form_v2.republish_dispatched":   { en: "Auto-match queued",             es: "Emparejamiento en cola" },
+    "jobs.form_v2.republish_no_automatch": { en: "Auto-match is off for this posting", es: "El emparejamiento automático está apagado" },
+    "jobs.form_v2.republish_failed":       { en: "Could not resend auto-match",   es: "No se pudo reenviar" },
+    "jobs.form_v2.reopen_button":          { en: "Re-open posting",               es: "Reabrir publicación" },
+    "jobs.form_v2.reopen_failed":          { en: "Could not re-open posting",     es: "No se pudo reabrir" },
+    "jobs.form_v2.renotify_pause_button":  { en: "Pause renotifications",         es: "Pausar reavisos" },
+    "jobs.form_v2.renotify_resume_button": { en: "Resume renotifications",        es: "Reanudar reavisos" },
+    "jobs.form_v2.renotify_paused_ok":     { en: "Renotifications paused",        es: "Reavisos pausados" },
+    "jobs.form_v2.renotify_resumed_ok":    { en: "Renotifications resumed",       es: "Reavisos reanudados" },
+    "jobs.form_v2.renotify_pause_failed":  { en: "Could not change renotify state", es: "No se pudo cambiar el estado" },
 
     // Worker preview rail
     "jobs.form_v2.preview.rail_label":         { en: "Worker preview",            es: "Vista del trabajador" },

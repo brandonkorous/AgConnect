@@ -141,7 +141,7 @@ export function buildCardStrings(t: Translator, tHead: Translator) {
             close: tHead('actions.close'),
             discard: tHead('actions.discard'),
             pauseRenotify: tHead('actions.pause_renotify'),
-            pauseRenotifyComingSoon: tHead('actions.pause_renotify_soon'),
+            resumeRenotify: tHead('actions.resume_renotify'),
             confirmDiscardTitle: tHead('confirm_discard.title'),
             confirmDiscardBody: tHead('confirm_discard.body'),
             confirmCloseTitle: tHead('confirm_close.title'),

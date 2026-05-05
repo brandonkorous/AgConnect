@@ -91,6 +91,47 @@ export async function publishJob(
   return { ok: true };
 }
 
+export async function republishJob(
+  locale: string,
+  id: string,
+): Promise<{ ok: true; enqueued: boolean } | { ok: false; code: string; message: string }> {
+  const res = await client(locale).post<{ ok: true; enqueued: boolean }>(
+    `/v1/employer/jobs/${id}/republish`,
+    undefined,
+    { handleErrorInline: true },
+  );
+  if (!isOk(res)) return { ok: false, code: res.error.code, message: res.error.message };
+  return { ok: true, enqueued: res.data.enqueued };
+}
+
+export async function reopenJob(
+  locale: string,
+  id: string,
+): Promise<{ ok: true } | { ok: false; code: string; message: string }> {
+  const res = await client(locale).post<{ job: EmployerJobView }>(
+    `/v1/employer/jobs/${id}/reopen`,
+    undefined,
+    { handleErrorInline: true },
+  );
+  if (!isOk(res)) return { ok: false, code: res.error.code, message: res.error.message };
+  return { ok: true };
+}
+
+export async function setJobRenotifyPaused(
+  locale: string,
+  id: string,
+  paused: boolean,
+): Promise<{ ok: true; renotifyPaused: boolean } | { ok: false; code: string; message: string }> {
+  const path = paused ? 'pause-renotify' : 'resume-renotify';
+  const res = await client(locale).post<{ renotifyPaused: boolean }>(
+    `/v1/employer/jobs/${id}/${path}`,
+    undefined,
+    { handleErrorInline: true },
+  );
+  if (!isOk(res)) return { ok: false, code: res.error.code, message: res.error.message };
+  return { ok: true, renotifyPaused: res.data.renotifyPaused };
+}
+
 export async function uploadJobPhoto(
   locale: Locale | string,
   jobId: string,

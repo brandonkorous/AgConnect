@@ -48,6 +48,7 @@ export default async function CompliancePage({ params }: Props) {
         0,
     );
     const openItems = totalItems - okItems;
+    const actionItemIds = new Set(actions.map((a) => a.id).filter((x): x is string => x != null));
 
     const subtitle = (() => {
         if (summary?.delta != null && summary.priorScore != null) {
@@ -72,7 +73,7 @@ export default async function CompliancePage({ params }: Props) {
         : t('dol_inspection_none');
 
     return (
-        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
+        <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <p className="text-base-content/60 text-[11px] font-semibold uppercase tracking-[0.18em]">
@@ -192,10 +193,15 @@ export default async function CompliancePage({ params }: Props) {
                                                 : t('item_status.fail');
                                     const icon =
                                         it.status === 'ok' ? faCheck : it.status === 'warn' ? faBell : faMinus;
+                                    const isPinned = it.id != null && actionItemIds.has(it.id);
                                     return (
                                         <div
                                             key={it.key}
-                                            className="bg-base-200 flex items-center gap-3 rounded-2xl px-3 py-2"
+                                            id={`item-${it.key}`}
+                                            className={[
+                                                'flex items-center gap-3 scroll-mt-24 rounded-2xl px-3 py-2 target:ring-2 target:ring-primary target:ring-offset-2',
+                                                isPinned ? 'bg-base-200/40 opacity-70' : 'bg-base-200',
+                                            ].join(' ')}
                                         >
                                             <div
                                                 className={[
@@ -213,6 +219,11 @@ export default async function CompliancePage({ params }: Props) {
                                                 <div className="flex items-center gap-2">
                                                     <div className="text-xs font-medium">{it.label}</div>
                                                     <StatusBadge status={badgeStatus} label={badgeLabel} />
+                                                    {isPinned && (
+                                                        <span className="badge badge-ghost badge-xs font-mono uppercase tracking-wider">
+                                                            {t('item_pinned_in_actions')}
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="text-base-content/60 text-[11px]">{it.details}</div>
                                             </div>

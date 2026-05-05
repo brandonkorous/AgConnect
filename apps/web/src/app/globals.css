@@ -52,8 +52,11 @@
   animation-duration: 320ms;
 }
 
-/* Tierra signature: eyebrow label utility — 0.18em tracking is brand-defining */
-@utility label {
+/* Tierra signature: marketing eyebrow utility — 0.18em tracking is brand-defining.
+   Reserved for short marketing flourishes (BOOST YOUR EARNINGS, eyebrow-over-headline
+   patterns), NOT for form labels or hint text. Form labels stay sentence-case via
+   daisyUI's native .label class. */
+@utility eyebrow {
   font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 600;
@@ -73,6 +76,22 @@ body {
     @apply px-3 py-2;
 }
 
+.label {
+    white-space: normal;
+}
+
+.menu a{
+    &:hover {
+            @apply bg-primary/5 text-primary rounded-lg shadow-none;
+        };
+
+    @apply rounded-lg;
+}
+.menu-active {
+    @apply bg-primary/10 text-primary rounded-lg font-semibold shadow-none;
+
+}
+
 /* Tierra: cream surfaces wash out daisyUI's default 20% base-content border.
    Lift inputs / selects / textareas to a more visible border so fields read
    as fields, not as text on a card. Focus state still uses the strong
@@ -84,6 +103,18 @@ body {
   --input-color: var(--color-base-300);
   border-color: var(--color-base-300);
   @apply rounded bg-base-100;
+}
+
+/* daisyUI ships .fieldset with `grid-template-columns: 1fr`, but a bare 1fr
+   track sizes to MAX-CONTENT of its items (long hint paragraphs, unbreakable
+   address strings) — so a fieldset stays 285px wide while its inner grid
+   blows out to 445px and overflows the viewport on phones. minmax(0, 1fr)
+   constrains the track; min-width: 0 on the items lets them shrink to it. */
+.fieldset {
+  grid-template-columns: minmax(0, 1fr);
+}
+.fieldset > * {
+  min-width: 0;
 }
 [data-theme='tierra-dark'] .input,
 [data-theme='tierra-dark'] .select,

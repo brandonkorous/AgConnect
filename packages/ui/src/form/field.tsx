@@ -34,7 +34,7 @@ export function Field<TValues extends FieldValues>({
   const hintId = `${id}-hint`;
 
   return (
-    <fieldset className="fieldset">
+    <fieldset className="fieldset w-full min-w-0">
       <legend className="fieldset-legend" id={`${id}-label`}>
         {label}
         {required && <span className="text-error ml-1">*</span>}

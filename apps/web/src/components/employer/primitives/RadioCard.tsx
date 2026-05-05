@@ -1,6 +1,8 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 type RadioCardProps<T extends string> = {
@@ -11,6 +13,7 @@ type RadioCardProps<T extends string> = {
     title: string;
     description?: string;
     icon?: IconDefinition;
+    chip?: ReactNode;
     disabled?: boolean;
     className?: string;
 };
@@ -23,6 +26,7 @@ export function RadioCard<T extends string>({
     title,
     description,
     icon,
+    chip,
     disabled,
     className,
 }: RadioCardProps<T>) {
@@ -50,7 +54,9 @@ export function RadioCard<T extends string>({
                 onChange={() => onChange(value)}
                 className="sr-only"
             />
-            {icon && (
+            {chip ? (
+                <span className="shrink-0">{chip}</span>
+            ) : icon ? (
                 <span
                     className={[
                         'mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full',
@@ -59,13 +65,18 @@ export function RadioCard<T extends string>({
                 >
                     <FontAwesomeIcon icon={icon} className="h-4 w-4" />
                 </span>
-            )}
+            ) : null}
             <span className="min-w-0 flex-1">
                 <span className="block text-base font-semibold text-base-content">{title}</span>
                 {description && (
                     <span className="mt-0.5 block text-sm text-base-content/70">{description}</span>
                 )}
             </span>
+            {chip && checked && (
+                <span className="bg-primary text-primary-content grid h-5 w-5 place-items-center rounded-full">
+                    <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
+                </span>
+            )}
         </label>
     );
 }

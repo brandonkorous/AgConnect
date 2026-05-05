@@ -235,6 +235,7 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
       status: existing.status as 'draft' | 'active',
       employerName,
       notifyApplicants: body.notifyApplicants,
+      renotifyPaused: existing.renotifyPaused,
     });
 
     return { updated, renotify };
@@ -366,6 +367,150 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
       console.warn('[publish] automatch enqueue failed', e);
     }
   }
+
+  return ok(c, { job: shapeJob(result.job, {}) });
+});
+
+// ─── Pause / Resume renotifications ──────────────────────────────────────
+// Toggles the `renotifyPaused` flag on the posting. While paused, the
+// recordEditAndMaybeRenotify pipeline skips the SMS/push enqueue on edits.
+employerJobsRoutes.post('/:id/pause-renotify', async (c) => {
+  const userId = c.var.userId;
+  const id = c.req.param('id');
+
+  const job = await c.var.db.jobPosting.findFirst({
+    where: { id, employerId: userId, deletedAt: null },
+    select: { id: true, status: true, renotifyPaused: true },
+  });
+  if (!job) return err(c, 404, 'not_found');
+  if (job.status !== JobStatus.active) {
+    return err(c, 422, 'validation_failed', 'cannot_pause_non_active');
+  }
+  if (job.renotifyPaused) return ok(c, { renotifyPaused: true });
+
+  await c.var.db.jobPosting.update({
+    where: { id },
+    data: { renotifyPaused: true },
+  });
+
+  await c.var.audit.log({
+    action: 'job.posting.renotify.paused',
+    resourceId: id,
+  });
+
+  return ok(c, { renotifyPaused: true });
+});
+
+employerJobsRoutes.post('/:id/resume-renotify', async (c) => {
+  const userId = c.var.userId;
+  const id = c.req.param('id');
+
+  const job = await c.var.db.jobPosting.findFirst({
+    where: { id, employerId: userId, deletedAt: null },
+    select: { id: true, renotifyPaused: true },
+  });
+  if (!job) return err(c, 404, 'not_found');
+  if (!job.renotifyPaused) return ok(c, { renotifyPaused: false });
+
+  await c.var.db.jobPosting.update({
+    where: { id },
+    data: { renotifyPaused: false },
+  });
+
+  await c.var.audit.log({
+    action: 'job.posting.renotify.resumed',
+    resourceId: id,
+  });
+
+  return ok(c, { renotifyPaused: false });
+});
+
+// ─── Republish (re-runs auto-match SMS for an active posting) ────────────
+employerJobsRoutes.post('/:id/republish', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+
+  const job = await c.var.db.jobPosting.findFirst({
+    where: { id, employerId: userId, deletedAt: null },
+    select: { id: true, status: true, autoMatchEnabled: true },
+  });
+  if (!job) return err(c, 404, 'not_found');
+  if (job.status !== JobStatus.active) {
+    return err(c, 422, 'validation_failed', 'cannot_republish_non_active');
+  }
+
+  let enqueuedId: string | null = null;
+  if (job.autoMatchEnabled) {
+    try {
+      enqueuedId = await enqueueAutomatch({ tenantId, jobId: job.id });
+    } catch (e) {
+      console.warn('[republish] automatch enqueue failed', e);
+      return err(c, 500, 'automatch_enqueue_failed');
+    }
+  }
+
+  await c.var.audit.log({
+    action: 'job.posting.republished',
+    resourceId: job.id,
+    metadata: { enqueued: !!enqueuedId, autoMatchEnabled: job.autoMatchEnabled },
+  });
+
+  return ok(c, { ok: true, enqueued: !!enqueuedId });
+});
+
+// ─── Reopen (closed → active; preserves slug + keyword) ──────────────────
+employerJobsRoutes.post('/:id/reopen', async (c) => {
+  const userId = c.var.userId;
+  const id = c.req.param('id');
+
+  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  if (!profile) return err(c, 404, 'not_found');
+  if (!isVerified(profile)) return err(c, 403, 'employer_not_verified');
+
+  const limit = activePostingLimit(profile.plan);
+
+  const result = await c.var.db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM employer_profiles WHERE id = ${profile.id} FOR UPDATE`;
+
+    const job = await tx.jobPosting.findFirst({
+      where: { id, employerId: userId, deletedAt: null },
+    });
+    if (!job) return { kind: 'not_found' as const };
+    if (job.status !== JobStatus.closed) return { kind: 'not_closed' as const };
+
+    if (Number.isFinite(limit)) {
+      const activeCount = await tx.jobPosting.count({
+        where: { employerId: userId, status: JobStatus.active, deletedAt: null },
+      });
+      if (activeCount >= limit) return { kind: 'plan_limit' as const };
+    }
+
+    const reopened = await tx.jobPosting.update({
+      where: { id },
+      data: {
+        status: JobStatus.active,
+        closedAt: null,
+        filledAt: null,
+      },
+      include: {
+        foremanContact: true,
+        photos: { orderBy: { sortOrder: 'asc' } },
+        screeningQuestions: { orderBy: { sortOrder: 'asc' } },
+      },
+    });
+
+    return { kind: 'ok' as const, job: reopened };
+  });
+
+  if (result.kind === 'not_found') return err(c, 404, 'not_found');
+  if (result.kind === 'not_closed') return err(c, 422, 'validation_failed', 'not_closed');
+  if (result.kind === 'plan_limit') return err(c, 402, 'plan_posting_limit');
+
+  await c.var.audit.log({
+    action: 'job.posting.reopened',
+    resourceId: result.job.id,
+  });
 
   return ok(c, { job: shapeJob(result.job, {}) });
 });

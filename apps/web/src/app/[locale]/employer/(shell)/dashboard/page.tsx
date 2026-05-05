@@ -65,7 +65,7 @@ export default async function EmployerDashboardPage({ params }: Props) {
     const hidePaymentCta = status === 'pending' || status === 'rejected';
 
     return (
-        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
+        <div className=" px-5 pb-16 pt-8">
             <EmployerGreeting
                 locale={locale}
                 firstName={firstName}
