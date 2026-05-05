@@ -85,12 +85,12 @@ export default async function JobsPage({ params, searchParams }: Props) {
   const jobs = enrich(filteredRaw as unknown as JobCardData[]);
 
   return (
-    <div className="px-6 pb-16 pt-8 lg:px-8">
+    <div className="min-w-0 max-w-full px-4 pb-16 pt-6 sm:px-6 sm:pt-8 lg:px-8">
       <BrowseJobsHeader totalCount={jobs.length} county={COUNTY} locale={locale} />
       <BrowseJobsFilters />
       <CropChips />
 
-      <div className="grid gap-[22px] lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid min-w-0 grid-cols-1 gap-[22px] lg:grid-cols-[1.5fr_1fr]">
         <div>
           <div className="mb-3.5 flex items-end justify-between gap-4">
             <div>
@@ -118,7 +118,7 @@ export default async function JobsPage({ params, searchParams }: Props) {
               <p className="text-base-content/60 text-[13px]">{t('empty_body')}</p>
             </div>
           ) : (
-            <div className="grid gap-3.5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} locale={locale} />
               ))}

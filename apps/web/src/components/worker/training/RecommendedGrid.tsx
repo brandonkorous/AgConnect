@@ -58,7 +58,7 @@ export function RecommendedGrid({ programs, locale }: Props) {
   return (
     <>
       <SectionHeading sub={t('sub')}>{t('title')}</SectionHeading>
-      <div className="mb-6 grid gap-3.5 lg:grid-cols-2">
+      <div className="mb-6 grid grid-cols-1 gap-3.5 lg:grid-cols-2">
         {programs.map((p, i) => {
           const title = locale === 'es' ? p.titleEs : p.titleEn;
           return (

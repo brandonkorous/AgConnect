@@ -12,7 +12,7 @@ export function ContactSection({ state, actions }: Props) {
   const t = useTranslations('employer.onboarding');
 
   return (
-    <div className="border-base-300 grid gap-5 border-t pt-5 sm:grid-cols-2">
+    <div className="border-base-300 grid grid-cols-1 gap-5 border-t pt-5 sm:grid-cols-2">
       <fieldset className="fieldset w-full min-w-0">
         <legend className="fieldset-legend">{t('contact_email.label')}</legend>
         <input

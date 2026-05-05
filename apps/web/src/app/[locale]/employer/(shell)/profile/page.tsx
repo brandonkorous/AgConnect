@@ -43,7 +43,7 @@ export default async function EmployerProfilePage({ params }: Props) {
                 <p className="text-base-content/70 mt-2 max-w-2xl text-sm">{t('subtitle')}</p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
                 <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
                     <ProfileEditor
                         initial={{

@@ -61,7 +61,7 @@ export default async function BillingPage({ params }: Props) {
 
             <div className="mb-7">
                 <DarkHeroCard glow="gold">
-                    <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto] md:items-end">
                         <div>
                             <p className="text-accent font-mono text-[11px] uppercase tracking-wider">
                                 {t('current_plan')}
@@ -114,7 +114,7 @@ export default async function BillingPage({ params }: Props) {
                 </DarkHeroCard>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {(['free', 'pro', 'enterprise'] as const).map((tier) => (
                     <PlanTierCard
                         key={tier}

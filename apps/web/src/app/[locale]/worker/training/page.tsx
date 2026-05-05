@@ -86,7 +86,7 @@ export default async function TrainingHubPage({ params }: Props) {
         }
       />
 
-      <div className="mb-5 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
           <StatTile key={s.label} {...s} />
         ))}

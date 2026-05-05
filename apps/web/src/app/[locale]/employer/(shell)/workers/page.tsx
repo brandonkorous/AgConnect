@@ -137,7 +137,7 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
                     <p className="text-base-content/70 text-sm">{t('empty')}</p>
                 </div>
             ) : (
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     {workers.map((w) => (
                         <WorkerCard
                             key={w.id}

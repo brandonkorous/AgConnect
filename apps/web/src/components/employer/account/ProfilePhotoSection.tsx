@@ -2,12 +2,12 @@
 
 import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import type { UserResource } from '@clerk/types';
 import { SectionCard } from './SectionCard';
+import type { ClerkUser } from './types';
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
-type Props = { user: UserResource };
+type Props = { user: ClerkUser };
 
 export function ProfilePhotoSection({ user }: Props) {
     const t = useTranslations('employer.account.profile_photo');

@@ -65,7 +65,7 @@ export default async function PayrollPage({ params }: Props) {
                 />
             </div>
 
-            <div className="mb-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+            <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
                 <DarkHeroCard glow="gold">
                     <div className="text-accent font-mono text-[11px] uppercase tracking-wider">
                         {t('hero_eyebrow')}

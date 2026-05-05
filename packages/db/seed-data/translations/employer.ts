@@ -3840,6 +3840,14 @@ export const employer: TranslationBundle = {
         en: "No thread selected.",
         es: "No hay hilo seleccionado.",
     },
+    "messages.read_indicator": {
+        en: "read at {time}",
+        es: "leído a las {time}",
+    },
+    "messages.sent_indicator": {
+        en: "sent",
+        es: "enviado",
+    },
     "messages.pinned_confirmed": {
         en: "{confirmed}/{total} confirmed",
         es: "{confirmed}/{total} confirmados",

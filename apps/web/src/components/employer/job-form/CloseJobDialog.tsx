@@ -1,9 +1,9 @@
 'use client';
 
-import { forwardRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { patchJob } from './api';
+import { closeJob } from './api';
 
 type Props = {
     locale: string;
@@ -16,25 +16,26 @@ export const CloseJobDialog = forwardRef<HTMLDialogElement, Props>(function Clos
 ) {
     const t = useTranslations('employer.jobs.form_v2');
     const router = useRouter();
+    const innerRef = useRef<HTMLDialogElement | null>(null);
+    useImperativeHandle(ref, () => innerRef.current as HTMLDialogElement, []);
     const [closing, setClosing] = useState(false);
 
     async function handleClose() {
         if (!jobId) return;
         setClosing(true);
         try {
-            const r = await patchJob(locale, jobId, { status: 'closed' });
-            if (r.kind === 'ok') {
+            const r = await closeJob(locale, jobId);
+            if (r.ok) {
                 router.push(`/${locale}/employer/jobs`);
             }
         } finally {
             setClosing(false);
-            const dlg = (ref as React.RefObject<HTMLDialogElement | null>)?.current;
-            dlg?.close();
+            innerRef.current?.close();
         }
     }
 
     return (
-        <dialog ref={ref} className="modal">
+        <dialog ref={innerRef} className="modal">
             <div className="modal-box">
                 <h3 className="font-display text-xl font-normal">{t('close_modal_title')}</h3>
                 <p className="text-base-content/70 mt-2 text-sm">{t('close_modal_body')}</p>

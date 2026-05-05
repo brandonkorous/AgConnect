@@ -336,12 +336,18 @@ function Conversation({
                             </div>
                             <div
                                 className={[
-                                    'text-base-content/60 mt-1 font-mono text-[10px]',
+                                    'mt-1 font-mono text-[10px]',
                                     m.senderRole === 'me' ? 'text-right' : 'text-left',
+                                    m.senderRole === 'me' && m.readByOthersLabel
+                                        ? 'text-success'
+                                        : 'text-base-content/60',
                                 ].join(' ')}
                             >
                                 {m.whenLabel}
-                                {m.senderRole === 'me' ? ' · sent' : ''}
+                                {m.senderRole === 'me' &&
+                                    (m.readByOthersLabel
+                                        ? ` · ${t('read_indicator', { time: m.readByOthersLabel })}`
+                                        : ` · ${t('sent_indicator')}`)}
                             </div>
                         </div>
                     </div>

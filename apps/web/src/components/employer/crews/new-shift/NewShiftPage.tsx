@@ -252,7 +252,7 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
         </select>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[12rem_minmax(0,1fr)] xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[12rem_minmax(0,1fr)] xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
         <div className="hidden lg:block">
           <div className="sticky top-22">
             <SectionNav />

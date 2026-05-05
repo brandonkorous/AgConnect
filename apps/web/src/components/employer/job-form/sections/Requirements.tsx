@@ -135,7 +135,7 @@ export function RequirementsSection({ state, update, skills, locale, errors = {}
         {err('skills') && <p className="label text-error">{t(`validation_reason_${err('skills')!.reason}`)}</p>}
       </fieldset>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_min_experience')}

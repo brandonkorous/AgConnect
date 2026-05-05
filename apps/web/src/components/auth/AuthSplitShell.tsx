@@ -21,7 +21,7 @@ export async function AuthSplitShell({ locale, variant, children }: Props) {
 
   return (
     <main className="bg-base-200 min-h-[100dvh]">
-      <div className="grid min-h-[100dvh] lg:grid-cols-[minmax(0,46%)_minmax(0,54%)]">
+      <div className="grid grid-cols-1 min-h-[100dvh] lg:grid-cols-[minmax(0,46%)_minmax(0,54%)]">
         {/* ─────────────────── Pitch panel — civic-utilitarian, no hero metric */}
         <aside
           className={[

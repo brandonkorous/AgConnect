@@ -86,7 +86,7 @@ export default async function EmployerDashboardPage({ params }: Props) {
 
             <HiringPipelineBoard locale={locale} applicants={applicants} />
 
-            <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr]">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
                 <div className="grid gap-5">
                     <ActiveJobsBoard locale={locale} jobs={jobs} />
                 </div>

@@ -85,20 +85,20 @@ export default async function PayPage({ params }: Props) {
         }
       />
 
-      <div className="mb-5 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
           <StatTile key={s.label} {...s} />
         ))}
       </div>
 
-      <div className="mb-5 grid gap-5 lg:grid-cols-[1.55fr_1fr]">
+      <div className="mb-5 grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
         <EarningsChart paystubs={paystubs} locale={locale} />
         <NextDepositCard nextDeposit={nextDeposit} />
       </div>
 
       <PaystubsTable rows={paystubs} locale={locale} />
 
-      <div className="mt-5 grid gap-3.5 lg:grid-cols-3">
+      <div className="mt-5 grid grid-cols-1 gap-3.5 lg:grid-cols-3">
         <DirectDepositCard locale={locale} />
         <TaxDocsCard locale={locale} />
         <WageTransparencyCard locale={locale} avgHourly={`$${avgHourly}/hr`} />

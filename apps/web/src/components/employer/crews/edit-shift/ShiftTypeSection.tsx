@@ -29,7 +29,7 @@ export function ShiftTypeSection({ value, onChange }: Props) {
 
   return (
     <SectionCard id="type" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-2.5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-4">
         {TYPES.map((type) => (
           <RadioCard<ShiftType>
             key={type.k}

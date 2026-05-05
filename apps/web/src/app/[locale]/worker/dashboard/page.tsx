@@ -48,7 +48,7 @@ export default async function WorkerDashboardPage({ params }: Props) {
       />
       <WorkerKpiRow locale={locale} />
       <UpNextShift locale={locale} />
-      <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
         <div className="grid gap-5">
           <MatchedJobs locale={locale} />
           <ApplicationsPanel locale={locale} />

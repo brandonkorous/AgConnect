@@ -88,7 +88,7 @@ export default async function EmployerHelpPage({ params }: Props) {
                 >
                     {t('topics_heading')}
                 </h2>
-                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                     {topics.map((topic) => (
                         <Link
                             key={topic.titleKey}
@@ -107,7 +107,7 @@ export default async function EmployerHelpPage({ params }: Props) {
 
             <section
                 aria-labelledby="contact-heading"
-                className="bg-base-100 border-base-300 grid gap-6 rounded-2xl border p-7 md:grid-cols-[1fr_auto] md:items-center"
+                className="bg-base-100 border-base-300 grid grid-cols-1 gap-6 rounded-2xl border p-7 md:grid-cols-[1fr_auto] md:items-center"
             >
                 <div>
                     <h2 id="contact-heading" className="font-display text-2xl font-light tracking-tight">

@@ -101,7 +101,7 @@ export default async function CompliancePage({ params }: Props) {
                 </div>
             </div>
 
-            <div className="mb-6 grid gap-4 lg:grid-cols-[260px_1fr]">
+            <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[260px_1fr]">
                 <div className="card card-bordered card-compact bg-base-100">
                     <div className="card-body items-center text-center">
                         <ScoreDonut percent={overall} size="lg" label={t('overall_label')} />
@@ -147,7 +147,7 @@ export default async function CompliancePage({ params }: Props) {
                 </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {cats.map((c) => (
                     <div key={c.key} className="card card-bordered card-compact bg-base-100">
                         <div className="card-body">

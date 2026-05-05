@@ -135,7 +135,7 @@ export function ProfileEditor({ initial }: Props) {
             />
           </Field>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label={t('onboarding.ein.label')} help={t('onboarding.ein.help')}>
               <input
                 name="ein"
@@ -196,7 +196,7 @@ export function ProfileEditor({ initial }: Props) {
           />
         </div>
 
-        <div className="border-base-300 mt-1 grid gap-5 border-t pt-5 sm:grid-cols-2">
+        <div className="border-base-300 mt-1 grid grid-cols-1 gap-5 border-t pt-5 sm:grid-cols-2">
           <Field label={t('onboarding.contact_email.label')}>
             <input
               name="contactEmail"

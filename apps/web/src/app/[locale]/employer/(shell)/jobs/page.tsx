@@ -133,7 +133,7 @@ export default async function EmployerJobsPage({ params, searchParams }: Props) 
                     <p className="text-base-content/70">{q ? tHead('no_results') : t('empty')}</p>
                 </div>
             ) : (
-                <div className="grid gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 lg:grid-cols-3">
                     {visibleJobs.map((j) => (
                         <JobCard
                             key={j.id}

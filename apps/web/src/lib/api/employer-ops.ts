@@ -646,6 +646,8 @@ export type MessageView = {
   senderRole: 'me' | 'them';
   body: string;
   whenLabel: string;
+  /** Short-time label of when a counterparty read this message; null if unread. */
+  readByOthersLabel: string | null;
 };
 
 type ApiConversation = {
@@ -708,21 +710,35 @@ export async function listThreads(folder: FolderKey = 'all'): Promise<{
   }
 }
 
+type CounterpartyRead = { userId: string; lastReadAt: string | null };
+
 export async function listMessages(threadId: string, employerUserId?: string): Promise<MessageView[]> {
   try {
     const client = await getServerApiClient();
-    const res = await client.get<{ messages: ApiMessage[] }>(
-      `/v1/employer/messages/${threadId}/messages`,
-      { handleErrorInline: true },
-    );
+    const res = await client.get<{
+      messages: ApiMessage[];
+      counterpartiesRead: CounterpartyRead[];
+    }>(`/v1/employer/messages/${threadId}/messages`, { handleErrorInline: true });
     if (!isOk(res)) return [];
-    return res.data.messages.map((m) => ({
-      id: m.id,
-      threadId: m.conversationId,
-      senderRole: employerUserId && m.senderUserId === employerUserId ? 'me' : 'them',
-      body: m.body,
-      whenLabel: shortTime(m.createdAt),
-    }));
+    const latestRead = (res.data.counterpartiesRead ?? [])
+      .map((c) => (c.lastReadAt ? new Date(c.lastReadAt).getTime() : 0))
+      .reduce((max, t) => (t > max ? t : max), 0);
+    return res.data.messages.map((m) => {
+      const senderIsMe = !!(employerUserId && m.senderUserId === employerUserId);
+      const sentAt = new Date(m.createdAt).getTime();
+      const readByOthersLabel =
+        senderIsMe && latestRead > 0 && latestRead >= sentAt
+          ? shortTime(new Date(latestRead).toISOString())
+          : null;
+      return {
+        id: m.id,
+        threadId: m.conversationId,
+        senderRole: senderIsMe ? 'me' : 'them',
+        body: m.body,
+        whenLabel: shortTime(m.createdAt),
+        readByOthersLabel,
+      };
+    });
   } catch (e) {
     console.error('listMessages failed', e);
     return [];

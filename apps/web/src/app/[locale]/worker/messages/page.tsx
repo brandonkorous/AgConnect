@@ -79,7 +79,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
           </p>
         </div>
       ) : (
-        <div className="border-base-300 bg-base-100 grid min-h-[640px] overflow-hidden rounded-2xl border lg:grid-cols-[180px_1fr_1.4fr]">
+        <div className="border-base-300 bg-base-100 grid grid-cols-1 min-h-[640px] overflow-hidden rounded-2xl border lg:grid-cols-[180px_1fr_1.4fr]">
           <FoldersRail
             locale={locale}
             counts={folderCounts(threads)}

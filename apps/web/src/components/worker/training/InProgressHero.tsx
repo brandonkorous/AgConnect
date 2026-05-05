@@ -26,7 +26,7 @@ export function InProgressHero({ enrollment, locale }: Props) {
             'radial-gradient(ellipse 60% 100% at 100% 0%, rgba(245,158,11,0.22), transparent 60%)',
         }}
       />
-      <div className="relative grid items-center gap-8 lg:grid-cols-[1fr_auto]">
+      <div className="relative grid grid-cols-1 items-center gap-8 lg:grid-cols-[1fr_auto]">
         <div>
           <div className="text-warning font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
             {t('eyebrow', { funder: program.funder })}

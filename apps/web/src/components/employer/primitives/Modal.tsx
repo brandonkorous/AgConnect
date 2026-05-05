@@ -122,7 +122,7 @@ export const Modal = forwardRef<ModalHandle, Props>(function Modal(
 
         <div className="mt-4">
           {sidebar ? (
-            <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
               <div className="min-w-0">{children}</div>
               <aside className="lg:border-base-300 lg:border-l lg:pl-6">
                 {sidebar}

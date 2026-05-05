@@ -123,7 +123,7 @@ export default async function DocumentsPage({ params }: Props) {
         }
       />
 
-      <div className="border-base-300 bg-base-100 mb-5 grid items-center gap-8 rounded-2xl border p-[22px] lg:grid-cols-[1.4fr_1fr]">
+      <div className="border-base-300 bg-base-100 mb-5 grid grid-cols-1 items-center gap-8 rounded-2xl border p-[22px] lg:grid-cols-[1.4fr_1fr]">
         <div>
           <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
             {tComp('eyebrow')}
@@ -188,7 +188,7 @@ export default async function DocumentsPage({ params }: Props) {
         <SectionHeading sub={tGroup('on_file', { n: profileItems.length })}>
           {tGroup('title.identification')}
         </SectionHeading>
-        <div className="grid gap-3.5 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
           {profileItems.map((it) => (
             <DocCard
               key={it.name}
@@ -222,7 +222,7 @@ export default async function DocumentsPage({ params }: Props) {
             </Link>
           </div>
         ) : (
-          <div className="grid gap-3.5 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
             {certItems.map((it) => (
               <DocCard
                 key={it.name}

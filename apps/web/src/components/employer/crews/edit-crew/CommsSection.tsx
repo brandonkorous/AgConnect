@@ -34,7 +34,7 @@ export function CommsSection({ draft, onChange }: Props) {
 
   return (
     <SectionCard id="comms" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-2.5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
         {COMMS_KEYS.map((k) => (
           <CheckboxCard
             key={k}

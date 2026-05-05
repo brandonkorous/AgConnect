@@ -75,7 +75,7 @@ export function ApplicationSection({ state, update, contacts, smsApplyKeyword, e
         />
       </fieldset>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <fieldset className="fieldset">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_foreman')}

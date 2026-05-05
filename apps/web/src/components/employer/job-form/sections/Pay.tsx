@@ -32,7 +32,7 @@ export function PaySection({ state, update, errors = {} }: Props) {
         <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
           {t('field_wage_structure')}
         </legend>
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           {STRUCTURES.map((k) => (
             <RadioCard
               key={k}
@@ -53,7 +53,7 @@ export function PaySection({ state, update, errors = {} }: Props) {
         </div>
       </fieldset>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 flex w-full items-baseline justify-between text-sm font-semibold">
             <span>{t('field_base_rate')}</span>
@@ -179,7 +179,7 @@ export function PaySection({ state, update, errors = {} }: Props) {
         <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
           {t('field_benefits')}
         </legend>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <CheckboxCard
             variant="toggle"
             checked={state.transport}

@@ -218,7 +218,7 @@ function AddForm({
           placeholder={t('name_placeholder')}
         />
       </fieldset>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <fieldset className="fieldset">
           <legend className="fieldset-legend">{t('county')}</legend>
           <input

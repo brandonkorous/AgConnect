@@ -138,7 +138,7 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                 )}
             </section>
 
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
                     <div className="font-display mb-4 text-lg font-light tracking-tight">
                         {t('by_job_type')}

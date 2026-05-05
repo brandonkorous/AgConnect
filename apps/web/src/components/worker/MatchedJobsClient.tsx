@@ -81,7 +81,7 @@ export function MatchedJobsClient({ jobs, locale, labels }: Props) {
           <p className="text-base-content/70 text-sm">{labels.empty}</p>
         </div>
       ) : (
-        <div className="grid gap-3.5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
           {filtered.slice(0, 4).map((job) => (
             <WorkerJobCard key={job.id} job={job} locale={locale} />
           ))}

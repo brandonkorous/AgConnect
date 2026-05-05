@@ -36,7 +36,7 @@ export async function FeaturedPostingHero({ locale, job, applicants }: Props) {
         aria-hidden
         className="from-accent/30 absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_100%_0%,_var(--tw-gradient-from),_transparent_60%)]"
       />
-      <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+      <div className="relative grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-center">
         <div>
           <p className="text-accent font-mono text-[11px] uppercase tracking-wider">
             {startsAt} · {job.county}

@@ -32,7 +32,7 @@ meShiftsRoutes.get('/', async (c) => {
       shift: {
         include: {
           employer: { include: { employerProfile: true } },
-          crew: true,
+          crew: { include: { foreman: true } },
         },
       },
     },
@@ -55,10 +55,12 @@ meShiftsRoutes.get('/', async (c) => {
   return ok(c, {
     shifts: assignments.map((a) => {
       const job = a.shift.jobId ? jobById.get(a.shift.jobId) ?? null : null;
+      const foreman = a.shift.crew?.foreman ?? null;
       return {
         id: a.id,
         status: a.status,
         hoursWorked: a.hoursWorked ? Number(a.hoursWorked.toString()) : null,
+        arrivedAt: a.arrivedAt ? a.arrivedAt.toISOString() : null,
         shift: {
           id: a.shift.id,
           date: a.shift.shiftDate.toISOString().slice(0, 10),
@@ -74,6 +76,7 @@ meShiftsRoutes.get('/', async (c) => {
             a.shift.employer?.employerProfile?.legalName ??
             'AgConn employer',
           crewName: a.shift.crew?.name ?? null,
+          foremanPhone: foreman?.phone ?? null,
           jobTitleEn: job?.titleEn ?? null,
           jobTitleEs: job?.titleEs ?? null,
         },
@@ -122,4 +125,31 @@ meShiftsRoutes.post('/:assignmentId/decline', async (c) => {
     metadata: { fields: 'shift.declined' },
   });
   return ok(c, { id: updated.id, status: updated.status });
+});
+
+// Field Mode "I'm here" tile. Records the worker's arrival timestamp without
+// promoting status — the assignment stays at `assigned` or `confirmed`, and
+// the foreman/HR system reads `arrived_at` separately to clock the worker in.
+meShiftsRoutes.post('/:assignmentId/arrive', async (c) => {
+  const id = c.req.param('assignmentId');
+  const assignment = await c.var.db.shiftAssignment.findFirst({
+    where: { id, workerUserId: c.var.userId },
+  });
+  if (!assignment) return err(c, 404, 'not_found');
+  if (assignment.status === ShiftAssignmentStatus.declined) {
+    return err(c, 422, 'validation_failed', 'cannot_arrive_at_declined');
+  }
+  if (assignment.arrivedAt) {
+    return ok(c, { id: assignment.id, arrivedAt: assignment.arrivedAt.toISOString() });
+  }
+  const updated = await c.var.db.shiftAssignment.update({
+    where: { id },
+    data: { arrivedAt: new Date() },
+  });
+  await c.var.audit.log({
+    action: 'worker.profile.updated',
+    resourceId: id,
+    metadata: { fields: 'shift.arrived' },
+  });
+  return ok(c, { id: updated.id, arrivedAt: updated.arrivedAt!.toISOString() });
 });

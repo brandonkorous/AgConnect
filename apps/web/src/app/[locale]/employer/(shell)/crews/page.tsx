@@ -161,7 +161,7 @@ export default async function CrewsPage({ params, searchParams }: Props) {
             {crews.length > 0 && (
                 <>
                     <h2 className="font-display mb-3 text-2xl font-light tracking-tight">{t('crew_leaders')}</h2>
-                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
                         {crews.map((cr) => (
                             <CrewLeaderCard key={cr.id} cr={cr} locale={locale} t={t} />
                         ))}

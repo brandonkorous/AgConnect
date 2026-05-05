@@ -35,7 +35,7 @@ export function DateTimeSection({ draft, onChange, crewSize, errors }: Props) {
 
   return (
     <SectionCard id="date" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-3.5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
         <Field label={t('shift_date_label')} error={errors?.shiftDate ?? null}>
           <input
             type="date"
@@ -118,7 +118,7 @@ export function DateTimeSection({ draft, onChange, crewSize, errors }: Props) {
             tone="primary"
           />
         </div>
-      </div>
+      </fieldset>
     </SectionCard>
   );
 }

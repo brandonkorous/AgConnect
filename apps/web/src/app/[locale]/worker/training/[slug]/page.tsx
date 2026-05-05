@@ -41,7 +41,7 @@ export default async function ProgramDetailPage({ params }: Props) {
         {t('back')}
       </Link>
 
-      <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
         <div>
           <div className="flex items-center gap-2">
             <Pill tone={program.funder === 'CDFA' ? 'warning' : 'primary'}>

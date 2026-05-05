@@ -26,7 +26,7 @@ export function LogisticsSection({ draft, onChange }: Props) {
 
   return (
     <SectionCard id="logistics" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-2.5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
         <ToggleWithEdit
           icon={faVanShuttle}
           checked={Boolean(md.pickup?.enabled)}

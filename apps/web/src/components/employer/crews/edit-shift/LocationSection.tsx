@@ -62,7 +62,7 @@ export function LocationSection({ draft, onChange, error }: Props) {
 
   return (
     <SectionCard id="loc" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-3.5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
         <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend">
             {t('block_label')}

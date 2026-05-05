@@ -62,8 +62,8 @@ export function EarningsChart({ paystubs, locale }: Props) {
         style={{ height: 200 }}
       >
         {months.map((m, i) => (
-          <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-            <div className="text-base-content/60 font-mono text-[10px] font-semibold">
+          <div key={i} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+            <div className="text-base-content/60 hidden font-mono text-[10px] font-semibold sm:block">
               ${m.value.toFixed(1)}k
             </div>
             <div
@@ -84,7 +84,7 @@ export function EarningsChart({ paystubs, locale }: Props) {
         {months.map((m, i) => (
           <div
             key={i}
-            className="text-base-content/60 flex-1 text-center font-mono text-[10.5px] font-semibold"
+            className="text-base-content/60 min-w-0 flex-1 text-center font-mono text-[10.5px] font-semibold"
           >
             {/* Render month abbreviation in the active locale. */}
             {new Date(2024, MONTH_KEYS.indexOf(m.label as (typeof MONTH_KEYS)[number]), 1)

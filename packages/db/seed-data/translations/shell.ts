@@ -381,4 +381,12 @@ export const shell: TranslationBundle = {
         en: "Too short.",
         es: "Demasiado corto.",
     },
+    "mobile.open_menu_aria": {
+        en: "Open menu",
+        es: "Abrir menú",
+    },
+    "mobile.drawer_aria": {
+        en: "Main menu",
+        es: "Menú principal",
+    },
 };

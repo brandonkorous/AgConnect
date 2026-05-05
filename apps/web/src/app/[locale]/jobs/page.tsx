@@ -63,7 +63,7 @@ export default async function PublicJobsPage({ params, searchParams }: Props) {
           <p className="text-base-content/70 text-[14px]">{t('empty')}</p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-3.5 sm:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
           {jobs.map((j) => (
             <PublicJobCard key={j.id} job={j} locale={locale} />
           ))}

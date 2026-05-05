@@ -36,6 +36,21 @@ export async function declineShiftAction(
   return { ok: true, data: { status: res.data.status } };
 }
 
+export async function arriveAtShiftAction(
+  assignmentId: string,
+): Promise<ActionResult<{ arrivedAt: string }>> {
+  const api = await getServerApiClient();
+  const res = await api.post<{ arrivedAt: string }>(
+    `/v1/me/shifts/${encodeURIComponent(assignmentId)}/arrive`,
+    null,
+    { handleErrorInline: true },
+  );
+  if (!res.ok) return { ok: false, code: res.error.code, message: res.error.message };
+  revalidatePath('/[locale]/field', 'page');
+  revalidatePath('/[locale]/worker/shifts', 'page');
+  return { ok: true, data: { arrivedAt: res.data.arrivedAt } };
+}
+
 export async function sendMessageAction(
   conversationId: string,
   body: string,

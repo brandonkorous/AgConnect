@@ -64,6 +64,20 @@ export async function autosaveJob(
   return { ok: true, autosavedAt: res.data.autosavedAt };
 }
 
+export async function closeJob(
+  locale: string,
+  id: string,
+  reason?: 'filled' | 'expired' | 'changed_mind',
+): Promise<{ ok: true } | { ok: false; code: string; message: string }> {
+  const res = await client(locale).post<{ job: EmployerJobView }>(
+    `/v1/employer/jobs/${id}/close`,
+    reason ? { reason } : undefined,
+    { handleErrorInline: true },
+  );
+  if (!isOk(res)) return { ok: false, code: res.error.code, message: res.error.message };
+  return { ok: true };
+}
+
 export async function publishJob(
   locale: string,
   id: string,

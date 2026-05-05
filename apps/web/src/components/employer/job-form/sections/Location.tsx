@@ -59,7 +59,7 @@ export function LocationSection({ state, update, locale, errors = {} }: Props) {
 
   return (
     <SectionShell num={5} id="s-location" title={t('location_title')} subtitle={t('location_sub')}>
-      <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.4fr_1fr]">
         <AddressAutocomplete
           label={t('field_site_address')}
           labels={labels}

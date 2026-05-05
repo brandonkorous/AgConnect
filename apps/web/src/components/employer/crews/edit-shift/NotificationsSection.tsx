@@ -40,7 +40,7 @@ export function NotificationsSection({ draft, onChange }: Props) {
 
   return (
     <SectionCard id="notify" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-2.5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
         {CHANNELS.map((ch) => (
           <CheckboxCard
             key={ch.key}

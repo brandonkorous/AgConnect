@@ -80,7 +80,7 @@ export default async function ShiftsPage({ params, searchParams }: Props) {
           </>
         }
       />
-      <div className="grid gap-5 lg:grid-cols-[1.7fr_1fr]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.7fr_1fr]">
         <ShiftsCalendar shifts={rows} locale={locale} year={year} month={month} />
         <div className="grid gap-3.5">
           <MonthSummary

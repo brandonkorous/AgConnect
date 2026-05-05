@@ -25,7 +25,7 @@ export function ForemanSection({ draft, onChange, hires, locale }: Props) {
           {t('empty_no_hires')}
         </div>
       ) : (
-        <div className="grid gap-2.5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
           {hires.map((h) => {
             const sel = draft.foremanUserId === h.workerUserId;
             const initials = `${h.firstName[0] ?? '?'}${h.lastInitial}`.toUpperCase();

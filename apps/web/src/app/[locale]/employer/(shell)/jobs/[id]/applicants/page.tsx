@@ -59,7 +59,7 @@ export default async function JobApplicantsPage({ params }: Props) {
                 </p>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                 <Column title={t('applied')} apps={cols.applied} locale={locale} />
                 <Column title={t('reviewed')} apps={cols.reviewed} locale={locale} />
                 <Column title={t('hired')} apps={cols.hired} locale={locale} />

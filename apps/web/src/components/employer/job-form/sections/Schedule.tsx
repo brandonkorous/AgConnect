@@ -19,7 +19,7 @@ export function ScheduleSection({ state, update, errors = {} }: Props) {
   const err = (path: string) => errors[path];
   return (
     <SectionShell num={2} id="s-schedule" title={t('schedule_title')} subtitle={t('schedule_sub')}>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_start_date')}

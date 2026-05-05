@@ -270,11 +270,17 @@ employerMessagesRoutes.get('/:id/messages', async (c) => {
   });
   if (!co) return err(c, 404, 'not_found');
 
-  const msgs = await c.var.db.message.findMany({
-    where: { conversationId: id, deletedAt: null },
-    orderBy: { createdAt: 'asc' },
-    take: 200,
-  });
+  const [msgs, otherParticipants] = await Promise.all([
+    c.var.db.message.findMany({
+      where: { conversationId: id, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      take: 200,
+    }),
+    c.var.db.conversationParticipant.findMany({
+      where: { conversationId: id, userId: { not: userId }, leftAt: null },
+      select: { userId: true, lastReadAt: true },
+    }),
+  ]);
 
   // Mark as read for the requesting user.
   await c.var.db.conversationParticipant.updateMany({
@@ -291,6 +297,10 @@ employerMessagesRoutes.get('/:id/messages', async (c) => {
       channel: m.channel,
       direction: m.direction,
       createdAt: m.createdAt.toISOString(),
+    })),
+    counterpartiesRead: otherParticipants.map((p) => ({
+      userId: p.userId,
+      lastReadAt: p.lastReadAt?.toISOString() ?? null,
     })),
   });
 });

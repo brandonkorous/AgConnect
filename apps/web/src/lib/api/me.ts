@@ -5,6 +5,7 @@ export type ShiftRow = {
   id: string;
   status: 'assigned' | 'confirmed' | 'declined' | 'no_show' | 'attended';
   hoursWorked: number | null;
+  arrivedAt: string | null;
   shift: {
     id: string;
     date: string;
@@ -17,6 +18,7 @@ export type ShiftRow = {
     notes: string | null;
     employer: string;
     crewName: string | null;
+    foremanPhone: string | null;
     jobTitleEn: string | null;
     jobTitleEs: string | null;
   };

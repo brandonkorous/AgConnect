@@ -51,7 +51,7 @@ export default async function PreviewAsEmployer({ params }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.6fr_1fr]">
           <div className="border-base-300 grid gap-5 rounded-2xl border bg-white p-6">
             <span className="bg-warning/15 text-warning self-start rounded-full px-3 py-1 text-xs font-semibold uppercase">
               {t('badge')}

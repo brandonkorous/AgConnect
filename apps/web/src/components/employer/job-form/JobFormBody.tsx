@@ -77,7 +77,7 @@ export function JobFormBody({
                 </select>
             </div>
 
-            <div className="grid gap-6 xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
                 <div className="hidden xl:block">
                     <div className="sticky top-20">
                         <SectionNav sections={sections} />

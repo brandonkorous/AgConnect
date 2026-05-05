@@ -28,7 +28,7 @@ export function BasicsSection({ draft, onChange, nameError }: Props) {
 
   return (
     <SectionCard id="basics" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-3.5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
         <fieldset className="fieldset w-full min-w-0">
           <legend className="fieldset-legend">{t('name_label')}</legend>
           <input

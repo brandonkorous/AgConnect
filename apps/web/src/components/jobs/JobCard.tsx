@@ -76,9 +76,9 @@ export function JobCard({ job, locale }: Props) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-3">
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
         <div>
-          <div className="text-base-content font-serif text-[28px] font-normal leading-none tracking-[-0.02em]">
+          <div className="text-base-content font-serif text-[28px] font-normal leading-none tracking-[-0.02em] whitespace-nowrap">
             ${job.wageMin}–${job.wageMax}
           </div>
           <div className="text-base-content/60 mt-1 text-[11.5px]">
@@ -87,11 +87,11 @@ export function JobCard({ job, locale }: Props) {
         </div>
         <div className="text-right">
           <div className="text-base-content/60 text-xs">{t('start_label')}</div>
-          <div className="font-mono text-[13px] font-semibold">
+          <div className="font-mono text-[13px] font-semibold tabular-nums slashed-zero">
             {job.startDate}
           </div>
         </div>
-        <span className="bg-base-content text-base-100 group-hover:bg-primary inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[13.5px] font-medium transition-colors">
+        <span className="bg-base-content text-base-100 group-hover:bg-primary inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13.5px] font-medium transition-colors sm:w-auto">
           {t('apply')}
           <FontAwesomeIcon icon={faArrowRight} className="h-3 w-3" />
         </span>

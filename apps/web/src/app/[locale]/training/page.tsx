@@ -41,7 +41,7 @@ export default async function TrainingPage({ params, searchParams }: Props) {
           <p className="text-base-content/60 text-sm">{tWorker('empty_help')}</p>
         </div>
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {programs.map((p) => (
             <ProgramCard key={p.id} program={p} locale={locale} />
           ))}

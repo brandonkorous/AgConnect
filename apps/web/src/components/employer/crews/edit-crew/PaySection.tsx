@@ -14,7 +14,7 @@ export function PaySection({ draft, onChange }: Props) {
 
   return (
     <SectionCard id="pay" title={t('title')} sub={t('sub')}>
-      <div className="grid gap-3.5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3.5 md:grid-cols-3">
         <MoneyField
           label={t('base_wage_label')}
           value={draft.baseWageCents}

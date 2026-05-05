@@ -67,7 +67,7 @@ export function ScreeningList({ questions, onChange }: Props) {
         </div>
       ))}
       {questions.length < 10 && (
-        <div className="border-base-300 grid gap-2 rounded-xl border border-dashed p-3.5 sm:grid-cols-2">
+        <div className="border-base-300 grid grid-cols-1 gap-2 rounded-xl border border-dashed p-3.5 sm:grid-cols-2">
           <fieldset className="fieldset">
             <legend className="fieldset-legend text-base-content/70 text-[12px] font-semibold">
               {t('screening_q_en')}

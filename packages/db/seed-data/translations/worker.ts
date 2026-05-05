@@ -2941,4 +2941,392 @@ export const worker: TranslationBundle = {
         en: "Skills Wallet",
         es: "Cartera de habilidades",
     },
+    "dashboard.sidebar.menu_field_mode": {
+        en: "Switch to Field Mode",
+        es: "Cambiar al Modo de campo",
+    },
+    "dashboard.sidebar.menu_field_mode_hint": {
+        en: "A simpler view for one-handed use in the field.",
+        es: "Una vista más simple para usar con una sola mano en el campo.",
+    },
+    "field.meta.title": {
+        en: "Field Mode — AgConn",
+        es: "Modo de campo — AgConn",
+    },
+    "field.meta.description": {
+        en: "A simpler view of AgConn for use in the field.",
+        es: "Una vista más simple de AgConn para usar en el campo.",
+    },
+    "field.header.home_aria": {
+        en: "AgConn Field Mode home",
+        es: "Inicio del Modo de campo de AgConn",
+    },
+    "field.header.switch_locale_aria": {
+        en: "Switch language to {locale}",
+        es: "Cambiar idioma a {locale}",
+    },
+    "field.header.lang_en": {
+        en: "EN",
+        es: "EN",
+    },
+    "field.header.lang_es": {
+        en: "ES",
+        es: "ES",
+    },
+    "field.bottom_nav.aria": {
+        en: "Field Mode navigation",
+        es: "Navegación del Modo de campo",
+    },
+    "field.bottom_nav.today": {
+        en: "Today",
+        es: "Hoy",
+    },
+    "field.bottom_nav.apply": {
+        en: "Apply",
+        es: "Aplicar",
+    },
+    "field.bottom_nav.applications": {
+        en: "Mine",
+        es: "Mías",
+    },
+    "field.bottom_nav.messages": {
+        en: "Messages",
+        es: "Mensajes",
+    },
+    "field.exit.switch_to_full": {
+        en: "Switch to full view",
+        es: "Cambiar a vista completa",
+    },
+    "field.exit.switch_to_full_hint": {
+        en: "Field Mode is for one-handed use in the field. Switch back when you're at home or on a laptop.",
+        es: "El Modo de campo es para usar con una sola mano en el campo. Cambia de regreso cuando estés en casa o en la computadora.",
+    },
+    "field.today.greeting_today": {
+        en: "Today",
+        es: "Hoy",
+    },
+    "field.today.eyebrow": {
+        en: "Today's shift",
+        es: "El turno de hoy",
+    },
+    "field.today.untitled_job": {
+        en: "Field work",
+        es: "Trabajo de campo",
+    },
+    "field.today.crew_at_employer": {
+        en: "{crew} · {employer}",
+        es: "{crew} · {employer}",
+    },
+    "field.today.where": {
+        en: "Where",
+        es: "Dónde",
+    },
+    "field.today.get_directions": {
+        en: "Get directions",
+        es: "Cómo llegar",
+    },
+    "field.today.call_supervisor": {
+        en: "Call supervisor",
+        es: "Llamar al supervisor",
+    },
+    "field.today.what_to_bring": {
+        en: "What to bring",
+        es: "Qué traer",
+    },
+    "field.today.confirm.title": {
+        en: "Confirm this shift",
+        es: "Confirma este turno",
+    },
+    "field.today.confirm.body": {
+        en: "Let your supervisor know you'll be there.",
+        es: "Avisa a tu supervisor que estarás ahí.",
+    },
+    "field.today.confirm.cta": {
+        en: "Yes, I'll be there",
+        es: "Sí, ahí estaré",
+    },
+    "field.today.confirm.submitting": {
+        en: "Confirming…",
+        es: "Confirmando…",
+    },
+    "field.today.confirm.error": {
+        en: "Couldn't confirm. Try again.",
+        es: "No se pudo confirmar. Intenta de nuevo.",
+    },
+    "field.today.arrival.cta": {
+        en: "I'm here",
+        es: "Ya llegué",
+    },
+    "field.today.arrival.submitting": {
+        en: "Sending…",
+        es: "Enviando…",
+    },
+    "field.today.arrival.arrived": {
+        en: "You're checked in",
+        es: "Estás registrado",
+    },
+    "field.today.arrival.arrived_at_time": {
+        en: "Arrived at {time}",
+        es: "Llegaste a las {time}",
+    },
+    "field.today.arrival.error": {
+        en: "Couldn't send. Try again.",
+        es: "No se pudo enviar. Intenta de nuevo.",
+    },
+    "field.today.empty.title": {
+        en: "No shift today",
+        es: "Hoy no hay turno",
+    },
+    "field.today.empty.body": {
+        en: "Take it easy. We'll text you when your next shift is set.",
+        es: "Descansa. Te avisaremos por mensaje cuando se programe tu próximo turno.",
+    },
+    "field.today.empty.next_up": {
+        en: "Next up",
+        es: "Lo que sigue",
+    },
+    "field.today.empty.see_all_shifts": {
+        en: "See all shifts",
+        es: "Ver todos los turnos",
+    },
+    "field.apply.title": {
+        en: "Apply to a job",
+        es: "Aplicar a un trabajo",
+    },
+    "field.apply.subtitle": {
+        en: "One tap. Confirmation comes by text message.",
+        es: "Un toque. La confirmación llega por mensaje de texto.",
+    },
+    "field.apply.empty.title": {
+        en: "No open jobs near you",
+        es: "No hay trabajos abiertos cerca de ti",
+    },
+    "field.apply.empty.body": {
+        en: "We'll text you when something opens up.",
+        es: "Te avisaremos por mensaje cuando se abra algo.",
+    },
+    "field.apply.applied_chip": {
+        en: "Applied",
+        es: "Aplicado",
+    },
+    "field.apply.confirm_eyebrow": {
+        en: "Apply to",
+        es: "Aplicar a",
+    },
+    "field.apply.confirm_body": {
+        en: "The employer will see your name, skills, and contact info. We'll text you when they respond.",
+        es: "El empleador verá tu nombre, habilidades e información de contacto. Te avisaremos por mensaje cuando responda.",
+    },
+    "field.apply.confirm_cta": {
+        en: "Apply now",
+        es: "Aplicar ahora",
+    },
+    "field.apply.applied_state": {
+        en: "Application sent",
+        es: "Solicitud enviada",
+    },
+    "field.apply.submitting": {
+        en: "Sending…",
+        es: "Enviando…",
+    },
+    "field.apply.error": {
+        en: "Couldn't send. Try again.",
+        es: "No se pudo enviar. Intenta de nuevo.",
+    },
+    "field.apply.close": {
+        en: "Close",
+        es: "Cerrar",
+    },
+    "field.apply.sms_hint": {
+        en: "You can also text APPLY to (559) 555-AGRI from any phone.",
+        es: "También puedes enviar APLICAR por mensaje al (559) 555-AGRI desde cualquier teléfono.",
+    },
+    "field.apply.detail.wage": {
+        en: "Pay",
+        es: "Pago",
+    },
+    "field.apply.detail.location": {
+        en: "Where",
+        es: "Dónde",
+    },
+    "field.apply.detail.starts": {
+        en: "Starts",
+        es: "Empieza",
+    },
+    "field.apply.detail.employer": {
+        en: "Employer",
+        es: "Empleador",
+    },
+    "field.apply.wage_unit.hour": {
+        en: "hr",
+        es: "h",
+    },
+    "field.apply.wage_unit.day": {
+        en: "day",
+        es: "día",
+    },
+    "field.apply.wage_unit.piece": {
+        en: "piece",
+        es: "pieza",
+    },
+    "field.apply.wage_unit.acre": {
+        en: "acre",
+        es: "acre",
+    },
+    "field.applications.title": {
+        en: "My applications",
+        es: "Mis solicitudes",
+    },
+    "field.applications.subtitle": {
+        en: "Open applications you can withdraw.",
+        es: "Solicitudes abiertas que puedes retirar.",
+    },
+    "field.applications.empty.title": {
+        en: "No open applications",
+        es: "No hay solicitudes abiertas",
+    },
+    "field.applications.empty.body": {
+        en: "When you apply to a job, you'll see it here.",
+        es: "Cuando apliques a un trabajo, lo verás aquí.",
+    },
+    "field.applications.status.applied": {
+        en: "Applied",
+        es: "Aplicado",
+    },
+    "field.applications.status.reviewed": {
+        en: "Under review",
+        es: "En revisión",
+    },
+    "field.applications.status.hired": {
+        en: "Hired",
+        es: "Contratado",
+    },
+    "field.applications.status.rejected": {
+        en: "Closed",
+        es: "Cerrado",
+    },
+    "field.applications.status.withdrawn": {
+        en: "Withdrawn",
+        es: "Retirada",
+    },
+    "field.applications.sheet_eyebrow": {
+        en: "Application",
+        es: "Solicitud",
+    },
+    "field.applications.withdraw_warning": {
+        en: "Withdrawing tells the employer you're no longer interested. You can apply again later if the job is still open.",
+        es: "Retirar le avisa al empleador que ya no estás interesado. Puedes aplicar de nuevo más tarde si el trabajo sigue abierto.",
+    },
+    "field.applications.withdraw_cta": {
+        en: "Withdraw application",
+        es: "Retirar solicitud",
+    },
+    "field.applications.withdrawn_state": {
+        en: "Withdrawn",
+        es: "Retirada",
+    },
+    "field.applications.submitting": {
+        en: "Withdrawing…",
+        es: "Retirando…",
+    },
+    "field.applications.error": {
+        en: "Couldn't withdraw. Try again.",
+        es: "No se pudo retirar. Intenta de nuevo.",
+    },
+    "field.applications.close": {
+        en: "Close",
+        es: "Cerrar",
+    },
+    "field.applications.keep_application": {
+        en: "Keep application",
+        es: "Mantener solicitud",
+    },
+    "field.messages.title": {
+        en: "Messages",
+        es: "Mensajes",
+    },
+    "field.messages.subtitle": {
+        en: "Notes from your supervisors and employers.",
+        es: "Notas de tus supervisores y empleadores.",
+    },
+    "field.messages.empty.title": {
+        en: "No messages yet",
+        es: "Aún no hay mensajes",
+    },
+    "field.messages.empty.body": {
+        en: "When an employer or supervisor reaches out, you'll see it here.",
+        es: "Cuando un empleador o supervisor te escriba, lo verás aquí.",
+    },
+    "field.messages.no_messages_yet": {
+        en: "No messages yet",
+        es: "Aún no hay mensajes",
+    },
+    "field.messages.you_prefix": {
+        en: "You:",
+        es: "Tú:",
+    },
+    "field.messages.thread.back": {
+        en: "Messages",
+        es: "Mensajes",
+    },
+    "field.messages.thread.eyebrow": {
+        en: "Conversation with",
+        es: "Conversación con",
+    },
+    "field.messages.thread.empty": {
+        en: "No messages in this thread yet.",
+        es: "Aún no hay mensajes en esta conversación.",
+    },
+    "field.messages.composer.placeholder": {
+        en: "Write a message…",
+        es: "Escribe un mensaje…",
+    },
+    "field.messages.composer.aria_label": {
+        en: "Message body",
+        es: "Cuerpo del mensaje",
+    },
+    "field.messages.composer.send_aria": {
+        en: "Send message",
+        es: "Enviar mensaje",
+    },
+    "field.messages.composer.sending": {
+        en: "Sending",
+        es: "Enviando",
+    },
+    "field.messages.composer.error": {
+        en: "Couldn't send. Try again.",
+        es: "No se pudo enviar. Intenta de nuevo.",
+    },
+    "field.soft_prompt.aria": {
+        en: "Field Mode suggestion",
+        es: "Sugerencia del Modo de campo",
+    },
+    "field.soft_prompt.title": {
+        en: "Looks like you're on a phone",
+        es: "Parece que estás en un teléfono",
+    },
+    "field.soft_prompt.body": {
+        en: "Field Mode is simpler — built for one hand and the sun.",
+        es: "El Modo de campo es más simple — hecho para una mano y el sol.",
+    },
+    "field.soft_prompt.try_it": {
+        en: "Try it",
+        es: "Probar",
+    },
+    "field.soft_prompt.dismiss_aria": {
+        en: "Dismiss",
+        es: "Descartar",
+    },
+    "field.placeholder.eyebrow": {
+        en: "Field Mode",
+        es: "Modo de campo",
+    },
+    "field.placeholder.title": {
+        en: "Field Mode is on its way",
+        es: "El Modo de campo está en camino",
+    },
+    "field.placeholder.body": {
+        en: "Today's shift, one-tap clock-in, and quick apply will live here. We're building the screens now.",
+        es: "El turno de hoy, el ingreso con un toque y la aplicación rápida vivirán aquí. Estamos construyendo las pantallas ahora.",
+    },
 };

@@ -21,7 +21,7 @@ type Props = { counts: PipelineCounts };
 export function PipelineCounters({ counts }: Props) {
   const t = useTranslations('worker.applications_dense.pipeline');
   return (
-    <div className="mb-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
       {ORDER.map((k) => (
         <div
           key={k}

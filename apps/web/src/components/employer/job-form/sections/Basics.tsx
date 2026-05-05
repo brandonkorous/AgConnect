@@ -100,7 +100,7 @@ export function BasicsSection({
           {err('cropId') && <p className="label text-error">{t(`validation_reason_${err('cropId')!.reason}`)}</p>}
         </fieldset>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <fieldset className="fieldset">
             <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
               {t('field_role')}

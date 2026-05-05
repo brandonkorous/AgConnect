@@ -13,7 +13,7 @@ export function CertificateGrid({ certs, locale }: Props) {
   return (
     <>
       <SectionHeading sub={t('sub')}>{t('title')}</SectionHeading>
-      <div className="grid gap-3.5 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
         {certs.map((c) => {
           const title = locale === 'es' ? c.program.titleEs : c.program.titleEn;
           const issued = c.completedAt

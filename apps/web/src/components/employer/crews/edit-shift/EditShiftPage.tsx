@@ -1,17 +1,9 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import Link from 'next/link';
 import type { Route } from 'next';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChevronRight,
-    faCheck,
-    faCopy,
-    faXmark,
-} from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { SectionNav } from './SectionNav';
@@ -24,6 +16,8 @@ import { SafetySection } from './SafetySection';
 import { NotificationsSection } from './NotificationsSection';
 import { WorkersSection } from './WorkersSection';
 import { PreviewRail } from './PreviewRail';
+import { EditShiftHeader } from './EditShiftHeader';
+import { EditShiftFooter } from './EditShiftFooter';
 import {
     dowOfDate,
     repeatDatesForDraft,
@@ -65,13 +59,7 @@ export function EditShiftPage({
         notes: shift.notes ?? '',
         metadata: { ...shift.metadata },
         repeatDow: {
-            Mon: false,
-            Tue: false,
-            Wed: false,
-            Thu: false,
-            Fri: false,
-            Sat: false,
-            Sun: false,
+            Mon: false, Tue: false, Wed: false, Thu: false, Fri: false, Sat: false, Sun: false,
             [baseDow]: true,
         },
     });
@@ -81,9 +69,7 @@ export function EditShiftPage({
     }, []);
 
     const onCountsChanged = useCallback(
-        (next: { assignedCount: number; confirmedCount: number }) => {
-            setCounts(next);
-        },
+        (next: { assignedCount: number; confirmedCount: number }) => setCounts(next),
         [],
     );
 
@@ -144,9 +130,7 @@ export function EditShiftPage({
                 return;
             }
             const created = (res.data as { shift: { id: string } }).shift;
-            router.push(
-                `/${locale}/employer/crews/shifts/${created.id}/edit` as Route,
-            );
+            router.push(`/${locale}/employer/crews/shifts/${created.id}/edit` as Route);
         } finally {
             setBusy(false);
         }
@@ -157,9 +141,7 @@ export function EditShiftPage({
         setError(null);
         try {
             const client = getApiClient(locale === 'es' ? 'es' : 'en');
-            const res = await client.del(`/v1/employer/shifts/${shift.id}`, {
-                handleErrorInline: true,
-            });
+            const res = await client.del(`/v1/employer/shifts/${shift.id}`, { handleErrorInline: true });
             if (!isOk(res)) {
                 setError(res.error.message || t('error_cancel'));
                 return;
@@ -172,66 +154,21 @@ export function EditShiftPage({
 
     const repeatDates = repeatDatesForDraft(draft.shiftDate, draft.repeatDow);
     const isCancelled = draft.status === 'cancelled';
+    const openCount = Math.max(0, counts.assignedCount - counts.confirmedCount);
 
     return (
         <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
-            {/* Breadcrumbs */}
-            <nav
-                aria-label={t('breadcrumbs_aria')}
-                className="text-base-content/60 mb-3 flex flex-wrap items-center gap-1.5 text-xs"
-            >
-                <Link href={`/${locale}/employer/crews`} className="hover:text-base-content">
-                    {t('breadcrumb_crews')}
-                </Link>
-                <FontAwesomeIcon icon={faChevronRight} className="h-2 w-2 opacity-60" />
-                <span>{crewName ?? t('breadcrumb_no_crew')}</span>
-                <FontAwesomeIcon icon={faChevronRight} className="h-2 w-2 opacity-60" />
-                <span className="text-base-content/80 font-semibold">
-                    {t('breadcrumb_current', { date: formatBreadcrumbDate(draft.shiftDate, locale) })}
-                </span>
-            </nav>
-
-            {/* Header */}
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-                <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
-                        {t('eyebrow')}
-                    </p>
-                    <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
-                        {t('title_a')}{' '}
-                        <em className="text-primary not-italic font-light">{t('title_b')}</em>
-                    </h1>
-                    <div className="text-base-content/70 mt-2 text-sm">
-                        {t('subtitle', {
-                            crew: crewName ?? t('breadcrumb_no_crew'),
-                            confirmed: counts.confirmedCount,
-                            open: Math.max(0, counts.assignedCount - counts.confirmedCount),
-                        })}
-                    </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        onClick={duplicate}
-                        disabled={busy}
-                        className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
-                    >
-                        <FontAwesomeIcon icon={faCopy} className="h-3 w-3" />
-                        {t('action_duplicate')}
-                    </button>
-                    {!isCancelled && (
-                        <button
-                            type="button"
-                            onClick={() => setCancelOpen((v) => !v)}
-                            disabled={busy}
-                            className="btn btn-sm border-error/40 text-error hover:bg-error/10 rounded-full border bg-base-100 font-medium"
-                        >
-                            <FontAwesomeIcon icon={faXmark} className="h-3 w-3" />
-                            {t('action_cancel')}
-                        </button>
-                    )}
-                </div>
-            </div>
+            <EditShiftHeader
+                locale={locale}
+                crewName={crewName}
+                shiftDate={draft.shiftDate}
+                isCancelled={isCancelled}
+                confirmedCount={counts.confirmedCount}
+                openCount={openCount}
+                busy={busy}
+                onDuplicate={duplicate}
+                onCancelClick={() => setCancelOpen(!cancelOpen)}
+            />
 
             {error && (
                 <div className="bg-warning/10 border-warning/30 text-base-content mb-4 rounded-xl border px-3 py-2 text-sm">
@@ -241,9 +178,7 @@ export function EditShiftPage({
 
             {cancelOpen && !isCancelled && (
                 <div className="bg-base-200/60 border-base-300 mb-5 rounded-2xl border p-4">
-                    <p className="text-sm leading-relaxed">
-                        {t('cancel_confirm_message')}
-                    </p>
+                    <p className="text-sm leading-relaxed">{t('cancel_confirm_message')}</p>
                     <div className="mt-3 flex justify-end gap-2">
                         <button
                             type="button"
@@ -283,7 +218,7 @@ export function EditShiftPage({
                 </select>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[12rem_minmax(0,1fr)] xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[12rem_minmax(0,1fr)] xl:grid-cols-[12rem_minmax(0,1fr)_22rem]">
                 <div className="hidden lg:block">
                     <div className="sticky top-22">
                         <SectionNav />
@@ -313,48 +248,14 @@ export function EditShiftPage({
                         onCountsChanged={onCountsChanged}
                     />
 
-                    <div className="bg-base-100 border-base-300 shadow-pop sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
-                        <div className="flex items-center gap-3">
-                            <span className="bg-primary/10 text-primary grid h-9 w-9 place-items-center rounded-full">
-                                <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
-                            </span>
-                            <div className="min-w-0">
-                                <div className="text-sm font-semibold">
-                                    {t('save_bar_complete', { date: formatBreadcrumbDate(draft.shiftDate, locale) })}
-                                </div>
-                                <div className="text-base-content/55 text-xs">
-                                    {repeatDates.length > 0
-                                        ? t('save_bar_repeat', { count: repeatDates.length })
-                                        : t('save_bar_single')}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            <Link
-                                href={`/${locale}/employer/crews?week=${draft.shiftDate}`}
-                                className="btn btn-ghost btn-sm border-base-300 rounded-full border"
-                            >
-                                {t('footer_cancel')}
-                            </Link>
-                            <button
-                                type="button"
-                                onClick={() => save(false)}
-                                disabled={busy}
-                                className="btn btn-sm border-base-300 rounded-full border bg-transparent"
-                            >
-                                {busy ? '…' : t('footer_save_quiet')}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => save(true)}
-                                disabled={busy}
-                                className="btn btn-primary btn-sm rounded-full"
-                            >
-                                <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
-                                {busy ? '…' : t('footer_save_notify')}
-                            </button>
-                        </div>
-                    </div>
+                    <EditShiftFooter
+                        locale={locale}
+                        shiftDate={draft.shiftDate}
+                        repeatCount={repeatDates.length}
+                        busy={busy}
+                        onSaveQuiet={() => save(false)}
+                        onSaveNotify={() => save(true)}
+                    />
                 </div>
 
                 <div className="hidden xl:block">
@@ -377,13 +278,4 @@ function nextDay(iso: string): string {
     const d = new Date(`${iso}T00:00:00.000Z`);
     d.setUTCDate(d.getUTCDate() + 1);
     return d.toISOString().slice(0, 10);
-}
-
-function formatBreadcrumbDate(iso: string, locale: string): string {
-    const [y = 0, m = 1, d = 1] = iso.split('-').map(Number);
-    return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-    }).format(new Date(y, m - 1, d));
 }
