@@ -1,24 +1,31 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import type { SkillLookupView } from '@/lib/api/employer';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';
+import type { ErrorMap } from '../validation';
 
 const EXPERIENCE = ['none', 'one_year', 'three_years', 'five_years'] as const;
 const AGES = ['sixteen', 'eighteen', 'twenty_one'] as const;
+const CUSTOM_PREFIX = 'custom:';
 
 type Props = {
   state: JobFormState;
   update: JobFormUpdate;
   skills: SkillLookupView[];
   locale: string;
+  errors?: ErrorMap;
 };
 
-export function RequirementsSection({ state, update, skills, locale }: Props) {
+export function RequirementsSection({ state, update, skills, locale, errors = {} }: Props) {
   const t = useTranslations('employer.jobs.form_v2');
+  const err = (path: string) => errors[path];
+  const [showCustom, setShowCustom] = useState(false);
+  const [customDraft, setCustomDraft] = useState('');
 
   function toggleSkill(slug: string) {
     const has = state.skills.includes(slug);
@@ -26,6 +33,26 @@ export function RequirementsSection({ state, update, skills, locale }: Props) {
       skills: has ? state.skills.filter((s) => s !== slug) : [...state.skills, slug],
     });
   }
+
+  function addCustomSkill() {
+    const label = customDraft.trim();
+    if (!label) return;
+    const slug = `${CUSTOM_PREFIX}${label}`;
+    if (state.skills.includes(slug)) {
+      setCustomDraft('');
+      setShowCustom(false);
+      return;
+    }
+    update({ skills: [...state.skills, slug] });
+    setCustomDraft('');
+    setShowCustom(false);
+  }
+
+  function removeCustom(slug: string) {
+    update({ skills: state.skills.filter((s) => s !== slug) });
+  }
+
+  const customSkills = state.skills.filter((s) => s.startsWith(CUSTOM_PREFIX));
 
   return (
     <SectionShell num={4} id="s-requirements" title={t('req_title')} subtitle={t('req_sub')}>
@@ -56,15 +83,63 @@ export function RequirementsSection({ state, update, skills, locale }: Props) {
               </button>
             );
           })}
+          {customSkills.map((slug) => {
+            const label = slug.slice(CUSTOM_PREFIX.length);
+            return (
+              <span
+                key={slug}
+                className="bg-base-content text-base-100 border-base-content inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold"
+              >
+                <FontAwesomeIcon icon={faCheck} className="h-2.5 w-2.5" />
+                {label}
+                <button
+                  type="button"
+                  onClick={() => removeCustom(slug)}
+                  aria-label={t('skill_custom_remove')}
+                  className="text-base-100/70 hover:text-base-100 ml-0.5"
+                >
+                  <FontAwesomeIcon icon={faXmark} className="h-2.5 w-2.5" />
+                </button>
+              </span>
+            );
+          })}
           <button
             type="button"
-            disabled
-            className="border-base-300 text-base-content/45 inline-flex cursor-not-allowed items-center gap-1 rounded-full border border-dashed px-3 py-1.5 text-xs font-semibold"
+            onClick={() => setShowCustom((v) => !v)}
+            className="border-base-300 text-base-content/70 hover:border-base-content/40 hover:text-base-content inline-flex items-center gap-1 rounded-full border border-dashed px-3 py-1.5 text-xs font-semibold transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} className="h-2.5 w-2.5" />
-            {t('skill_custom')}
+            {t('skill_custom_add')}
           </button>
         </div>
+        {showCustom && (
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              type="text"
+              value={customDraft}
+              onChange={(e) => setCustomDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addCustomSkill();
+                }
+              }}
+              maxLength={40}
+              placeholder={t('skill_custom_placeholder')}
+              className="input input-bordered input-sm flex-1"
+              aria-label={t('skill_custom_add')}
+            />
+            <button
+              type="button"
+              onClick={addCustomSkill}
+              disabled={!customDraft.trim()}
+              className="btn btn-sm btn-primary rounded-full"
+            >
+              {t('screening_add_short')}
+            </button>
+          </div>
+        )}
+        {err('skills') && <p className="label text-error">{t(`validation_reason_${err('skills')!.reason}`)}</p>}
       </fieldset>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">

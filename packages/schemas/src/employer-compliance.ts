@@ -19,9 +19,9 @@ export const CreateComplianceItemBody = z
     itemKey: z.string().min(1).max(60),
     label: z.string().min(1).max(200),
     status: ComplianceItemStatusEnum.default('ok'),
-    details: z.string().max(500).optional(),
-    evidenceUrl: z.string().url().max(2048).optional(),
-    dueAt: z.string().datetime().optional(),
+    details: z.string().max(500).nullable().optional(),
+    evidenceUrl: z.string().url().max(2048).nullable().optional(),
+    dueAt: z.string().datetime().nullable().optional(),
   })
   .strict();
 export type CreateComplianceItemBody = z.infer<typeof CreateComplianceItemBody>;

@@ -17,6 +17,7 @@
     "@agconn/api-client": "workspace:*",
     "@agconn/schemas": "workspace:*",
     "@agconn/ui": "workspace:*",
+    "@clerk/localizations": "^3.0.0",
     "@clerk/nextjs": "^7.2.9",
     "@fortawesome/fontawesome-svg-core": "7.2.0",
     "@fortawesome/free-brands-svg-icons": "7.2.0",

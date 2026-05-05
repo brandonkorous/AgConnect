@@ -20,7 +20,7 @@ export function EmployerTopBar({ locale, canPublish }: Props) {
 
             <Link
                 href={`/${locale}/employer/help` as Route}
-                className="btn btn-sm border-base-300 border"
+                className="btn btn-sm btn-ghost"
             >
                 <FontAwesomeIcon icon={faComments} className="h-3.5 w-3.5" />
                 {t('help')}

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpRightFromSquare, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import type { ComplianceInstructionsView } from '@/lib/api/employer-ops';
 
 type Props = {
@@ -14,10 +14,7 @@ export function ComplianceInstructionsSidebar({ instructions }: Props) {
 
   if (!instructions || !instructions.why) {
     return (
-      <div className="text-base-content/60 flex items-start gap-2 text-xs">
-        <FontAwesomeIcon icon={faCircleInfo} className="mt-0.5 h-3 w-3 shrink-0" />
-        <p>{t('empty')}</p>
-      </div>
+      <p className="text-base-content/60 text-xs leading-relaxed">{t('empty_neutral')}</p>
     );
   }
 

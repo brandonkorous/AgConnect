@@ -4,13 +4,20 @@ import { useTranslations } from 'next-intl';
 import { SectionCard } from './SectionCard';
 import { DOW_KEYS, dowOfDate, type ShiftDraft } from './types';
 
+type FieldErrorMap = {
+  shiftDate?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+};
+
 type Props = {
   draft: ShiftDraft;
   onChange: (patch: Partial<ShiftDraft>) => void;
   crewSize: number;
+  errors?: FieldErrorMap;
 };
 
-export function DateTimeSection({ draft, onChange, crewSize }: Props) {
+export function DateTimeSection({ draft, onChange, crewSize, errors }: Props) {
   const t = useTranslations('employer.crews.edit_shift.date_time');
 
   const hoursPerDay = (() => {
@@ -20,20 +27,23 @@ export function DateTimeSection({ draft, onChange, crewSize }: Props) {
     return Math.max(0, (eh * 60 + em - (sh * 60 + sm)) / 60);
   })();
   const baseDow = dowOfDate(draft.shiftDate);
-  const activeDays =
-    1 + Object.values(draft.repeatDow).filter(Boolean).filter((_, i) => DOW_KEYS[i] !== baseDow).length;
+  const activeDays = DOW_KEYS.reduce(
+    (n, k) => (k === baseDow || draft.repeatDow[k] ? n + 1 : n),
+    0,
+  );
   const totalCrewHours = Math.round(hoursPerDay * activeDays * Math.max(crewSize, 0));
 
   return (
     <SectionCard id="date" title={t('title')} sub={t('sub')}>
       <div className="grid gap-3.5 md:grid-cols-2">
-        <Field label={t('shift_date_label')}>
+        <Field label={t('shift_date_label')} error={errors?.shiftDate ?? null}>
           <input
             type="date"
             required
             value={draft.shiftDate}
             onChange={(e) => onChange({ shiftDate: e.target.value })}
-            className="input w-full"
+            aria-invalid={errors?.shiftDate ? true : undefined}
+            className={['input w-full', errors?.shiftDate ? 'input-error' : ''].join(' ')}
           />
         </Field>
         <Field label={t('status_label')}>
@@ -51,21 +61,23 @@ export function DateTimeSection({ draft, onChange, crewSize }: Props) {
             ))}
           </select>
         </Field>
-        <Field label={t('start_time_label')}>
+        <Field label={t('start_time_label')} error={errors?.startTime ?? null}>
           <input
             type="time"
             required
             value={draft.startTime}
             onChange={(e) => onChange({ startTime: e.target.value })}
-            className="input w-full"
+            aria-invalid={errors?.startTime ? true : undefined}
+            className={['input w-full', errors?.startTime ? 'input-error' : ''].join(' ')}
           />
         </Field>
-        <Field label={t('end_time_label')}>
+        <Field label={t('end_time_label')} error={errors?.endTime ?? null}>
           <input
             type="time"
             value={draft.endTime}
             onChange={(e) => onChange({ endTime: e.target.value })}
-            className="input w-full"
+            aria-invalid={errors?.endTime ? true : undefined}
+            className={['input w-full', errors?.endTime ? 'input-error' : ''].join(' ')}
           />
         </Field>
       </div>
@@ -120,19 +132,25 @@ export function DateTimeSection({ draft, onChange, crewSize }: Props) {
 function Field({
   label,
   sub,
+  error,
   children,
 }: {
   label: string;
   sub?: string;
+  error?: string | null;
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="fieldset">
+    <fieldset className="fieldset w-full min-w-0">
       <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
         {label}
       </legend>
       {children}
-      {sub && <p className="text-base-content/60 mt-1.5 text-[11px]">{sub}</p>}
+      {error ? (
+        <p className="label text-error">{error}</p>
+      ) : sub ? (
+        <p className="text-base-content/60 mt-1.5 text-[11px]">{sub}</p>
+      ) : null}
     </fieldset>
   );
 }

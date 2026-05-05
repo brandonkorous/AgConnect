@@ -138,7 +138,7 @@ export function toApiBody(s: JobFormState): Record<string, unknown> {
     payFrequency: s.payFrequency,
     mealsProvided: s.mealsProvided,
     endOfSeasonBonusCents: s.endOfSeasonBonusCents,
-    skills: s.skills,
+    skills: s.skills.filter((sk) => !sk.startsWith('custom:')),
     minExperience: s.minExperience,
     minAge: s.minAge,
     autoMatchEnabled: s.autoMatchEnabled,

@@ -25,6 +25,14 @@ export const employer: TranslationBundle = {
         en: "account.",
         es: "cuenta.",
     },
+    "account.delete_warning_title": {
+        en: "Deleting your account is permanent",
+        es: "Eliminar tu cuenta es permanente",
+    },
+    "account.delete_warning_body": {
+        en: "Deleting your account will permanently remove your business profile, postings, and payroll history. This cannot be undone.",
+        es: "Al eliminar tu cuenta se borrarán de forma permanente tu perfil de negocio, publicaciones e historial de nómina. Esta acción no se puede deshacer.",
+    },
     "applicant_detail.agconn_verified": {
         en: "AgConn-verified",
         es: "Verificado por AgConn",
@@ -69,6 +77,10 @@ export const employer: TranslationBundle = {
         en: "Self-reported",
         es: "Auto-reportado",
     },
+    "applicant_detail.skills": {
+        en: "Skills",
+        es: "Habilidades",
+    },
     "applicant_detail.skills_match": {
         en: "{count} match",
         es: "{count} coinciden",
@@ -96,6 +108,10 @@ export const employer: TranslationBundle = {
     "billing.feature.active_postings": {
         en: "Active postings",
         es: "Publicaciones activas",
+    },
+    "billing.feature.active_postings_limit": {
+        en: "Active postings limit",
+        es: "Límite de publicaciones activas",
     },
     "billing.feature.active_postings_unlimited": {
         en: "Unlimited",
@@ -201,6 +217,18 @@ export const employer: TranslationBundle = {
         en: "Upgrade to Pro",
         es: "Mejorar a Pro",
     },
+    "billing.upgrade_unavailable_tooltip": {
+        en: "Billing not yet available",
+        es: "La facturación aún no está disponible",
+    },
+    "billing.per_year": {
+        en: "/ year",
+        es: "/ año",
+    },
+    "billing.or_monthly_split": {
+        en: "${price}/mo billed yearly",
+        es: "${price}/mes facturado anualmente",
+    },
     "billing.yearly": {
         en: "yearly",
         es: "anual",
@@ -214,8 +242,8 @@ export const employer: TranslationBundle = {
         es: "Mensaje",
     },
     "candidates.bulk_message": {
-        en: "Bulk message",
-        es: "Mensaje masivo",
+        en: "Open broadcasts",
+        es: "Abrir broadcasts",
     },
     "candidates.col.actions": {
         en: "Actions",
@@ -402,12 +430,16 @@ export const employer: TranslationBundle = {
         es: "No se pudo guardar.",
     },
     "compliance.action_cta.evidence_help": {
-        en: "Link to the document, photo, or schedule confirmation.",
-        es: "Liga al documento, foto o confirmación de la cita.",
+        en: "Paste a link or upload a file. PDF, JPG, PNG up to 25 MB. Stored privately.",
+        es: "Pega un enlace o sube un archivo. PDF, JPG, PNG hasta 25 MB. Guardado en privado.",
     },
     "compliance.action_cta.evidence_label": {
-        en: "Evidence URL",
-        es: "URL de evidencia",
+        en: "Evidence",
+        es: "Evidencia",
+    },
+    "compliance.action_cta.cta_resolve": {
+        en: "Resolve",
+        es: "Resolver",
     },
     "compliance.action_cta.note_label": {
         en: "Note (optional)",
@@ -594,8 +626,8 @@ export const employer: TranslationBundle = {
         es: "Subir un archivo",
     },
     "compliance.evidence.upload_help": {
-        en: "PDF, JPG, PNG up to 25 MB. Stored privately.",
-        es: "PDF, JPG, PNG hasta 25 MB. Guardado en privado.",
+        en: "Paste a link or upload a file. PDF, JPG, PNG up to 25 MB. Stored privately.",
+        es: "Pega un enlace o sube un archivo. PDF, JPG, PNG hasta 25 MB. Guardado en privado.",
     },
     "compliance.evidence.uploading": {
         en: "Uploading…",
@@ -775,6 +807,10 @@ export const employer: TranslationBundle = {
     "compliance.seed_item.three_quarter.details": {
         en: "Only applies to H-2A program participants.",
         es: "Solo aplica a participantes del programa H-2A.",
+    },
+    "compliance.instructions.empty_neutral": {
+        en: "Attach the document or paste a link to the record on file.",
+        es: "Adjunta el documento o pega un enlace al registro en archivo.",
     },
     "compliance.instructions.empty": {
         en: "No additional guidance for this item yet. Add a note or evidence URL based on your own records.",
@@ -960,6 +996,14 @@ export const employer: TranslationBundle = {
         en: "{actions, plural, =0 {All clear — no actions due} one {1 action due — review and resolve when ready} other {# actions due — review and resolve when ready}}",
         es: "{actions, plural, =0 {Todo en orden — ninguna acción pendiente} one {1 acción pendiente — revisa y resuelve cuando estés listo} other {# acciones pendientes — revisa y resuelve cuando estés listo}}",
     },
+    "compliance.summary_open": {
+        en: "{open, plural, one {1 item left to address} other {# items left to address}}",
+        es: "{open, plural, one {1 ítem pendiente por atender} other {# ítems pendientes por atender}}",
+    },
+    "compliance.actions_title_pending": {
+        en: "{open, plural, one {1 item still needs evidence} other {# items still need evidence}}",
+        es: "{open, plural, one {1 ítem aún requiere evidencia} other {# ítems aún requieren evidencia}}",
+    },
     "compliance.title": {
         en: "Compliance",
         es: "Cumplimiento",
@@ -1131,6 +1175,18 @@ export const employer: TranslationBundle = {
         en: "Add a pickup or block location before creating the shift.",
         es: "Agrega una ubicación o punto de recogida antes de crear el turno.",
     },
+    "crews.new_shift.error_field_required": {
+        en: "Required.",
+        es: "Requerido.",
+    },
+    "crews.new_shift.save_bar_incomplete": {
+        en: "A few details left.",
+        es: "Faltan algunos datos.",
+    },
+    "crews.new_shift.save_bar_help_incomplete": {
+        en: "Set the date, start time, end time, and a location to continue.",
+        es: "Define la fecha, hora de inicio, hora de fin y una ubicación para continuar.",
+    },
     "crews.new_shift.workers_placeholder.title": {
         en: "Workers on this shift",
         es: "Trabajadores en este turno",
@@ -1288,7 +1344,7 @@ export const employer: TranslationBundle = {
     "crews.edit_crew.breadcrumb_new": { en: "New crew", es: "Nueva cuadrilla" },
     "crews.edit_crew.breadcrumb_edit": { en: "Edit crew", es: "Editar cuadrilla" },
     "crews.edit_crew.action_duplicate": { en: "Duplicate crew", es: "Duplicar cuadrilla" },
-    "crews.edit_crew.action_archive": { en: "Disband", es: "Disolver" },
+    "crews.edit_crew.action_archive": { en: "Archive", es: "Archivar" },
     "crews.edit_crew.archive_confirm": {
         en: "Archive {name}? Members stay hired but the crew is removed from the schedule.",
         es: "¿Archivar {name}? Los miembros siguen contratados pero la cuadrilla se quita del horario.",
@@ -1316,6 +1372,38 @@ export const employer: TranslationBundle = {
     "crews.edit_crew.error_name_required": {
         en: "Crew needs a name (at least 2 characters).",
         es: "La cuadrilla necesita un nombre (mínimo 2 caracteres).",
+    },
+    "crews.edit_crew.save_bar_new_incomplete": {
+        en: "Add a crew name to continue.",
+        es: "Agrega un nombre para continuar.",
+    },
+    "crews.edit_crew.save_bar_help_new_incomplete": {
+        en: "A name is required — at least 2 characters.",
+        es: "Se requiere un nombre — mínimo 2 caracteres.",
+    },
+    "crews.edit_crew.save_bar_edit_clean": {
+        en: "No changes yet.",
+        es: "Sin cambios aún.",
+    },
+    "crews.edit_crew.save_bar_saved": {
+        en: "Saved · {ago}",
+        es: "Guardado · {ago}",
+    },
+    "crews.edit_crew.relative_just_now": {
+        en: "just now",
+        es: "ahora mismo",
+    },
+    "crews.edit_crew.relative_minutes": {
+        en: "{n, plural, one {1 min ago} other {# min ago}}",
+        es: "hace {n, plural, one {1 min} other {# min}}",
+    },
+    "crews.edit_crew.relative_hours": {
+        en: "{n, plural, one {1 hr ago} other {# hr ago}}",
+        es: "hace {n, plural, one {1 hr} other {# hr}}",
+    },
+    "crews.edit_crew.archive_toast_title": {
+        en: "{name} archived.",
+        es: "{name} archivada.",
     },
 
     // Section-rail nav.
@@ -2400,6 +2488,10 @@ export const employer: TranslationBundle = {
         en: "Accepted",
         es: "Aceptado",
     },
+    "dashboard.pipeline.empty_lane": {
+        en: "No applicants in this stage",
+        es: "Sin postulantes en esta etapa",
+    },
     "dashboard.pipeline.match": {
         en: "match",
         es: "afín",
@@ -2499,6 +2591,10 @@ export const employer: TranslationBundle = {
     "errors.address_required": {
         en: "Add a business address to continue.",
         es: "Agrega una dirección del negocio para continuar.",
+    },
+    "errors.address_repick": {
+        en: "Couldn't save your address — please re-pick it from the dropdown.",
+        es: "No pudimos guardar tu dirección — vuelve a elegirla del menú.",
     },
     "errors.ein_format": {
         en: "EIN must be in the format XX-XXXXXXX.",
@@ -3185,8 +3281,8 @@ export const employer: TranslationBundle = {
         es: "Plantillas",
     },
     "messages.empty": {
-        en: "Folder empty.",
-        es: "Carpeta vacía.",
+        en: "No conversations in this folder yet.",
+        es: "Aún no hay conversaciones en esta carpeta.",
     },
     "messages.eyebrow": {
         en: "Inbox",
@@ -3277,8 +3373,8 @@ export const employer: TranslationBundle = {
         es: "Cargando trabajadores…",
     },
     "messages.new_conversation.no_contacts": {
-        en: "No applicants or crew members yet — once people apply or join a crew they'll appear here.",
-        es: "Aún sin aplicantes ni miembros de cuadrilla — aparecerán aquí cuando se postulen o se unan.",
+        en: "No workers in your roster yet — invite from the Crews page.",
+        es: "Aún no hay trabajadores en tu equipo — invítalos desde la página de Cuadrillas.",
     },
     "messages.new_conversation.no_matches": {
         en: "No matches",
@@ -3522,7 +3618,51 @@ export const employer: TranslationBundle = {
     },
     "payroll.approve": {
         en: "Approve & run payroll",
-        es: "Aprobar y correr nómina",
+        es: "Aprobar y ejecutar nómina",
+    },
+    "payroll.approve_modal.title": {
+        en: "Approve and run payroll",
+        es: "Aprobar y ejecutar nómina",
+    },
+    "payroll.approve_modal.body": {
+        en: "Lock this period from edits and run payroll for {workers} workers totaling {total}.",
+        es: "Bloquea este periodo y ejecuta la nómina para {workers} trabajadores con un total de {total}.",
+    },
+    "payroll.approve_modal.cancel": {
+        en: "Cancel",
+        es: "Cancelar",
+    },
+    "payroll.approve_modal.confirm": {
+        en: "Approve & run",
+        es: "Aprobar y ejecutar",
+    },
+    "payroll.approve_success": {
+        en: "Payroll approved",
+        es: "Nómina aprobada",
+    },
+    "payroll.export_941": {
+        en: "Export 941 (federal)",
+        es: "Exportar 941 (federal)",
+    },
+    "payroll.export_de9": {
+        en: "Export DE-9 (CA)",
+        es: "Exportar DE-9 (CA)",
+    },
+    "payroll.export_menu_label": {
+        en: "Export tax forms",
+        es: "Exportar formularios fiscales",
+    },
+    "payroll.generate_success": {
+        en: "Generated {count} timesheets from shifts",
+        es: "Se generaron {count} hojas de tiempo desde turnos",
+    },
+    "payroll.generate_empty": {
+        en: "No shifts to generate from for this period.",
+        es: "No hay turnos para generar en este periodo.",
+    },
+    "payroll.h2a_no_data": {
+        en: "(no data yet)",
+        es: "(aún sin datos)",
     },
     "payroll.edit_line.approved_label": {
         en: "Approved",
@@ -3624,6 +3764,10 @@ export const employer: TranslationBundle = {
         en: "Pay date (Fri)",
         es: "Fecha de pago (Vie)",
     },
+    "payroll.new_period_modal.pay_date_hint": {
+        en: "Defaults to the Friday after the period ends.",
+        es: "Por defecto, el viernes después del fin del periodo.",
+    },
     "payroll.new_period_modal.start_date": {
         en: "Period start (Mon)",
         es: "Inicio (Lun)",
@@ -3694,7 +3838,7 @@ export const employer: TranslationBundle = {
     },
     "payroll.table.col_overtime": {
         en: "OT",
-        es: "OT",
+        es: "HE",
     },
     "payroll.table.col_role": {
         en: "Role",
@@ -3888,6 +4032,10 @@ export const employer: TranslationBundle = {
         en: "No postings yet — flow will populate once you publish your first job",
         es: "Aún sin publicaciones — el flujo aparecerá cuando publiques tu primer trabajo",
     },
+    "reports.applicant_flow.no_data": {
+        en: "No applicant data yet — once jobs receive applications, weekly flow will appear here.",
+        es: "Aún sin datos de aplicantes — el flujo semanal aparecerá cuando los trabajos reciban aplicaciones.",
+    },
     "reports.applicant_flow.title": {
         en: "Applicant flow vs. spots filled · weekly",
         es: "Flujo de aplicantes vs. puestos cubiertos · semanal",
@@ -3895,6 +4043,38 @@ export const employer: TranslationBundle = {
     "reports.by_job_type": {
         en: "By job type · season",
         es: "Por tipo de empleo · temporada",
+    },
+    "reports.kpi.hires.label": {
+        en: "Hires this season",
+        es: "Contrataciones esta temporada",
+    },
+    "reports.kpi.hires.sub": {
+        en: "{count, plural, =0 {no job postings yet} =1 {1 job posting} other {# job postings}}",
+        es: "{count, plural, =0 {aún sin publicaciones} =1 {1 publicación} other {# publicaciones}}",
+    },
+    "reports.kpi.time_to_fill.label": {
+        en: "Avg time-to-fill",
+        es: "Tiempo medio para cubrir",
+    },
+    "reports.kpi.time_to_fill.sub": {
+        en: "from publish to last hire",
+        es: "desde publicar hasta última contratación",
+    },
+    "reports.kpi.cost_per_hire.label": {
+        en: "Cost per hire",
+        es: "Costo por contratación",
+    },
+    "reports.kpi.cost_per_hire.sub": {
+        en: "incl. SMS, broadcast",
+        es: "incl. SMS y broadcast",
+    },
+    "reports.kpi.retention_30d.label": {
+        en: "30-day worker retention",
+        es: "Retención de 30 días",
+    },
+    "reports.kpi.retention_30d.sub": {
+        en: "share of hires still active after 30 days",
+        es: "porcentaje de contratados activos tras 30 días",
     },
     "reports.export_csv": {
         en: "Export CSV",
@@ -4321,6 +4501,8 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.weekday_short.fri": { en: "Fri", es: "Vie" },
     "jobs.form_v2.weekday_short.sat": { en: "Sat", es: "Sáb" },
     "jobs.form_v2.weekday_short.sun": { en: "Sun", es: "Dom" },
+    "jobs.form_v2.day_range_separator": { en: "–", es: " a " },
+    "jobs.form_v2.weekday_daily":       { en: "Daily", es: "Diario" },
 
     "jobs.form_v2.field_wage_structure":    { en: "Wage structure",                  es: "Estructura de pago" },
     "jobs.form_v2.wage_hourly":             { en: "Hourly only",                     es: "Solo por hora" },
@@ -4352,6 +4534,10 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.field_skills":            { en: "Skills & certifications wanted",  es: "Habilidades y certificaciones deseadas" },
     "jobs.form_v2.hint_skills":             { en: "Click to add — workers see these as badges.", es: "Toca para agregar — el trabajador las ve como insignias." },
     "jobs.form_v2.skill_custom":            { en: "Custom skill",                    es: "Habilidad personalizada" },
+    "jobs.form_v2.skill_custom_add":        { en: "Add custom skill",                es: "Agregar habilidad personalizada" },
+    "jobs.form_v2.skill_custom_remove":     { en: "Remove custom skill",             es: "Quitar habilidad personalizada" },
+    "jobs.form_v2.skill_custom_placeholder":{ en: "e.g. Citrus thinning",            es: "ej. Raleo de cítricos" },
+    "jobs.form_v2.screening_add_short":     { en: "Add",                             es: "Agregar" },
     "jobs.form_v2.field_min_experience":    { en: "Minimum experience",              es: "Experiencia mínima" },
     "jobs.form_v2.experience_none":         { en: "No experience needed",            es: "No se requiere experiencia" },
     "jobs.form_v2.experience_one_year":     { en: "1+ year",                         es: "1+ año" },
@@ -4437,6 +4623,14 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.h1_new":                 { en: "New job —",                     es: "Trabajo nuevo —" },
     "jobs.form_v2.header_meta_edit":       { en: "Posting #{id} · live for {days, plural, =0 {today} one {1 day} other {# days}} · {applicants, plural, =0 {no applicants} one {1 applicant} other {# applicants}}", es: "Publicación #{id} · activa por {days, plural, =0 {hoy} one {1 día} other {# días}} · {applicants, plural, =0 {sin aplicantes} one {1 aplicante} other {# aplicantes}}" },
     "jobs.form_v2.header_meta_new":        { en: "Draft · not yet published",     es: "Borrador · aún no publicado" },
+    "jobs.form_v2.header_meta_draft":      { en: "Draft — not yet published",     es: "Borrador — aún no publicado" },
+    "jobs.form_v2.header_meta_starts":     { en: "Live · starts {date}",          es: "Activa · inicia {date}" },
+    "jobs.form_v2.header_meta_live":       { en: "Live for today · {applicants, plural, =0 {no applicants} one {1 applicant} other {# applicants}}", es: "Activa · {applicants, plural, =0 {sin aplicantes} one {1 aplicante} other {# aplicantes}}" },
+    "jobs.form_v2.header_meta_closed":     { en: "Closed",                        es: "Cerrada" },
+    "jobs.form_v2.close_modal_title":      { en: "Close this posting?",           es: "¿Cerrar esta publicación?" },
+    "jobs.form_v2.close_modal_body":       { en: "Workers will no longer see it. You can duplicate it later if you need to repost.", es: "Los trabajadores ya no la verán. Puedes duplicarla más tarde si necesitas volver a publicarla." },
+    "jobs.form_v2.close_modal_keep":       { en: "Keep open",                     es: "Mantener abierta" },
+    "jobs.form_v2.close_modal_confirm":    { en: "Close posting",                 es: "Cerrar publicación" },
     "jobs.form_v2.spots_open":             { en: "{n, plural, =0 {Filled} one {1 spot open} other {# spots open}}", es: "{n, plural, =0 {Lleno} one {1 cupo abierto} other {# cupos abiertos}}" },
     "jobs.form_v2.publish":                { en: "Publish",                       es: "Publicar" },
     "jobs.form_v2.publish_changes":        { en: "Publish changes",               es: "Publicar cambios" },
@@ -4461,6 +4655,7 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.preview.match_preview":      { en: "Match preview",             es: "Vista previa de coincidencias" },
     "jobs.form_v2.preview.match_preview_body": { en: "With these requirements, <n>{n}</n> workers within {radius} mi qualify. Auto-match will SMS the top {top}.", es: "Con estos requisitos, <n>{n}</n> trabajadores en {radius} millas califican. El auto-emparejamiento enviará SMS a los {top} mejores." },
     "jobs.form_v2.preview.hero_meta":          { en: "{spots} SPOTS · STARTS {start}", es: "{spots} CUPOS · INICIA {start}" },
+    "jobs.form_v2.preview.spots_open":         { en: "{count, plural, =0 {FILLED} one {1 SPOT OPEN} other {# SPOTS OPEN}}", es: "{count, plural, =0 {LLENO} one {1 CUPO} other {# CUPOS}}" },
     "jobs.form_v2.preview.takehome_label":     { en: "Take-home / day",           es: "Ganancia diaria" },
     "jobs.form_v2.preview.schedule_label":     { en: "Schedule",                  es: "Horario" },
     "jobs.form_v2.preview.transport_label":    { en: "Transport",                 es: "Transporte" },

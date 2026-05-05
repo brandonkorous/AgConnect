@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { isOk } from '@agconn/api-client';
@@ -16,6 +16,24 @@ type Props = { locale: string };
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 
+const VISIBLE_FIELDS = new Set([
+  'legalName',
+  'dbaName',
+  'flcLicenseNum',
+  'dolMspaNum',
+  'ein',
+  'county',
+  'contactEmail',
+  'contactPhone',
+  'address',
+]);
+
+function formatEin(raw: string): string {
+  const digits = raw.replace(/\D/g, '').slice(0, 9);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+}
+
 export function OnboardingForm({ locale }: Props) {
   const t = useTranslations('employer.onboarding');
   const tShared = useTranslations('shell.address');
@@ -25,10 +43,24 @@ export function OnboardingForm({ locale }: Props) {
   const [licenseType, setLicenseType] = useState<'grower' | 'flc'>('grower');
   const [participatesInH2a, setParticipatesInH2a] = useState(false);
   const [address, setAddress] = useState<AddressValue | null>(null);
+  const [legalName, setLegalName] = useState('');
+  const [ein, setEin] = useState('');
+  const [flcLicenseNum, setFlcLicenseNum] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
   const pinDrop = useAddressPinDropFallback(CV_PROXIMITY);
+
+  useEffect(() => {
+    if (address && (errors.address || errors._root)) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.address;
+        if (next._root === tErr('address_required')) delete next._root;
+        return next;
+      });
+    }
+  }, [address, errors.address, errors._root, tErr]);
 
   const labels: AddressLabels = {
     placeholder: tShared('placeholder'),
@@ -43,20 +75,40 @@ export function OnboardingForm({ locale }: Props) {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrors({});
-    if (!address) {
-      setErrors({ _root: tErr('address_required'), address: tErr('address_required') });
-      return;
-    }
-    setSubmitting(true);
 
     const form = new FormData(e.currentTarget);
+    const trimmedLegal = legalName.trim();
+    const trimmedEin = ein.trim();
+    const trimmedFlc = flcLicenseNum.trim();
+
+    const clientErrors: Record<string, string> = {};
+    if (trimmedLegal.length < 2) {
+      clientErrors.legalName = tErr('grower_fields_required');
+    }
+    if (licenseType === 'grower' && !/^\d{2}-\d{7}$/.test(trimmedEin)) {
+      clientErrors.ein = tErr('ein_format');
+    }
+    if (licenseType === 'flc' && !/^[A-Z0-9-]{4,20}$/.test(trimmedFlc)) {
+      clientErrors.flcLicenseNum = tErr('flc_license_required');
+    }
+    if (!address) {
+      clientErrors.address = tErr('address_required');
+    }
+    if (Object.keys(clientErrors).length > 0) {
+      const firstMsg = Object.values(clientErrors)[0] ?? tErr('validation_failed');
+      setErrors({ _root: firstMsg, ...clientErrors });
+      return;
+    }
+
+    setSubmitting(true);
+
     const body = {
-      legalName: String(form.get('legalName') ?? '').trim(),
+      legalName: trimmedLegal,
       dbaName: String(form.get('dbaName') ?? '').trim() || undefined,
       licenseType,
-      flcLicenseNum: licenseType === 'flc' ? String(form.get('flcLicenseNum') ?? '').trim() : undefined,
+      flcLicenseNum: licenseType === 'flc' ? trimmedFlc : undefined,
       dolMspaNum: licenseType === 'flc' ? String(form.get('dolMspaNum') ?? '').trim() || undefined : undefined,
-      ein: licenseType === 'grower' ? String(form.get('ein') ?? '').trim() : undefined,
+      ein: licenseType === 'grower' ? trimmedEin : undefined,
       county: licenseType === 'grower' ? String(form.get('county') ?? '') : undefined,
       contactEmail: String(form.get('contactEmail') ?? '').trim() || undefined,
       contactPhone: String(form.get('contactPhone') ?? '').trim() || undefined,
@@ -71,15 +123,17 @@ export function OnboardingForm({ locale }: Props) {
       });
       if (!isOk(res)) {
         const code = res.error.code;
-        // Treat already_onboarded as success — the profile exists, the user
-        // just hit a transient post-write error on a previous submit. Route
-        // them through to the dashboard rather than re-trying.
         if (code === 'already_onboarded' || res.error.message === 'already_onboarded') {
           setDone(true);
           return;
         }
         const fieldErrs = res.error.fields ?? {};
-        const msg = tErrSafe(tErr, code) ?? res.error.message ?? tErr('internal');
+        const fieldKeys = Object.keys(fieldErrs);
+        const onlyHidden =
+          fieldKeys.length > 0 && fieldKeys.every((k) => !VISIBLE_FIELDS.has(k.split('.')[0] ?? k));
+        const msg = onlyHidden
+          ? tErr('address_repick')
+          : tErrSafe(tErr, code) ?? res.error.message ?? tErr('internal');
         setErrors({ _root: msg, ...fieldErrs });
         setSubmitting(false);
         return;
@@ -93,7 +147,7 @@ export function OnboardingForm({ locale }: Props) {
 
   if (done) {
     return (
-      <div className="bg-base-100 border-base-300 w-full rounded-3xl border p-10 text-center shadow-md">
+      <div className="bg-base-100 border-base-300 mx-auto w-full max-w-xl rounded-3xl border p-10 text-center shadow-md">
         <span className="bg-primary/10 text-primary mx-auto grid h-12 w-12 place-items-center rounded-full">
           <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5" />
         </span>
@@ -140,12 +194,25 @@ export function OnboardingForm({ locale }: Props) {
           <input
             name="legalName"
             type="text"
-            required
             minLength={2}
             maxLength={120}
             autoComplete="organization"
-            className="input input-bordered w-full"
+            value={legalName}
+            onChange={(e) => {
+              setLegalName(e.target.value);
+              if (errors.legalName) {
+                setErrors((p) => {
+                  const n = { ...p };
+                  delete n.legalName;
+                  return n;
+                });
+              }
+            }}
+            className={`input input-bordered w-full ${errors.legalName ? 'input-error' : ''}`}
           />
+          {errors.legalName && (
+            <p className="text-error mt-1 text-xs">{errors.legalName}</p>
+          )}
         </Field>
 
         <Field label={t('dba_name.label')} help={t('dba_name.help')}>
@@ -187,9 +254,19 @@ export function OnboardingForm({ locale }: Props) {
               <input
                 name="flcLicenseNum"
                 type="text"
-                required
                 pattern="[A-Z0-9-]{4,20}"
-                className="input input-bordered w-full"
+                value={flcLicenseNum}
+                onChange={(e) => {
+                  setFlcLicenseNum(e.target.value.toUpperCase());
+                  if (errors.flcLicenseNum) {
+                    setErrors((p) => {
+                      const n = { ...p };
+                      delete n.flcLicenseNum;
+                      return n;
+                    });
+                  }
+                }}
+                className={`input input-bordered w-full ${errors.flcLicenseNum ? 'input-error' : ''}`}
               />
               {errors.flcLicenseNum && (
                 <p className="text-error mt-1 text-xs">{errors.flcLicenseNum}</p>
@@ -212,10 +289,22 @@ export function OnboardingForm({ locale }: Props) {
               <input
                 name="ein"
                 type="text"
-                required
+                inputMode="numeric"
                 pattern="\d{2}-\d{7}"
                 placeholder="XX-XXXXXXX"
-                className="input input-bordered w-full"
+                maxLength={10}
+                value={ein}
+                onChange={(e) => {
+                  setEin(formatEin(e.target.value));
+                  if (errors.ein) {
+                    setErrors((p) => {
+                      const n = { ...p };
+                      delete n.ein;
+                      return n;
+                    });
+                  }
+                }}
+                className={`input input-bordered w-full ${errors.ein ? 'input-error' : ''}`}
               />
               {errors.ein && <p className="text-error mt-1 text-xs">{errors.ein}</p>}
             </Field>
@@ -263,7 +352,6 @@ export function OnboardingForm({ locale }: Props) {
             label={t('address.label')}
             labels={labels}
             hint={t('address.help')}
-            required
             proximity={CV_PROXIMITY}
             language={locale === 'es' ? 'es' : 'en'}
             value={address}

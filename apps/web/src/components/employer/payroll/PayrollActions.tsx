@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faDownload, faPlus, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faChevronDown, faDownload, faPlus, faRotate } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
+import { pushToast } from '@agconn/ui';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
 import { DownloadButton } from '@/components/employer/primitives/DownloadButton';
@@ -13,29 +14,40 @@ import { DownloadButton } from '@/components/employer/primitives/DownloadButton'
 type Props = {
   periodId: string;
   status: 'draft' | 'approved' | 'paid';
+  workers?: number;
+  netCents?: number;
 };
 
-export function PayrollActions({ periodId, status }: Props) {
+export function PayrollActions({ periodId, status, workers = 0, netCents = 0 }: Props) {
   const t = useTranslations('employer.payroll');
   const locale = useLocale();
   const router = useRouter();
   const [busy, setBusy] = useState<'none' | 'gen' | 'approve' | 'new'>('none');
   const [error, setError] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
-
-  async function api<T>(path: string, body?: unknown) {
-    const client = getApiClient(locale === 'es' ? 'es' : 'en');
-    return client.post<T>(path, body, { handleErrorInline: true });
-  }
+  const [approveOpen, setApproveOpen] = useState(false);
 
   async function generate() {
     setBusy('gen');
     setError(null);
     try {
-      const res = await api(`/v1/employer/payroll/periods/${periodId}/generate-lines`);
+      const client = getApiClient(locale === 'es' ? 'es' : 'en');
+      const res = await client.post<{ generated: number }>(
+        `/v1/employer/payroll/periods/${periodId}/generate-lines`,
+        undefined,
+        { handleErrorInline: true },
+      );
       if (!isOk(res)) {
-        setError(res.error.message || t('error_generate'));
+        const msg = res.error.message || t('error_generate');
+        setError(msg);
+        pushToast({ variant: 'error', title: msg });
         return;
+      }
+      const count = res.data.generated;
+      if (count === 0) {
+        pushToast({ variant: 'info', title: t('generate_empty') });
+      } else {
+        pushToast({ variant: 'success', title: t('generate_success', { count }) });
       }
       router.refresh();
     } finally {
@@ -48,13 +60,19 @@ export function PayrollActions({ periodId, status }: Props) {
     setError(null);
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
-      const res = await client.patch(`/v1/employer/payroll/periods/${periodId}`, {
-        status: 'approved',
-      }, { handleErrorInline: true });
+      const res = await client.post(
+        `/v1/employer/payroll/periods/${periodId}/approve`,
+        undefined,
+        { handleErrorInline: true },
+      );
       if (!isOk(res)) {
-        setError(res.error.message || t('error_approve'));
+        const msg = res.error.message || t('error_approve');
+        setError(msg);
+        pushToast({ variant: 'error', title: msg });
         return;
       }
+      pushToast({ variant: 'success', title: t('approve_success') });
+      setApproveOpen(false);
       router.refresh();
     } finally {
       setBusy('none');
@@ -82,22 +100,48 @@ export function PayrollActions({ periodId, status }: Props) {
         <FontAwesomeIcon icon={faPlus} className="h-3 w-3" />
         {t('new_period')}
       </button>
-      <DownloadButton
-        path={`/v1/employer/payroll/periods/${periodId}/lines.csv`}
-        label={t('export_forms')}
-        icon={faDownload}
-        filename={`agconn-payroll-${periodId}.csv`}
-        variant="pill"
-      />
+      <div className="dropdown dropdown-end">
+        <div
+          tabIndex={0}
+          role="button"
+          aria-label={t('export_menu_label')}
+          className="btn btn-sm bg-base-100 border-base-300 rounded-full border font-medium"
+        >
+          <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
+          {t('export_forms')}
+          <FontAwesomeIcon icon={faChevronDown} className="h-2.5 w-2.5 opacity-60" />
+        </div>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu bg-base-100 border-base-300 rounded-box z-[1] mt-2 w-56 border p-2 shadow-[var(--shadow-pop)]"
+        >
+          <li>
+            <DownloadButton
+              path={`/v1/employer/payroll/periods/${periodId}/export?form=941`}
+              label={t('export_941')}
+              filename={`agconn-941-${periodId}.csv`}
+              variant="btn-sm"
+            />
+          </li>
+          <li>
+            <DownloadButton
+              path={`/v1/employer/payroll/periods/${periodId}/export?form=de9`}
+              label={t('export_de9')}
+              filename={`agconn-de9-${periodId}.csv`}
+              variant="btn-sm"
+            />
+          </li>
+        </ul>
+      </div>
       {status === 'draft' && (
         <button
           type="button"
-          onClick={approve}
+          onClick={() => setApproveOpen(true)}
           disabled={busy !== 'none'}
           className="btn btn-sm btn-primary rounded-full"
         >
           <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
-          {busy === 'approve' ? '…' : t('approve')}
+          {t('approve')}
         </button>
       )}
       {status === 'approved' && (
@@ -114,7 +158,57 @@ export function PayrollActions({ periodId, status }: Props) {
       {error && <div className="alert alert-error mt-2 w-full text-xs">{error}</div>}
 
       {newOpen && <NewPeriodModal onClose={() => setNewOpen(false)} />}
+      {approveOpen && (
+        <ApproveModal
+          onClose={() => setApproveOpen(false)}
+          onConfirm={approve}
+          busy={busy === 'approve'}
+          workers={workers}
+          netCents={netCents}
+        />
+      )}
     </div>
+  );
+}
+
+function ApproveModal({
+  onClose,
+  onConfirm,
+  busy,
+  workers,
+  netCents,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+  busy: boolean;
+  workers: number;
+  netCents: number;
+}) {
+  const t = useTranslations('employer.payroll.approve_modal');
+  const locale = useLocale();
+  const total = (Math.abs(netCents) / 100).toLocaleString(
+    locale === 'es' ? 'es-MX' : 'en-US',
+    { style: 'currency', currency: 'USD' },
+  );
+  return (
+    <Modal title={t('title')} onClose={onClose} size="sm">
+      <p className="text-base-content/80 text-sm">
+        {t('body', { workers, total })}
+      </p>
+      <div className="mt-5 flex justify-end gap-2">
+        <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">
+          {t('cancel')}
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={busy}
+          className="btn btn-primary btn-sm"
+        >
+          {busy ? '…' : t('confirm')}
+        </button>
+      </div>
+    </Modal>
   );
 }
 
@@ -149,7 +243,6 @@ function NewPeriodModal({ onClose }: { onClose: () => void }) {
     }
   }
 
-  // default to next week Mon–Sun, pay date the following Friday
   const today = new Date();
   const dow = today.getUTCDay();
   const offset = dow === 0 ? 1 : 8 - dow;
@@ -193,6 +286,7 @@ function NewPeriodModal({ onClose }: { onClose: () => void }) {
             defaultValue={payFri.toISOString().slice(0, 10)}
             className="input w-full"
           />
+          <p className="label">{t('pay_date_hint')}</p>
         </fieldset>
         <div className="mt-2 flex justify-end gap-2">
           <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">

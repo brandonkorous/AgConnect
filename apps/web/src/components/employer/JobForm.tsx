@@ -4,7 +4,7 @@
 // preview. Stacks at lg / md / sm with the preview moved into a daisyUI
 // drawer behind a "Preview" toggle.
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -15,6 +15,7 @@ import {
     faCheck,
     faCopy,
     faEye,
+    faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import type {
     EmployerJobView,
@@ -29,6 +30,12 @@ import { SectionNav } from './job-form/SectionNav';
 import { WorkerPreviewRail } from './job-form/WorkerPreviewRail';
 import { useAutosave } from './job-form/useAutosave';
 import { createJob, patchJob, publishJob, replaceScreeningQuestions } from './job-form/api';
+import { ValidationSummary } from './job-form/ValidationSummary';
+import {
+    validateForm,
+    fromServerFields,
+    type FieldError,
+} from './job-form/validation';
 import { BasicsSection } from './job-form/sections/Basics';
 import { ScheduleSection } from './job-form/sections/Schedule';
 import { PaySection } from './job-form/sections/Pay';
@@ -80,12 +87,33 @@ export function JobForm({
     const [smsKeyword, setSmsKeyword] = useState<string | null>(initial?.smsApplyKeyword ?? null);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
     const [renotifyMsg, setRenotifyMsg] = useState<string | null>(null);
 
     const isDraft = (initial?.status ?? 'draft') === 'draft';
     const isActive = mode === 'edit' && initial?.status === 'active';
     const employerName = profile?.dbaName || profile?.legalName || 'Your business';
     const crop = useMemo(() => crops.find((c) => c.id === state.cropId) ?? null, [crops, state.cropId]);
+
+    const liveStrict = !isDraft;
+    const liveErrors = useMemo(
+        () => validateForm(state, liveStrict ? 'create' : 'edit'),
+        [state, liveStrict],
+    );
+    const errorByPath = useMemo(() => {
+        const map: Record<string, FieldError> = {};
+        for (const e of liveErrors) map[e.path] = e;
+        for (const e of fieldErrors) map[e.path] = e;
+        return map;
+    }, [liveErrors, fieldErrors]);
+
+    function focusFirstError(errors: FieldError[]) {
+        const first = errors[0];
+        if (!first || typeof window === 'undefined') return;
+        const id = first.sectionHref.replace(/^#/, '');
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     const { status: autosaveStatus, savedAt } = useAutosave({
         enabled: mode === 'edit' && isDraft,
@@ -100,7 +128,17 @@ export function JobForm({
 
     async function save(action: SaveAction) {
         setError(null);
+        setFieldErrors([]);
         setRenotifyMsg(null);
+
+        const strict = action === 'publish' || isActive;
+        const preflight = validateForm(state, strict ? 'create' : 'edit');
+        if (preflight.length > 0) {
+            setFieldErrors(preflight);
+            focusFirstError(preflight);
+            return;
+        }
+
         setSubmitting(true);
         try {
             let id = jobId;
@@ -116,7 +154,13 @@ export function JobForm({
                     ? await createJob(locale, body)
                     : await patchJob(locale, id!, body);
             if (res.kind === 'error') {
-                setError(publishErrorMessage(res.code, res.message));
+                const fromServer = fromServerFields(res.fields);
+                if (fromServer.length > 0) {
+                    setFieldErrors(fromServer);
+                    focusFirstError(fromServer);
+                } else {
+                    setError(publishErrorMessage(res.code, res.message));
+                }
                 return;
             }
             id = res.job.id;
@@ -170,8 +214,11 @@ export function JobForm({
             <Header
                 mode={mode}
                 title={state.titleEn || state.titleEs}
+                jobId={jobId}
                 humanId={initial?.humanId ?? null}
+                status={initial?.status ?? 'draft'}
                 publishedAt={initial?.publishedAt ?? null}
+                startDate={state.startDate}
                 applicantsCount={
                     (initial?.applicationCounts?.applied ?? 0) +
                     (initial?.applicationCounts?.reviewed ?? 0) +
@@ -183,6 +230,9 @@ export function JobForm({
                 locale={locale}
             />
 
+            {fieldErrors.length > 0 && (
+                <ValidationSummary errors={fieldErrors} />
+            )}
             {error && (
                 <div role="alert" className="alert alert-error alert-soft mb-5 text-sm">
                     {error}
@@ -228,26 +278,38 @@ export function JobForm({
                         jobId={jobId}
                         locale={locale}
                         onPhotosChange={(photos) => update({ photos })}
+                        errors={errorByPath}
                     />
-                    <ScheduleSection state={state} update={update} />
-                    <PaySection state={state} update={update} />
-                    <RequirementsSection state={state} update={update} skills={skills} locale={locale} />
-                    <LocationSection state={state} update={update} locale={locale} />
+                    <ScheduleSection state={state} update={update} errors={errorByPath} />
+                    <PaySection state={state} update={update} errors={errorByPath} />
+                    <RequirementsSection state={state} update={update} skills={skills} locale={locale} errors={errorByPath} />
+                    <LocationSection state={state} update={update} locale={locale} errors={errorByPath} />
                     <ApplicationSection
                         state={state}
                         update={update}
                         contacts={contacts}
                         smsApplyKeyword={smsKeyword}
+                        errors={errorByPath}
                     />
                     <ComplianceSection state={state} profile={profile} locale={locale} />
 
                     <div className="bg-base-100 border-base-300 shadow-pop sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
                         <div className="flex items-center gap-3">
-                            <span className="bg-primary/10 text-primary grid h-9 w-9 place-items-center rounded-full">
-                                <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
-                            </span>
+                            {liveErrors.length > 0 ? (
+                                <span className="bg-error/10 text-error grid h-9 w-9 place-items-center rounded-full">
+                                    <FontAwesomeIcon icon={faTriangleExclamation} className="h-4 w-4" />
+                                </span>
+                            ) : (
+                                <span className="bg-primary/10 text-primary grid h-9 w-9 place-items-center rounded-full">
+                                    <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
+                                </span>
+                            )}
                             <div className="min-w-0">
-                                <div className="text-sm font-semibold">{t('save_bar_complete')}</div>
+                                <div className="text-sm font-semibold">
+                                    {liveErrors.length > 0
+                                        ? t('save_bar_blocked', { count: liveErrors.length })
+                                        : t('save_bar_complete')}
+                                </div>
                                 <div className="text-base-content/55 text-xs">
                                     {savedAt
                                         ? t('save_bar_autosaved', { time: relativeTime(savedAt, locale) })
@@ -313,6 +375,7 @@ export function JobForm({
                         <WorkerPreviewRail
                             state={state}
                             crop={crop}
+                            skills={skills}
                             employerName={employerName}
                             smsApplyKeyword={smsKeyword}
                             locale={locale}
@@ -327,8 +390,11 @@ export function JobForm({
 function Header({
     mode,
     title,
+    jobId,
     humanId,
+    status,
     publishedAt,
+    startDate,
     applicantsCount,
     spotsOpen,
     autosaveStatus,
@@ -337,8 +403,11 @@ function Header({
 }: {
     mode: Mode;
     title: string;
+    jobId: string | null;
     humanId: string | null;
+    status: 'draft' | 'active' | 'closed' | 'filled';
     publishedAt: string | null;
+    startDate: string;
     applicantsCount: number;
     spotsOpen: number;
     autosaveStatus: 'idle' | 'pending' | 'saving' | 'saved' | 'error';
@@ -347,10 +416,46 @@ function Header({
 }) {
     const t = useTranslations('employer.jobs.form_v2');
     const tList = useTranslations('employer.jobs.list');
-    const isLive = !!publishedAt;
-    const liveDays = isLive
-        ? Math.max(0, Math.floor((Date.now() - new Date(publishedAt!).getTime()) / 86_400_000))
-        : 0;
+    const router = useRouter();
+    const closeDialogRef = useRef<HTMLDialogElement>(null);
+    const [closing, setClosing] = useState(false);
+
+    const isLive = status === 'active' && !!publishedAt;
+    const isClosed = status === 'closed' || status === 'filled';
+    const startsInFuture = (() => {
+        if (!startDate) return false;
+        const today = new Date();
+        const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        return startDate > todayKey;
+    })();
+
+    function eyebrow(): string {
+        if (mode === 'create') return t('header_meta_new');
+        if (status === 'draft') return t('header_meta_draft');
+        if (isClosed) return t('header_meta_closed');
+        if (status === 'active') {
+            if (startsInFuture) return t('header_meta_starts', { date: formatStartDate(startDate, locale) });
+            return t('header_meta_live', { applicants: applicantsCount });
+        }
+        return t('header_meta_new');
+    }
+
+    async function handleClose() {
+        if (!jobId) return;
+        setClosing(true);
+        try {
+            const r = await patchJob(locale, jobId, { status: 'closed' });
+            if (r.kind === 'ok') {
+                router.push(`/${locale}/employer/jobs`);
+            }
+        } finally {
+            setClosing(false);
+            closeDialogRef.current?.close();
+        }
+    }
+
+    const showDuplicate = mode === 'edit' && status !== 'draft' && !!jobId;
+    const showClose = mode === 'edit' && status === 'active' && !!jobId;
 
     return (
         <div className="mb-5 pt-2">
@@ -366,13 +471,9 @@ function Header({
             <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <div className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
-                        {mode === 'edit' && humanId
-                            ? t('header_meta_edit', {
-                                id: humanId,
-                                days: liveDays,
-                                applicants: applicantsCount,
-                            })
-                            : t('header_meta_new')}
+                        {humanId && mode === 'edit'
+                            ? `#${humanId} · ${eyebrow()}`
+                            : eyebrow()}
                     </div>
                     <h1 className="font-display mt-1.5 text-3xl font-light leading-tight tracking-tight md:text-4xl">
                         {mode === 'edit' ? t('h1_edit') : t('h1_new')}{' '}
@@ -390,19 +491,25 @@ function Header({
                 </div>
                 {mode === 'edit' && (
                     <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            className="btn btn-sm btn-ghost border-base-300 rounded-full border"
-                        >
-                            <FontAwesomeIcon icon={faCopy} className="h-3 w-3" />
-                            {tList('duplicate')}
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-sm btn-ghost border-base-300 text-error rounded-full border"
-                        >
-                            {tList('close')}
-                        </button>
+                        {showDuplicate && (
+                            <button
+                                type="button"
+                                onClick={() => router.push(`/${locale}/employer/jobs/new?from=${jobId}`)}
+                                className="btn btn-sm btn-ghost border-base-300 rounded-full border"
+                            >
+                                <FontAwesomeIcon icon={faCopy} className="h-3 w-3" />
+                                {tList('duplicate')}
+                            </button>
+                        )}
+                        {showClose && (
+                            <button
+                                type="button"
+                                onClick={() => closeDialogRef.current?.showModal()}
+                                className="btn btn-sm btn-ghost border-base-300 text-error rounded-full border"
+                            >
+                                {tList('close')}
+                            </button>
+                        )}
                         <label
                             htmlFor="preview-drawer"
                             className="btn btn-sm btn-primary rounded-full xl:hidden"
@@ -414,8 +521,42 @@ function Header({
                     </div>
                 )}
             </div>
+
+            <dialog ref={closeDialogRef} className="modal">
+                <div className="modal-box">
+                    <h3 className="font-display text-xl font-normal">{t('close_modal_title')}</h3>
+                    <p className="text-base-content/70 mt-2 text-sm">{t('close_modal_body')}</p>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn btn-sm border-base-300 rounded-full border bg-transparent">
+                                {t('close_modal_keep')}
+                            </button>
+                        </form>
+                        <button
+                            type="button"
+                            disabled={closing}
+                            onClick={handleClose}
+                            className="btn btn-sm btn-error rounded-full"
+                        >
+                            {t('close_modal_confirm')}
+                        </button>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
         </div>
     );
+}
+
+function formatStartDate(yyyymmdd: string, locale: string): string {
+    const [y, m, d] = yyyymmdd.split('-').map(Number);
+    if (!y || !m || !d) return yyyymmdd;
+    return new Date(y, m - 1, d).toLocaleDateString(locale, {
+        month: 'short',
+        day: 'numeric',
+    });
 }
 
 function AutosaveBadge({
@@ -453,6 +594,8 @@ function relativeTime(iso: string, locale: string): string {
 
 function publishErrorMessage(code: string, message?: string): string {
     switch (code) {
+        case 'wage_required':
+            return 'Set a base hourly rate above $0 before publishing.';
         case 'employer_not_verified':
             return "Your business is still being verified. You can publish postings once it's approved.";
         case 'plan_posting_limit':

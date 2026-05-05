@@ -53,7 +53,11 @@ export function CheckoutButton(props: Props) {
         type="button"
         onClick={go}
         disabled={busy || props.disabled}
-        className="btn btn-primary btn-sm mt-4 w-full"
+        aria-disabled={busy || props.disabled}
+        className={[
+          'btn btn-primary btn-sm mt-4 w-full',
+          props.disabled ? 'btn-disabled cursor-not-allowed opacity-60' : '',
+        ].join(' ')}
       >
         {busy ? '…' : props.label}
       </button>

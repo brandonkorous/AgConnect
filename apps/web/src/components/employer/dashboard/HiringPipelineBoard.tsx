@@ -98,8 +98,8 @@ export async function HiringPipelineBoard({ locale, applicants }: Props) {
                 </Link>
               ))}
               {col.cards.length === 0 && (
-                <div className="text-base-content/40 px-1 py-2 text-center font-mono text-[11px]">
-                  —
+                <div className="text-base-content/50 px-1 py-2 text-center text-[11px]">
+                  {t('empty_lane')}
                 </div>
               )}
               {col.cards.length > 3 && (

@@ -37,6 +37,12 @@ export default async function CompliancePage({ params }: Props) {
 
     const overall = summary?.overall
         ?? Math.round(cats.reduce((sum, c) => sum + c.score, 0) / Math.max(1, cats.length));
+    const totalItems = cats.reduce((n, c) => n + c.items.length, 0);
+    const okItems = cats.reduce(
+        (n, c) => n + c.items.filter((it) => it.status === 'ok').length,
+        0,
+    );
+    const openItems = totalItems - okItems;
 
     const subtitle = (() => {
         if (summary?.delta != null && summary.priorScore != null) {
@@ -71,7 +77,9 @@ export default async function CompliancePage({ params }: Props) {
                         <span className="text-primary">{overall}%</span> {t('headline_suffix')}
                     </h1>
                     <div className="text-base-content/70 mt-2 text-sm">
-                        {t('summary', { actions: actions.length })}
+                        {overall < 100 && actions.length === 0 && openItems > 0
+                            ? t('summary_open', { open: openItems })
+                            : t('summary', { actions: actions.length })}
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -116,7 +124,9 @@ export default async function CompliancePage({ params }: Props) {
                     <div className="mb-3 flex items-center gap-2">
                         <FontAwesomeIcon icon={faBell} className="text-warning h-4 w-4" />
                         <h2 className="font-display text-xl font-semibold tracking-tight tabular-nums slashed-zero">
-                            {t('actions_title', { count: actions.length })}
+                            {actions.length === 0 && overall < 100 && openItems > 0
+                                ? t('actions_title_pending', { open: openItems })
+                                : t('actions_title', { count: actions.length })}
                         </h2>
                     </div>
                     <div className="grid gap-3">
@@ -144,7 +154,7 @@ export default async function CompliancePage({ params }: Props) {
                                         </div>
                                         <div className="text-base-content/70 text-xs">{a.detail}</div>
                                     </div>
-                                    <ComplianceActionCta action={{ ...a, cta: t(`severity_cta.${a.severity}`) } as ComplianceAction} />
+                                    <ComplianceActionCta action={{ ...a, cta: a.severity === 'urgent' ? t('action_cta.cta_resolve') : t(`severity_cta.${a.severity}`) } as ComplianceAction} />
                                 </div>
                             );
                         })}

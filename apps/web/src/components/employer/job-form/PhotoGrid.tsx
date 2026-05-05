@@ -77,47 +77,53 @@ export function PhotoGrid({ jobId, locale, photos, onChange }: Props) {
         className="hidden"
         onChange={onPick}
       />
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-        {photoSlots.map((p, i) =>
-          p ? (
-            <div
-              key={p.id}
-              draggable={!!jobId}
-              onDragStart={() => onDragStart(p)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => onDrop(p)}
-              className="group bg-base-200 border-base-300 relative aspect-square overflow-hidden rounded-lg border"
-            >
-              <img
-                src={p.url}
-                alt={p.captionEn ?? ''}
-                className="h-full w-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => remove(p)}
-                aria-label={t('photo_remove')}
-                className="bg-base-100/90 text-error hover:bg-base-100 absolute right-1 top-1 grid h-6 w-6 place-items-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+      {!jobId ? (
+        <div className="border-base-300 bg-base-200/50 text-base-content/65 grid min-h-24 place-items-center rounded-lg border-2 border-dashed p-4 text-center">
+          <div>
+            <FontAwesomeIcon icon={faPlus} className="text-base-content/40 mb-1.5 h-5 w-5" />
+            <p className="text-sm font-semibold">{t('photo_save_first')}</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+          {photoSlots.map((p, i) =>
+            p ? (
+              <div
+                key={p.id}
+                draggable={!!jobId}
+                onDragStart={() => onDragStart(p)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => onDrop(p)}
+                className="group bg-base-200 border-base-300 relative aspect-square overflow-hidden rounded-lg border"
               >
-                <FontAwesomeIcon icon={faXmark} className="h-3 w-3" />
+                <img
+                  src={p.url}
+                  alt={p.captionEn ?? ''}
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => remove(p)}
+                  aria-label={t('photo_remove')}
+                  className="bg-base-100/90 text-error hover:bg-base-100 absolute right-1 top-1 grid h-6 w-6 place-items-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                >
+                  <FontAwesomeIcon icon={faXmark} className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <button
+                key={`empty-${i}`}
+                type="button"
+                disabled={uploading}
+                onClick={() => fileInput.current?.click()}
+                className="border-base-300 text-base-content/40 hover:border-primary hover:text-primary grid aspect-square place-items-center rounded-lg border border-dashed transition-colors disabled:opacity-40"
+                aria-label={t('photo_add')}
+              >
+                <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
               </button>
-            </div>
-          ) : (
-            <button
-              key={`empty-${i}`}
-              type="button"
-              disabled={!jobId || uploading}
-              onClick={() => fileInput.current?.click()}
-              className="border-base-300 text-base-content/40 hover:border-primary hover:text-primary grid aspect-square place-items-center rounded-lg border border-dashed transition-colors disabled:opacity-40"
-              aria-label={t('photo_add')}
-            >
-              <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-            </button>
-          ),
-        )}
-      </div>
-      {!jobId && (
-        <p className="text-base-content/50 mt-2 text-xs">{t('photo_save_first')}</p>
+            ),
+          )}
+        </div>
       )}
     </div>
   );

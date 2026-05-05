@@ -172,7 +172,14 @@ employerComplianceRoutes.post('/items', validate('json', CreateComplianceItemBod
       evidenceUrl: body.evidenceUrl ?? null,
       dueAt: body.dueAt ? new Date(body.dueAt) : null,
     },
+  }).catch(async (e: unknown) => {
+    const msg = e instanceof Error ? e.message : 'create_failed';
+    if (msg.includes('Unique constraint')) {
+      return null;
+    }
+    throw e;
   });
+  if (!created) return err(c, 409, 'conflict', 'item_key_in_use');
 
   await c.var.audit.log({
     action: 'employer.compliance.item.created',

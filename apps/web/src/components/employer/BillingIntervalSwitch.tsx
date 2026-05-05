@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { PLAN_DISPLAY_PRICE } from '@agconn/schemas';
 import { CheckoutButton } from './CheckoutButton';
 
 type Props = {
@@ -12,18 +13,49 @@ type Props = {
 export function PlanCheckoutControls({ tier, disabled }: Props) {
   const t = useTranslations('employer.billing');
   const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly');
+  const price = PLAN_DISPLAY_PRICE[tier];
+  const monthly = price.monthly;
+  const yearly = price.yearly;
+
+  const tooltip = disabled ? t('upgrade_unavailable_tooltip') : undefined;
+  const wrapperProps = tooltip ? { 'data-tip': tooltip, className: 'tooltip tooltip-top w-full' } : { className: 'w-full' };
 
   return (
     <div>
-      <div className="bg-base-200 mb-3 grid grid-cols-2 rounded-full p-0.5 text-[11px] font-semibold">
+      {monthly !== null && (
+        <div className="mb-3">
+          {interval === 'monthly' ? (
+            <p className="text-base-content flex items-baseline gap-2">
+              <span className="font-display text-3xl font-light tracking-tight">${monthly}</span>
+              <span className="text-base-content/60 text-xs">{t('per_month')}</span>
+            </p>
+          ) : (
+            <p className="text-base-content flex items-baseline gap-2">
+              <span className="font-display text-3xl font-light tracking-tight">${yearly}</span>
+              <span className="text-base-content/60 text-xs">{t('per_year')}</span>
+              {yearly !== null && (
+                <span className="text-base-content/55 ml-auto font-mono text-[11px]">
+                  {t('or_monthly_split', { price: Math.round(yearly / 12) })}
+                </span>
+              )}
+            </p>
+          )}
+        </div>
+      )}
+      <div
+        role="group"
+        aria-label={t('interval_toggle')}
+        className="bg-base-200 mb-3 grid grid-cols-2 rounded-full p-0.5 text-[11px] font-semibold"
+      >
         <button
           type="button"
           onClick={() => setInterval('monthly')}
           disabled={disabled}
+          aria-pressed={interval === 'monthly'}
           className={[
             'rounded-full py-1 transition',
             interval === 'monthly'
-              ? 'bg-base-100 text-base-content shadow-sm'
+              ? 'bg-primary text-primary-content shadow-sm'
               : 'text-base-content/60',
             disabled ? 'cursor-not-allowed opacity-50' : '',
           ].join(' ')}
@@ -34,10 +66,11 @@ export function PlanCheckoutControls({ tier, disabled }: Props) {
           type="button"
           onClick={() => setInterval('yearly')}
           disabled={disabled}
+          aria-pressed={interval === 'yearly'}
           className={[
             'rounded-full py-1 transition',
             interval === 'yearly'
-              ? 'bg-base-100 text-base-content shadow-sm'
+              ? 'bg-primary text-primary-content shadow-sm'
               : 'text-base-content/60',
             disabled ? 'cursor-not-allowed opacity-50' : '',
           ].join(' ')}
@@ -45,13 +78,15 @@ export function PlanCheckoutControls({ tier, disabled }: Props) {
           {t('yearly')}
         </button>
       </div>
-      <CheckoutButton
-        mode="checkout"
-        tier={tier}
-        interval={interval}
-        label={tier === 'pro' ? t('upgrade_pro') : t('upgrade_enterprise')}
-        disabled={disabled}
-      />
+      <div {...wrapperProps}>
+        <CheckoutButton
+          mode="checkout"
+          tier={tier}
+          interval={interval}
+          label={tier === 'pro' ? t('upgrade_pro') : t('upgrade_enterprise')}
+          disabled={disabled}
+        />
+      </div>
     </div>
   );
 }

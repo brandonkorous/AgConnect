@@ -22,10 +22,8 @@ export function PaySection({ draft, onChange }: Props) {
           suffix={t('per_hour')}
         />
 
-        <fieldset className="fieldset">
-          <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-            {t('piece_rate_label')}
-          </legend>
+        <fieldset className="fieldset w-full min-w-0">
+          <legend className="fieldset-legend">{t('piece_rate_label')}</legend>
           <div className="join w-full">
             <label className="join-item border-base-300 bg-base-200 text-base-content/60 grid place-items-center border px-3 text-xs">
               $
@@ -81,10 +79,8 @@ function MoneyField({
 }) {
   const display = value != null ? (value / 100).toFixed(2) : '';
   return (
-    <fieldset className="fieldset">
-      <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
-        {label}
-      </legend>
+    <fieldset className="fieldset w-full min-w-0">
+      <legend className="fieldset-legend">{label}</legend>
       <div className="join w-full">
         <label className="join-item border-base-300 bg-base-200 text-base-content/60 grid place-items-center border px-3 text-xs">
           {prefix}

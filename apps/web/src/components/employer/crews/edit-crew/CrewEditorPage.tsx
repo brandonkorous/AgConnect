@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
@@ -13,6 +13,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
+import { pushToast } from '@agconn/ui';
 import { getApiClient } from '@/lib/api/client';
 import { SectionNav } from './SectionNav';
 import { BasicsSection } from './BasicsSection';
@@ -43,14 +44,37 @@ export function CrewEditorPage({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [attemptedSave, setAttemptedSave] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [memberCount, setMemberCount] = useState(members.length);
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+  const [, setTick] = useState(0);
 
-  const [draft, setDraft] = useState<CrewDraft>(() => (crew ? draftFromCrew(crew) : emptyDraft()));
+  const initialDraft = useMemo<CrewDraft>(
+    () => (crew ? draftFromCrew(crew) : emptyDraft()),
+    [crew],
+  );
+  const [draft, setDraft] = useState<CrewDraft>(initialDraft);
 
   const updateDraft = useCallback((patch: Partial<CrewDraft>) => {
     setDraft((d) => ({ ...d, ...patch }));
+    setLastSavedAt(null);
   }, []);
+
+  useEffect(() => {
+    if (lastSavedAt == null) return;
+    const id = setInterval(() => setTick((n) => n + 1), 15_000);
+    return () => clearInterval(id);
+  }, [lastSavedAt]);
+
+  const trimmedName = draft.name.trim();
+  const isNameValid = trimmedName.length >= 2;
+  const isDirty = useMemo(
+    () => !draftsEqual(draft, initialDraft),
+    [draft, initialDraft],
+  );
+  const canSubmit = mode === 'new' ? isNameValid : isNameValid && isDirty;
 
   const foremanName = useMemo(() => {
     if (!draft.foremanUserId) return null;
@@ -78,10 +102,14 @@ export function CrewEditorPage({
   }
 
   async function save() {
-    if (!draft.name.trim() || draft.name.trim().length < 2) {
-      setError(t('error_name_required'));
+    setAttemptedSave(true);
+    if (!isNameValid) {
+      setNameError(t('error_name_required'));
+      const el = document.getElementById('basics');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
+    setNameError(null);
     setError(null);
     setBusy(true);
     try {
@@ -90,7 +118,6 @@ export function CrewEditorPage({
         const body = buildBody();
         const res = await client.post<{ crew: { id: string } }>(
           '/v1/employer/crews',
-          // POST requires non-null fields; strip nulls.
           Object.fromEntries(
             Object.entries(body).filter(([, v]) => v !== null && v !== undefined),
           ),
@@ -109,8 +136,7 @@ export function CrewEditorPage({
           setError(res.error.message || t('error_save'));
           return;
         }
-        router.push(`/${locale}/employer/crews`);
-        router.refresh();
+        setLastSavedAt(Date.now());
       }
     } finally {
       setBusy(false);
@@ -157,7 +183,12 @@ export function CrewEditorPage({
         setError(res.error.message || t('error_archive'));
         return;
       }
+      pushToast({
+        variant: 'success',
+        title: t('archive_toast_title', { name: crew.name }),
+      });
       router.push(`/${locale}/employer/crews`);
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -295,7 +326,11 @@ export function CrewEditorPage({
         </div>
 
         <div className="min-w-0">
-          <BasicsSection draft={draft} onChange={updateDraft} />
+          <BasicsSection
+            draft={draft}
+            onChange={updateDraft}
+            nameError={attemptedSave && !isNameValid ? (nameError ?? t('error_name_required')) : null}
+          />
           <ForemanSection draft={draft} onChange={updateDraft} hires={hires} locale={locale} />
           <RosterSection
             crewId={crew?.id ?? null}
@@ -314,10 +349,10 @@ export function CrewEditorPage({
               </span>
               <div className="min-w-0">
                 <div className="text-sm font-semibold">
-                  {mode === 'new' ? t('save_bar_new') : t('save_bar_edit')}
+                  {saveBarTitle({ mode, isNameValid, isDirty, lastSavedAt, t })}
                 </div>
                 <div className="text-base-content/55 text-xs">
-                  {mode === 'new' ? t('save_bar_help_new') : t('save_bar_help_edit')}
+                  {saveBarHelp({ mode, isNameValid, lastSavedAt, t })}
                 </div>
               </div>
             </div>
@@ -331,8 +366,11 @@ export function CrewEditorPage({
               <button
                 type="button"
                 onClick={save}
-                disabled={busy}
-                className="btn btn-primary btn-sm rounded-full"
+                disabled={busy || !canSubmit}
+                className={[
+                  'btn btn-primary btn-sm rounded-full',
+                  !canSubmit ? 'btn-disabled' : '',
+                ].join(' ')}
               >
                 <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
                 {busy ? '…' : mode === 'new' ? t('footer_create') : t('footer_save')}
@@ -355,4 +393,76 @@ export function CrewEditorPage({
       </div>
     </div>
   );
+}
+
+function draftsEqual(a: CrewDraft, b: CrewDraft): boolean {
+  if (a.name !== b.name) return false;
+  if (a.shortCode !== b.shortCode) return false;
+  if (a.crewType !== b.crewType) return false;
+  if (a.primaryCrop !== b.primaryCrop) return false;
+  if (a.color !== b.color) return false;
+  if (a.baseWageCents !== b.baseWageCents) return false;
+  if (a.pieceRateCents !== b.pieceRateCents) return false;
+  if (a.pieceRateUnit !== b.pieceRateUnit) return false;
+  if (a.foremanPremiumCents !== b.foremanPremiumCents) return false;
+  if (a.foremanUserId !== b.foremanUserId) return false;
+  if (a.notes !== b.notes) return false;
+  if (a.requiredSkills.size !== b.requiredSkills.size) return false;
+  for (const s of a.requiredSkills) if (!b.requiredSkills.has(s)) return false;
+  const aKeys = Object.keys(a.commsChannels) as (keyof typeof a.commsChannels)[];
+  const bKeys = Object.keys(b.commsChannels) as (keyof typeof b.commsChannels)[];
+  if (aKeys.length !== bKeys.length) return false;
+  for (const k of aKeys) if (a.commsChannels[k] !== b.commsChannels[k]) return false;
+  return true;
+}
+
+function saveBarTitle({
+  mode,
+  isNameValid,
+  isDirty,
+  lastSavedAt,
+  t,
+}: {
+  mode: 'new' | 'edit';
+  isNameValid: boolean;
+  isDirty: boolean;
+  lastSavedAt: number | null;
+  t: ReturnType<typeof useTranslations>;
+}): string {
+  if (mode === 'edit' && lastSavedAt != null && !isDirty) {
+    return t('save_bar_saved', { ago: relativeTime(lastSavedAt, t) });
+  }
+  if (mode === 'new') {
+    return isNameValid ? t('save_bar_new') : t('save_bar_new_incomplete');
+  }
+  return isDirty ? t('save_bar_edit') : t('save_bar_edit_clean');
+}
+
+function saveBarHelp({
+  mode,
+  isNameValid,
+  lastSavedAt,
+  t,
+}: {
+  mode: 'new' | 'edit';
+  isNameValid: boolean;
+  lastSavedAt: number | null;
+  t: ReturnType<typeof useTranslations>;
+}): string {
+  if (mode === 'edit' && lastSavedAt != null) {
+    return t('save_bar_help_edit');
+  }
+  if (mode === 'new' && !isNameValid) {
+    return t('save_bar_help_new_incomplete');
+  }
+  return mode === 'new' ? t('save_bar_help_new') : t('save_bar_help_edit');
+}
+
+function relativeTime(ts: number, t: ReturnType<typeof useTranslations>): string {
+  const seconds = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (seconds < 45) return t('relative_just_now');
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return t('relative_minutes', { n: minutes });
+  const hours = Math.floor(minutes / 60);
+  return t('relative_hours', { n: hours });
 }

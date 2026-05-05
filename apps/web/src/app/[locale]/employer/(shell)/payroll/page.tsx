@@ -27,13 +27,14 @@ export default async function PayrollPage({ params }: Props) {
     ]);
 
     const fmtCents = (c: number, withSign = false) => {
-        const n = c / 100;
+        const n = Math.abs(c) / 100;
         const s = n.toLocaleString(locale === 'es' ? 'es-MX' : 'en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
         return `${withSign && c < 0 ? '−' : ''}$${s}`;
     };
+    const hasLines = lines.length > 0;
 
     return (
         <div className="px-5 pb-16 pt-8">
@@ -56,7 +57,12 @@ export default async function PayrollPage({ params }: Props) {
                         })}
                     </div>
                 </div>
-                <PayrollActions periodId={period.id} status={period.status} />
+                <PayrollActions
+                    periodId={period.id}
+                    status={period.status}
+                    workers={period.totals.workers}
+                    netCents={period.totals.netCents}
+                />
             </div>
 
             <div className="mb-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
@@ -125,9 +131,17 @@ export default async function PayrollPage({ params }: Props) {
                             </div>
                         )}
                     </div>
-                    <div className="bg-accent text-accent-content rounded-2xl p-5">
+                    <div
+                        className={[
+                            'bg-accent text-accent-content rounded-2xl p-5',
+                            hasLines ? '' : 'opacity-60',
+                        ].join(' ')}
+                    >
                         <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
                             {t('h2a_eyebrow')}
+                            {!hasLines && (
+                                <span className="ml-2 font-normal opacity-80">{t('h2a_no_data')}</span>
+                            )}
                         </div>
                         <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
                             {t('h2a_headline')}

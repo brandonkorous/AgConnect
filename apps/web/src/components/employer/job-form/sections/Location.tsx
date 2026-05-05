@@ -11,6 +11,7 @@ import {
 import { useAddressPinDropFallback } from '@/components/ui/useAddressPinDropFallback';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';
+import type { ErrorMap } from '../validation';
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 const CV_PROXIMITY: [number, number] = [-119.78, 36.74];
@@ -19,6 +20,7 @@ type Props = {
   state: JobFormState;
   update: JobFormUpdate;
   locale: string;
+  errors?: ErrorMap;
 };
 
 function deriveAddress(state: JobFormState): AddressValue | null {
@@ -36,9 +38,10 @@ function deriveAddress(state: JobFormState): AddressValue | null {
   };
 }
 
-export function LocationSection({ state, update, locale }: Props) {
+export function LocationSection({ state, update, locale, errors = {} }: Props) {
   const t = useTranslations('employer.jobs.form_v2');
   const tShared = useTranslations('shell.address');
+  const err = (path: string) => errors[path];
   const sitePinDrop = useAddressPinDropFallback(CV_PROXIMITY);
   const pickupPinDrop = useAddressPinDropFallback(CV_PROXIMITY);
 
@@ -86,7 +89,7 @@ export function LocationSection({ state, update, locale }: Props) {
           <select
             value={state.county}
             onChange={(e) => update({ county: e.target.value })}
-            className="select select-bordered w-full"
+            className={`select select-bordered w-full${err('county') ? ' select-error' : ''}`}
           >
             {COUNTIES.map((c) => (
               <option key={c} value={c}>
@@ -94,6 +97,7 @@ export function LocationSection({ state, update, locale }: Props) {
               </option>
             ))}
           </select>
+          {err('county') && <p className="label text-error">{t(`validation_reason_${err('county')!.reason}`)}</p>}
         </fieldset>
       </div>
 

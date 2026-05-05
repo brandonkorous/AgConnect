@@ -80,7 +80,7 @@ export default async function BillingPage({ params }: Props) {
                         <div className="grid grid-cols-3 gap-4 text-[11px]">
                             <div>
                                 <div className="text-base-100/60 font-mono uppercase tracking-wider">
-                                    {t('feature.active_postings')}
+                                    {t('feature.active_postings_limit')}
                                 </div>
                                 <div className="font-display mt-1 text-2xl font-light">
                                     {billing.features.activePostings === -1
@@ -172,7 +172,7 @@ function PlanCard({
             <h3 className="font-display text-2xl font-light tracking-tight">{t(tier)}</h3>
             <p className="text-base-content/60 mt-1 text-xs">{t(`pitch.${tier}`)}</p>
 
-            <PlanPrice tier={tier} t={t} />
+            {(isFree || isCurrent) && <PlanPrice tier={tier} t={t} />}
 
             <ul className="mt-5 flex flex-col gap-2 text-sm">
                 <FeatureLine
@@ -217,13 +217,7 @@ function PlanPrice({
 }) {
     const price = PLAN_DISPLAY_PRICE[tier];
     if (price.monthly === null) return null;
-    if (tier === 'free') {
-        return (
-            <p className="text-base-content font-display mt-3 text-3xl font-light tracking-tight">
-                {t('price_free')}
-            </p>
-        );
-    }
+    if (tier === 'free') return null;
     return (
         <p className="text-base-content mt-3 flex items-baseline gap-2">
             <span className="font-display text-3xl font-light tracking-tight">

@@ -32,7 +32,7 @@ export default async function EmployerProfilePage({ params }: Props) {
                 : { bg: 'bg-warning/15', fg: 'text-warning', icon: faClock };
 
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
             <div className="mb-7">
                 <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
                     {t('eyebrow')}
@@ -111,10 +111,7 @@ export default async function EmployerProfilePage({ params }: Props) {
                     </div>
 
                     <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                        <h2 className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
-                            {t('sidebar.business_id')}
-                        </h2>
-                        <dl className="mt-3 grid gap-3 text-xs">
+                        <dl className="grid gap-3 text-xs">
                             <div>
                                 <dt className="text-base-content/60">{t('sidebar.legal_name')}</dt>
                                 <dd className="mt-0.5 text-sm font-semibold">{profile.legalName}</dd>

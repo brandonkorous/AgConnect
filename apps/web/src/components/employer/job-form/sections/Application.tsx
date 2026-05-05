@@ -7,16 +7,19 @@ import type { EmployerContactView } from '@/lib/api/employer';
 import { SectionShell } from '../SectionShell';
 import { ScreeningList } from '../ScreeningList';
 import type { JobFormState, JobFormUpdate } from '../types';
+import type { ErrorMap } from '../validation';
 
 type Props = {
   state: JobFormState;
   update: JobFormUpdate;
   contacts: EmployerContactView[];
   smsApplyKeyword?: string | null;
+  errors?: ErrorMap;
 };
 
-export function ApplicationSection({ state, update, contacts, smsApplyKeyword }: Props) {
+export function ApplicationSection({ state, update, contacts, smsApplyKeyword, errors = {} }: Props) {
   const t = useTranslations('employer.jobs.form_v2');
+  const err = (path: string) => errors[path];
 
   return (
     <SectionShell
@@ -81,7 +84,7 @@ export function ApplicationSection({ state, update, contacts, smsApplyKeyword }:
           <select
             value={state.foremanContactId ?? ''}
             onChange={(e) => update({ foremanContactId: e.target.value || null })}
-            className="select select-bordered w-full"
+            className={`select select-bordered w-full${err('foremanContactId') ? ' select-error' : ''}`}
           >
             <option value="">{t('foreman_pick')}</option>
             {contacts.map((c) => (
@@ -90,6 +93,7 @@ export function ApplicationSection({ state, update, contacts, smsApplyKeyword }:
               </option>
             ))}
           </select>
+          {err('foremanContactId') && <p className="label text-error">{t(`validation_reason_${err('foremanContactId')!.reason}`)}</p>}
         </fieldset>
         <fieldset className="fieldset">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
@@ -100,8 +104,9 @@ export function ApplicationSection({ state, update, contacts, smsApplyKeyword }:
             type="datetime-local"
             value={toLocalDatetime(state.applicationDeadlineAt)}
             onChange={(e) => update({ applicationDeadlineAt: fromLocalDatetime(e.target.value) })}
-            className="input input-bordered w-full"
+            className={`input input-bordered w-full${err('applicationDeadlineAt') ? ' input-error' : ''}`}
           />
+          {err('applicationDeadlineAt') && <p className="label text-error">{t(`validation_reason_${err('applicationDeadlineAt')!.reason}`)}</p>}
         </fieldset>
       </div>
     </SectionShell>

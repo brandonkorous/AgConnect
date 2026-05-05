@@ -81,18 +81,24 @@ export default async function ReportsPage({ params, searchParams }: Props) {
             </div>
 
             <div className="mb-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-                {data.kpis.map((k) => (
-                    <div key={k.label} className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                        <div className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
-                            {k.label}
+                {data.kpis.map((k) => {
+                    const label = t(`kpi.${k.key}.label`);
+                    const subCount = parseSubCount(k.sub);
+                    const sub = t(`kpi.${k.key}.sub`, { count: subCount });
+                    const showSub = !(k.key === 'hires' && k.value === '0');
+                    return (
+                        <div key={k.key} className="bg-base-100 border-base-300 rounded-2xl border p-5">
+                            <div className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+                                {label}
+                            </div>
+                            <div className="text-primary font-display mt-2 text-4xl font-light leading-none tracking-tight">
+                                {k.value === '—' ? '0' : k.value}
+                            </div>
+                            <div className="text-success mt-2 font-mono text-xs font-bold">{k.delta}</div>
+                            {showSub && <div className="text-base-content/60 mt-1 text-xs">{sub}</div>}
                         </div>
-                        <div className="text-primary font-display mt-2 text-4xl font-light leading-none tracking-tight">
-                            {k.value}
-                        </div>
-                        <div className="text-success mt-2 font-mono text-xs font-bold">{k.delta}</div>
-                        <div className="text-base-content/60 mt-1 text-xs">{k.sub}</div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <section className="bg-base-100 border-base-300 mb-6 rounded-2xl border p-6">
@@ -114,12 +120,20 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                         </div>
                     </div>
                 </div>
-                <FlowChart points={data.seasonFlow} />
-                <div className="text-base-content/60 mt-2 flex justify-between font-mono text-[10px]">
-                    {months.map((m) => (
-                        <span key={m}>{m}</span>
-                    ))}
-                </div>
+                {hasFlowData(data.seasonFlow) ? (
+                    <>
+                        <FlowChart points={data.seasonFlow} />
+                        <div className="text-base-content/60 mt-2 flex justify-between font-mono text-[10px]">
+                            {months.map((m) => (
+                                <span key={m}>{m}</span>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="text-base-content/55 grid place-items-center py-12 text-center text-sm">
+                        {t('applicant_flow.no_data')}
+                    </div>
+                )}
             </section>
 
             <div className="grid gap-4 lg:grid-cols-2">
@@ -200,6 +214,16 @@ export default async function ReportsPage({ params, searchParams }: Props) {
             </div>
         </div>
     );
+}
+
+function hasFlowData(points: { applied: number; hired: number }[]): boolean {
+    return points.some((p) => p.applied > 0 || p.hired > 0);
+}
+
+function parseSubCount(sub: string | null): number {
+    if (!sub) return 0;
+    const m = /(\d+)/.exec(sub);
+    return m ? Number(m[1]) : 0;
 }
 
 function normalizeRange(raw: string | undefined): RangeKey {

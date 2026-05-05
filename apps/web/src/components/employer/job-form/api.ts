@@ -23,13 +23,15 @@ export type EditMeta = {
 
 export type SaveResult =
   | { kind: 'ok'; job: EmployerJobView; edit?: EditMeta }
-  | { kind: 'error'; code: string; message: string };
+  | { kind: 'error'; code: string; message: string; fields?: Record<string, string> };
 
 export async function createJob(locale: string, body: Record<string, unknown>): Promise<SaveResult> {
   const res = await client(locale).post<{ job: EmployerJobView }>('/v1/employer/jobs', body, {
     handleErrorInline: true,
   });
-  if (!isOk(res)) return { kind: 'error', code: res.error.code, message: res.error.message };
+  if (!isOk(res)) {
+    return { kind: 'error', code: res.error.code, message: res.error.message, fields: res.error.fields };
+  }
   return { kind: 'ok', job: res.data.job };
 }
 
@@ -42,7 +44,9 @@ export async function patchJob(
     job: EmployerJobView;
     edit?: EditMeta;
   }>(`/v1/employer/jobs/${id}`, body, { handleErrorInline: true });
-  if (!isOk(res)) return { kind: 'error', code: res.error.code, message: res.error.message };
+  if (!isOk(res)) {
+    return { kind: 'error', code: res.error.code, message: res.error.message, fields: res.error.fields };
+  }
   return { kind: 'ok', job: res.data.job, edit: res.data.edit };
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { currentUser } from '@clerk/nextjs/server';
 import {
     getEmployerProfile,
     getDashboardStats,
@@ -29,12 +30,13 @@ export default async function EmployerDashboardPage({ params }: Props) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.dashboard' });
 
-    const [profile, stats, jobs, applicants, billing] = await Promise.all([
+    const [profile, stats, jobs, applicants, billing, user] = await Promise.all([
         getEmployerProfile(),
         getDashboardStats(),
         listEmployerJobs(),
         listInbox(),
         getBilling(),
+        currentUser(),
     ]);
 
     if (!profile) {
@@ -43,10 +45,8 @@ export default async function EmployerDashboardPage({ params }: Props) {
 
     const status = verificationStatus(profile);
     const firstName =
-        (profile.contactEmail?.split('@')[0] ?? profile.displayName.split(/\s+/)[0] ?? '')
-            .replace(/[._-]+/g, ' ')
-            .replace(/\b\w/g, (m) => m.toUpperCase())
-            .split(' ')[0] ?? '';
+        user?.firstName?.trim() ||
+        (profile.displayName.split(/\s+/)[0] ?? '');
 
     const activePostings = jobs.filter((j) => j.status === 'active').length;
     const totalSeats = jobs
@@ -62,13 +62,14 @@ export default async function EmployerDashboardPage({ params }: Props) {
 
     const featured = pickFeaturedJob(jobs);
 
+    const hidePaymentCta = status === 'pending' || status === 'rejected';
+
     return (
-        <div className="px-5 pb-16 pt-8">
+        <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
             <EmployerGreeting
                 locale={locale}
                 firstName={firstName}
                 county={profile.county}
-                companyName={profile.displayName}
                 summaryLine={summaryLine}
             />
 
@@ -90,7 +91,13 @@ export default async function EmployerDashboardPage({ params }: Props) {
                     <ActiveJobsBoard locale={locale} jobs={jobs} />
                 </div>
                 <div className="grid gap-3.5">
-                    {billing && <BillingSnapshot locale={locale} billing={billing} />}
+                    {billing && (
+                        <BillingSnapshot
+                            locale={locale}
+                            billing={billing}
+                            hidePaymentCta={hidePaymentCta}
+                        />
+                    )}
                     <VerificationCard locale={locale} profile={profile} status={status} />
                     <TopApplicantsCard locale={locale} applicants={applicants} />
                 </div>

@@ -312,6 +312,12 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
     if (!job) return { kind: 'not_found' as const };
     if (job.status !== JobStatus.draft) return { kind: 'not_draft' as const };
 
+    const wageMinNum = Number(job.wageMin?.toString() ?? '0');
+    const wageMaxNum = Number(job.wageMax?.toString() ?? '0');
+    if (!(wageMinNum > 0) && !(wageMaxNum > 0)) {
+      return { kind: 'wage_required' as const };
+    }
+
     if (Number.isFinite(limit)) {
       const activeCount = await tx.jobPosting.count({
         where: { employerId: userId, status: JobStatus.active, deletedAt: null },
@@ -342,6 +348,7 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
 
   if (result.kind === 'not_found') return err(c, 404, 'not_found');
   if (result.kind === 'not_draft') return err(c, 422, 'validation_failed', 'not_draft');
+  if (result.kind === 'wage_required') return err(c, 422, 'validation_failed', 'wage_required');
   if (result.kind === 'plan_limit') return err(c, 402, 'plan_posting_limit');
 
   await c.var.audit.log({

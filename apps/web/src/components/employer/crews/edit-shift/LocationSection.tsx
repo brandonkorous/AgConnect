@@ -18,9 +18,10 @@ const CV_PROXIMITY: [number, number] = [-119.78, 36.74];
 type Props = {
   draft: ShiftDraft;
   onChange: (patch: Partial<ShiftDraft>) => void;
+  error?: string | null;
 };
 
-export function LocationSection({ draft, onChange }: Props) {
+export function LocationSection({ draft, onChange, error }: Props) {
   const t = useTranslations('employer.crews.edit_shift.location_section');
   const tShared = useTranslations('shell.address');
   const locale = useLocale();
@@ -62,7 +63,7 @@ export function LocationSection({ draft, onChange }: Props) {
   return (
     <SectionCard id="loc" title={t('title')} sub={t('sub')}>
       <div className="grid gap-3.5 md:grid-cols-2">
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
             {t('block_label')}
           </legend>
@@ -71,8 +72,10 @@ export function LocationSection({ draft, onChange }: Props) {
             value={draft.locationLabel}
             maxLength={120}
             onChange={(e) => onChange({ locationLabel: e.target.value })}
-            className="input w-full"
+            aria-invalid={error ? true : undefined}
+            className={['input w-full', error ? 'input-error' : ''].join(' ')}
           />
+          {error && <p className="label text-error">{error}</p>}
         </fieldset>
         <fieldset className="fieldset">
           <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">

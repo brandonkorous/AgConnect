@@ -13,15 +13,16 @@ import type { CrewColor, CrewCrop, CrewType } from '@/lib/api/employer-ops';
 type Props = {
   draft: CrewDraft;
   onChange: (patch: Partial<CrewDraft>) => void;
+  nameError?: string | null;
 };
 
-export function BasicsSection({ draft, onChange }: Props) {
+export function BasicsSection({ draft, onChange, nameError }: Props) {
   const t = useTranslations('employer.crews.edit_crew.basics');
 
   return (
     <SectionCard id="basics" title={t('title')} sub={t('sub')}>
       <div className="grid gap-3.5 md:grid-cols-2">
-        <fieldset className="fieldset">
+        <fieldset className="fieldset w-full min-w-0">
           <legend className="text-base-content/60 mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-wider">
             {t('name_label')}
           </legend>
@@ -31,9 +32,14 @@ export function BasicsSection({ draft, onChange }: Props) {
             maxLength={80}
             placeholder={t('name_placeholder')}
             onChange={(e) => onChange({ name: e.target.value })}
-            className="input w-full"
+            aria-invalid={nameError ? true : undefined}
+            className={['input w-full', nameError ? 'input-error' : ''].join(' ')}
           />
-          <p className="text-base-content/60 mt-1.5 text-[11px]">{t('name_help')}</p>
+          {nameError ? (
+            <p className="label text-error">{nameError}</p>
+          ) : (
+            <p className="text-base-content/60 mt-1.5 text-[11px]">{t('name_help')}</p>
+          )}
         </fieldset>
 
         <fieldset className="fieldset">

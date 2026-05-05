@@ -4,6 +4,10 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import { ClerkProvider } from '@clerk/nextjs';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error — @clerk/localizations is added to package.json; module may
+// not be installed locally yet. Run `pnpm install` before typechecking.
+import { esES, enUS } from '@clerk/localizations';
 import { routing } from '@/i18n/routing';
 import { inter, interTight, dmMono } from '@/lib/fonts';
 import { dataThemeFor, DEFAULT_THEME, themeInitScript } from '@/lib/theme';
@@ -12,10 +16,28 @@ import '../globals.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
 const clerkConfigured = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+const isProd = process.env.NODE_ENV === 'production';
 
-function MaybeClerkProvider({ children }: { children: React.ReactNode }) {
+function MaybeClerkProvider({
+    children,
+    locale,
+}: {
+    children: React.ReactNode;
+    locale: string;
+}) {
     if (!clerkConfigured) return <>{children}</>;
-    return <ClerkProvider>{children}</ClerkProvider>;
+    const localization = locale === 'es' ? esES : enUS;
+    const hideDevBadge = isProd
+        ? ({ developmentModeWarning: { display: 'none' } } as Record<string, unknown>)
+        : undefined;
+    return (
+        <ClerkProvider
+            localization={localization}
+            appearance={hideDevBadge ? { elements: hideDevBadge } : undefined}
+        >
+            {children}
+        </ClerkProvider>
+    );
 }
 
 faConfig.autoAddCss = false;
@@ -70,7 +92,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                 />
             </head>
             <body className="bg-base-300 text-base-content antialiased">
-                <MaybeClerkProvider>
+                <MaybeClerkProvider locale={locale}>
                     <NextIntlClientProvider locale={locale} messages={messages}>
                         <AppShellProviders enablePwa={process.env.NODE_ENV === 'production'}>
                             {children}

@@ -177,7 +177,6 @@ function AddressAutocompleteInner({
   label,
   labels,
   hint,
-  required,
   types,
   proximity,
   country,
@@ -319,7 +318,6 @@ function AddressAutocompleteInner({
       <fieldset className="fieldset">
         <legend className="fieldset-legend">
           {label}
-          {required && <span className="text-error ml-1">*</span>}
         </legend>
         <div
           className="border-base-300 bg-base-100 rounded-box flex items-start justify-between gap-3 border p-3"
@@ -353,7 +351,6 @@ function AddressAutocompleteInner({
     <fieldset className="fieldset">
       <legend className="fieldset-legend" id={`${inputId}-label`}>
         {label}
-        {required && <span className="text-error ml-1">*</span>}
       </legend>
       <div className="relative">
         <input

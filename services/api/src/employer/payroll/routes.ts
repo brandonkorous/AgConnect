@@ -336,6 +336,97 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
   return ok(c, { generated: writes });
 });
 
+employerPayrollRoutes.post('/periods/:id/approve', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+
+  const existing = await c.var.db.payrollPeriod.findFirst({
+    where: { id, tenantId, employerId: userId },
+  });
+  if (!existing) return err(c, 404, 'not_found');
+  if (existing.status !== PayrollPeriodStatus.draft) return err(c, 422, 'period_locked');
+
+  const updated = await c.var.db.payrollPeriod.update({
+    where: { id },
+    data: {
+      status: PayrollPeriodStatus.approved,
+      approvedAt: new Date(),
+      approvedById: userId,
+    },
+  });
+
+  await c.var.audit.log({
+    action: 'employer.payroll.period.status_changed',
+    resourceId: id,
+    metadata: { periodId: id, fromStatus: existing.status, toStatus: 'approved' },
+  });
+
+  return ok(c, {
+    period: {
+      id: updated.id,
+      employerId: updated.employerId,
+      startDate: updated.startDate.toISOString().slice(0, 10),
+      endDate: updated.endDate.toISOString().slice(0, 10),
+      payDate: updated.payDate.toISOString().slice(0, 10),
+      status: updated.status,
+      approvedAt: updated.approvedAt?.toISOString() ?? null,
+      paidAt: updated.paidAt?.toISOString() ?? null,
+    },
+  });
+});
+
+// audit-required:exempt — CSV view of already-audited payroll lines.
+employerPayrollRoutes.get('/periods/:id/export', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+  const formRaw = (c.req.query('form') ?? '941').toLowerCase();
+  const form = formRaw === 'de9' || formRaw === 'de-9' ? 'de9' : '941';
+
+  const period = await c.var.db.payrollPeriod.findFirst({
+    where: { id, tenantId, employerId: userId },
+  });
+  if (!period) return new Response('not_found', { status: 404 });
+
+  const lines = await c.var.db.payrollLine.findMany({
+    where: { tenantId, periodId: id },
+    include: { worker: { include: { workerProfile: true } } },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  const periodLabel = `${period.startDate.toISOString().slice(0, 10)}_${period.endDate.toISOString().slice(0, 10)}`;
+  const header = form === '941'
+    ? ['form', 'period_start', 'period_end', 'worker_id', 'first_name', 'last_name', 'gross_cents', 'taxes_cents', 'net_cents']
+    : ['form', 'period_start', 'period_end', 'worker_id', 'first_name', 'last_name', 'hours', 'gross_cents', 'taxes_cents'];
+  const rows: string[][] = [header];
+  for (const l of lines) {
+    const wp = l.worker.workerProfile;
+    const base = [
+      form === '941' ? '941' : 'DE-9',
+      period.startDate.toISOString().slice(0, 10),
+      period.endDate.toISOString().slice(0, 10),
+      l.workerUserId,
+      wp?.firstName ?? '',
+      wp?.lastName ?? '',
+    ];
+    if (form === '941') {
+      rows.push([...base, String(l.grossCents), String(l.taxesCents), String(l.netCents)]);
+    } else {
+      rows.push([...base, Number(l.hours.toString()).toFixed(2), String(l.grossCents), String(l.taxesCents)]);
+    }
+  }
+
+  const filename = `agconn-${form}-${periodLabel}.csv`;
+  return new Response(toCsv(rows), {
+    status: 200,
+    headers: {
+      'content-type': 'text/csv; charset=utf-8',
+      'content-disposition': `attachment; filename="${filename}"`,
+    },
+  });
+});
+
 // audit-required:exempt — CSV view of already-audited payroll lines.
 employerPayrollRoutes.get('/periods/:id/lines.csv', async (c) => {
   const userId = c.var.userId;

@@ -8,6 +8,7 @@ import { CropGlyph } from '@/components/ui/CropGlyph';
 import { SectionShell } from '../SectionShell';
 import { PhotoGrid } from '../PhotoGrid';
 import type { JobFormState, JobFormUpdate } from '../types';
+import type { ErrorMap } from '../validation';
 
 type Props = {
   state: JobFormState;
@@ -17,6 +18,7 @@ type Props = {
   jobId: string | null;
   locale: string;
   onPhotosChange: (photos: JobPhotoView[]) => void;
+  errors?: ErrorMap;
 };
 
 export function BasicsSection({
@@ -27,8 +29,10 @@ export function BasicsSection({
   jobId,
   locale,
   onPhotosChange,
+  errors = {},
 }: Props) {
   const t = useTranslations('employer.jobs.form_v2');
+  const err = (path: string) => errors[path];
   const filled = state.positionsTotal > 0 ? Math.max(0, state.positionsTotal - 0) : 0;
   void filled;
 
@@ -46,23 +50,24 @@ export function BasicsSection({
             value={state.titleEn}
             onChange={(e) => update({ titleEn: e.target.value })}
             maxLength={120}
-            className="input input-bordered w-full text-base font-medium"
+            className={`input input-bordered w-full text-base font-medium${err('titleEn') ? ' input-error' : ''}`}
           />
+          {err('titleEn') && <p className="label text-error">{t(`validation_reason_${err('titleEn')!.reason}`)}</p>}
         </fieldset>
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_title_es')}
             <FontAwesomeIcon icon={faGlobe} className="text-base-content/40 ml-1.5 h-3 w-3" />
-            <span className="text-base-content/55 ml-1.5 font-normal">{t('optional')}</span>
           </legend>
           <input
             type="text"
             value={state.titleEs}
             onChange={(e) => update({ titleEs: e.target.value })}
             maxLength={120}
-            className="input input-bordered bg-base-200 w-full"
+            className={`input input-bordered bg-base-200 w-full${err('titleEs') ? ' input-error' : ''}`}
           />
+          {err('titleEs') && <p className="label text-error">{t(`validation_reason_${err('titleEs')!.reason}`)}</p>}
         </fieldset>
 
         <fieldset className="fieldset">
@@ -92,6 +97,7 @@ export function BasicsSection({
               );
             })}
           </div>
+          {err('cropId') && <p className="label text-error">{t(`validation_reason_${err('cropId')!.reason}`)}</p>}
         </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -102,7 +108,7 @@ export function BasicsSection({
             <select
               value={state.roleTypeId ?? ''}
               onChange={(e) => update({ roleTypeId: e.target.value || null })}
-              className="select select-bordered w-full"
+              className={`select select-bordered w-full${err('roleTypeId') ? ' select-error' : ''}`}
             >
               <option value="">{t('role_pick')}</option>
               {roleTypes.map((r) => (
@@ -111,6 +117,7 @@ export function BasicsSection({
                 </option>
               ))}
             </select>
+            {err('roleTypeId') && <p className="label text-error">{t(`validation_reason_${err('roleTypeId')!.reason}`)}</p>}
           </fieldset>
           <fieldset className="fieldset">
             <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
@@ -149,10 +156,7 @@ export function BasicsSection({
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend text-base-content/80 flex w-full items-baseline justify-between text-sm font-semibold">
-            <span>
-              {t('field_desc_en')}
-              <span className="text-base-content/55 ml-1.5 font-normal">{t('optional')}</span>
-            </span>
+            <span>{t('field_desc_en')}</span>
             <span className="text-base-content/55 text-[11px] font-normal">{t('hint_desc')}</span>
           </legend>
           <textarea
@@ -161,15 +165,15 @@ export function BasicsSection({
             onChange={(e) => update({ descriptionEn: e.target.value })}
             minLength={20}
             maxLength={5000}
-            className="textarea textarea-bordered w-full"
+            className={`textarea textarea-bordered w-full${err('descriptionEn') ? ' textarea-error' : ''}`}
           />
+          {err('descriptionEn') && <p className="label text-error">{t(`validation_reason_${err('descriptionEn')!.reason}`)}</p>}
         </fieldset>
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend text-base-content/80 text-sm font-semibold">
             {t('field_desc_es')}
             <FontAwesomeIcon icon={faGlobe} className="text-base-content/40 ml-1.5 h-3 w-3" />
-            <span className="text-base-content/55 ml-1.5 font-normal">{t('optional')}</span>
           </legend>
           <textarea
             rows={4}
@@ -177,8 +181,9 @@ export function BasicsSection({
             onChange={(e) => update({ descriptionEs: e.target.value })}
             minLength={20}
             maxLength={5000}
-            className="textarea textarea-bordered bg-base-200 w-full"
+            className={`textarea textarea-bordered bg-base-200 w-full${err('descriptionEs') ? ' textarea-error' : ''}`}
           />
+          {err('descriptionEs') && <p className="label text-error">{t(`validation_reason_${err('descriptionEs')!.reason}`)}</p>}
         </fieldset>
 
         <fieldset className="fieldset">

@@ -761,10 +761,10 @@ function shortTime(iso: string): string {
 // ───────────────────────────────────────────────── Reports
 
 export type ReportsKpiView = {
-  label: string;
+  key: string;
   value: string;
   delta: string;
-  sub: string;
+  sub: string | null;
 };
 
 export type ReportsByJobTypeView = {
@@ -792,20 +792,13 @@ type ReportsOverviewResponse = {
   seasonFlow: ReportsSeasonFlowPoint[];
 };
 
-const KPI_LABELS: Record<string, string> = {
-  hires: 'Hires this season',
-  time_to_fill: 'Avg time-to-fill',
-  cost_per_hire: 'Cost per hire',
-  retention_30d: 'Retention · 30 d',
-};
-
 export async function getReportsOverview(): Promise<{
   kpis: ReportsKpiView[];
   byJobType: ReportsByJobTypeView[];
   topWorkers: ReportsTopWorkerView[];
   seasonFlow: ReportsSeasonFlowPoint[];
 }> {
-  const empty = { kpis: [], byJobType: [], topWorkers: [], seasonFlow: [] };
+  const empty = { kpis: [] as ReportsKpiView[], byJobType: [], topWorkers: [], seasonFlow: [] };
   try {
     const client = await getServerApiClient();
     const res = await client.get<ReportsOverviewResponse>('/v1/employer/reports/overview', {
@@ -815,10 +808,10 @@ export async function getReportsOverview(): Promise<{
     // Empty real metrics are truth — render zero cards instead of fake fixtures.
     return {
       kpis: res.data.kpis.map((k) => ({
-        label: KPI_LABELS[k.key] ?? k.key,
+        key: k.key,
         value: k.value,
         delta: k.delta,
-        sub: k.sub,
+        sub: k.sub ?? null,
       })),
       byJobType: res.data.byJobType,
       topWorkers: res.data.topWorkers.map((w) => ({

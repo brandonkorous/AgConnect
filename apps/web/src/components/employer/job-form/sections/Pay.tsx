@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';
+import type { ErrorMap } from '../validation';
 
 const STRUCTURES = ['hourly', 'hourly_piece', 'piece'] as const;
 const FREQUENCIES = ['weekly', 'biweekly', 'daily'] as const;
@@ -12,10 +13,12 @@ const FREQUENCIES = ['weekly', 'biweekly', 'daily'] as const;
 type Props = {
   state: JobFormState;
   update: JobFormUpdate;
+  errors?: ErrorMap;
 };
 
-export function PaySection({ state, update }: Props) {
+export function PaySection({ state, update, errors = {} }: Props) {
   const t = useTranslations('employer.jobs.form_v2');
+  const err = (path: string) => errors[path];
 
   const dailyHours = computeDailyHours(state.dailyStartTime, state.dailyEndTime);
   const dailyTakeMin = state.wageMin * dailyHours;
@@ -78,7 +81,7 @@ export function PaySection({ state, update }: Props) {
             <span className="text-base-content/55 text-[11px] font-normal">{t('hint_ca_min')}</span>
           </legend>
           <div className="flex items-center gap-1.5">
-            <label className="input input-bordered flex flex-1 items-center gap-1.5">
+            <label className={`input input-bordered flex flex-1 items-center gap-1.5${err('wageMin') ? ' input-error' : ''}`}>
               <span className="text-base-content/45 font-mono text-sm">$</span>
               <input
                 type="number"
@@ -99,7 +102,7 @@ export function PaySection({ state, update }: Props) {
             <span className="text-base-content/45 px-1 text-sm" aria-hidden>
               –
             </span>
-            <label className="input input-bordered flex flex-1 items-center gap-1.5">
+            <label className={`input input-bordered flex flex-1 items-center gap-1.5${err('wageMax') ? ' input-error' : ''}`}>
               <span className="text-base-content/45 font-mono text-sm">$</span>
               <input
                 type="number"
@@ -117,6 +120,11 @@ export function PaySection({ state, update }: Props) {
               <span className="text-base-content/55 text-xs">/hr</span>
             </label>
           </div>
+          {(err('wageMin') || err('wageMax')) && (
+            <p className="label text-error">
+              {t(`validation_reason_${(err('wageMin') ?? err('wageMax'))!.reason}`)}
+            </p>
+          )}
         </fieldset>
 
         {state.wageStructure !== 'hourly' && (

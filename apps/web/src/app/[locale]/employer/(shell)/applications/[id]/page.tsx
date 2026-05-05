@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { listInbox } from '@/lib/api/employer';
 import { ApplicantActions } from '@/components/employer/ApplicantActions';
 
@@ -18,9 +20,10 @@ export default async function ApplicantDetailPage({ params }: Props) {
         <div className="px-5 pb-16 pt-8">
             <Link
                 href={`/${locale}/employer/inbox`}
-                className="text-base-content/60 hover:text-base-content mb-6 inline-block text-sm"
+                className="text-base-content/60 hover:text-base-content mb-6 inline-flex items-center text-sm"
             >
-                ← {t('back')}
+                <FontAwesomeIcon icon={faChevronLeft} className="mr-2 h-3 w-3" />
+                {t('back')}
             </Link>
 
             <div className="bg-base-100 border-base-300 rounded-2xl border p-6">
@@ -30,7 +33,7 @@ export default async function ApplicantDetailPage({ params }: Props) {
                         {app.worker.lastInitial}
                     </div>
                     <div className="min-w-0 flex-1">
-                        <h1 className="font-display text-3xl font-light">
+                        <h1 className="font-display text-4xl font-light leading-tight tracking-tight md:text-5xl">
                             {app.worker.firstName} {app.worker.lastInitial}.
                         </h1>
                         <p className="text-base-content/70 text-sm">{app.worker.county}</p>
@@ -42,11 +45,11 @@ export default async function ApplicantDetailPage({ params }: Props) {
 
                 <div className="mt-6">
                     <h2 className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
-                        {t('experience').replace('Experience', 'Skills')} ({t('skills_match', { count: app.worker.skillsMatchCount })})
+                        {t('skills')} ({t('skills_match', { count: app.worker.skillsMatchCount })})
                     </h2>
                     <div className="mt-2 flex flex-wrap gap-2">
                         {app.worker.skills.map((s) => (
-                            <span key={s} className="bg-base-200 rounded-full px-3 py-1 text-xs">
+                            <span key={s} className="badge badge-ghost">
                                 {s}
                             </span>
                         ))}
@@ -63,10 +66,8 @@ export default async function ApplicantDetailPage({ params }: Props) {
                                 <span
                                     key={c.name}
                                     className={[
-                                        'rounded-full px-3 py-1 text-xs',
-                                        c.source === 'agconn'
-                                            ? 'bg-primary/10 text-primary border-primary/20 border'
-                                            : 'bg-base-200',
+                                        'badge',
+                                        c.source === 'agconn' ? 'badge-primary badge-outline' : 'badge-ghost',
                                     ].join(' ')}
                                 >
                                     {c.name} · {c.source === 'agconn' ? t('agconn_verified') : t('self_reported')}

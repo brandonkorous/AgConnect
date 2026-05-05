@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
-import type { CropLookupView } from '@/lib/api/employer';
+import type { CropLookupView, SkillLookupView } from '@/lib/api/employer';
 import { CropGlyph } from '@/components/ui/CropGlyph';
 import { fetchMatchPreview, type MatchPreviewResult } from './api';
 import type { JobFormState } from './types';
@@ -15,6 +15,7 @@ import type { JobFormState } from './types';
 type Props = {
   state: JobFormState;
   crop?: CropLookupView | null;
+  skills?: SkillLookupView[];
   employerName: string;
   smsApplyKeyword: string | null;
   locale: string;
@@ -23,11 +24,13 @@ type Props = {
 export function WorkerPreviewRail({
   state,
   crop,
+  skills = [],
   employerName,
   smsApplyKeyword,
   locale,
 }: Props) {
   const t = useTranslations('employer.jobs.form_v2.preview');
+  const tForm = useTranslations('employer.jobs.form_v2');
   const [lang, setLang] = useState<'en' | 'es'>(locale === 'es' ? 'es' : 'en');
   const [match, setMatch] = useState<MatchPreviewResult | null>(null);
 
@@ -66,6 +69,25 @@ export function WorkerPreviewRail({
   const dailyTakeMin = state.wageMin * computeDailyHours(state);
   const dailyTakeMax =
     state.wageMax * computeDailyHours(state) + (state.pieceRate ?? 0) * 50;
+
+  const skillLabels = state.skills.slice(0, 3).map((slug) => {
+    if (slug.startsWith('custom:')) return slug.slice('custom:'.length);
+    const found = skills.find((s) => s.slug === slug);
+    if (!found) return slug;
+    return lang === 'es' ? found.labelEs : found.labelEn;
+  });
+
+  const dayShortLabels: string[] = [
+    tForm('weekday_short.mon'),
+    tForm('weekday_short.tue'),
+    tForm('weekday_short.wed'),
+    tForm('weekday_short.thu'),
+    tForm('weekday_short.fri'),
+    tForm('weekday_short.sat'),
+    tForm('weekday_short.sun'),
+  ];
+  const dayRangeSeparator = tForm('day_range_separator');
+  const dailyLabel = tForm('weekday_daily');
 
   return (
     <aside aria-label={t('rail_label')} className="hidden xl:block">
@@ -108,7 +130,10 @@ export function WorkerPreviewRail({
               wageMin={state.wageMin}
               pieceRate={state.pieceRate}
               pieceUnit={state.pieceUnit}
-              skills={state.skills.slice(0, 3)}
+              skills={skillLabels}
+              dayShortLabels={dayShortLabels}
+              dayRangeSeparator={dayRangeSeparator}
+              dailyLabel={dailyLabel}
               glyphKey={crop?.glyphKey ?? 'almond'}
               dailyStartTime={state.dailyStartTime}
               dailyEndTime={state.dailyEndTime}
@@ -171,6 +196,9 @@ function JobPreviewCard(props: {
   workingDays: number;
   transport: boolean;
   pickupPoint: string;
+  dayShortLabels: string[];
+  dayRangeSeparator: string;
+  dailyLabel: string;
 }) {
   const t = useTranslations('employer.jobs.form_v2.preview');
   const startLabel = props.startDate ? formatLocalDate(props.startDate) : '—';
@@ -180,6 +208,9 @@ function JobPreviewCard(props: {
         <CropGlyph glyph={props.glyphKey} size={44} className="text-base-100" />
         <div className="bg-base-content/40 text-base-100 absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
           {t('hero_meta', { spots: props.positionsTotal, start: startLabel })}
+        </div>
+        <div className="bg-error text-error-content absolute right-2.5 top-2.5 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider">
+          {t('spots_open', { count: props.positionsTotal })}
         </div>
       </div>
       <div className="p-3.5">
@@ -222,7 +253,7 @@ function JobPreviewCard(props: {
               {fmtTimeRange(props.dailyStartTime, props.dailyEndTime)}
             </div>
             <div className="text-base-content/55 text-[10px]">
-              {fmtWorkingDays(props.workingDays)}
+              {fmtWorkingDays(props.workingDays, props.dayShortLabels, props.dayRangeSeparator, props.dailyLabel)}
             </div>
           </div>
           <div>
@@ -293,11 +324,15 @@ function fmt(hhmm: string): string {
   return `${hh}:${String(m).padStart(2, '0')} ${am ? 'AM' : 'PM'}`;
 }
 
-const DAYS_LABEL_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-function fmtWorkingDays(mask: number): string {
-  const on = DAYS_LABEL_EN.filter((_, i) => (mask & (1 << i)) !== 0);
+function fmtWorkingDays(
+  mask: number,
+  shortLabels: string[],
+  rangeSeparator: string,
+  dailyLabel: string,
+): string {
+  const on = shortLabels.filter((_, i) => (mask & (1 << i)) !== 0);
   if (on.length === 0) return '—';
-  if (on.length === 7) return 'Daily';
-  if (on.length >= 2) return `${on[0]}–${on[on.length - 1]}`;
+  if (on.length === 7) return dailyLabel;
+  if (on.length >= 2) return `${on[0]}${rangeSeparator}${on[on.length - 1]}`;
   return on.join(', ');
 }

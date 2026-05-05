@@ -6,7 +6,11 @@ import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faCheck, faUsers } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronRight,
+  faCheck,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { SectionNav } from '../edit-shift/SectionNav';
@@ -33,6 +37,13 @@ type Props = {
   defaultDate?: string;
 };
 
+type FieldErrors = {
+  shiftDate?: string;
+  startTime?: string;
+  endTime?: string;
+  locationLabel?: string;
+};
+
 const TODAY_ISO = (): string => {
   const d = new Date();
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
@@ -46,6 +57,7 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const initialDate = defaultDate || TODAY_ISO();
   const baseDow = dowOfDate(initialDate);
@@ -73,9 +85,32 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
     },
   });
 
-  const updateDraft = useCallback((patch: Partial<ShiftDraft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
+  const [touched, setTouched] = useState<Set<string>>(() => new Set());
+
+  const markTouched = useCallback((field: string) => {
+    setTouched((prev) => {
+      if (prev.has(field)) return prev;
+      const next = new Set(prev);
+      next.add(field);
+      return next;
+    });
   }, []);
+
+  const updateDraft = useCallback(
+    (patch: Partial<ShiftDraft>) => {
+      setDraft((d) => ({ ...d, ...patch }));
+      for (const k of Object.keys(patch)) markTouched(k);
+      setFieldErrors((prev) => {
+        if (Object.keys(prev).length === 0) return prev;
+        const next = { ...prev };
+        for (const k of Object.keys(patch)) {
+          delete next[k as keyof FieldErrors];
+        }
+        return next;
+      });
+    },
+    [markTouched],
+  );
 
   const activeCrew = useMemo(
     () => crews.find((c) => c.id === draft.crewId) ?? null,
@@ -84,10 +119,43 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
   const crewName = activeCrew?.name ?? null;
   const crewSize = activeCrew?.memberCount ?? 0;
 
+  function validate(): FieldErrors {
+    const errs: FieldErrors = {};
+    if (!draft.shiftDate) errs.shiftDate = t('error_field_required');
+    if (!draft.startTime) errs.startTime = t('error_field_required');
+    if (!draft.endTime) errs.endTime = t('error_field_required');
+    if (
+      !draft.locationLabel ||
+      draft.locationLat == null ||
+      draft.locationLng == null
+    ) {
+      errs.locationLabel = t('error_no_location');
+    }
+    return errs;
+  }
+
+  const isComplete = useMemo(
+    () => Object.keys(validate()).length === 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draft.shiftDate, draft.startTime, draft.endTime, draft.locationLabel, draft.locationLat, draft.locationLng],
+  );
+
   async function save() {
     setError(null);
-    if (!draft.locationLabel || draft.locationLat == null || draft.locationLng == null) {
-      setError(t('error_no_location'));
+    const errs = validate();
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      const firstField = Object.keys(errs)[0];
+      const anchor =
+        firstField === 'locationLabel'
+          ? 'loc'
+          : firstField === 'shiftDate' || firstField === 'startTime' || firstField === 'endTime'
+            ? 'date'
+            : null;
+      if (anchor) {
+        const el = document.getElementById(anchor);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
       return;
     }
     setBusy(true);
@@ -113,13 +181,18 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
         { handleErrorInline: true },
       );
       if (!isOk(res)) {
+        if (res.error.fields) {
+          const next: FieldErrors = {};
+          for (const [k, msg] of Object.entries(res.error.fields)) {
+            if (typeof msg === 'string') (next as Record<string, string>)[k] = msg;
+          }
+          setFieldErrors(next);
+          return;
+        }
         setError(res.error.message || t('error_save'));
         return;
       }
-      const created = res.data.shift;
-      router.push(
-        `/${locale}/employer/crews/shifts/${created.id}/edit` as Route,
-      );
+      router.push(`/${locale}/employer/crews?week=${draft.shiftDate}`);
     } finally {
       setBusy(false);
     }
@@ -197,8 +270,21 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
             onChange={(v) => updateDraft({ crewId: v })}
             locale={locale}
           />
-          <DateTimeSection draft={draft} onChange={updateDraft} crewSize={crewSize} />
-          <LocationSection draft={draft} onChange={updateDraft} />
+          <DateTimeSection
+            draft={draft}
+            onChange={updateDraft}
+            crewSize={crewSize}
+            errors={{
+              shiftDate: fieldErrors.shiftDate ?? null,
+              startTime: fieldErrors.startTime ?? null,
+              endTime: fieldErrors.endTime ?? null,
+            }}
+          />
+          <LocationSection
+            draft={draft}
+            onChange={updateDraft}
+            error={fieldErrors.locationLabel ?? null}
+          />
           <LogisticsSection draft={draft} onChange={updateDraft} />
           <SafetySection draft={draft} onChange={updateDraft} locale={locale} />
           <NotificationsSection draft={draft} onChange={updateDraft} />
@@ -206,15 +292,24 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
 
           <div className="bg-base-100 border-base-300 shadow-pop sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4">
             <div className="flex items-center gap-3">
-              <span className="bg-primary/10 text-primary grid h-9 w-9 place-items-center rounded-full">
+              <span
+                className={[
+                  'grid h-9 w-9 place-items-center rounded-full',
+                  isComplete ? 'bg-primary/10 text-primary' : 'bg-base-200 text-base-content/50',
+                ].join(' ')}
+              >
                 <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
               </span>
               <div className="min-w-0">
-                <div className="text-sm font-semibold">{t('save_bar_complete')}</div>
+                <div className="text-sm font-semibold">
+                  {isComplete ? t('save_bar_complete') : t('save_bar_incomplete')}
+                </div>
                 <div className="text-base-content/55 text-xs">
-                  {repeatDates.length > 0
-                    ? t('save_bar_repeat', { count: repeatDates.length })
-                    : t('save_bar_single')}
+                  {!isComplete
+                    ? t('save_bar_help_incomplete')
+                    : repeatDates.length > 0
+                      ? t('save_bar_repeat', { count: repeatDates.length })
+                      : t('save_bar_single')}
                 </div>
               </div>
             </div>
@@ -228,11 +323,18 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
               <button
                 type="button"
                 onClick={save}
-                disabled={busy}
-                className="btn btn-primary btn-sm rounded-full"
+                disabled={busy || !isComplete}
+                className={[
+                  'btn btn-primary btn-sm rounded-full',
+                  !isComplete ? 'btn-disabled' : '',
+                ].join(' ')}
               >
-                <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
-                {busy ? '…' : t('footer_create')}
+                {busy ? (
+                  <span className="loading loading-spinner loading-sm" aria-hidden />
+                ) : (
+                  <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />
+                )}
+                {t('footer_create')}
               </button>
             </div>
           </div>
@@ -246,6 +348,7 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
               assignedCount={0}
               confirmedCount={0}
               locale={locale}
+              touched={touched}
             />
           </div>
         </div>

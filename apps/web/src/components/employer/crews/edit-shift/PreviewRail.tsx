@@ -10,6 +10,9 @@ type Props = {
   assignedCount: number;
   confirmedCount: number;
   locale: string;
+  // When provided (new-shift flow), only show real values for fields the user
+  // has explicitly engaged. Omit (edit flow) to render every field.
+  touched?: Set<string>;
 };
 
 // Right-rail "what the worker sees" mockup. Wraps the SMS preview in the
@@ -22,6 +25,7 @@ export function PreviewRail({
   assignedCount,
   confirmedCount,
   locale,
+  touched,
 }: Props) {
   const t = useTranslations('employer.crews.edit_shift.preview');
   const [lang, setLang] = useState<'en' | 'es'>(locale === 'es' ? 'es' : 'en');
@@ -65,6 +69,7 @@ export function PreviewRail({
               draft={draft}
               crewName={crewName}
               heatHigh={heatHigh}
+              touched={touched}
             />
           </div>
         </div>
@@ -111,23 +116,42 @@ function ShiftSmsCard({
   draft,
   crewName,
   heatHigh,
+  touched,
 }: {
   lang: 'en' | 'es';
   draft: ShiftDraft;
   crewName: string | null;
   heatHigh: boolean;
+  touched?: Set<string>;
 }) {
   const tEn = labels.en;
   const tEs = labels.es;
   const L = lang === 'es' ? tEs : tEn;
 
+  const gated = touched != null;
+  const dash = '—';
+  const timeTouched = !gated || touched.has('startTime') || touched.has('endTime');
+  const logisticsTouched = !gated || touched.has('metadata');
+
   const dateLabel = formatHumanDate(draft.shiftDate, lang);
-  const timeLabel = `${draft.startTime}${draft.endTime ? `–${draft.endTime}` : ''}`;
-  const pickup = draft.metadata.pickup?.enabled
-    ? draft.metadata.pickup.label || L.pickup_default
-    : L.no_pickup;
-  const bring = draft.metadata.equipmentProvided ? L.bring_minimal : L.bring_all;
-  const lunch = draft.metadata.lunchProvided ? L.lunch_provided : L.lunch_byo;
+  const timeLabel = timeTouched
+    ? `${draft.startTime}${draft.endTime ? `–${draft.endTime}` : ''}`
+    : dash;
+  const pickup = !logisticsTouched
+    ? dash
+    : draft.metadata.pickup?.enabled
+      ? draft.metadata.pickup.label || L.pickup_default
+      : L.no_pickup;
+  const bring = !logisticsTouched
+    ? dash
+    : draft.metadata.equipmentProvided
+      ? L.bring_minimal
+      : L.bring_all;
+  const lunch = !logisticsTouched
+    ? dash
+    : draft.metadata.lunchProvided
+      ? L.lunch_provided
+      : L.lunch_byo;
 
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-sm">

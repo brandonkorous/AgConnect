@@ -17,10 +17,8 @@ export function EmployerSearchBox({ locale }: Props) {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key !== '/') return;
-      const target = e.target as HTMLElement | null;
-      const tag = target?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return;
+      const isCmdK = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k';
+      if (!isCmdK) return;
       e.preventDefault();
       inputRef.current?.focus();
     }
@@ -50,9 +48,7 @@ export function EmployerSearchBox({ locale }: Props) {
           aria-label={t('search_placeholder')}
           className="placeholder:text-base-content/60 text-base-content flex-1 border-0 bg-transparent text-sm outline-none"
         />
-        <span className="bg-base-200 text-base-content/60 ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]">
-          {t('search_kbd')}
-        </span>
+        <kbd className="kbd kbd-sm ml-auto">{t('search_kbd')}</kbd>
       </label>
     </form>
   );

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
+import { pushToast } from '@agconn/ui';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
 import { EvidenceField } from '@/components/employer/compliance/EvidenceField';
@@ -62,28 +63,38 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
       setBusy(false);
       return;
     }
-    const body = {
+    const labelValue = String(f.get('label') ?? '').trim();
+    const detailsValue = String(f.get('details') ?? '').trim();
+    const body: Record<string, unknown> = {
       category: String(f.get('category') ?? 'custom'),
       itemKey:
-        String(f.get('label') ?? '')
+        labelValue
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '_')
           .replace(/^_+|_+$/g, '')
-          .slice(0, 60) || `item-${Date.now()}`,
-      label: String(f.get('label') ?? '').trim(),
+          .slice(0, 60) || `item_${Date.now()}`,
+      label: labelValue,
       status: String(f.get('status') ?? 'warn'),
-      details: String(f.get('details') ?? '').trim() || undefined,
-      dueAt,
     };
+    if (detailsValue) body.details = detailsValue;
+    if (dueAt) body.dueAt = dueAt;
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
       const res = await client.post('/v1/employer/compliance/items', body, {
         handleErrorInline: true,
       });
       if (!isOk(res)) {
-        setError(res.error.message || t('error'));
+        const detail = (res.error as { details?: { issues?: { path?: (string | number)[]; message: string }[] } }).details;
+        const issues = detail?.issues;
+        const inline = issues && issues.length > 0
+          ? issues.map((i) => `${i.path?.join('.') ?? 'field'}: ${i.message}`).join('; ')
+          : null;
+        const msg = inline || res.error.message || t('error');
+        setError(msg);
+        pushToast({ variant: 'error', title: msg });
         return;
       }
+      pushToast({ variant: 'success', title: t('confirm') });
       onClose();
       router.refresh();
     } catch (err) {
@@ -198,23 +209,21 @@ export function ComplianceActionCta({ action }: { action: Action }) {
     // the field renders no URL input, so this is empty and we leave URL alone.
     const evidenceUrl = String(f.get('evidenceUrl') ?? '').trim() || null;
     const note = String(f.get('note') ?? '').trim();
-    const markResolved = f.get('resolve') === 'on';
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
-      const body: Record<string, unknown> = {};
-      if (markResolved) {
-        body.status = 'ok';
-        body.resolved = true;
-      }
+      const body: Record<string, unknown> = { status: 'ok', resolved: true };
       if (evidenceUrl) body.evidenceUrl = evidenceUrl;
       if (note) body.noteAppend = note;
       const res = await client.patch(`/v1/employer/compliance/items/${action.id}`, body, {
         handleErrorInline: true,
       });
       if (!isOk(res)) {
-        setError(res.error.message || t('error'));
+        const msg = res.error.message || t('error');
+        setError(msg);
+        pushToast({ variant: 'error', title: msg });
         return;
       }
+      pushToast({ variant: 'success', title: t('confirm') });
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -254,10 +263,6 @@ export function ComplianceActionCta({ action }: { action: Action }) {
               <legend className="fieldset-legend">{t('note_label')}</legend>
               <textarea name="note" rows={2} maxLength={500} className="textarea w-full" />
             </fieldset>
-            <label className="label cursor-pointer justify-start gap-2 py-1">
-              <input type="checkbox" name="resolve" defaultChecked className="checkbox checkbox-sm" />
-              <span className="text-sm">{t('resolve_label')}</span>
-            </label>
             <div className="mt-2 flex justify-end gap-2">
               <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost">
                 {t('cancel')}
@@ -311,22 +316,26 @@ export function EditComplianceItemButton({
       setBusy(false);
       return;
     }
+    const newStatus = String(f.get('status') ?? 'ok');
     const body: Record<string, unknown> = {
-      status: String(f.get('status') ?? 'ok'),
+      status: newStatus,
       details: String(f.get('details') ?? '').trim() || null,
       evidenceUrl: String(f.get('evidenceUrl') ?? '').trim() || null,
       dueAt,
     };
-    if (f.get('resolved') === 'on') body.resolved = true;
+    if (newStatus === 'ok') body.resolved = true;
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
       const res = await client.patch(`/v1/employer/compliance/items/${itemId}`, body, {
         handleErrorInline: true,
       });
       if (!isOk(res)) {
-        setError(res.error.message || t('error'));
+        const msg = res.error.message || t('error');
+        setError(msg);
+        pushToast({ variant: 'error', title: msg });
         return;
       }
+      pushToast({ variant: 'success', title: t('confirm') });
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -393,11 +402,6 @@ export function EditComplianceItemButton({
                 className="input w-full"
               />
             </fieldset>
-
-            <label className="label cursor-pointer justify-start gap-2 py-1">
-              <input type="checkbox" name="resolved" className="checkbox checkbox-sm" />
-              <span className="text-sm">{t('resolved_label')}</span>
-            </label>
 
             <div className="mt-2 flex justify-end gap-2">
               <button type="button" onClick={() => setOpen(false)} className="btn btn-ghost">

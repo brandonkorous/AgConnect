@@ -7,9 +7,10 @@ import type { BillingView } from '@/lib/api/employer';
 type Props = {
   locale: string;
   billing: BillingView;
+  hidePaymentCta?: boolean;
 };
 
-export async function BillingSnapshot({ locale, billing }: Props) {
+export async function BillingSnapshot({ locale, billing, hidePaymentCta = false }: Props) {
   const t = await getTranslations({ locale, namespace: 'employer.dashboard.billing_card' });
 
   const renewsLine = billing.currentPeriodEnd
@@ -59,16 +60,18 @@ export async function BillingSnapshot({ locale, billing }: Props) {
             </div>
           </div>
         </div>
-        <Link
-          href={`/${locale}/employer/billing`}
-          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-3 py-2 text-xs font-semibold"
-        >
-          <FontAwesomeIcon
-            icon={billing.hasPaymentMethod ? faCheck : faCreditCard}
-            className="h-3 w-3"
-          />
-          {billing.hasPaymentMethod ? t('manage') : t('add_payment')}
-        </Link>
+        {!(hidePaymentCta && !billing.hasPaymentMethod) && (
+          <Link
+            href={`/${locale}/employer/billing`}
+            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-3 py-2 text-xs font-semibold"
+          >
+            <FontAwesomeIcon
+              icon={billing.hasPaymentMethod ? faCheck : faCreditCard}
+              className="h-3 w-3"
+            />
+            {billing.hasPaymentMethod ? t('manage') : t('add_payment')}
+          </Link>
+        )}
       </div>
     </div>
   );

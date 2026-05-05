@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { getEmployerJob, listInbox } from '@/lib/api/employer';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
@@ -33,9 +35,10 @@ export default async function JobApplicantsPage({ params }: Props) {
             <div className="mb-6">
                 <Link
                     href={`/${locale}/employer/jobs`}
-                    className="text-base-content/60 hover:text-base-content text-sm"
+                    className="text-base-content/60 hover:text-base-content inline-flex items-center text-sm"
                 >
-                    ← {tForm('back')}
+                    <FontAwesomeIcon icon={faChevronLeft} className="mr-2 h-3 w-3" />
+                    {tForm('back')}
                 </Link>
                 <h1 className="font-display mt-2 text-3xl font-light">
                     {locale === 'es' ? job.titleEs : job.titleEn}

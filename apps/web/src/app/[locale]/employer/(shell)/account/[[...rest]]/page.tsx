@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { UserProfile } from '@clerk/nextjs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -24,6 +26,17 @@ export default async function EmployerAccountPage({ params }: Props) {
                     {t('title_a')} <em className="text-primary not-italic font-light">{t('title_b')}</em>
                 </h1>
                 <p className="text-base-content/70 mt-3 text-base">{t('subtitle')}</p>
+            </div>
+
+            <div
+                role="note"
+                className="border-warning/40 bg-warning/10 mb-5 flex max-w-3xl items-start gap-3 rounded-2xl border p-4"
+            >
+                <FontAwesomeIcon icon={faTriangleExclamation} className="text-warning mt-0.5 h-4 w-4" />
+                <div>
+                    <div className="text-sm font-semibold">{t('delete_warning_title')}</div>
+                    <p className="text-base-content/70 mt-1 text-sm">{t('delete_warning_body')}</p>
+                </div>
             </div>
 
             <UserProfile

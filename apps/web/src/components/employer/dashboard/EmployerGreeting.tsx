@@ -7,7 +7,6 @@ type Props = {
   locale: string;
   firstName: string;
   county: string | null;
-  companyName: string;
   summaryLine: string;
 };
 
@@ -15,7 +14,6 @@ export async function EmployerGreeting({
   locale,
   firstName,
   county,
-  companyName,
   summaryLine,
 }: Props) {
   const t = await getTranslations({ locale, namespace: 'employer.dashboard' });
@@ -25,7 +23,7 @@ export async function EmployerGreeting({
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
         <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
-          {[dateLine, county, companyName].filter(Boolean).join(' · ')}
+          {[dateLine, county].filter(Boolean).join(' · ')}
         </p>
         <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
           {t(greetingKey())},{' '}
