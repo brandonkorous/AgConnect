@@ -21,6 +21,9 @@ export async function ApplicationsPanel({ locale }: Props) {
   const tStage = await getTranslations({ locale, namespace: 'worker.application.status' });
   const { applications } = await fetchApplications('all');
   const rows = applications.slice(0, 5);
+  const activeCount = applications.filter(
+    (a) => a.status === 'applied' || a.status === 'reviewed',
+  ).length;
 
   return (
     <section className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border">
@@ -28,7 +31,7 @@ export async function ApplicationsPanel({ locale }: Props) {
         <div>
           <h2 className="font-serif text-2xl font-medium tracking-tight">{t('title')}</h2>
           <p className="text-base-content/60 mt-0.5 text-xs">
-            {t('subtitle', { defaultValue: '' })}
+            {t('subtitle', { count: activeCount })}
           </p>
         </div>
         <Link

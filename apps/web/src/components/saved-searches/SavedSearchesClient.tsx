@@ -85,7 +85,7 @@ export function SavedSearchesClient({ locale, initial }: Props) {
           key={s.id}
           className="border-base-300 bg-base-100 grid gap-2 rounded-2xl border p-5"
         >
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="text-[15px] font-semibold">
@@ -199,11 +199,22 @@ function AddForm({
         alertActive: channel !== 'none',
       });
       if (!res.ok) {
-        setError(res.code === 'validation_failed' ? t('error_phone') : t('error'));
+        if (res.code === 'validation_failed' && /phone/.test(res.message)) {
+          setError(t('error_phone'));
+        } else if (res.code === 'validation_failed') {
+          setError(t('error_validation'));
+        } else {
+          setError(t('error'));
+        }
         return;
       }
       onCreated(res.data);
     });
+  }
+
+  function setChannelAndClear(c: SavedSearch['alertChannel']) {
+    setChannel(c);
+    setError(null);
   }
 
   return (
@@ -241,12 +252,12 @@ function AddForm({
       </div>
       <fieldset className="fieldset">
         <legend className="fieldset-legend">{t('alert_channel')}</legend>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(['sms', 'email', 'both', 'none'] as const).map((c) => (
             <button
               key={c}
               type="button"
-              onClick={() => setChannel(c)}
+              onClick={() => setChannelAndClear(c)}
               className={[
                 'rounded-full px-3 py-1.5 text-[12px] font-semibold',
                 channel === c
@@ -260,7 +271,7 @@ function AddForm({
         </div>
       </fieldset>
       {error && <div className="text-error text-[12px]">{error}</div>}
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
         <button
           type="button"
           onClick={onCancel}

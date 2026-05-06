@@ -14,6 +14,8 @@ import {
     faGraduationCap,
     faIdBadge,
     faComments,
+    faBookmark,
+    faWallet,
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { Wordmark } from '@/components/primitives/Wordmark';
@@ -27,26 +29,31 @@ export type WorkerNavKey =
     | 'pay'
     | 'training'
     | 'documents'
-    | 'messages';
+    | 'messages'
+    | 'saved_searches'
+    | 'wallet';
+
+export type WorkerNavCounts = Partial<Record<WorkerNavKey, number>>;
 
 type NavItem = {
     key: WorkerNavKey;
     icon: IconDefinition;
     /** Path under /[locale] — used for both href and active-match. */
     path: string;
-    count?: number;
     accent?: boolean;
 };
 
 const ITEMS: NavItem[] = [
     { key: 'dashboard',       icon: faChartLine,       path: '/worker/dashboard' },
-    { key: 'browse_jobs',     icon: faLeaf,            path: '/worker/jobs', count: 142 },
-    { key: 'my_applications', icon: faClipboardCheck,  path: '/worker/applications', count: 5 },
+    { key: 'browse_jobs',     icon: faLeaf,            path: '/worker/jobs' },
+    { key: 'saved_searches',  icon: faBookmark,        path: '/worker/saved-searches' },
+    { key: 'my_applications', icon: faClipboardCheck,  path: '/worker/applications' },
     { key: 'my_shifts',       icon: faCalendarDays,    path: '/worker/shifts' },
     { key: 'pay',             icon: faSackDollar,      path: '/worker/pay' },
+    { key: 'wallet',          icon: faWallet,          path: '/worker/wallet' },
     { key: 'training',        icon: faGraduationCap,   path: '/worker/training' },
     { key: 'documents',       icon: faIdBadge,         path: '/worker/documents' },
-    { key: 'messages',        icon: faComments,        path: '/worker/messages', count: 3, accent: true },
+    { key: 'messages',        icon: faComments,        path: '/worker/messages', accent: true },
 ];
 
 type Props = {
@@ -55,14 +62,15 @@ type Props = {
     locale: string;
     /** 'inline' renders the desktop aside (md+); 'drawer' renders the body for the mobile drawer. */
     variant?: 'inline' | 'drawer';
+    counts?: WorkerNavCounts;
 };
 
-export function WorkerSidebar({ active, locale, variant = 'inline' }: Props) {
+export function WorkerSidebar({ active, locale, variant = 'inline', counts }: Props) {
     const t = useTranslations('worker.dashboard.sidebar');
     const pathname = usePathname();
     const { user } = useUser();
     const derived = ITEMS.find((it) => pathname.startsWith(`/${locale}${it.path}`))?.key;
-    const current = active ?? derived ?? 'dashboard';
+    const current = active ?? derived;
 
     const firstName = user?.firstName ?? '';
     const lastName = user?.lastName ?? '';
@@ -88,40 +96,42 @@ export function WorkerSidebar({ active, locale, variant = 'inline' }: Props) {
                 </Link>
             </div>
 
-            <nav className="flex flex-col gap-1">
+            <ul className="menu menu-sm w-full gap-1 p-0">
                 {ITEMS.map((item) => {
                     const isActive = item.key === current;
+                    const count = counts?.[item.key];
                     return (
-                        <Link
-                            key={item.key}
-                            href={`/${locale}${item.path}`}
-                            className={[
-                                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
-                                isActive
-                                    ? 'bg-primary/10 text-primary font-semibold'
-                                    : 'text-base-content/70 hover:bg-base-200 font-medium',
-                            ].join(' ')}
-                        >
-                            <FontAwesomeIcon icon={item.icon} className="h-4 w-4" />
-                            <span className="flex-1">{t(item.key)}</span>
-                            {item.count !== undefined && (
-                                <span
-                                    className={[
-                                        'rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold',
-                                        item.accent
-                                            ? 'bg-accent text-accent-content'
-                                            : isActive
-                                              ? 'bg-base-100 text-primary'
-                                              : 'bg-base-200 text-base-content/60',
-                                    ].join(' ')}
-                                >
-                                    {item.count}
-                                </span>
-                            )}
-                        </Link>
+                        <li key={item.key}>
+                            <Link
+                                href={`/${locale}${item.path}`}
+                                className={[
+                                    'flex items-center gap-2.5 rounded-lg px-2.5 py-2',
+                                    isActive
+                                        ? 'menu-active bg-primary/10 text-primary font-semibold'
+                                        : 'text-base-content/70 font-medium',
+                                ].join(' ')}
+                            >
+                                <FontAwesomeIcon icon={item.icon} className="h-4 w-4" />
+                                <span className="flex-1">{t(item.key)}</span>
+                                {count !== undefined && count > 0 && (
+                                    <span
+                                        className={[
+                                            'badge badge-sm font-mono text-[10px] font-bold',
+                                            item.accent
+                                                ? 'badge-accent'
+                                                : isActive
+                                                  ? 'badge-ghost'
+                                                  : 'badge-neutral badge-soft',
+                                        ].join(' ')}
+                                    >
+                                        {count}
+                                    </span>
+                                )}
+                            </Link>
+                        </li>
                     );
                 })}
-            </nav>
+            </ul>
 
             <div className="mt-auto pt-6">
                 <UserMenu

@@ -1,17 +1,25 @@
 import { useTranslations } from 'next-intl';
 
-const SPARK_POINTS = [40, 52, 38, 70, 60, 88, 72, 95, 80, 110, 96, 124];
-
-function Spark({ width = 240, height = 56 }: { width?: number; height?: number }) {
-    const max = Math.max(...SPARK_POINTS);
-    const lastIndex = SPARK_POINTS.length - 1;
-    const lastValue = SPARK_POINTS[lastIndex] ?? 0;
+function Spark({
+    points,
+    width = 240,
+    height = 56,
+    ariaLabel,
+}: {
+    points: number[];
+    width?: number;
+    height?: number;
+    ariaLabel: string;
+}) {
+    const max = Math.max(...points);
+    const lastIndex = points.length - 1;
+    const lastValue = points[lastIndex] ?? 0;
     const xy = (p: number, i: number) => {
         const x = (i / lastIndex) * width;
         const y = height - (p / max) * height * 0.9 - 4;
         return { x, y };
     };
-    const path = SPARK_POINTS.map((p, i) => {
+    const path = points.map((p, i) => {
         const { x, y } = xy(p, i);
         return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
     }).join(' ');
@@ -19,7 +27,7 @@ function Spark({ width = 240, height = 56 }: { width?: number; height?: number }
     const lastPt = xy(lastValue, lastIndex);
 
     return (
-        <svg width={width} height={height} role="img" aria-label="12-week earnings sparkline">
+        <svg width={width} height={height} role="img" aria-label={ariaLabel}>
             <path
                 d={path}
                 stroke="currentColor"
@@ -47,17 +55,39 @@ type GreetingProps = {
     name: string;
     upcomingShifts: number;
     newMatches: number;
+    locale: string;
+    county?: string | null;
+    earningsTrend?: number[] | null;
 };
 
-export function WorkerGreeting({ name, upcomingShifts, newMatches }: GreetingProps) {
+function formatContext(locale: string, county?: string | null): string {
+    const fmtLocale = locale === 'es' ? 'es-MX' : 'en-US';
+    const today = new Intl.DateTimeFormat(fmtLocale, {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+    }).format(new Date());
+    const where = county ? `${county}, CA` : '';
+    return where ? `${today} · ${where}` : today;
+}
+
+export function WorkerGreeting({
+    name,
+    upcomingShifts,
+    newMatches,
+    locale,
+    county,
+    earningsTrend,
+}: GreetingProps) {
     const t = useTranslations('worker.dashboard.greeting');
     const isFresh = upcomingShifts === 0 && newMatches === 0;
+    const showSpark = !!earningsTrend && earningsTrend.some((v) => v > 0);
 
     return (
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
                 <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/60">
-                    {t('context')}
+                    {formatContext(locale, county)}
                 </span>
                 <h1 className="font-serif mt-2 text-4xl font-medium leading-[1.05] tracking-tight md:text-5xl">
                     {t('salutation', { name })}
@@ -68,14 +98,19 @@ export function WorkerGreeting({ name, upcomingShifts, newMatches }: GreetingPro
                         : t('summary', { shifts: upcomingShifts, matches: newMatches })}
                 </p>
             </div>
-            <div className="bg-base-100 border-base-300 rounded-2xl border p-3.5">
-                <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
-                    {t('earnings_eyebrow')}
+            {showSpark && (
+                <div className="bg-base-100 border-base-300 rounded-2xl border p-3.5">
+                    <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+                        {t('earnings_eyebrow')}
+                    </div>
+                    <div className="mt-1">
+                        <Spark
+                            points={earningsTrend!}
+                            ariaLabel={t('earnings_eyebrow')}
+                        />
+                    </div>
                 </div>
-                <div className="mt-1">
-                    <Spark />
-                </div>
-            </div>
+            )}
         </header>
     );
 }

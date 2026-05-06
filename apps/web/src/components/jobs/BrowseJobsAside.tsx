@@ -4,6 +4,7 @@ import type { Route } from 'next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import type { SavedSearch } from '@/lib/api/saved-searches';
+import { getSmsApplyNumber, getSmsApplyKeyword } from '@/lib/sms-apply';
 
 type Props = { locale: string; savedSearches: SavedSearch[] };
 
@@ -29,36 +30,42 @@ function filtersToLabel(filters: SavedSearch['filters'], locale: string): string
 export async function BrowseJobsAside({ locale, savedSearches }: Props) {
   const t = await getTranslations({ locale, namespace: 'worker.jobs.browse.aside' });
   const visible = savedSearches.slice(0, 3);
+  const smsNumber = getSmsApplyNumber();
+  const smsKeyword = getSmsApplyKeyword();
   return (
-    <div id="map" className="grid content-start gap-3.5">
-      <div className="bg-base-content text-base-100 relative overflow-hidden rounded-2xl p-[18px]">
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 70% 100% at 100% 0%, rgba(217,180,65,0.22), transparent 60%)',
-          }}
-        />
-        <div className="relative">
-          <div className="text-accent font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
-            {t('sms.eyebrow')}
+    <div className="grid content-start gap-3.5">
+      {smsNumber && (
+        <div className="bg-base-content text-base-100 relative overflow-hidden rounded-2xl p-[18px]">
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse 70% 100% at 100% 0%, rgba(217,180,65,0.22), transparent 60%)',
+            }}
+          />
+          <div className="relative">
+            <div className="text-accent font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
+              {t('sms.eyebrow')}
+            </div>
+            <div className="font-serif mt-1.5 text-[22px] leading-[1.2] tracking-[-0.02em]">
+              {t.rich('sms.body', {
+                keyword: smsKeyword,
+                number: smsNumber,
+                text: (chunks) => (
+                  <strong className="text-accent">{chunks}</strong>
+                ),
+                num: (chunks) => (
+                  <strong className="font-mono">{chunks}</strong>
+                ),
+              })}
+            </div>
+            <div className="mt-2 text-[12.5px] opacity-80">{t('sms.note')}</div>
           </div>
-          <div className="font-serif mt-1.5 text-[22px] leading-[1.2] tracking-[-0.02em]">
-            {t.rich('sms.body', {
-              text: (chunks) => (
-                <strong className="text-accent">{chunks}</strong>
-              ),
-              num: (chunks) => (
-                <strong className="font-mono">{chunks}</strong>
-              ),
-            })}
-          </div>
-          <div className="mt-2 text-[12.5px] opacity-80">{t('sms.note')}</div>
         </div>
-      </div>
+      )}
 
-      <div className="border-base-300 rounded-2xl border bg-white p-[18px]">
+      <div id="map" className="border-base-300 rounded-2xl border bg-white p-[18px] scroll-mt-24">
         <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
           {t('map.eyebrow')}
         </div>
@@ -121,7 +128,7 @@ export async function BrowseJobsAside({ locale, savedSearches }: Props) {
           href={`/${locale}/worker/shifts`}
           className="border-base-300 mt-3 block w-full rounded-full border bg-transparent py-2.5 text-center text-[12.5px] font-semibold no-underline"
         >
-          {t('map.cta')}
+          {t('map.cta_shifts')}
         </Link>
       </div>
 

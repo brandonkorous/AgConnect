@@ -5,16 +5,14 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import type { Route } from 'next';
 import { CropGlyph } from './CropGlyph';
 
-const CROPS: Array<{ key: string; n: number; skill: string }> = [
-  { key: 'grape', n: 38, skill: 'grape' },
-  { key: 'almond', n: 24, skill: 'almond' },
-  { key: 'tomato', n: 19, skill: 'tomato' },
-  { key: 'citrus', n: 31, skill: 'citrus' },
-  { key: 'strawberry', n: 12, skill: 'strawberry' },
-  { key: 'lettuce', n: 18, skill: 'lettuce' },
-];
+const CROP_KEYS = ['grape', 'almond', 'tomato', 'citrus', 'strawberry', 'lettuce'] as const;
+type CropKey = (typeof CROP_KEYS)[number];
 
-export function CropChips() {
+type Props = {
+  counts: Record<CropKey, number>;
+};
+
+export function CropChips({ counts }: Props) {
   const t = useTranslations('worker.jobs.browse.crop');
   const router = useRouter();
   const pathname = usePathname();
@@ -39,14 +37,15 @@ export function CropChips() {
 
   return (
     <div className="thin-scroll mb-[22px] flex gap-2.5 overflow-x-auto pb-1">
-      {CROPS.map(({ key, n, skill }) => {
-        const active = activeSkills.includes(skill);
+      {CROP_KEYS.map((key) => {
+        const n = counts[key] ?? 0;
+        const active = activeSkills.includes(key);
         return (
           <button
             type="button"
             key={key}
             aria-pressed={active}
-            onClick={() => toggle(skill)}
+            onClick={() => toggle(key)}
             className={[
               'flex shrink-0 items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-left transition-colors',
               active

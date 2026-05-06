@@ -15,6 +15,7 @@ import { CropGlyph } from '@/components/jobs/CropGlyph';
 import { fetchPublicJob } from '@/lib/api/public-jobs';
 import { inferCrop } from '@/lib/crop';
 import { PublicShell } from '@/components/public/PublicShell';
+import { getSmsApplyNumber, getSmsApplyKeyword } from '@/lib/sms-apply';
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -175,14 +176,16 @@ export default async function PublicJobDetailPage({ params }: Props) {
             <div className="text-base-content/60 text-center text-[11.5px]">
               {t('signin_note')}
             </div>
-            <div className="border-base-300 mt-2 border-t pt-3 text-center">
-              <div className="text-base-content/60 font-mono text-[10.5px] uppercase tracking-[0.18em]">
-                {t('sms_label')}
+            {getSmsApplyNumber() && (
+              <div className="border-base-300 mt-2 border-t pt-3 text-center">
+                <div className="text-base-content/60 font-mono text-[10.5px] uppercase tracking-[0.18em]">
+                  {t('sms_label')}
+                </div>
+                <div className="text-base-content mt-1 font-mono text-[15px] font-bold">
+                  {getSmsApplyKeyword()} → {getSmsApplyNumber()}
+                </div>
               </div>
-              <div className="text-base-content mt-1 font-mono text-[15px] font-bold">
-                JOB → (559) 555-0142
-              </div>
-            </div>
+            )}
           </div>
           {job.applyBy && (
             <div className="border-base-300 bg-base-100 grid gap-1 rounded-2xl border p-5">

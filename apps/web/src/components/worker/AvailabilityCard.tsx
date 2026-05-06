@@ -8,8 +8,18 @@ export async function AvailabilityCard({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: 'worker.dashboard.availability' });
   const profile = await fetchProfile();
   const availability = profile.availability;
-  const days = t.raw('days') as string[];
-  const conflictDay = t('conflict_day');
+  const daysRaw = t.raw('days') as string | string[];
+  const days = Array.isArray(daysRaw)
+    ? daysRaw
+    : (() => {
+        try {
+          const parsed = JSON.parse(daysRaw);
+          if (Array.isArray(parsed)) return parsed as string[];
+        } catch {
+          /* fall through */
+        }
+        return daysRaw.split(',').map((s) => s.trim());
+      })();
 
   // Build the next 7 days starting today.
   const today = new Date();
@@ -21,6 +31,7 @@ export async function AvailabilityCard({ locale }: Props) {
     const open = isWeekend ? availability.weekends : availability.weekdays;
     return { date: d, open };
   });
+  const openCount = week.filter((d) => d.open).length;
 
   return (
     <section className="bg-base-100 border-base-300 rounded-2xl border p-4">
@@ -63,8 +74,8 @@ export async function AvailabilityCard({ locale }: Props) {
       </ol>
 
       <p className="text-base-content/60 mt-3 text-xs">
-        {profile.firstName
-          ? t('footer', { day: conflictDay })
+        {profile.firstName && (availability.weekdays || availability.weekends)
+          ? t('footer', { open: openCount, conflicts: 0 })
           : locale === 'es'
             ? 'Marca tu disponibilidad para que los empleadores te vean primero.'
             : 'Mark your availability so employers see you first.'}

@@ -7,14 +7,26 @@ import { fetchWallet } from '@/lib/api/wallet';
 
 type Props = { params: Promise<{ locale: string }> };
 
+function fmtDate(iso: string | null | undefined, locale: string): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(d);
+}
+
 export default async function WalletPage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'worker.wallet' });
   const items = await fetchWallet();
 
   return (
-    <div className="px-6 pb-16 pt-8 lg:px-8">
-      <WorkerPageHeader title={t('title')} />
+    <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
+      <WorkerPageHeader title={t('title')} sub={t('subtitle')} />
       {items.length === 0 ? (
         <div className="border-base-300 grid gap-3 rounded-2xl border bg-white p-8 text-center">
           <p className="font-serif text-xl font-semibold">{t('empty.title')}</p>
@@ -57,8 +69,8 @@ export default async function WalletPage({ params }: Props) {
               </h3>
               <p className="text-base-content/60 text-sm">
                 {item.source === 'enrollment'
-                  ? `${item.funder} · ${item.orgName} · ${item.completedAt}`
-                  : `${item.issuer ?? '—'} · ${item.issuedAt ?? '—'}`}
+                  ? `${item.funder} · ${item.orgName} · ${fmtDate(item.completedAt, locale)}`
+                  : `${item.issuer ?? '—'} · ${fmtDate(item.issuedAt, locale)}`}
               </p>
               {item.source === 'enrollment' && (
                 <div className="mt-2 flex gap-2">

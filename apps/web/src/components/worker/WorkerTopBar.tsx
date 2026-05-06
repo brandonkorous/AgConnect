@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import type { Route } from 'next';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -19,6 +19,21 @@ export function WorkerTopBar() {
     const params = useParams<{ locale: string }>();
     const locale = params.locale ?? 'en';
     const [q, setQ] = useState('');
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform);
+            const modifier = isMac ? e.metaKey : e.ctrlKey;
+            if (modifier && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                inputRef.current?.focus();
+                inputRef.current?.select();
+            }
+        }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     function handleSearch(e: React.FormEvent) {
         e.preventDefault();
@@ -36,32 +51,34 @@ export function WorkerTopBar() {
                 role="search"
                 className="flex flex-1 items-center"
             >
-                <label className="bg-base-100 border-base-300 text-base-content/60 flex w-[360px] items-center gap-2.5 rounded-full border px-3.5 py-2">
-                    <FontAwesomeIcon icon={faMagnifyingGlass} className="h-3.5 w-3.5" />
+                <label className="input input-bordered input-sm w-[360px] rounded-full">
+                    <FontAwesomeIcon
+                        icon={faMagnifyingGlass}
+                        className="text-base-content/60 h-3.5 w-3.5"
+                    />
                     <input
+                        ref={inputRef}
                         type="search"
                         value={q}
                         onChange={(e) => setQ(e.target.value)}
                         placeholder={t('search_placeholder')}
                         aria-label={t('search_placeholder')}
-                        className="placeholder:text-base-content/60 flex-1 border-0 bg-transparent text-sm outline-none"
+                        className="grow"
                     />
-                    <span className="bg-base-200 text-base-content/60 ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]">
-                        {t('search_kbd')}
-                    </span>
+                    <kbd className="kbd kbd-xs font-mono">{t('search_kbd')}</kbd>
                 </label>
             </form>
 
-            <Link
-                href={`/${locale}/worker/messages?channel=sms`}
-                className="text-base-content/70 inline-flex items-center gap-1.5 text-sm no-underline hover:text-base-content"
+            <span
+                className="badge badge-success badge-sm gap-1.5"
+                aria-label={t('sms_apply')}
             >
-                <FontAwesomeIcon icon={faMobileScreen} className="h-3.5 w-3.5" />
+                <FontAwesomeIcon icon={faMobileScreen} className="h-3 w-3" />
                 {t('sms_apply')}
-            </Link>
+            </span>
 
             <Link
-                href={`/${locale}/worker/messages`}
+                href={`/${locale}/faq`}
                 className="btn btn-ghost btn-sm border-base-300 border"
             >
                 <FontAwesomeIcon icon={faComments} className="h-3.5 w-3.5" />

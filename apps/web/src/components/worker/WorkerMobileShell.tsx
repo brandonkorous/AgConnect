@@ -8,13 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { SideDrawer } from '@/components/shell/SideDrawer';
-import { WorkerSidebar } from '@/components/worker/WorkerSidebar';
+import { WorkerSidebar, type WorkerNavCounts } from '@/components/worker/WorkerSidebar';
 
 type Props = {
     locale: string;
+    counts?: WorkerNavCounts;
 };
 
-export function WorkerMobileShell({ locale }: Props) {
+export function WorkerMobileShell({ locale, counts }: Props) {
     const t = useTranslations('shell.mobile');
     const [open, setOpen] = useState(false);
 
@@ -46,7 +47,7 @@ export function WorkerMobileShell({ locale }: Props) {
                     onClose={() => setOpen(false)}
                     ariaLabel={t('drawer_aria')}
                 >
-                    <WorkerSidebar locale={locale} variant="drawer" />
+                    <WorkerSidebar locale={locale} variant="drawer" counts={counts} />
                 </SideDrawer>
             </div>
         </>

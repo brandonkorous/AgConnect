@@ -38,10 +38,13 @@ function asArray(v: string | string[] | undefined): string[] | undefined {
   return undefined;
 }
 
+const SORT_OPTIONS = ['best', 'newest', 'wage_high', 'starts_soon'] as const;
+
 function buildQuery(sp: Record<string, string | string[] | undefined>): JobsQuery {
   const housing = asString(sp.housing);
   const transport = asString(sp.transport);
   const wageMin = asString(sp.wageMin);
+  const sort = asString(sp.sort);
   return {
     q: asString(sp.q),
     county: asArray(sp.county),
@@ -51,6 +54,9 @@ function buildQuery(sp: Record<string, string | string[] | undefined>): JobsQuer
     startAfter: asString(sp.startAfter),
     housing: housing === '1' || housing === 'true' ? true : undefined,
     transport: transport === '1' || transport === 'true' ? true : undefined,
+    sort: (SORT_OPTIONS as readonly string[]).includes(sort ?? '')
+      ? (sort as JobsQuery['sort'])
+      : undefined,
     cursor: asString(sp.cursor) ?? null,
     limit: PAGE_SIZE,
   };
@@ -74,21 +80,20 @@ export default async function JobsPage({ params, searchParams }: Props) {
   const sp = await searchParams;
   const t = await getTranslations({ locale, namespace: 'worker.jobs.browse' });
   const query = buildQuery(sp);
-  const [{ jobs: rawJobs, nextCursor }, savedSearches] = await Promise.all([
-    fetchJobs(query),
-    fetchSavedSearches(),
-  ]);
+  const [{ jobs: rawJobs, nextCursor, totalCount, cropCounts }, savedSearches] =
+    await Promise.all([fetchJobs(query), fetchSavedSearches()]);
   const noExperience = asString(sp.noExperience) === '1';
   const filteredRaw = noExperience
     ? rawJobs.filter((j) => j.skills.length <= 1)
     : rawJobs;
   const jobs = enrich(filteredRaw as unknown as JobCardData[]);
+  const totalShown = jobs.length;
 
   return (
-    <div className="min-w-0 max-w-full px-4 pb-16 pt-6 sm:px-6 sm:pt-8 lg:px-8">
-      <BrowseJobsHeader totalCount={jobs.length} county={COUNTY} locale={locale} />
+    <div className="container mx-auto min-w-0 max-w-full px-5 pb-16 pt-6 md:px-8 lg:px-20">
+      <BrowseJobsHeader totalCount={totalCount} county={COUNTY} locale={locale} />
       <BrowseJobsFilters />
-      <CropChips />
+      <CropChips counts={cropCounts} />
 
       <div className="grid min-w-0 grid-cols-1 gap-[22px] lg:grid-cols-[1.5fr_1fr]">
         <div>
@@ -103,7 +108,8 @@ export default async function JobsPage({ params, searchParams }: Props) {
             </div>
             <span className="text-base-content/60 text-xs">
               {t.rich('showing', {
-                total: jobs.length,
+                shown: totalShown,
+                total: totalCount,
                 strong: (chunks) => (
                   <strong className="text-base-content">{chunks}</strong>
                 ),

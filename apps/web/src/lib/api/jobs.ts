@@ -29,6 +29,14 @@ export type JobDetail = JobCard & {
   publishedAt: string | null;
   applicationStatus: string | null;
   applicationId: string | null;
+  dailyStartTime: string | null;
+  dailyEndTime: string | null;
+  workingDays: number;
+  payFrequency: string;
+  mealsProvided: boolean;
+  pickupPoint: string | null;
+  positionsTotal: number;
+  hireCount: number;
 };
 
 export type JobsQuery = {
@@ -41,13 +49,24 @@ export type JobsQuery = {
   startAfter?: string;
   housing?: boolean;
   transport?: boolean;
+  sort?: 'best' | 'newest' | 'wage_high' | 'starts_soon';
   cursor?: string | null;
   limit?: number;
 };
 
+export type CropKey =
+  | 'grape'
+  | 'almond'
+  | 'tomato'
+  | 'citrus'
+  | 'strawberry'
+  | 'lettuce';
+
 export type JobsPage = {
   jobs: JobCard[];
   nextCursor: string | null;
+  totalCount: number;
+  cropCounts: Record<CropKey, number>;
 };
 
 export async function fetchJobs(query: JobsQuery = {}): Promise<JobsPage> {
@@ -63,12 +82,27 @@ export async function fetchJobs(query: JobsQuery = {}): Promise<JobsPage> {
       startAfter: query.startAfter,
       housing: query.housing,
       transport: query.transport,
+      sort: query.sort,
       limit: query.limit ?? 20,
       cursor: query.cursor ?? undefined,
     },
     handleErrorInline: true,
   });
-  if (!res.ok) return { jobs: [], nextCursor: null };
+  if (!res.ok) {
+    return {
+      jobs: [],
+      nextCursor: null,
+      totalCount: 0,
+      cropCounts: {
+        grape: 0,
+        almond: 0,
+        tomato: 0,
+        citrus: 0,
+        strawberry: 0,
+        lettuce: 0,
+      },
+    };
+  }
   return res.data;
 }
 

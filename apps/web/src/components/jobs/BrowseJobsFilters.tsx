@@ -107,7 +107,7 @@ export function BrowseJobsFilters() {
             className={[
               'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-colors',
               on
-                ? 'bg-base-content text-base-100'
+                ? 'bg-primary text-primary-content'
                 : 'bg-base-200 text-base-content/70 hover:bg-base-300',
             ].join(' ')}
           >
@@ -116,11 +116,53 @@ export function BrowseJobsFilters() {
           </button>
         );
       })}
-      <span className="text-base-content/60 ml-auto inline-flex items-center gap-1 text-xs">
-        {t('sort_label')}{' '}
-        <strong className="text-base-content">{t('sort_default')}</strong>
-        <FontAwesomeIcon icon={faChevronDown} className="h-2.5 w-2.5" />
-      </span>
+      <SortControl />
     </div>
+  );
+}
+
+const SORT_OPTIONS = ['best', 'newest', 'wage_high', 'starts_soon'] as const;
+type SortOption = (typeof SORT_OPTIONS)[number];
+
+function SortControl() {
+  const t = useTranslations('worker.jobs.browse');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const current: SortOption =
+    (SORT_OPTIONS as readonly string[]).includes(searchParams.get('sort') ?? '')
+      ? (searchParams.get('sort') as SortOption)
+      : 'best';
+
+  function setSort(value: SortOption) {
+    const next = new URLSearchParams(searchParams);
+    next.delete('cursor');
+    if (value === 'best') next.delete('sort');
+    else next.set('sort', value);
+    const qs = next.toString();
+    router.push((qs ? `${pathname}?${qs}` : pathname) as Route);
+  }
+
+  return (
+    <details className="dropdown dropdown-end ml-auto">
+      <summary className="text-base-content/60 inline-flex cursor-pointer list-none items-center gap-1 text-xs">
+        {t('sort_label')}{' '}
+        <strong className="text-base-content">{t(`sort.${current}`)}</strong>
+        <FontAwesomeIcon icon={faChevronDown} className="h-2.5 w-2.5" />
+      </summary>
+      <ul className="menu dropdown-content bg-base-100 border-base-300 rounded-box z-10 mt-1 w-52 border p-2 shadow-md">
+        {SORT_OPTIONS.map((opt) => (
+          <li key={opt}>
+            <button
+              type="button"
+              onClick={() => setSort(opt)}
+              className={opt === current ? 'menu-active' : ''}
+            >
+              {t(`sort.${opt}`)}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }

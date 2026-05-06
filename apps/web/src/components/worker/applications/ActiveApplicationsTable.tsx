@@ -88,7 +88,7 @@ export function ActiveApplicationsTable({ rows, locale }: Props) {
               className={[
                 'cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-semibold',
                 filter === f
-                  ? 'bg-base-content text-base-100'
+                  ? 'bg-primary text-primary-content'
                   : 'bg-base-200 text-base-content/80',
               ].join(' ')}
             >

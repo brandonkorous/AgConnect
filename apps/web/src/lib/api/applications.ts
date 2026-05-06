@@ -39,7 +39,11 @@ export async function fetchApplications(
 ): Promise<ApplicationsPage> {
   const api = await getServerApiClient();
   const res = await api.get<ApplicationsPage>('/v1/applications', {
-    query: { status, limit: 50 },
+    query: {
+      // The API schema only accepts active|hired|closed; 'all' means no filter.
+      ...(status !== 'all' ? { status } : {}),
+      limit: 50,
+    },
     handleErrorInline: true,
   });
   if (!res.ok) return { applications: [], nextCursor: null };

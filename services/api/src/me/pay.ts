@@ -15,8 +15,10 @@ mePayRoutes.use('*', requireRole('worker'));
 
 mePayRoutes.get('/', async (c) => {
   const workerId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
+  // Workers are platform-level; their payroll records live in employer
+  // tenants. The query is scoped by workerUserId so cross-tenant leak isn't
+  // possible. Return an empty summary if no rows match (also covers the
+  // brand-new worker with no employers yet).
 
   const lines = await c.var.db.payrollLine.findMany({
     where: {

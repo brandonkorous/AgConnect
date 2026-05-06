@@ -28,6 +28,7 @@ type ProfileSnapshot = {
   firstName: string;
   lastName: string;
   email: string | null;
+  phone: string | null;
   zipCode: string | null;
   county: string | null;
   skills: string[];
@@ -121,6 +122,17 @@ export function ProfileEditor({ locale, initial }: Props) {
             className="input input-bordered w-full"
           />
         </FieldRow>
+        {snapshot.phone && (
+          <FieldRow label={t('field.phone.label')}>
+            <input
+              type="tel"
+              value={snapshot.phone}
+              readOnly
+              className="input input-bordered w-full opacity-70"
+            />
+            <p className="label">{t('field.phone.hint')}</p>
+          </FieldRow>
+        )}
         <FieldRow label={t('field.zip.label')}>
           <input
             type="text"

@@ -17,49 +17,53 @@ import { fetchRecommendedJobs } from '@/lib/api/jobs';
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'worker.dashboard.meta' });
-  return { title: t('title') };
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'worker.dashboard.meta' });
+    return { title: t('title') };
 }
 
 export default async function WorkerDashboardPage({ params }: Props) {
-  const { locale } = await params;
-  const [profile, clerkUser, shifts, matched] = await Promise.all([
-    fetchProfile(),
-    currentUser(),
-    fetchMyShifts(),
-    fetchRecommendedJobs(),
-  ]);
-  const workerName =
-    profile.firstName ||
-    clerkUser?.firstName ||
-    (locale === 'es' ? 'Amig@' : 'there');
-  const now = Date.now();
-  const upcomingShifts = shifts.filter(
-    (s) => new Date(s.shift.startTime).getTime() >= now,
-  ).length;
-  const newMatches = matched.length;
-  return (
-    <div className="px-8 pb-16 pt-8">
-      <WorkerGreeting
-        name={workerName}
-        upcomingShifts={upcomingShifts}
-        newMatches={newMatches}
-      />
-      <WorkerKpiRow locale={locale} />
-      <UpNextShift locale={locale} />
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
-        <div className="grid gap-5">
-          <MatchedJobs locale={locale} />
-          <ApplicationsPanel locale={locale} />
+    const { locale } = await params;
+    const [profile, clerkUser, shifts, matched] = await Promise.all([
+        fetchProfile(),
+        currentUser(),
+        fetchMyShifts(),
+        fetchRecommendedJobs(),
+    ]);
+    const workerName =
+        profile.firstName ||
+        clerkUser?.firstName ||
+        (locale === 'es' ? 'Trabajador' : 'there');
+    const now = Date.now();
+    const upcomingShifts = shifts.filter(
+        (s) => new Date(s.shift.startTime).getTime() >= now,
+    ).length;
+    const newMatches = matched.length;
+    const county = profile.county ?? null;
+    return (
+        <div className=" px-5 pb-16 pt-8">
+            <WorkerGreeting
+                name={workerName}
+                upcomingShifts={upcomingShifts}
+                newMatches={newMatches}
+                locale={locale}
+                county={county}
+                earningsTrend={null}
+            />
+            <WorkerKpiRow locale={locale} />
+            <UpNextShift locale={locale} />
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
+                <div className="grid gap-5">
+                    <MatchedJobs locale={locale} />
+                    <ApplicationsPanel locale={locale} />
+                </div>
+                <div className="grid gap-3.5">
+                    <PaycheckCard locale={locale} />
+                    <AvailabilityCard locale={locale} />
+                    <TrainingNudge locale={locale} />
+                    <MessagesCard locale={locale} />
+                </div>
+            </div>
         </div>
-        <div className="grid gap-3.5">
-          <PaycheckCard locale={locale} />
-          <AvailabilityCard locale={locale} />
-          <TrainingNudge locale={locale} />
-          <MessagesCard locale={locale} />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

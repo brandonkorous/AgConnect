@@ -14,8 +14,24 @@ profileRoutes.get('/', async (c) => {
   const userId = c.var.userId;
   const user = await c.var.db.user.findUnique({ where: { id: userId } });
   if (!user) return err(c, 404, 'not_found');
-  const profile = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
-  if (!profile) return err(c, 403, 'forbidden', 'not_onboarded');
+  // Auto-create a stub worker_profile prefilled from Clerk so the editor has
+  // somewhere to land. Workers shouldn't be gated on a separate "onboarding"
+  // step — the apply flow does the same thing.
+  let profile = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
+  if (!profile) {
+    let firstName = '';
+    let lastName = '';
+    try {
+      const cu = await c.get('clerk').users.getUser(userId);
+      firstName = cu.firstName ?? '';
+      lastName = cu.lastName ?? '';
+    } catch {
+      /* Clerk lookup is best-effort — proceed with empty names. */
+    }
+    profile = await c.var.db.workerProfile.create({
+      data: { id: userId, firstName, lastName },
+    });
+  }
   return ok(c, { user: shapeUser(user), workerProfile: shapeProfile(profile) });
 });
 
@@ -23,8 +39,12 @@ profileRoutes.patch('/', validate('json', PatchProfileBody), async (c) => {
   const userId = c.var.userId;
   const body = c.var.body;
 
-  const existing = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
-  if (!existing) return err(c, 403, 'forbidden', 'not_onboarded');
+  let existing = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
+  if (!existing) {
+    existing = await c.var.db.workerProfile.create({
+      data: { id: userId, firstName: '', lastName: '' },
+    });
+  }
 
   if (
     body.expectedUpdatedAt &&

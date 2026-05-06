@@ -90,7 +90,7 @@ export default async function EmployerJobsPage({ params, searchParams }: Props) 
     const cardStrings = buildCardStrings(t, tHead);
 
     return (
-        <div className="container mx-auto px-5 pt-8 pb-16 md:px-8 lg:px-20">
+        <div className=" px-5 pb-16 pt-8">
             <JobsHeader
                 eyebrow={tHead('eyebrow')}
                 titleA={tHead('title_a')}
@@ -133,7 +133,7 @@ export default async function EmployerJobsPage({ params, searchParams }: Props) 
                     <p className="text-base-content/70">{q ? tHead('no_results') : t('empty')}</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 lg:grid-cols-4">
                     {visibleJobs.map((j) => (
                         <JobCard
                             key={j.id}

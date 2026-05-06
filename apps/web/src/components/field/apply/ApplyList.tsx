@@ -17,6 +17,7 @@ import type { RecommendedJob } from '@/lib/api/jobs';
 type Props = {
     locale: string;
     jobs: RecommendedJob[];
+    smsApply: { number: string; keyword: string } | null;
 };
 
 type ApplyState =
@@ -25,7 +26,7 @@ type ApplyState =
     | { kind: 'done'; jobId: string }
     | { kind: 'error'; jobId: string; message: string };
 
-export function ApplyList({ locale, jobs }: Props) {
+export function ApplyList({ locale, jobs, smsApply }: Props) {
     const t = useTranslations('worker.field.apply');
     const formatter = useFormatter();
     const [selected, setSelected] = useState<RecommendedJob | null>(null);
@@ -230,9 +231,14 @@ export function ApplyList({ locale, jobs }: Props) {
                                     {errorForSelected}
                                 </p>
                             )}
-                            <p className="text-base-content/45 mt-3 text-center text-xs">
-                                {t('sms_hint')}
-                            </p>
+                            {smsApply && (
+                                <p className="text-base-content/45 mt-3 text-center text-xs">
+                                    {t('sms_hint', {
+                                        keyword: smsApply.keyword,
+                                        number: smsApply.number,
+                                    })}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

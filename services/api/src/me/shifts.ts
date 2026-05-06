@@ -13,8 +13,8 @@ meShiftsRoutes.use('*', requireRole('worker'));
 
 meShiftsRoutes.get('/', async (c) => {
   const workerId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
+  // Worker self-access: query is scoped by workerUserId; tenant pin not
+  // required.
 
   const url = new URL(c.req.url);
   const fromParam = url.searchParams.get('from');

@@ -42,6 +42,7 @@ export const JobsQuery = z
     startBefore: z.string().optional(),
     startAfter: z.string().optional(),
     q: z.string().max(120).optional(),
+    sort: z.enum(['best', 'newest', 'wage_high', 'starts_soon']).optional(),
     limit: z.coerce.number().int().min(1).max(50).default(20),
     cursor: z.string().min(1).max(200).optional(),
   })
@@ -77,7 +78,7 @@ export const CreateSavedSearchBody = z
   .object({
     name: z.string().max(60).optional(),
     filters: SavedSearchFiltersSchema,
-    alertChannel: z.enum(['sms', 'email', 'both']).default('sms'),
+    alertChannel: z.enum(['sms', 'email', 'both', 'none']).default('sms'),
     alertActive: z.boolean().default(true),
   })
   .strict();
@@ -87,7 +88,7 @@ export const PatchSavedSearchBody = z
   .object({
     name: z.string().max(60).nullable().optional(),
     filters: SavedSearchFiltersSchema.optional(),
-    alertChannel: z.enum(['sms', 'email', 'both']).optional(),
+    alertChannel: z.enum(['sms', 'email', 'both', 'none']).optional(),
     alertActive: z.boolean().optional(),
   })
   .strict();
@@ -96,7 +97,7 @@ export const SavedSearchSchema = z.object({
   id: z.string().uuid(),
   name: z.string().nullable(),
   filters: SavedSearchFiltersSchema,
-  alertChannel: z.enum(['sms', 'email', 'both']),
+  alertChannel: z.enum(['sms', 'email', 'both', 'none']),
   alertActive: z.boolean(),
   lastNotifiedAt: z.string().datetime().nullable(),
   createdAt: z.string().datetime(),

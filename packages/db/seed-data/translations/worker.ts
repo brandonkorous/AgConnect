@@ -21,6 +21,26 @@ export const worker: TranslationBundle = {
         en: "Apply",
         es: "Aplicar",
     },
+    "application.apply.confirm_title": {
+        en: "Send your application?",
+        es: "¿Enviar tu postulación?",
+    },
+    "application.apply.confirm_body": {
+        en: "The employer will see what's listed below. You can update your profile any time.",
+        es: "El empleador verá lo que aparece abajo. Puedes actualizar tu perfil en cualquier momento.",
+    },
+    "application.apply.confirm_summary_label": {
+        en: "You'll apply with",
+        es: "Postularás con",
+    },
+    "application.apply.confirm_submit": {
+        en: "Send application",
+        es: "Enviar postulación",
+    },
+    "application.apply.confirm_cancel": {
+        en: "Cancel",
+        es: "Cancelar",
+    },
     "application.apply.edit_profile": {
         en: "Edit profile",
         es: "Editar perfil",
@@ -32,6 +52,18 @@ export const worker: TranslationBundle = {
     "application.apply.error_already_applied": {
         en: "You've already applied to this job.",
         es: "Ya aplicaste a este trabajo.",
+    },
+    "application.apply.error_not_onboarded": {
+        en: "Finish setting up your profile before applying.",
+        es: "Termina de configurar tu perfil antes de aplicar.",
+    },
+    "application.apply.error_forbidden": {
+        en: "We couldn't send your application. Please try again later.",
+        es: "No pudimos enviar tu postulación. Inténtalo más tarde.",
+    },
+    "application.apply.error_job_closed": {
+        en: "This posting is no longer accepting applications.",
+        es: "Esta publicación ya no acepta postulaciones.",
     },
     "application.apply.privacy": {
         en: "By applying, the employer will see your name, skills, and contact info.",
@@ -414,8 +446,8 @@ export const worker: TranslationBundle = {
         es: "Revisada",
     },
     "dashboard.apps.subtitle": {
-        en: "5 active · last sync 2m ago",
-        es: "5 activas · sincronizado hace 2m",
+        en: "{count, plural, =0 {No active applications} =1 {1 active application} other {# active applications}}",
+        es: "{count, plural, =0 {Sin postulaciones activas} =1 {1 postulación activa} other {# postulaciones activas}}",
     },
     "dashboard.apps.title": {
         en: "My applications",
@@ -430,8 +462,8 @@ export const worker: TranslationBundle = {
         es: "7 de ago",
     },
     "dashboard.availability.days": {
-        en: "[\"M\",\"T\",\"W\",\"T\",\"F\",\"S\",\"S\"]",
-        es: "[\"L\",\"M\",\"M\",\"J\",\"V\",\"S\",\"D\"]",
+        en: "M,T,W,T,F,S,S",
+        es: "L,M,M,J,V,S,D",
     },
     "dashboard.availability.edit": {
         en: "Edit",
@@ -442,8 +474,8 @@ export const worker: TranslationBundle = {
         es: "Esta semana",
     },
     "dashboard.availability.footer": {
-        en: "5 days open · 1 conflict on {day} (training)",
-        es: "5 días abiertos · 1 conflicto el {day} (capacitación)",
+        en: "{open, plural, =0 {No days marked open} =1 {1 day open} other {# days open}}{conflicts, plural, =0 {} =1 { · 1 conflict} other { · # conflicts}}",
+        es: "{open, plural, =0 {Sin días marcados} =1 {1 día abierto} other {# días abiertos}}{conflicts, plural, =0 {} =1 { · 1 conflicto} other { · # conflictos}}",
     },
     "dashboard.availability.off": {
         en: "OFF",
@@ -458,8 +490,8 @@ export const worker: TranslationBundle = {
         es: "Disponibilidad",
     },
     "dashboard.greeting.context": {
-        en: "Sunday, August 3 · Madera, CA",
-        es: "Domingo, 3 de agosto · Madera, CA",
+        en: "{date}{county, select, _none {} other { · {county}, CA}}",
+        es: "{date}{county, select, _none {} other { · {county}, CA}}",
     },
     "dashboard.greeting.earnings_eyebrow": {
         en: "Earnings · 12 wk",
@@ -482,32 +514,32 @@ export const worker: TranslationBundle = {
         es: "Solicitudes activas",
     },
     "dashboard.kpi.active_apps.sub": {
-        en: "2 awaiting reply",
-        es: "2 en espera de respuesta",
+        en: "Tracking your applications",
+        es: "Monitoreando tus postulaciones",
     },
     "dashboard.kpi.avg_rate.label": {
         en: "Avg pay rate",
         es: "Tarifa promedio",
     },
     "dashboard.kpi.avg_rate.sub": {
-        en: "ranks top 18% in county",
-        es: "top 18% del condado",
+        en: "Across your shifts",
+        es: "En tus turnos",
     },
     "dashboard.kpi.hours_logged.label": {
         en: "Hours logged",
         es: "Horas registradas",
     },
     "dashboard.kpi.hours_logged.sub": {
-        en: "of 60 max",
-        es: "de 60 máx",
+        en: "this week",
+        es: "esta semana",
     },
     "dashboard.kpi.week_earned.label": {
         en: "This week earned",
         es: "Ganado esta semana",
     },
     "dashboard.kpi.week_earned.sub": {
-        en: "+12% vs last week",
-        es: "+12% vs semana pasada",
+        en: "Net pay",
+        es: "Pago neto",
     },
     "dashboard.matched.apply": {
         en: "Apply",
@@ -681,13 +713,21 @@ export const worker: TranslationBundle = {
         en: "Pay & timesheets",
         es: "Pago y horas",
     },
+    "dashboard.sidebar.saved_searches": {
+        en: "Saved searches",
+        es: "Búsquedas guardadas",
+    },
+    "dashboard.sidebar.wallet": {
+        en: "Wallet",
+        es: "Cartera",
+    },
     "dashboard.sidebar.profile_default_location": {
         en: "Madera, CA",
         es: "Madera, CA",
     },
     "dashboard.sidebar.profile_default_name": {
         en: "Worker",
-        es: "Trabajador@",
+        es: "Trabajador",
     },
     "dashboard.sidebar.sign_out": {
         en: "Sign out",
@@ -722,8 +762,8 @@ export const worker: TranslationBundle = {
         es: "Inscribirse gratis",
     },
     "dashboard.training.eyebrow": {
-        en: "Boost your earnings",
-        es: "Aumenta tus ingresos",
+        en: "Training in your area",
+        es: "Capacitación cerca de ti",
     },
     "dashboard.training.headline_amount": {
         en: "+$2.50/hr",
@@ -834,28 +874,32 @@ export const worker: TranslationBundle = {
         es: "Añadir →",
     },
     "documents.completeness.blurb": {
-        en: "You're <top>top 14%</top> of workers on AgConn. A complete profile gets <boost>3.4× more</boost> employer responses.",
-        es: "Estás en el <top>14% más alto</top> de trabajadores en AgConn. Un perfil completo recibe <boost>3.4× más</boost> respuestas de empleadores.",
+        en: "Verified employers see complete profiles first. Add what's missing below.",
+        es: "Los empleadores verificados ven primero los perfiles completos. Agrega lo que falta abajo.",
     },
     "documents.completeness.eyebrow": {
         en: "Profile completeness",
         es: "Perfil completo",
     },
-    "documents.completeness.task.banking": {
-        en: "Banking on file",
-        es: "Cuenta bancaria registrada",
-    },
     "documents.completeness.task.identity": {
-        en: "Identity verified",
-        es: "Identidad verificada",
+        en: "Name on file",
+        es: "Nombre registrado",
     },
-    "documents.completeness.task.photo": {
-        en: "Profile photo",
-        es: "Foto de perfil",
+    "documents.completeness.task.location": {
+        en: "Service area",
+        es: "Zona de trabajo",
     },
-    "documents.completeness.task.references": {
-        en: "References uploaded",
-        es: "Referencias subidas",
+    "documents.completeness.task.skills": {
+        en: "Skills listed",
+        es: "Habilidades agregadas",
+    },
+    "documents.completeness.task.experience": {
+        en: "Work history",
+        es: "Historial laboral",
+    },
+    "documents.completeness.task.availability": {
+        en: "Availability set",
+        es: "Disponibilidad marcada",
     },
     "documents.cta_download": {
         en: "Download all",
@@ -866,8 +910,8 @@ export const worker: TranslationBundle = {
         es: "Subir documento",
     },
     "documents.eyebrow": {
-        en: "Last verified Aug 1, 2026",
-        es: "Última verificación 1 ago 2026",
+        en: "{date, select, _none {Documents} other {Last verified {date}}}",
+        es: "{date, select, _none {Documentos} other {Última verificación {date}}}",
     },
     "documents.group.on_file": {
         en: "{n} on file",
@@ -930,8 +974,8 @@ export const worker: TranslationBundle = {
         es: "Verificado",
     },
     "documents.sub": {
-        en: "Stored securely and encrypted at rest. Share specific docs with employers without handing over your file.",
-        es: "Almacenados de forma segura y cifrados. Comparte documentos específicos con empleadores sin entregar tu archivo completo.",
+        en: "Share specific docs with employers without handing over your file.",
+        es: "Comparte documentos específicos con empleadores sin entregar tu archivo completo.",
     },
     "documents.title.em": {
         en: "documents",
@@ -1017,9 +1061,61 @@ export const worker: TranslationBundle = {
         en: "Apply by",
         es: "Aplicar antes de",
     },
+    "job_detail.details.schedule": {
+        en: "Daily schedule",
+        es: "Horario diario",
+    },
+    "job_detail.details.days_per_week": {
+        en: "Days per week",
+        es: "Días por semana",
+    },
+    "job_detail.details.runs_until": {
+        en: "Runs until",
+        es: "Hasta",
+    },
+    "job_detail.details.positions": {
+        en: "Positions",
+        es: "Puestos",
+    },
+    "job_detail.details.positions_value": {
+        en: "{open} of {total} open",
+        es: "{open} de {total} disponibles",
+    },
+    "job_detail.details.pay_frequency": {
+        en: "Pay frequency",
+        es: "Frecuencia de pago",
+    },
+    "job_detail.details.pay_frequency.weekly": {
+        en: "Weekly",
+        es: "Semanal",
+    },
+    "job_detail.details.pay_frequency.biweekly": {
+        en: "Every two weeks",
+        es: "Quincenal",
+    },
+    "job_detail.details.pay_frequency.monthly": {
+        en: "Monthly",
+        es: "Mensual",
+    },
+    "job_detail.details.pay_frequency.daily": {
+        en: "Daily",
+        es: "Diario",
+    },
+    "job_detail.details.extras": {
+        en: "Extras",
+        es: "Beneficios",
+    },
+    "job_detail.details.meals_provided": {
+        en: "Meals provided",
+        es: "Comidas incluidas",
+    },
+    "job_detail.details.pickup_point": {
+        en: "Pickup point",
+        es: "Punto de encuentro",
+    },
     "job_detail.apply_via_sms": {
-        en: "Or text JOB to (559) 555-0142",
-        es: "O envía JOB al (559) 555-0142",
+        en: "Or text {keyword} to {number}",
+        es: "O envía {keyword} al {number}",
     },
     "job_detail.back": {
         en: "Back to jobs",
@@ -1032,6 +1128,14 @@ export const worker: TranslationBundle = {
     "job_detail.no_description": {
         en: "Employer hasn't posted details yet — apply and they'll reach out with more.",
         es: "El empleador aún no ha publicado detalles — postula y te contactarán con más información.",
+    },
+    "job_detail.share_body": {
+        en: "{title} – ${wageMin}-${wageMax}/{wageUnit}",
+        es: "{title} – ${wageMin}-${wageMax}/{wageUnit}",
+    },
+    "job_detail.share_body_with_county": {
+        en: "{title} – ${wageMin}-${wageMax}/{wageUnit} in {county}",
+        es: "{title} – ${wageMin}-${wageMax}/{wageUnit} en {county}",
     },
     "job_detail.share_title": {
         en: "Share this job",
@@ -1057,6 +1161,10 @@ export const worker: TranslationBundle = {
         en: "Wage",
         es: "Pago",
     },
+    "jobs.browse.aside.map.cta_shifts": {
+        en: "See my shifts →",
+        es: "Ver mis turnos →",
+    },
     "jobs.browse.aside.map.cta": {
         en: "Open full map →",
         es: "Abrir mapa completo →",
@@ -1078,8 +1186,8 @@ export const worker: TranslationBundle = {
         es: "{hits} nuevos esta semana",
     },
     "jobs.browse.aside.sms.body": {
-        en: "Text <text>JOB</text> to <num>(559) 555-0142</num>",
-        es: "Envía <text>TRABAJO</text> al <num>(559) 555-0142</num>",
+        en: "Text <text>{keyword}</text> to <num>{number}</num>",
+        es: "Envía <text>{keyword}</text> al <num>{number}</num>",
     },
     "jobs.browse.aside.sms.eyebrow": {
         en: "SMS apply",
@@ -1118,8 +1226,8 @@ export const worker: TranslationBundle = {
         es: "Tomates",
     },
     "jobs.browse.eyebrow": {
-        en: "{count} open jobs · within 50 mi of {county}",
-        es: "{count} trabajos abiertos · a 80 km de {county}",
+        en: "{count, plural, =0 {No open jobs} =1 {1 open job} other {# open jobs}} · {county}",
+        es: "{count, plural, =0 {Sin trabajos abiertos} =1 {1 trabajo abierto} other {# trabajos abiertos}} · {county}",
     },
     "jobs.browse.filter.has_housing": {
         en: "Has housing",
@@ -1198,8 +1306,8 @@ export const worker: TranslationBundle = {
         es: "Aún no tienes búsquedas guardadas. Toca “Guardar búsqueda” para recibir alertas.",
     },
     "jobs.browse.showing": {
-        en: "Showing 1–8 of <strong>{total}</strong>",
-        es: "Mostrando 1–8 de <strong>{total}</strong>",
+        en: "{total, plural, =0 {No matches} =1 {Showing <strong>1</strong> of 1} other {Showing 1–{shown} of <strong>{total}</strong>}}",
+        es: "{total, plural, =0 {Sin resultados} =1 {Mostrando <strong>1</strong> de 1} other {Mostrando 1–{shown} de <strong>{total}</strong>}}",
     },
     "jobs.browse.sort_default": {
         en: "Best match",
@@ -1208,6 +1316,22 @@ export const worker: TranslationBundle = {
     "jobs.browse.sort_label": {
         en: "Sort:",
         es: "Ordenar:",
+    },
+    "jobs.browse.sort.best": {
+        en: "Best match",
+        es: "Mejor coincidencia",
+    },
+    "jobs.browse.sort.newest": {
+        en: "Newest first",
+        es: "Más recientes",
+    },
+    "jobs.browse.sort.wage_high": {
+        en: "Highest pay",
+        es: "Mejor pago",
+    },
+    "jobs.browse.sort.starts_soon": {
+        en: "Starts soonest",
+        es: "Empieza pronto",
     },
     "jobs.browse.sub": {
         en: "We surface jobs that fit your skills, distance, and weekly availability first. Verified employers only.",
@@ -1218,8 +1342,8 @@ export const worker: TranslationBundle = {
         es: "Mejores coincidencias",
     },
     "jobs.browse.updated": {
-        en: "Updated 4 minutes ago",
-        es: "Actualizado hace 4 minutos",
+        en: "Live",
+        es: "En vivo",
     },
     "jobs.card.apply": {
         en: "Apply",
@@ -1370,8 +1494,12 @@ export const worker: TranslationBundle = {
         es: "Nuevo mensaje",
     },
     "messages.eyebrow": {
-        en: "3 unread · 18 active conversations",
-        es: "3 sin leer · 18 conversaciones activas",
+        en: "Inbox",
+        es: "Bandeja de entrada",
+    },
+    "messages.eyebrow_n": {
+        en: "{unread, plural, =0 {No unread} =1 {1 unread} other {# unread}} · {count, plural, =0 {no conversations} =1 {1 conversation} other {# conversations}}",
+        es: "{unread, plural, =0 {Sin leer: 0} =1 {1 sin leer} other {# sin leer}} · {count, plural, =0 {sin conversaciones} =1 {1 conversación} other {# conversaciones}}",
     },
     "messages.folders.agconn": {
         en: "AgConn",
@@ -1922,8 +2050,8 @@ export const worker: TranslationBundle = {
         es: "Descargar talón",
     },
     "pay.deposit.eyebrow": {
-        en: "Next deposit · Friday Aug 8",
-        es: "Próximo depósito · Viernes 8 ago",
+        en: "{date, select, _none {Next deposit} other {Next deposit · {date}}}",
+        es: "{date, select, _none {Próximo depósito} other {Próximo depósito · {date}}}",
     },
     "pay.deposit.gross": {
         en: "Gross",
@@ -1982,24 +2110,24 @@ export const worker: TranslationBundle = {
         es: "Horas trabajadas",
     },
     "pay.stat.hours.sub": {
-        en: "32 weeks logged",
-        es: "32 semanas registradas",
+        en: "{weeks, plural, =0 {No weeks logged} =1 {1 week logged} other {# weeks logged}}",
+        es: "{weeks, plural, =0 {Sin semanas registradas} =1 {1 semana registrada} other {# semanas registradas}}",
     },
     "pay.stat.next_deposit.label": {
         en: "Next deposit",
         es: "Próximo depósito",
     },
     "pay.stat.next_deposit.sub": {
-        en: "Friday Aug 8",
-        es: "Viernes 8 ago",
+        en: "{date, select, _none {No upcoming deposit} other {{date}}}",
+        es: "{date, select, _none {Sin depósitos próximos} other {{date}}}",
     },
     "pay.stat.ytd_earnings.label": {
         en: "YTD earnings",
         es: "Ganancias YTD",
     },
     "pay.stat.ytd_earnings.sub": {
-        en: "across 4 employers",
-        es: "en 4 empleadores",
+        en: "{employers, plural, =0 {No employers yet} =1 {across 1 employer} other {across # employers}}",
+        es: "{employers, plural, =0 {Sin empleadores aún} =1 {en 1 empleador} other {en # empleadores}}",
     },
     "pay.sub": {
         en: "Every hour, every shift, every paystub. Download timesheets for tax filing or the EDD.",
@@ -2152,6 +2280,14 @@ export const worker: TranslationBundle = {
     "profile.field.email.label": {
         en: "Email (optional)",
         es: "Correo electrónico (opcional)",
+    },
+    "profile.field.phone.label": {
+        en: "Phone",
+        es: "Teléfono",
+    },
+    "profile.field.phone.hint": {
+        en: "Verified at sign-in. Update from your account settings.",
+        es: "Verificado al iniciar sesión. Actualízalo en tu cuenta.",
     },
     "profile.field.zip.label": {
         en: "Zip code",
@@ -2405,6 +2541,10 @@ export const worker: TranslationBundle = {
         en: "Add a phone number to get SMS alerts.",
         es: "Agrega un teléfono para recibir avisos por SMS.",
     },
+    "saved_searches.form.error_validation": {
+        en: "Some fields aren't valid. Check your filters and try again.",
+        es: "Algunos campos no son válidos. Revisa tus filtros e inténtalo de nuevo.",
+    },
     "saved_searches.form.name": {
         en: "Name (optional)",
         es: "Nombre (opcional)",
@@ -2518,8 +2658,8 @@ export const worker: TranslationBundle = {
         es: "Sincronizar al teléfono",
     },
     "shifts.eyebrow": {
-        en: "August 2026 · Madera, CA",
-        es: "Agosto 2026 · Madera, CA",
+        en: "{month}{county, select, _none {} other { · {county}, CA}}",
+        es: "{month}{county, select, _none {} other { · {county}, CA}}",
     },
     "shifts.meta.title": {
         en: "My shifts",
@@ -2686,8 +2826,8 @@ export const worker: TranslationBundle = {
         es: "No puedes cancelar una vez que el programa ha empezado.",
     },
     "training_hub.eyebrow": {
-        en: "14 free programs in your area",
-        es: "14 programas gratis en tu zona",
+        en: "Free programs in your area",
+        es: "Programas gratis en tu zona",
     },
     "training_hub.eyebrow_n": {
         en: "{n} free programs in your area",
@@ -2770,16 +2910,16 @@ export const worker: TranslationBundle = {
         es: "Horas completadas",
     },
     "training_hub.stat.hours.sub": {
-        en: "of 32 in current cert",
-        es: "de 32 en cert. actual",
+        en: "this year",
+        es: "este año",
     },
     "training_hub.stat.in_progress.label": {
         en: "In progress",
         es: "En progreso",
     },
     "training_hub.stat.in_progress.sub": {
-        en: "Forklift cert",
-        es: "Cert. de montacargas",
+        en: "currently enrolled",
+        es: "actualmente inscrito",
     },
     "training_hub.sub": {
         en: "Free certifications funded by California Department of Food & Agriculture and the F3 initiative. Most pay a stipend during training.",
@@ -2940,6 +3080,10 @@ export const worker: TranslationBundle = {
     "wallet.title": {
         en: "Skills Wallet",
         es: "Cartera de habilidades",
+    },
+    "wallet.subtitle": {
+        en: "Trainings, certificates, and credentials you've earned. Tap a record to download or share.",
+        es: "Capacitaciones, certificados y credenciales que has obtenido. Toca un registro para descargarlo o compartirlo.",
     },
     "dashboard.sidebar.menu_field_mode": {
         en: "Switch to Field Mode",
@@ -3138,8 +3282,8 @@ export const worker: TranslationBundle = {
         es: "Cerrar",
     },
     "field.apply.sms_hint": {
-        en: "You can also text APPLY to (559) 555-AGRI from any phone.",
-        es: "También puedes enviar APLICAR por mensaje al (559) 555-AGRI desde cualquier teléfono.",
+        en: "You can also text {keyword} to {number} from any phone.",
+        es: "También puedes enviar {keyword} por mensaje al {number} desde cualquier teléfono.",
     },
     "field.apply.detail.wage": {
         en: "Pay",

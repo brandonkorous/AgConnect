@@ -10,6 +10,7 @@ export type ProfileSnapshot = {
   firstName: string;
   lastName: string;
   email: string | null;
+  phone: string | null;
   zipCode: string | null;
   county: string | null;
   skills: string[];
@@ -59,6 +60,7 @@ const EMPTY_SNAPSHOT: ProfileSnapshot = {
   firstName: '',
   lastName: '',
   email: null,
+  phone: null,
   zipCode: null,
   county: null,
   skills: [],
@@ -116,6 +118,7 @@ export async function fetchProfile(): Promise<ProfileSnapshot> {
     firstName: workerProfile.firstName,
     lastName: workerProfile.lastName,
     email: user?.email ?? null,
+    phone: user?.phone ?? null,
     zipCode: workerProfile.zipCode,
     county: workerProfile.county,
     skills: workerProfile.skills,

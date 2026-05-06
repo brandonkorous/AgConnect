@@ -38,6 +38,7 @@ export async function WorkerKpiRow({ locale }: Props) {
     ).length;
     const awaitingReply = applications.applications.filter((a) => a.status === 'applied').length;
 
+    const dash = '—';
     const tiles: Array<{
         key: string;
         label: string;
@@ -50,7 +51,7 @@ export async function WorkerKpiRow({ locale }: Props) {
             label: t('week_earned.label'),
             value: summary.nextDeposit
                 ? fmtMoney(summary.nextDeposit.grossCents, locale)
-                : '—',
+                : dash,
             sub: summary.nextDeposit
                 ? t('week_earned.sub')
                 : locale === 'es'
@@ -61,8 +62,8 @@ export async function WorkerKpiRow({ locale }: Props) {
         {
             key: 'hours_logged',
             label: t('hours_logged.label'),
-            value: summary.ytdHours.toFixed(1),
-            sub: t('hours_logged.sub'),
+            value: summary.ytdHours > 0 ? summary.ytdHours.toFixed(1) : dash,
+            sub: summary.ytdHours > 0 ? t('hours_logged.sub') : '',
         },
         {
             key: 'active_apps',
@@ -73,13 +74,15 @@ export async function WorkerKpiRow({ locale }: Props) {
                     ? locale === 'es'
                         ? `${awaitingReply} esperando respuesta`
                         : `${awaitingReply} awaiting reply`
-                    : t('active_apps.sub'),
+                    : activeApps > 0
+                      ? t('active_apps.sub')
+                      : '',
         },
         {
             key: 'avg_rate',
             label: t('avg_rate.label'),
-            value: summary.avgHourlyCents > 0 ? fmtRate(summary.avgHourlyCents, locale) : '—',
-            sub: t('avg_rate.sub'),
+            value: summary.avgHourlyCents > 0 ? fmtRate(summary.avgHourlyCents, locale) : dash,
+            sub: summary.avgHourlyCents > 0 ? t('avg_rate.sub') : '',
             accent: 'accent',
         },
     ];
@@ -89,22 +92,22 @@ export async function WorkerKpiRow({ locale }: Props) {
             {tiles.map((tile) => (
                 <div
                     key={tile.key}
-                    className="bg-base-100 border-base-300 rounded-2xl border p-5"
+                    className="stat bg-base-100 border-base-300 rounded-2xl border"
                 >
-                    <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+                    <div className="stat-title font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
                         {tile.label}
                     </div>
-                    <div className="mt-2.5 flex items-end gap-2.5">
-                        <div
-                            className={[
-                                'font-serif text-4xl font-medium leading-none tracking-tight',
-                                tile.accent ? accentClass[tile.accent] : 'text-base-content',
-                            ].join(' ')}
-                        >
-                            {tile.value}
-                        </div>
-                        <div className="text-base-content/60 pb-1.5 text-xs">{tile.sub}</div>
+                    <div
+                        className={[
+                            'stat-value font-serif text-4xl font-medium leading-none tracking-tight',
+                            tile.accent ? accentClass[tile.accent] : 'text-base-content',
+                        ].join(' ')}
+                    >
+                        {tile.value}
                     </div>
+                    {tile.sub && (
+                        <div className="stat-desc text-base-content/60 text-xs">{tile.sub}</div>
+                    )}
                 </div>
             ))}
         </div>

@@ -52,6 +52,7 @@ export async function ShiftsCalendar({ shifts, locale, year, month }: Props) {
   const monthLabel = monthStart.toLocaleDateString(locale, {
     month: 'long',
     year: 'numeric',
+    timeZone: 'UTC',
   });
   const prev = shiftMonth(year, month, -1);
   const next = shiftMonth(year, month, 1);

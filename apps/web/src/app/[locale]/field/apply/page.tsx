@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { fetchRecommendedJobs } from '@/lib/api/jobs';
 import { ApplyList } from '@/components/field/apply/ApplyList';
+import { getSmsApplyNumber, getSmsApplyKeyword } from '@/lib/sms-apply';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -10,6 +11,10 @@ export default async function FieldApplyPage({ params }: Props) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'worker.field.apply' });
     const jobs = await fetchRecommendedJobs();
+    const smsNumber = getSmsApplyNumber();
+    const smsApply = smsNumber
+        ? { number: smsNumber, keyword: getSmsApplyKeyword() }
+        : null;
 
     return (
         <div className="space-y-4">
@@ -19,7 +24,7 @@ export default async function FieldApplyPage({ params }: Props) {
                 </h1>
                 <p className="text-base-content/70 mt-1 text-sm">{t('subtitle')}</p>
             </div>
-            <ApplyList locale={locale} jobs={jobs} />
+            <ApplyList locale={locale} jobs={jobs} smsApply={smsApply} />
         </div>
     );
 }

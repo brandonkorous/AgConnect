@@ -1115,6 +1115,61 @@ export const marketing: TranslationBundle = {
     },
 
     // ========================================================================
+    // /sms-consent — SMS opt-in disclosure (Twilio A2P 10DLC compliance)
+    // ========================================================================
+    "sms_consent.eyebrow": { en: "SMS consent", es: "Consentimiento de SMS" },
+    "sms_consent.headline": {
+        en: "How AgConn sends you text messages.",
+        es: "Cómo AgConn te envía mensajes de texto.",
+    },
+    "sms_consent.intro": {
+        en: "Plain-language summary: AgConn uses SMS to confirm your sign-in, alert you to job applications and hires, remind you about training, and welcome you to the platform. We do not send marketing texts on this channel. You can stop messages at any time by replying STOP. Up to 30 messages per month. Message and data rates may apply.",
+        es: "Resumen en lenguaje claro: AgConn usa SMS para confirmar tu inicio de sesión, avisarte sobre solicitudes y contrataciones, recordarte capacitaciones, y darte la bienvenida a la plataforma. No enviamos mensajes de marketing por este canal. Puedes detener los mensajes en cualquier momento respondiendo STOP. Hasta 30 mensajes por mes. Las tarifas de mensajes y datos pueden aplicar.",
+    },
+    "sms_consent.meta.title": { en: "SMS consent — AgConn", es: "Consentimiento de SMS — AgConn" },
+    "sms_consent.meta.description": {
+        en: "How AgConn collects SMS consent, what messages we send, how often, and how to opt out. Required disclosure for AgConn's transactional SMS campaign.",
+        es: "Cómo AgConn recopila el consentimiento de SMS, qué mensajes enviamos, con qué frecuencia, y cómo cancelar. Divulgación requerida para la campaña de SMS transaccional de AgConn.",
+    },
+    "sms_consent.toc.web_flow": { en: "Web sign-up opt-in", es: "Opt-in en registro web" },
+    "sms_consent.toc.text_flow": { en: "Text-keyword opt-in", es: "Opt-in por palabra clave" },
+    "sms_consent.toc.message_types": { en: "What we send", es: "Qué enviamos" },
+    "sms_consent.toc.frequency": { en: "How often, when", es: "Con qué frecuencia, cuándo" },
+    "sms_consent.toc.optout": { en: "How to stop messages", es: "Cómo detener mensajes" },
+    "sms_consent.toc.help": { en: "How to get help", es: "Cómo obtener ayuda" },
+    "sms_consent.toc.privacy": { en: "Privacy and sharing", es: "Privacidad y uso compartido" },
+    "sms_consent.toc.contact": { en: "Contact", es: "Contacto" },
+
+    "sms_consent.web_flow.body": {
+        en: "When you create an account at agconn.com/worker/sign-up or agconn.com/employer/sign-up, you enter your mobile number and verify ownership by entering a six-digit code AgConn sends you. By completing sign-up you accept the AgConn Terms of Service, which explicitly states that you agree to receive transactional SMS messages related to your account — sign-in codes, application status, hire confirmations, training reminders, and welcome notes (terms.agconn.com, section: Your account). The Terms link to this disclosure page for full message content, frequency, and rate information. You can revoke SMS consent at any time by replying STOP to any AgConn message, by toggling SMS off in your account settings, or by visiting agconn.com/unsubscribe. Revoking SMS does not delete your account.",
+        es: "Cuando creas una cuenta en agconn.com/worker/sign-up o agconn.com/employer/sign-up, ingresas tu número móvil y verificas la propiedad ingresando un código de seis dígitos que AgConn te envía. Al completar el registro aceptas los Términos de Servicio de AgConn, que establecen explícitamente que aceptas recibir mensajes SMS transaccionales relacionados con tu cuenta — códigos de inicio de sesión, estado de solicitudes, confirmaciones de contratación, recordatorios de capacitación y notas de bienvenida (terms.agconn.com, sección: Tu cuenta). Los Términos enlazan a esta página de divulgación para el contenido completo de mensajes, frecuencia y tarifas. Puedes revocar el consentimiento de SMS en cualquier momento respondiendo STOP a cualquier mensaje de AgConn, desactivando SMS en la configuración de tu cuenta, o visitando agconn.com/unsubscribe. Revocar SMS no elimina tu cuenta.",
+    },
+    "sms_consent.text_flow.body": {
+        en: "Public job listings at agconn.com/jobs/[slug] display a job-specific application keyword (for example, WHC-PH7). When you text this keyword to AgConn's long code from your mobile phone, AgConn replies with a confirmation message: \"AgConn: You are applying for [Job Title] with [Employer]. Reply YES to confirm and receive application updates. Up to 30 msg/mo. Msg & data rates may apply. Reply STOP to cancel, HELP for help.\" No further messages are sent unless you reply YES, SI, or SÍ. Only after that confirmation does AgConn begin sending transactional updates — application status, employer responses, training reminders. This double opt-in is required for every new phone number that initiates contact through a text keyword. The keyword text itself is not treated as consent on its own.",
+        es: "Las publicaciones públicas de empleo en agconn.com/jobs/[slug] muestran una palabra clave de aplicación específica del trabajo (por ejemplo, WHC-PH7). Cuando envías esta palabra clave al código largo de AgConn desde tu teléfono móvil, AgConn responde con un mensaje de confirmación: \"AgConn: Estás aplicando a [Título del trabajo] con [Empleador]. Responde SI para confirmar y recibir actualizaciones. Hasta 30 msj/mes. Msj y datos pueden aplicar. Responde STOP para cancelar, HELP para ayuda.\" No se envían más mensajes a menos que respondas YES, SI o SÍ. Solo después de esa confirmación AgConn comienza a enviar actualizaciones transaccionales — estado de solicitud, respuestas del empleador, recordatorios de capacitación. Este doble opt-in es requerido para cada nuevo número de teléfono que inicia contacto a través de una palabra clave. El texto de la palabra clave por sí solo no se trata como consentimiento.",
+    },
+    "sms_consent.message_types.body": {
+        en: "Sign-in verification codes (one-time passcodes for account login), job application receipts and status changes, hire confirmations and decline notes from employers, scheduled training session reminders, certificate issuance notifications when you complete a training, account welcome messages, opt-in confirmation messages for the text-keyword path, and replies to STOP and HELP keywords. AgConn does not send marketing, promotional, or fundraising content on this channel; those communications would require separate, explicit opt-in and are not currently offered.",
+        es: "Códigos de verificación de inicio de sesión (contraseñas de un solo uso para iniciar sesión), recibos y cambios de estado de solicitudes de empleo, confirmaciones de contratación y notas de rechazo de empleadores, recordatorios programados de sesiones de capacitación, notificaciones de emisión de certificados cuando completas una capacitación, mensajes de bienvenida a la cuenta, mensajes de confirmación de opt-in para la ruta de palabra clave, y respuestas a las palabras STOP y HELP. AgConn no envía contenido de marketing, promocional ni de recaudación de fondos por este canal; esas comunicaciones requerirían un opt-in separado y explícito y no se ofrecen actualmente.",
+    },
+    "sms_consent.frequency.body": {
+        en: "Up to 30 messages per phone number per month under normal use; most workers receive five or fewer per month. Sign-in codes and account-event notifications are sent in real time as the event occurs; we do not batch or schedule them. Quiet hours are enforced between 9 PM and 7 AM Pacific time — no messages are sent during these hours, and any deferred message is delivered after 7 AM Pacific the following morning. Message and data rates may apply per your mobile carrier plan.",
+        es: "Hasta 30 mensajes por número de teléfono por mes bajo uso normal; la mayoría de los trabajadores reciben cinco o menos por mes. Los códigos de inicio de sesión y notificaciones de eventos de cuenta se envían en tiempo real conforme ocurre el evento; no los agrupamos ni programamos. Las horas de silencio se respetan entre 9 PM y 7 AM hora del Pacífico — no se envían mensajes durante estas horas, y cualquier mensaje diferido se entrega después de las 7 AM del Pacífico la mañana siguiente. Las tarifas de mensajes y datos pueden aplicar según tu plan de operador móvil.",
+    },
+    "sms_consent.optout.body": {
+        en: "Reply STOP (or PARAR, CANCELAR, UNSUBSCRIBE, END, QUIT) to any AgConn message to immediately stop all SMS to your number. The mobile carrier confirms the unsubscribe and AgConn records it within seconds; no further messages will be sent to that number. You can also toggle SMS off in your account settings at agconn.com/worker/profile (workers) or agconn.com/employer/profile (employers), or visit agconn.com/unsubscribe directly. Opting out of SMS does not delete your account, does not stop email notifications, and does not affect your ability to log in (you can still receive sign-in codes by email if you opt out of SMS).",
+        es: "Responde STOP (o PARAR, CANCELAR, UNSUBSCRIBE, END, QUIT) a cualquier mensaje de AgConn para detener inmediatamente todos los SMS a tu número. El operador móvil confirma la cancelación y AgConn la registra en segundos; no se enviarán más mensajes a ese número. También puedes desactivar SMS en la configuración de tu cuenta en agconn.com/worker/profile (trabajadores) o agconn.com/employer/profile (empleadores), o visitar agconn.com/unsubscribe directamente. Cancelar SMS no elimina tu cuenta, no detiene las notificaciones por correo, y no afecta tu capacidad de iniciar sesión (todavía puedes recibir códigos de inicio de sesión por correo si cancelas SMS).",
+    },
+    "sms_consent.help.body": {
+        en: "Reply HELP (or AYUDA, INFO) to any AgConn message and you will receive a reply with a link to agconn.com/help and the contact email hello@agconn.com. For urgent issues — locked out of your account, a suspicious message claiming to be from AgConn, harassment from another user — email security@agconn.com or use the contact form at agconn.com/contact. Bilingual support (English and Spanish) is available; we respond within two business days.",
+        es: "Responde HELP (o AYUDA, INFO) a cualquier mensaje de AgConn y recibirás una respuesta con un enlace a agconn.com/help y el correo de contacto hello@agconn.com. Para problemas urgentes — bloqueado de tu cuenta, un mensaje sospechoso que dice ser de AgConn, acoso de otro usuario — escribe a security@agconn.com o usa el formulario de contacto en agconn.com/contact. Soporte bilingüe (inglés y español) disponible; respondemos en menos de dos días hábiles.",
+    },
+    "sms_consent.privacy.body": {
+        en: "AgConn never sells, rents, trades, or shares your phone number for marketing or any other purpose. Your number is used only by AgConn (the platform) and the SMS infrastructure provider that delivers messages on AgConn's behalf under a Data Processing Agreement. Employers do not see your phone number; they communicate with you through AgConn's in-platform messaging, which optionally relays to SMS. The full data-handling policy is at agconn.com/privacy.",
+        es: "AgConn nunca vende, alquila, intercambia ni comparte tu número de teléfono para marketing ni para ningún otro propósito. Tu número solo es usado por AgConn (la plataforma) y el proveedor de infraestructura SMS que entrega mensajes en nombre de AgConn bajo un Acuerdo de Procesamiento de Datos. Los empleadores no ven tu número de teléfono; se comunican contigo a través de la mensajería interna de AgConn, que opcionalmente se transmite a SMS. La política completa de manejo de datos está en agconn.com/privacy.",
+    },
+
+    // ========================================================================
     // /workers (Header "For workers" — dedicated worker landing)
     // ========================================================================
     "workers_page.meta.title": { en: "For workers — AgConn", es: "Para trabajadores — AgConn" },

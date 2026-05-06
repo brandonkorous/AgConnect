@@ -20,19 +20,43 @@ jobApplyRoute.use('*', requireRole('worker'));
 
 jobApplyRoute.post('/:jobId/apply', async (c) => {
   const userId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
-
-  const profile = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
-  if (!profile?.onboardedAt) return err(c, 403, 'forbidden', 'not_onboarded');
-
   const jobId = c.req.param('jobId');
+
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id: jobId, tenantId, deletedAt: null },
+    where: { id: jobId, deletedAt: null },
   });
   if (!job) return err(c, 404, 'not_found', 'job_not_found');
   if (job.status !== JobStatus.active) {
     return err(c, 422, 'validation_failed', 'job_not_active');
+  }
+
+  const tenantId = job.tenantId;
+
+  // Workers can apply with whatever profile data they've already shared. We
+  // never gate on onboardedAt — the audience is farmworkers who often arrive
+  // via SMS OTP with only a verified phone, and the dignified default is to
+  // let them express interest immediately. The employer's applicant card
+  // surfaces missing fields; that's the right place to nudge, not here.
+  // Auto-create a stub worker_profile if one doesn't exist so the FK and the
+  // skills/county snapshots have somewhere to land.
+  let profile = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
+  if (!profile) {
+    let firstName = '';
+    let lastName = '';
+    try {
+      const cu = await c.get('clerk').users.getUser(userId);
+      firstName = cu.firstName ?? '';
+      lastName = cu.lastName ?? '';
+    } catch {
+      /* Clerk lookup is best-effort — proceed with empty names. */
+    }
+    profile = await c.var.db.workerProfile.create({
+      data: {
+        id: userId,
+        firstName,
+        lastName,
+      },
+    });
   }
 
   const existing = await c.var.db.application.findFirst({

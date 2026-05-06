@@ -19,8 +19,6 @@ jobsRoutes.use('*', requireAuth('jobs'));
 
 jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
   const q = c.var.body;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
 
   const limit = q.limit;
   const cursor = q.cursor ? decodeCursor(q.cursor) : null;
@@ -67,8 +65,7 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
     const ids = await c.var.db.$queryRaw<{ id: string; created_at: Date }[]>(Prisma.sql`
       SELECT id, created_at
       FROM "job_postings"
-      WHERE tenant_id = ${tenantId}::uuid
-        AND status = 'active'::"JobStatus"
+      WHERE status = 'active'::"JobStatus"
         AND deleted_at IS NULL
         AND search_vector @@ to_tsquery('simple', ${tsQuery})
         ${cursorClause}
@@ -82,7 +79,6 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
       rows = await c.var.db.jobPosting.findMany({
         where: {
           id: { in: ids.map((r) => r.id) },
-          tenantId,
           deletedAt: null,
           ...(counties ? { county: { in: counties } } : {}),
           ...(q.skills?.length ? { skills: { hasSome: q.skills } } : {}),
@@ -99,7 +95,6 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
     }
   } else {
     const where = {
-      tenantId,
       status: JobStatus.active,
       deletedAt: null,
       ...(counties ? { county: { in: counties } } : {}),
@@ -118,9 +113,16 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
         : {}),
     };
 
+    const orderBy =
+      q.sort === 'wage_high'
+        ? [{ wageMax: 'desc' as const }, { id: 'desc' as const }]
+        : q.sort === 'starts_soon'
+          ? [{ startDate: 'asc' as const }, { id: 'desc' as const }]
+          : [{ createdAt: 'desc' as const }, { id: 'desc' as const }];
+
     rows = await c.var.db.jobPosting.findMany({
       where,
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      orderBy,
       take: limit + 1,
       include: {
         employer: { include: { employerProfile: true } },
@@ -134,6 +136,38 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
   const nextCursor =
     hasMore && last ? encodeCursor({ createdAt: last.createdAt, id: last.id }) : null;
 
+  // Total + crop-facet counts use the same filter set as the result list but
+  // ignore cursor pagination. cropCounts also drops the skills filter so the
+  // chip n's reflect "what would match if I toggled this crop on", not the
+  // recursive intersection.
+  const totalWhere = {
+    status: JobStatus.active,
+    deletedAt: null,
+    ...(counties ? { county: { in: counties } } : {}),
+    ...(q.wageMin !== undefined ? { wageMax: { gte: q.wageMin } } : {}),
+    ...(q.wageMax !== undefined ? { wageMin: { lte: q.wageMax } } : {}),
+    ...(q.startBefore ? { startDate: { lte: new Date(q.startBefore) } } : {}),
+    ...(q.startAfter ? { startDate: { gte: new Date(q.startAfter) } } : {}),
+  };
+
+  const CROPS = ['grape', 'almond', 'tomato', 'citrus', 'strawberry', 'lettuce'] as const;
+  const [totalCount, ...cropCountList] = await Promise.all([
+    c.var.db.jobPosting.count({
+      where: {
+        ...totalWhere,
+        ...(q.skills?.length ? { skills: { hasSome: q.skills } } : {}),
+      },
+    }),
+    ...CROPS.map((crop) =>
+      c.var.db.jobPosting.count({
+        where: { ...totalWhere, skills: { has: crop } },
+      }),
+    ),
+  ]);
+  const cropCounts = Object.fromEntries(
+    CROPS.map((crop, i) => [crop, cropCountList[i] ?? 0]),
+  ) as Record<(typeof CROPS)[number], number>;
+
   // Lightweight analytics for content-gap detection.
   await c.var.db.searchView.create({
     data: {
@@ -146,18 +180,17 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
   return ok(c, {
     jobs: slice.map((j) => shapeJobCard(j)),
     nextCursor,
+    totalCount,
+    cropCounts,
   });
 });
 
 jobsRoutes.get('/recommended', async (c) => {
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
   const profile = await c.var.db.workerProfile.findUnique({ where: { id: c.var.userId } });
   if (!profile?.county) return ok(c, { jobs: [] });
 
   const rows = await c.var.db.jobPosting.findMany({
     where: {
-      tenantId,
       status: JobStatus.active,
       deletedAt: null,
       county: profile.county,
@@ -184,11 +217,9 @@ jobsRoutes.get('/recommended', async (c) => {
 });
 
 jobsRoutes.get('/:slug', async (c) => {
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
   const slug = c.req.param('slug');
   const job = await c.var.db.jobPosting.findFirst({
-    where: { tenantId, seoSlug: slug, deletedAt: null },
+    where: { seoSlug: slug, status: JobStatus.active, deletedAt: null },
     include: { employer: { include: { employerProfile: true } } },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -206,6 +237,18 @@ jobsRoutes.get('/:slug', async (c) => {
     publishedAt: job.publishedAt?.toISOString() ?? null,
     applicationStatus: application?.status ?? null,
     applicationId: application?.id ?? null,
+    dailyStartTime: job.dailyStartTime
+      ? job.dailyStartTime.toISOString().slice(11, 16)
+      : null,
+    dailyEndTime: job.dailyEndTime
+      ? job.dailyEndTime.toISOString().slice(11, 16)
+      : null,
+    workingDays: job.workingDays,
+    payFrequency: job.payFrequency,
+    mealsProvided: job.mealsProvided,
+    pickupPoint: job.pickupPoint,
+    positionsTotal: job.positionsTotal,
+    hireCount: job.hireCount,
   });
 });
 
@@ -227,18 +270,24 @@ savedSearchRoutes.get('/', async (c) => {
 savedSearchRoutes.post('/', validate('json', CreateSavedSearchBody), async (c) => {
   const body = c.var.body;
 
-  if (body.alertChannel === 'sms' || body.alertChannel === 'both') {
+  if (body.alertActive && (body.alertChannel === 'sms' || body.alertChannel === 'both')) {
     const user = await c.var.db.user.findUnique({ where: { id: c.var.userId } });
     if (!user?.phone) return err(c, 422, 'validation_failed', 'phone_required');
   }
+
+  // 'none' is a UI-level synonym for "no alerts". Persist it as the default
+  // channel with alertActive=false so the DB enum (sms|email|both) stays clean.
+  const persistChannel: 'sms' | 'email' | 'both' =
+    body.alertChannel === 'none' ? 'sms' : body.alertChannel;
+  const persistActive = body.alertChannel === 'none' ? false : body.alertActive;
 
   const created = await c.var.db.savedSearch.create({
     data: {
       workerId: c.var.userId,
       name: body.name ?? null,
       filters: body.filters as object,
-      alertChannel: body.alertChannel,
-      alertActive: body.alertActive,
+      alertChannel: persistChannel,
+      alertActive: persistActive,
     },
   });
 
@@ -259,13 +308,18 @@ savedSearchRoutes.patch('/:id', validate('json', PatchSavedSearchBody), async (c
   });
   if (!existing) return err(c, 404, 'not_found');
 
+  const patchChannel: 'sms' | 'email' | 'both' | undefined =
+    body.alertChannel === 'none' ? 'sms' : body.alertChannel;
+  const patchActive =
+    body.alertChannel === 'none' ? false : body.alertActive ?? undefined;
+
   const updated = await c.var.db.savedSearch.update({
     where: { id },
     data: {
       name: body.name === null ? null : body.name ?? undefined,
       filters: body.filters as object | undefined,
-      alertChannel: body.alertChannel ?? undefined,
-      alertActive: body.alertActive ?? undefined,
+      alertChannel: patchChannel,
+      alertActive: patchActive,
     },
   });
   return ok(c, shapeSavedSearch(updated));

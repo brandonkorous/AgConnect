@@ -15,8 +15,7 @@ meMessagesRoutes.use('*', requireRole('worker'));
 
 meMessagesRoutes.get('/', async (c) => {
   const workerId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
+  // Worker self-access: filtered by userId; tenant pin not required.
 
   const participations = await c.var.db.conversationParticipant.findMany({
     where: { userId: workerId, leftAt: null, conversation: { deletedAt: null } },
@@ -128,8 +127,6 @@ const SendBody = z.object({ body: z.string().min(1).max(2000) });
 meMessagesRoutes.post('/:id/send', validate('json', SendBody), async (c) => {
   const id = c.req.param('id');
   const workerId = c.var.userId;
-  const tenantId = c.var.tenantId;
-  if (!tenantId) return err(c, 403, 'no_tenant');
 
   const participant = await c.var.db.conversationParticipant.findFirst({
     where: { conversationId: id, userId: workerId, leftAt: null },
@@ -141,9 +138,11 @@ meMessagesRoutes.post('/:id/send', validate('json', SendBody), async (c) => {
   });
   if (!conv) return err(c, 404, 'not_found');
 
+  // Outbound message inherits the conversation's tenant — workers are
+  // platform-level and their messages are filed under the employer tenant.
   const message = await c.var.db.message.create({
     data: {
-      tenantId,
+      tenantId: conv.tenantId,
       conversationId: id,
       senderUserId: workerId,
       body: c.var.body.body,
