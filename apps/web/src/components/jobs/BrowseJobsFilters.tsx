@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 type FilterKey =
-  | 'within_25'
+  | 'my_county'
   | 'this_week'
   | 'pays_22'
   | 'has_housing'
@@ -15,7 +15,7 @@ type FilterKey =
   | 'no_experience';
 
 const FILTER_KEYS: FilterKey[] = [
-  'within_25',
+  'my_county',
   'this_week',
   'pays_22',
   'has_housing',
@@ -25,8 +25,8 @@ const FILTER_KEYS: FilterKey[] = [
 
 function isOn(sp: URLSearchParams, key: FilterKey): boolean {
   switch (key) {
-    case 'within_25':
-      return sp.get('county') === 'Madera';
+    case 'my_county':
+      return sp.get('myCounty') === '1';
     case 'this_week': {
       const v = sp.get('startBefore');
       return Boolean(v);
@@ -46,9 +46,9 @@ function applyToggle(sp: URLSearchParams, key: FilterKey, on: boolean): URLSearc
   const next = new URLSearchParams(sp);
   next.delete('cursor');
   switch (key) {
-    case 'within_25':
-      if (on) next.set('county', 'Madera');
-      else next.delete('county');
+    case 'my_county':
+      if (on) next.set('myCounty', '1');
+      else next.delete('myCounty');
       break;
     case 'this_week':
       if (on) {
@@ -79,7 +79,9 @@ function applyToggle(sp: URLSearchParams, key: FilterKey, on: boolean): URLSearc
   return next;
 }
 
-export function BrowseJobsFilters() {
+type Props = { workerCounty?: string | null };
+
+export function BrowseJobsFilters({ workerCounty }: Props = {}) {
   const t = useTranslations('worker.jobs.browse');
   const router = useRouter();
   const pathname = usePathname();
@@ -91,13 +93,21 @@ export function BrowseJobsFilters() {
     router.push((qs ? `${pathname}?${qs}` : pathname) as Route);
   }
 
+  const visibleKeys = workerCounty
+    ? FILTER_KEYS
+    : FILTER_KEYS.filter((k) => k !== 'my_county');
+
   return (
     <div className="border-base-300 mb-[18px] flex flex-wrap items-center gap-2.5 rounded-2xl border bg-white px-3.5 py-3">
       <span className="text-base-content/60 font-mono text-[11px] font-bold uppercase tracking-[0.06em] pr-1.5">
         {t('filters_label')}
       </span>
-      {FILTER_KEYS.map((k) => {
+      {visibleKeys.map((k) => {
         const on = isOn(searchParams, k);
+        const label =
+          k === 'my_county'
+            ? t('filter.my_county', { county: workerCounty ?? '' })
+            : t(`filter.${k}` as 'filter.this_week');
         return (
           <button
             type="button"
@@ -112,7 +122,7 @@ export function BrowseJobsFilters() {
             ].join(' ')}
           >
             {on && <FontAwesomeIcon icon={faCheck} className="h-3 w-3" />}
-            {t(`filter.${k}` as 'filter.within_25')}
+            {label}
           </button>
         );
       })}

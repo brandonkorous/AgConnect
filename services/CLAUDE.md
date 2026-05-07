@@ -14,9 +14,9 @@ Materialize as needed — don't pre-create empty services.
 
 ## Conventions
 
-- Each service is its own deployable container: independent `package.json`, `Dockerfile`, AKS `Deployment`.
+- Each service is its own deployable container: independent `package.json`, `Dockerfile`, GKE `Deployment`.
 - Services consume `packages/db`, `packages/messaging`, `packages/schemas`. They do not import from `apps/`.
 - **Idempotency is mandatory** — every queue handler accepts a job key, exits cleanly on duplicates, and never double-sends.
 - Logging: structured JSON to stdout. Propagate trace IDs from the producing call site.
-- No public HTTP surface. A `/health` and `/ready` endpoint for AKS probes is the only HTTP. User-facing surfaces stay in `apps/api`.
+- No public HTTP surface. A `/health` and `/ready` endpoint for GKE probes is the only HTTP. User-facing surfaces stay in `apps/api`.
 - Designed for future microservice extraction: lift the folder, drop in a Helm chart. Don't reach across service boundaries.

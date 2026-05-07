@@ -7,7 +7,6 @@ resources:
   - namespace.yaml
   - service-account.yaml
   - configmap.yaml
-  - secret-provider.yaml
   - web-deployment.yaml
   - api-deployment.yaml
   - email-worker-deployment.yaml

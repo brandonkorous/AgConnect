@@ -1,6 +1,14 @@
-# Ingress: agconn.com → web, api.agconn.com → api.
-# Assumes nginx ingress controller + cert-manager are installed cluster-wide
-# (typically once per cluster, not per app).
+# Ingress: agconn.com / www.agconn.com → web, api.agconn.com → api.
+#
+# Assumes nginx-ingress + cert-manager are installed cluster-wide (one-time
+# bootstrap, see deploy/README.md). The nginx-ingress LoadBalancer is bound to
+# the static IP allocated by Terraform (google_compute_address.ingress).
+#
+# Cert-manager uses Cloudflare DNS01 because Cloudflare proxies traffic to the
+# origin (orange cloud), which would intercept HTTP01 challenges. The
+# `cloudflare-api-token` Secret is created in the cert-manager namespace at
+# bootstrap time from the same CLOUDFLARE_API_TOKEN GitHub secret used by
+# Terraform.
 
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -13,9 +21,11 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod-account-key
     solvers:
-      - http01:
-          ingress:
-            class: nginx
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: api-token
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

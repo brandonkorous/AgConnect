@@ -182,6 +182,11 @@ function AddForm({
   const [name, setName] = useState('');
   const [county, setCounty] = useState('');
   const [wageMin, setWageMin] = useState('');
+  const [housing, setHousing] = useState(false);
+  const [transport, setTransport] = useState(false);
+  const [noExperience, setNoExperience] = useState(false);
+  const [thisWeek, setThisWeek] = useState(false);
+  const [skills, setSkills] = useState('');
   const [channel, setChannel] = useState<SavedSearch['alertChannel']>('sms');
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -189,11 +194,26 @@ function AddForm({
   function submit() {
     setError(null);
     startTransition(async () => {
+      const skillsList = skills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      let startBefore: string | undefined;
+      if (thisWeek) {
+        const d = new Date();
+        d.setUTCDate(d.getUTCDate() + 7);
+        startBefore = d.toISOString().slice(0, 10);
+      }
       const res = await createSavedSearchAction({
         name: name.trim() || null,
         filters: {
           ...(county ? { county: [county] } : {}),
           ...(wageMin ? { wageMin: Number(wageMin) } : {}),
+          ...(skillsList.length ? { skills: skillsList } : {}),
+          ...(housing ? { housing: true } : {}),
+          ...(transport ? { transport: true } : {}),
+          ...(noExperience ? { noExperience: true } : {}),
+          ...(startBefore ? { startBefore } : {}),
         },
         alertChannel: channel,
         alertActive: channel !== 'none',
@@ -251,22 +271,79 @@ function AddForm({
         </fieldset>
       </div>
       <fieldset className="fieldset">
+        <legend className="fieldset-legend">{t('skills_label')}</legend>
+        <input
+          value={skills}
+          onChange={(e) => setSkills(e.target.value)}
+          className="input input-bordered w-full"
+          placeholder={t('skills_placeholder')}
+        />
+        <p className="label">{t('skills_hint')}</p>
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">{t('extras_label')}</legend>
+        <div className="flex flex-wrap gap-3">
+          <label className="label cursor-pointer gap-2">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm"
+              checked={housing}
+              onChange={(e) => setHousing(e.target.checked)}
+            />
+            <span className="label-text">{t('extras.housing')}</span>
+          </label>
+          <label className="label cursor-pointer gap-2">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm"
+              checked={transport}
+              onChange={(e) => setTransport(e.target.checked)}
+            />
+            <span className="label-text">{t('extras.transport')}</span>
+          </label>
+          <label className="label cursor-pointer gap-2">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm"
+              checked={noExperience}
+              onChange={(e) => setNoExperience(e.target.checked)}
+            />
+            <span className="label-text">{t('extras.no_experience')}</span>
+          </label>
+          <label className="label cursor-pointer gap-2">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm"
+              checked={thisWeek}
+              onChange={(e) => setThisWeek(e.target.checked)}
+            />
+            <span className="label-text">{t('extras.this_week')}</span>
+          </label>
+        </div>
+      </fieldset>
+      <fieldset className="fieldset">
         <legend className="fieldset-legend">{t('alert_channel')}</legend>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t('alert_channel')}>
           {(['sms', 'email', 'both', 'none'] as const).map((c) => (
-            <button
+            <label
               key={c}
-              type="button"
-              onClick={() => setChannelAndClear(c)}
               className={[
-                'rounded-full px-3 py-1.5 text-[12px] font-semibold',
+                'cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-semibold',
                 channel === c
                   ? 'bg-primary text-primary-content'
                   : 'border-base-300 border bg-transparent',
               ].join(' ')}
             >
+              <input
+                type="radio"
+                name="alert-channel"
+                value={c}
+                checked={channel === c}
+                onChange={() => setChannelAndClear(c)}
+                className="sr-only"
+              />
               {t(`channel.${c}`)}
-            </button>
+            </label>
           ))}
         </div>
       </fieldset>
@@ -308,6 +385,9 @@ function filtersToHref(filters: SavedSearch['filters'], locale: string): string 
   if (filters.skills?.length) sp.set('skills', filters.skills.join(','));
   if (filters.wageMin !== undefined) sp.set('wageMin', String(filters.wageMin));
   if (filters.startBefore) sp.set('startBefore', filters.startBefore);
+  if (filters.housing) sp.set('housing', '1');
+  if (filters.transport) sp.set('transport', '1');
+  if (filters.noExperience) sp.set('noExperience', '1');
   const qs = sp.toString();
   return `/${locale}/worker/jobs${qs ? `?${qs}` : ''}`;
 }

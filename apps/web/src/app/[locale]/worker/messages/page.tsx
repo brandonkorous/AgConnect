@@ -72,9 +72,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
             {threads.length === 0 ? (
                 <div className="border-base-300 bg-base-100 grid place-items-center rounded-2xl border p-12 text-center">
                     <p className="text-base-content/70 text-[14px]">
-                        {locale === 'es'
-                            ? 'No tienes conversaciones todavía. Cuando un empleador te contacte, aparecerá aquí.'
-                            : "You don't have any conversations yet. When an employer contacts you, they'll appear here."}
+                        {t('empty.body')}
                     </p>
                 </div>
             ) : (
@@ -91,7 +89,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
                     ) : (
                         <div className="grid place-items-center p-8 text-center">
                             <p className="text-base-content/60 text-[13px]">
-                                {locale === 'es' ? 'Selecciona una conversación' : 'Select a conversation'}
+                                {t('empty.select_thread')}
                             </p>
                         </div>
                     )}

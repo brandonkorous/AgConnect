@@ -53,10 +53,8 @@ export function JobCard({ job, locale }: Props) {
             {(job.badge || job.employerVerified) && (
               <span
                 className={[
-                  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-[3px] font-mono text-[10px] font-semibold uppercase tracking-[0.08em]',
-                  isUrgent
-                    ? 'bg-warning/20 text-warning-content'
-                    : 'bg-primary/10 text-primary',
+                  'badge badge-sm gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] whitespace-nowrap',
+                  isUrgent ? 'badge-warning badge-soft' : 'badge-primary badge-soft',
                 ].join(' ')}
               >
                 <span className="inline-block h-[5px] w-[5px] rounded-full bg-current" />

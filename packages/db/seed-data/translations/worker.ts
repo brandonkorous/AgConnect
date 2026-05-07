@@ -230,8 +230,8 @@ export const worker: TranslationBundle = {
         es: "Inicia {date}",
     },
     "applications_dense.active.sub": {
-        en: "Sorted by stage urgency",
-        es: "Ordenadas por urgencia de etapa",
+        en: "Most recent first",
+        es: "Más recientes primero",
     },
     "applications_dense.active.title": {
         en: "Active applications",
@@ -1061,6 +1061,10 @@ export const worker: TranslationBundle = {
         en: "Apply by",
         es: "Aplicar antes de",
     },
+    "job_detail.apply_by_open": {
+        en: "Open · rolling",
+        es: "Abierto · continuo",
+    },
     "job_detail.details.schedule": {
         en: "Daily schedule",
         es: "Horario diario",
@@ -1249,9 +1253,9 @@ export const worker: TranslationBundle = {
         en: "This week",
         es: "Esta semana",
     },
-    "jobs.browse.filter.within_25": {
-        en: "Within 25 mi",
-        es: "A menos de 40 km",
+    "jobs.browse.filter.my_county": {
+        en: "{county} County",
+        es: "Condado de {county}",
     },
     "jobs.browse.filters_label": {
         en: "Filters",
@@ -1490,8 +1494,16 @@ export const worker: TranslationBundle = {
         es: "Marcar todo leído",
     },
     "messages.cta_new": {
-        en: "New message",
-        es: "Nuevo mensaje",
+        en: "Browse jobs",
+        es: "Buscar trabajos",
+    },
+    "messages.empty.body": {
+        en: "You don't have any conversations yet. When an employer contacts you after you apply, they'll appear here.",
+        es: "Aún no tienes conversaciones. Cuando un empleador te contacte después de aplicar, aparecerán aquí.",
+    },
+    "messages.empty.select_thread": {
+        en: "Select a conversation",
+        es: "Selecciona una conversación",
     },
     "messages.eyebrow": {
         en: "Inbox",
@@ -2290,8 +2302,8 @@ export const worker: TranslationBundle = {
         es: "Verificado al iniciar sesión. Actualízalo en tu cuenta.",
     },
     "profile.field.zip.label": {
-        en: "Zip code",
-        es: "Código postal",
+        en: "Zip code (optional)",
+        es: "Código postal (opcional)",
     },
     "profile.preview_as_employer": {
         en: "Preview as employer",
@@ -2568,6 +2580,38 @@ export const worker: TranslationBundle = {
     "saved_searches.form.wage_min": {
         en: "Min hourly wage ($)",
         es: "Salario mínimo por hora ($)",
+    },
+    "saved_searches.form.skills_label": {
+        en: "Skills",
+        es: "Habilidades",
+    },
+    "saved_searches.form.skills_placeholder": {
+        en: "grape, almond, tomato",
+        es: "uva, almendra, tomate",
+    },
+    "saved_searches.form.skills_hint": {
+        en: "Comma-separated. We'll alert you when any skill matches.",
+        es: "Separadas por comas. Te avisamos cuando coincida cualquiera.",
+    },
+    "saved_searches.form.extras_label": {
+        en: "Extras",
+        es: "Extras",
+    },
+    "saved_searches.form.extras.housing": {
+        en: "Housing provided",
+        es: "Vivienda incluida",
+    },
+    "saved_searches.form.extras.transport": {
+        en: "Pickup / transport",
+        es: "Recogida / transporte",
+    },
+    "saved_searches.form.extras.no_experience": {
+        en: "No experience needed",
+        es: "Sin experiencia",
+    },
+    "saved_searches.form.extras.this_week": {
+        en: "Starts this week",
+        es: "Comienza esta semana",
     },
     "saved_searches.last_notified": {
         en: "Last notified {date}",
@@ -3077,9 +3121,33 @@ export const worker: TranslationBundle = {
         en: "Self-reported",
         es: "Auto-reportado",
     },
-    "wallet.title": {
-        en: "Skills Wallet",
-        es: "Cartera de habilidades",
+    "wallet.title.lead": {
+        en: "Your skills,",
+        es: "Tus habilidades,",
+    },
+    "wallet.title.em": {
+        en: "verified.",
+        es: "verificadas.",
+    },
+    "wallet.sample.eyebrow": {
+        en: "Preview · what a credential looks like",
+        es: "Vista previa · cómo se ve una credencial",
+    },
+    "wallet.sample.badge": {
+        en: "AgConn Verified",
+        es: "Verificado por AgConn",
+    },
+    "wallet.sample.title": {
+        en: "Forklift Operator · OSHA-compliant",
+        es: "Operador de montacargas · OSHA",
+    },
+    "wallet.sample.meta": {
+        en: "WIOA · Madera Workforce · Sample preview",
+        es: "WIOA · Workforce de Madera · Muestra",
+    },
+    "wallet.sample.hint": {
+        en: "Each AgConn credential includes a QR code that employers can scan to verify it on the spot.",
+        es: "Cada credencial AgConn incluye un código QR que los empleadores pueden escanear para verificarla.",
     },
     "wallet.subtitle": {
         en: "Trainings, certificates, and credentials you've earned. Tap a record to download or share.",

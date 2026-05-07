@@ -17,10 +17,8 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: web
-        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: agconn
-      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
@@ -46,17 +44,6 @@ spec:
             httpGet: { path: /en, port: http }
             initialDelaySeconds: 30
             periodSeconds: 30
-          volumeMounts:
-            - name: secrets-store
-              mountPath: /mnt/secrets-store
-              readOnly: true
-      volumes:
-        - name: secrets-store
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: agconn-env
 ---
 apiVersion: v1
 kind: Service

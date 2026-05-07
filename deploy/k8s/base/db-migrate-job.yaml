@@ -17,7 +17,6 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: db-migrate
-        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: agconn
       restartPolicy: Never
@@ -40,11 +39,3 @@ spec:
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }
-          volumeMounts:
-            - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
-      volumes:
-        - name: secrets-store
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes: { secretProviderClass: agconn-env }

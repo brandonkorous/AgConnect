@@ -80,7 +80,7 @@ export function BrowseJobsHeader({ totalCount, county, locale }: Props) {
       <div className="flex gap-2">
         <Link
           href={`/${locale}/worker/jobs#map`}
-          className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2.5 text-[13px] font-semibold no-underline"
+          className="btn btn-sm btn-ghost border-base-300 rounded-full border"
         >
           <FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" />
           {t('map_view')}
@@ -89,7 +89,7 @@ export function BrowseJobsHeader({ totalCount, county, locale }: Props) {
           type="button"
           onClick={save}
           disabled={pending || saved}
-          className="bg-base-content text-base-100 inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-[13px] font-medium disabled:opacity-70"
+          className="btn btn-primary btn-sm rounded-full"
         >
           <FontAwesomeIcon
             icon={saved ? faCheck : faBookmark}

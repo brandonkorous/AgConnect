@@ -21,15 +21,14 @@ export async function AvailabilityCard({ locale }: Props) {
         return daysRaw.split(',').map((s) => s.trim());
       })();
 
-  // Build the next 7 days starting today.
   const today = new Date();
   const week = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
-    d.setUTCDate(today.getUTCDate() + i);
-    const dow = d.getUTCDay();
+    d.setDate(today.getDate() + i);
+    const dow = d.getDay();
     const isWeekend = dow === 0 || dow === 6;
     const open = isWeekend ? availability.weekends : availability.weekdays;
-    return { date: d, open };
+    return { date: d, dow, open };
   });
   const openCount = week.filter((d) => d.open).length;
 
@@ -64,7 +63,7 @@ export async function AvailabilityCard({ locale }: Props) {
             ].join(' ')}
           >
             <div className="font-mono text-[10px] font-bold tracking-wider">
-              {days[(day.date.getUTCDay() + 6) % 7] ?? ''}
+              {days[(day.dow + 6) % 7] ?? ''}
             </div>
             <div className="mt-0.5 text-[9px] font-semibold opacity-80">
               {day.open ? t('open') : t('off')}

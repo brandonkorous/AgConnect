@@ -10,7 +10,6 @@ import {
     faMagnifyingGlass,
     faMobileScreen,
     faComments,
-    faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
 export function WorkerTopBar() {
@@ -83,14 +82,6 @@ export function WorkerTopBar() {
             >
                 <FontAwesomeIcon icon={faComments} className="h-3.5 w-3.5" />
                 {t('help')}
-            </Link>
-
-            <Link
-                href={`/${locale}/worker/profile#availability`}
-                className="btn btn-primary btn-sm"
-            >
-                <FontAwesomeIcon icon={faPlus} className="h-3.5 w-3.5" />
-                {t('set_availability')}
             </Link>
         </div>
     );

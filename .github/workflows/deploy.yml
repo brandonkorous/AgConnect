@@ -10,7 +10,7 @@ on:
         required: true
         default: prod
         type: choice
-        options: [prod, preview]
+        options: [prod]
 
 concurrency:
   group: deploy-${{ inputs.environment || 'prod' }}
@@ -34,10 +34,10 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - { name: web,             dockerfile: apps/web/Dockerfile,             image: agconn-web }
-          - { name: api,             dockerfile: services/api/Dockerfile,         image: agconn-api }
-          - { name: email-worker,    dockerfile: services/email-worker/Dockerfile, image: agconn-email-worker }
-          - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,   image: agconn-sms-worker }
+          - { name: web,             dockerfile: apps/web/Dockerfile,                 image: agconn-web }
+          - { name: api,             dockerfile: services/api/Dockerfile,             image: agconn-api }
+          - { name: email-worker,    dockerfile: services/email-worker/Dockerfile,    image: agconn-email-worker }
+          - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,      image: agconn-sms-worker }
           - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile, image: agconn-audit-retention }
           - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile,  image: agconn-audit-verifier }
     steps:
@@ -73,19 +73,102 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Federated identity to Azure: configure once via
-      # `az ad app federated-credential create` for the github-actions OIDC
-      # subject `repo:OWNER/REPO:environment:prod`.
-      - uses: azure/login@v2
+      # Federated identity to GCP. The provider + service account are
+      # created by Terraform (infra/terraform). Repo binding is enforced via
+      # the WIF provider's attribute_condition.
+      - id: auth
+        uses: google-github-actions/auth@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
 
-      - uses: azure/aks-set-context@v3
+      - uses: google-github-actions/setup-gcloud@v2
         with:
-          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
-          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - id: gke
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: agconn-prod
+          location: us-west1-a
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: "5.4.3"
+
+      - name: Ensure namespace exists
+        run: |
+          kubectl apply -f deploy/k8s/base/namespace.yaml
+
+      - name: Apply runtime Secret (agconn-env) from GHA secrets
+        env:
+          DATABASE_URL:                          ${{ secrets.DATABASE_URL }}
+          DIRECT_URL:                            ${{ secrets.DIRECT_URL }}
+          AUDIT_HMAC_KEY:                        ${{ secrets.AUDIT_HMAC_KEY }}
+          AUDIT_HMAC_KEY_VERSION:                ${{ secrets.AUDIT_HMAC_KEY_VERSION }}
+          ADMIN_BEARER_TOKEN:                    ${{ secrets.ADMIN_BEARER_TOKEN }}
+          CLERK_SECRET_KEY:                      ${{ secrets.CLERK_SECRET_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:     ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_WEBHOOK_SECRET:                  ${{ secrets.CLERK_WEBHOOK_SECRET }}
+          RESEND_API_KEY:                        ${{ secrets.RESEND_API_KEY }}
+          RESEND_WEBHOOK_SECRET:                 ${{ secrets.RESEND_WEBHOOK_SECRET }}
+          WAITLIST_TOKEN_SECRET:                 ${{ secrets.WAITLIST_TOKEN_SECRET }}
+          SENTRY_DSN:                            ${{ secrets.SENTRY_DSN }}
+          NEXT_PUBLIC_SENTRY_DSN:                ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN:                     ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG:                            ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT:                        ${{ secrets.SENTRY_PROJECT }}
+          NEXT_PUBLIC_POSTHOG_KEY:               ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          POSTHOG_API_KEY:                       ${{ secrets.POSTHOG_API_KEY }}
+          STRIPE_SECRET_KEY:                     ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET:                 ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_PRO_MONTHLY:              ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
+          STRIPE_PRICE_PRO_YEARLY:               ${{ secrets.STRIPE_PRICE_PRO_YEARLY }}
+          STRIPE_PRICE_ENT_MONTHLY:              ${{ secrets.STRIPE_PRICE_ENT_MONTHLY }}
+          STRIPE_PRICE_ENT_YEARLY:               ${{ secrets.STRIPE_PRICE_ENT_YEARLY }}
+          TWILIO_ACCOUNT_SID:                    ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:                     ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_MESSAGING_SERVICE_SID:          ${{ secrets.TWILIO_MESSAGING_SERVICE_SID }}
+          TWILIO_INBOUND_PHONE:                  ${{ secrets.TWILIO_INBOUND_PHONE }}
+          SUPABASE_URL:                          ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:             ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_MAPBOX_TOKEN:              ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+        run: |
+          set -euo pipefail
+          kubectl -n agconn create secret generic agconn-env \
+            --from-literal=DATABASE_URL="$DATABASE_URL" \
+            --from-literal=DIRECT_URL="$DIRECT_URL" \
+            --from-literal=AUDIT_HMAC_KEY="$AUDIT_HMAC_KEY" \
+            --from-literal=AUDIT_HMAC_KEY_VERSION="$AUDIT_HMAC_KEY_VERSION" \
+            --from-literal=ADMIN_BEARER_TOKEN="$ADMIN_BEARER_TOKEN" \
+            --from-literal=CLERK_SECRET_KEY="$CLERK_SECRET_KEY" \
+            --from-literal=NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" \
+            --from-literal=CLERK_WEBHOOK_SECRET="$CLERK_WEBHOOK_SECRET" \
+            --from-literal=RESEND_API_KEY="$RESEND_API_KEY" \
+            --from-literal=RESEND_WEBHOOK_SECRET="$RESEND_WEBHOOK_SECRET" \
+            --from-literal=WAITLIST_TOKEN_SECRET="$WAITLIST_TOKEN_SECRET" \
+            --from-literal=SENTRY_DSN="$SENTRY_DSN" \
+            --from-literal=NEXT_PUBLIC_SENTRY_DSN="$NEXT_PUBLIC_SENTRY_DSN" \
+            --from-literal=SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
+            --from-literal=SENTRY_ORG="$SENTRY_ORG" \
+            --from-literal=SENTRY_PROJECT="$SENTRY_PROJECT" \
+            --from-literal=NEXT_PUBLIC_POSTHOG_KEY="$NEXT_PUBLIC_POSTHOG_KEY" \
+            --from-literal=POSTHOG_API_KEY="$POSTHOG_API_KEY" \
+            --from-literal=STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" \
+            --from-literal=STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" \
+            --from-literal=STRIPE_PRICE_PRO_MONTHLY="$STRIPE_PRICE_PRO_MONTHLY" \
+            --from-literal=STRIPE_PRICE_PRO_YEARLY="$STRIPE_PRICE_PRO_YEARLY" \
+            --from-literal=STRIPE_PRICE_ENT_MONTHLY="$STRIPE_PRICE_ENT_MONTHLY" \
+            --from-literal=STRIPE_PRICE_ENT_YEARLY="$STRIPE_PRICE_ENT_YEARLY" \
+            --from-literal=TWILIO_ACCOUNT_SID="$TWILIO_ACCOUNT_SID" \
+            --from-literal=TWILIO_AUTH_TOKEN="$TWILIO_AUTH_TOKEN" \
+            --from-literal=TWILIO_MESSAGING_SERVICE_SID="$TWILIO_MESSAGING_SERVICE_SID" \
+            --from-literal=TWILIO_INBOUND_PHONE="$TWILIO_INBOUND_PHONE" \
+            --from-literal=SUPABASE_URL="$SUPABASE_URL" \
+            --from-literal=SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
+            --from-literal=NEXT_PUBLIC_MAPBOX_TOKEN="$NEXT_PUBLIC_MAPBOX_TOKEN" \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Pin image tags via kustomize
         working-directory: deploy/k8s/overlays/prod
@@ -102,7 +185,6 @@ jobs:
           set -euo pipefail
           OWNER=${{ env.IMAGE_OWNER }}
           TAG=${{ env.TAG }}
-          # Substitute placeholders in the migrate Job template + apply.
           sed -e "s|REPLACE_OWNER|${OWNER}|g" -e "s|REPLACE_TAG|${TAG}|g" \
             deploy/k8s/base/db-migrate-job.yaml | kubectl apply -f -
           kubectl -n agconn wait --for=condition=complete --timeout=10m \

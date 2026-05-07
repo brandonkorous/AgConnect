@@ -289,7 +289,6 @@ The following findings have been remediated in this session. Each item links the
 
 ### Still pending — recorded for follow-up
 
-- **Cert detail (`/worker/wallet/cert/[id]`) and worker SMS thread detail** require seeded data — neither route has a verified record in the DB for the test account. Needs a small `seed-test-worker-data.ts` script that inserts an enrollment + completion + conversation for Brandon's userId.
 - **Sign-out and full locale-toggle round-trip** wired correctly per static review of `UserMenu.tsx` (`signOut({ redirectUrl: ... })` and pathname/locale-segment swap), but not exercised end-to-end this session.
 
 ### 2026-05-06 fix log (continued — autonomous batch)
@@ -319,6 +318,37 @@ The following findings have been remediated in this session. Each item links the
 - **`inferCrop` deduped** — worker job-detail page now imports from [@/lib/crop](apps/web/src/lib/crop.ts) instead of reimplementing.
 - **Wallet page** uses canonical container, formats dates with `Intl.DateTimeFormat`, and gained a `subtitle` translation.
 
+### 2026-05-06 fix log (third pass — finishing the punch list)
+
+#### Browse jobs / job detail
+- **`Within 25 mi` chip is now `{county} County`** — derived from `profile.county` and surfaced via the new `myCounty=1` query param ([BrowseJobsFilters.tsx](apps/web/src/components/jobs/BrowseJobsFilters.tsx), [worker/jobs/page.tsx](apps/web/src/app/%5Blocale%5D/worker/jobs/page.tsx)). Hides entirely when no county is set on the worker profile. Browse-page header eyebrow uses `${workerCounty}, CA` instead of the hardcoded `Madera, CA` constant.
+- **`enrich()` no longer injects synthetic `spots` and `Hiring fast` badges** ([jobs/page.tsx](apps/web/src/app/%5Blocale%5D/worker/jobs/page.tsx)). Verified employers still get `Verified`, but the fake "Hiring fast every third card" rotation is gone.
+- **Browse header CTAs are now daisyUI buttons** — `Save this search` is `btn btn-primary btn-sm rounded-full`, `Map view` is `btn btn-ghost btn-sm` ([BrowseJobsHeader.tsx](apps/web/src/components/jobs/BrowseJobsHeader.tsx)).
+- **JobCard `VERIFIED` badge** uses daisyUI `badge badge-primary badge-soft` (or `badge-warning badge-soft` when `Hiring fast`) instead of the hand-rolled pill markup.
+- **Job-detail "Apply by" aside** always renders. When `applyBy` is null, it shows the localized fallback `Open · rolling` / `Abierto · continuo`. When set, it formats with `Intl.DateTimeFormat`.
+
+#### Profile / dashboard / shifts
+- **AvailabilityCard week computation switched to local timezone** — replaced `getUTCDate`/`getUTCDay` with `getDate`/`getDay` so the "today" chip matches the worker's actual day in `America/Los_Angeles`.
+- **Topbar `+ Set availability` CTA removed** — the contextual CTA on dashboard, shifts, and the AvailabilityCard already covers this; the topbar is now search + SMS-apply badge + Help only ([WorkerTopBar.tsx](apps/web/src/components/worker/WorkerTopBar.tsx)).
+- **Profile editor "All changes saved" no longer renders on initial idle** — the indicator only appears after the first save attempt ([ProfileEditor.tsx](apps/web/src/components/profile/ProfileEditor.tsx)).
+- **`profile.field.zip.label`** now reads `Zip code (optional)` / `Código postal (opcional)` per the required-default convention.
+
+#### Saved searches
+- **Manual create form aligned with the Browse Jobs filter set** — added skills (comma-separated), housing, transport, no-experience, and "Starts this week" controls ([SavedSearchesClient.tsx](apps/web/src/components/saved-searches/SavedSearchesClient.tsx)). Schema extended at [packages/schemas/src/jobs.ts](packages/schemas/src/jobs.ts) and the client `SavedSearch.filters` type at [apps/web/src/lib/api/saved-searches.ts](apps/web/src/lib/api/saved-searches.ts).
+- **Channel chips converted to radio semantics** — wraps each chip in a `<label>` with a visually-hidden `<input type="radio" name="alert-channel">` inside a `role="radiogroup"`. Keyboard + screen-reader behavior matches a real radio group; visual styling unchanged.
+- **`filtersToHref` now propagates `housing`/`transport`/`noExperience`** so "View jobs" on a saved search restores the full filter state.
+
+#### Applications / messages / wallet
+- **Applications "Sorted by stage urgency" sub-text replaced with "Most recent first"**, and the `active` list is now actually sorted by `appliedAt` desc ([applications/page.tsx](apps/web/src/app/%5Blocale%5D/worker/applications/page.tsx)).
+- **Messages compose CTA renamed** — the misleading `+ New message` button (which routed to `/worker/jobs`) now reads `Browse jobs`. Empty-state copy lifted out of the inline `locale === 'es'` ternary into `messages.empty.body` and `messages.empty.select_thread` translation keys.
+- **Wallet page gained a sample credential preview card** ([wallet/page.tsx](apps/web/src/app/%5Blocale%5D/worker/wallet/page.tsx)). Empty state now layers a dashed-border preview showing what an AgConn-issued credential card looks like, including an inline QR glyph and copy explaining that employers can scan to verify. Title also adopts the `Lead em.` italic-accent pattern (`Your skills, verified.`).
+
+#### Tooling
+- **`packages/db/scripts/seed-test-worker-data.ts`** added. Idempotent — accepts an optional `userId` argv, picks the most-recent `worker_profile` if none is given. Inserts (or upgrades to `completed`) an `Enrollment` against the first available `TrainingProgram`, then opens a 3-message SMS conversation between the worker and a same-tenant employer. Designed to make `/worker/wallet/cert/[id]` and `/worker/messages?thread=…` testable end-to-end.
+
+#### Audit decisions
+- **`Pill` primitive kept as-is** (used by 14 surfaces). It already renders to a brand-aligned shape (rounded-full + leading dot + mono uppercase) that daisyUI's `badge` doesn't replicate exactly, and switching every callsite would mean visual drift across applications, training, pay, shifts, etc. Marking the original arch finding "audited — keep" rather than "fixed."
+
 ---
 
 ## Test status summary
@@ -328,4 +358,4 @@ The following findings have been remediated in this session. Each item links the
 - **High:** ~30 across all pages — sidebar counts, KPI sub-lines, hardcoded i18n strings, save-search phone gate, Tierra italic stripping, profile prefilling, hardcoded marketing claims on training/documents.
 - **Medium / Low / Arch:** ~50 collectively.
 - Sign-out and full locale-toggle round-trip not exercised this pass; add to follow-up.
-- Cert detail (`/worker/wallet/cert/[enrollmentId]`) and SMS-thread detail (`/worker/messages?thread=…`) require seeded data — out of scope for this pass.
+- Cert detail (`/worker/wallet/cert/[enrollmentId]`) and SMS-thread detail (`/worker/messages?thread=…`) — seed script shipped at [packages/db/scripts/seed-test-worker-data.ts](packages/db/scripts/seed-test-worker-data.ts); run it once per Brandon's userId before exercising those routes.

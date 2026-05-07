@@ -191,7 +191,7 @@ export function ProfileEditor({ locale, initial }: Props) {
         <Link href={`/${locale}/worker/profile/reupload`} className="btn btn-outline btn-sm">
           {t('reupload.cta')}
         </Link>
-        <SaveStatus state={save} />
+        {save !== 'idle' && <SaveStatus state={save} />}
       </div>
     </div>
   );

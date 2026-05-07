@@ -1,143 +1,123 @@
 # Deploy
 
-AKS + GHCR + GitHub Actions. The pipeline builds 5 images, pushes to GHCR, runs Prisma migrations as a one-shot Job, then rolls out web + api + email-worker. Audit retention + verifier are CronJobs.
+GKE + GHCR + GitHub Actions, with Cloudflare in front. The pipeline builds 6
+images, pushes to GHCR, runs Prisma migrations as a one-shot Job, then rolls
+out web + api + email-worker + sms-worker. Audit retention + verifier are
+CronJobs.
 
-This is a scaffold. The first deploy requires one-time cluster + Azure setup; after that, every push to `main` deploys.
+The first deploy requires one-time GCP infra (via Terraform) and cluster
+bootstrap (nginx-ingress + cert-manager). After that, every push to `main`
+deploys.
 
 ## Topology
 
 ```
-agconn.com / www.agconn.com  →  nginx-ingress  →  Service web  →  Deployment web    (Next.js)
-api.agconn.com               →  nginx-ingress  →  Service api  →  Deployment api    (Hono)
-                                                                  Deployment email-worker (pg-boss consumer)
-                                                                  CronJob audit-retention (02:00 UTC)
-                                                                  CronJob audit-verifier  (03:00 UTC)
+agconn.com / www.agconn.com  →  Cloudflare  →  nginx-ingress  →  Service web  →  Deployment web    (Next.js)
+api.agconn.com               →  Cloudflare  →  nginx-ingress  →  Service api  →  Deployment api    (Hono)
+                                                                                Deployment email-worker (pg-boss consumer)
+                                                                                Deployment sms-worker   (pg-boss consumer)
+                                                                                CronJob audit-retention (02:00 UTC)
+                                                                                CronJob audit-verifier  (03:00 UTC)
 ```
 
-Postgres is Azure-managed (Flexible Server). The audit_events table + RLS roles + HMAC come from `packages/db/prisma/migrations`.
+Postgres is Supabase. Migrations and audit HMAC roles live under
+`packages/db/prisma/migrations`.
 
 ## One-time setup
 
-### 1. Azure resources
+### 1. Provision GCP infra with Terraform
+
+See [`infra/terraform/README.md`](../infra/terraform/README.md). After
+`terraform apply` you'll have:
+
+- GCP project `agconn`
+- GKE zonal cluster `agconn-prod` in `us-west1-a` (e2-medium, 1–3 node autoscaler)
+- Static external IP for the ingress LB
+- Workload Identity Federation binding GitHub Actions OIDC → `agconn-deploy@…`
+- Cloudflare A records for `agconn.com`, `www.agconn.com`, `api.agconn.com`
+
+Copy the three values printed by Terraform's `github_actions_secrets` output
+into GitHub repo Settings → Secrets and variables → Actions:
+
+- `GCP_PROJECT_ID`
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_DEPLOY_SERVICE_ACCOUNT`
+
+### 2. Set the runtime secrets in GitHub Actions
+
+The deploy workflow projects all runtime secrets into a K8s Secret called
+`agconn-env` at apply time. Set every name listed below in GitHub repo secrets
+before the first deploy:
+
+| Group | Secrets |
+|---|---|
+| Cloudflare | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID` |
+| Database | `DATABASE_URL` (Supabase pooler), `DIRECT_URL` (Supabase direct, migrations) |
+| Audit | `AUDIT_HMAC_KEY`, `AUDIT_HMAC_KEY_VERSION` |
+| Admin | `ADMIN_BEARER_TOKEN` |
+| Clerk | `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_WEBHOOK_SECRET` |
+| Resend | `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET` |
+| Waitlist | `WAITLIST_TOKEN_SECRET` |
+| Sentry | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` |
+| PostHog | `NEXT_PUBLIC_POSTHOG_KEY`, `POSTHOG_API_KEY` |
+| Stripe | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO_MONTHLY`, `STRIPE_PRICE_PRO_YEARLY`, `STRIPE_PRICE_ENT_MONTHLY`, `STRIPE_PRICE_ENT_YEARLY` |
+| Twilio | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_MESSAGING_SERVICE_SID`, `TWILIO_INBOUND_PHONE` |
+| Supabase Storage | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |
+| Mapbox | `NEXT_PUBLIC_MAPBOX_TOKEN` |
+
+### 3. Install cluster controllers (nginx-ingress + cert-manager)
 
 ```bash
-RG=agconn-prod
-LOC=westus2
-KV=agconn-prod-kv
-AKS=agconn-prod
-ACR=ghcr.io   # using GHCR, not ACR
+gcloud container clusters get-credentials agconn-prod --zone us-west1-a --project agconn
 
-az group create -n $RG -l $LOC
+# Static IP from terraform output:
+INGRESS_IP=$(terraform -chdir=infra/terraform output -raw ingress_ip)
 
-# Postgres flexible server (private endpoint recommended; public for MVP)
-az postgres flexible-server create \
-  --resource-group $RG --name agconn-prod-db --location $LOC \
-  --admin-user agconn --admin-password "REDACTED" \
-  --sku-name Standard_B1ms --tier Burstable --version 16 \
-  --storage-size 32 --public-access 0.0.0.0
-az postgres flexible-server db create -g $RG -s agconn-prod-db -d agconn
-
-# AKS
-az aks create -g $RG -n $AKS \
-  --node-count 2 --node-vm-size Standard_B2s \
-  --enable-managed-identity --enable-workload-identity --enable-oidc-issuer \
-  --enable-addons azure-keyvault-secrets-provider \
-  --network-plugin azure --network-plugin-mode overlay \
-  --generate-ssh-keys
-
-az aks get-credentials -g $RG -n $AKS
-
-# Key Vault + secrets
-az keyvault create -g $RG -n $KV --enable-rbac-authorization true
-# Push every secret listed in deploy/k8s/base/secret-provider.yaml:
-for k in database-url audit-hmac-key audit-hmac-key-version \
-         clerk-secret-key clerk-publishable-key clerk-webhook-secret \
-         resend-api-key resend-webhook-secret waitlist-token-secret \
-         admin-bearer-token sentry-dsn sentry-public-dsn sentry-auth-token \
-         posthog-key posthog-api-key; do
-  az keyvault secret set --vault-name $KV --name $k --value "REDACTED"
-done
-```
-
-### 2. Workload identity → Key Vault
-
-```bash
-# User-assigned identity that pods will assume.
-UAI_NAME=agconn-prod-workload
-az identity create -g $RG -n $UAI_NAME
-UAI_CLIENT_ID=$(az identity show -g $RG -n $UAI_NAME --query clientId -o tsv)
-UAI_PRINCIPAL_ID=$(az identity show -g $RG -n $UAI_NAME --query principalId -o tsv)
-
-# Grant the identity read on Key Vault secrets.
-KV_SCOPE=$(az keyvault show -n $KV --query id -o tsv)
-az role assignment create --role "Key Vault Secrets User" \
-  --assignee-object-id $UAI_PRINCIPAL_ID --scope $KV_SCOPE
-
-# Federate the identity to the agconn ServiceAccount via OIDC issuer.
-OIDC_ISSUER=$(az aks show -g $RG -n $AKS --query oidcIssuerProfile.issuerUrl -o tsv)
-az identity federated-credential create -g $RG -n agconn-sa \
-  --identity-name $UAI_NAME \
-  --issuer "$OIDC_ISSUER" \
-  --subject "system:serviceaccount:agconn:agconn" \
-  --audiences api://AzureADTokenExchange
-```
-
-Then update three placeholders in the manifests:
-
-- `deploy/k8s/base/service-account.yaml` → `azure.workload.identity/client-id: <UAI_CLIENT_ID>`
-- `deploy/k8s/base/secret-provider.yaml` → `clientID`, `keyvaultName`, `tenantId`
-- `deploy/k8s/base/ingress.yaml` → `email: <ops-email>`
-
-### 3. Cluster-wide controllers
-
-```bash
-# nginx ingress
+# nginx-ingress, pinned to the static IP we allocated.
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-  -n ingress-nginx --create-namespace
+  -n ingress-nginx --create-namespace \
+  --set controller.service.loadBalancerIP="${INGRESS_IP}" \
+  --set controller.service.externalTrafficPolicy=Local
 
-# cert-manager
+# cert-manager (DNS01 with Cloudflare).
 helm repo add jetstack https://charts.jetstack.io
 helm upgrade --install cert-manager jetstack/cert-manager \
   -n cert-manager --create-namespace --version v1.16.0 \
   --set crds.enabled=true
+
+# Cloudflare API token Secret in the cert-manager namespace, used by the
+# DNS01 ClusterIssuer in deploy/k8s/base/ingress.yaml. Same token value as
+# the GH Actions CLOUDFLARE_API_TOKEN secret.
+kubectl -n cert-manager create secret generic cloudflare-api-token \
+  --from-literal=api-token='YOUR_CLOUDFLARE_API_TOKEN'
 ```
 
-Get the ingress controller's public IP, point `agconn.com`, `www.agconn.com`, `api.agconn.com` A records at it.
+### 4. Replace placeholders in manifests
 
-### 4. GitHub Actions OIDC → Azure
-
-Create an Entra ID app registration with federated credentials for the GitHub OIDC subject (`repo:OWNER/REPO:environment:prod`), then store these GitHub repo secrets:
-
-| secret | value |
-|---|---|
-| `AZURE_CLIENT_ID` | App registration client id |
-| `AZURE_TENANT_ID` | Entra tenant id |
-| `AZURE_SUBSCRIPTION_ID` | Subscription containing AKS |
-| `AKS_RESOURCE_GROUP` | `agconn-prod` |
-| `AKS_CLUSTER_NAME` | `agconn-prod` |
-| `SENTRY_AUTH_TOKEN` | Sentry release auth token (only if you want source-map upload from CI) |
-
-### 5. Replace placeholder owner in manifests
-
-The kustomize overlay references `ghcr.io/REPLACE_OWNER/...`. Run once:
+The kustomize overlay and the migrate Job reference `ghcr.io/REPLACE_OWNER/...`
+and the ClusterIssuer references `REPLACE_OPS_EMAIL`. Run once:
 
 ```bash
 OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+OPS_EMAIL=ops@agconn.com   # used by Let's Encrypt for expiry notices
 find deploy/k8s -type f -name '*.yaml' -exec \
-  sed -i "s|REPLACE_OWNER|${OWNER}|g" {} +
-git commit -am "chore(deploy): pin GHCR owner"
+  sed -i "s|REPLACE_OWNER|${OWNER}|g; s|REPLACE_OPS_EMAIL|${OPS_EMAIL}|g" {} +
+git commit -am "chore(deploy): pin GHCR owner + Let's Encrypt email"
 ```
 
 ## Routine deploys
 
-After setup, `git push` to `main` triggers `.github/workflows/deploy.yml`:
+After setup, `git push` to `main` triggers
+[`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml):
 
-1. Builds all 5 images in parallel and pushes to GHCR with the commit SHA + `latest` tag.
-2. Pins kustomize image tags to the commit SHA.
-3. Runs `db-migrate-<sha>` Job and waits for completion (rollout fails if migrations fail).
-4. `kubectl apply -k deploy/k8s/overlays/prod`.
-5. Waits on `web`, `api`, `email-worker` rollout to finish.
+1. Builds all 6 images in parallel and pushes to GHCR with the commit SHA + `latest` tag.
+2. Authenticates to GCP via Workload Identity Federation; pulls cluster credentials.
+3. Applies the namespace and the `agconn-env` Secret (rebuilt every deploy from GH secrets — rotation = redeploy).
+4. Pins kustomize image tags to the commit SHA.
+5. Runs `db-migrate-<sha>` Job and waits for completion (rollout fails if migrations fail).
+6. `kubectl apply -k deploy/k8s/overlays/prod`.
+7. Waits on `web`, `api`, `email-worker`, `sms-worker` rollout to finish.
 
 CronJobs (`audit-retention`, `audit-verifier`) update on apply but only run on schedule.
 
@@ -156,16 +136,21 @@ docker run --rm -p 3001:3001 --env-file .env --network host agconn-api:dev
 ## Rollback
 
 ```bash
-# Roll a Deployment back to the previous ReplicaSet:
 kubectl -n agconn rollout undo deployment/web
 kubectl -n agconn rollout undo deployment/api
+kubectl -n agconn rollout undo deployment/email-worker
+kubectl -n agconn rollout undo deployment/sms-worker
 ```
 
-For database rollback, Azure-managed PITR covers point-in-time restore. Migrations are forward-only by convention; if a migration breaks production, write a follow-up migration that reverses it. Don't `prisma migrate reset` in prod.
+For database rollback, Supabase Pro provides daily automated backups +
+point-in-time recovery (7-day window). Migrations are forward-only by
+convention; if a migration breaks production, write a follow-up migration that
+reverses it. Don't `prisma migrate reset` in prod.
 
 ## What's NOT in this scaffold
 
-- Preview environments per PR (would need a `preview` overlay + per-PR namespace + DNS automation). Listed for follow-up.
-- Sealed/SOPS-encrypted secrets in git. We rely on Key Vault → CSI; nothing sensitive is committed.
+- Preview environments per PR (would need a `preview` overlay + per-PR namespace + DNS automation). Listed for follow-up; trivially added when needed.
+- Sealed/SOPS-encrypted secrets in git. We rely on GitHub Actions secrets → kubectl create Secret; nothing sensitive is committed.
 - Helm chart packaging. Plain kustomize is enough at MVP scale.
-- Multi-region failover, Azure Front Door, or CDN. Single-region until traffic justifies more.
+- Multi-region failover or multi-zone HA. Single-zone (us-west1-a) until traffic justifies more — first zonal cluster has free cluster-management fee.
+- A staging environment. Prod-only until funding lands; mitigations are additive-only DB migrations + fast `rollout undo` rollback.

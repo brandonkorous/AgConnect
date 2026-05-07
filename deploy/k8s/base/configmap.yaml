@@ -7,7 +7,6 @@ data:
   NODE_ENV: production
   APP_ENV: production
   NEXT_PUBLIC_APP_ENV: production
-  PUBLIC_TENANT_ID: "00000000-0000-0000-0000-000000000001"
   NEXT_PUBLIC_SITE_URL: "https://agconn.com"
   NEXT_PUBLIC_API_BASE_URL: "https://api.agconn.com"
   PUBLIC_API_URL: "https://api.agconn.com"

@@ -11,6 +11,9 @@ export type SavedSearch = {
     wageMax?: number;
     startBefore?: string;
     startAfter?: string;
+    housing?: boolean;
+    transport?: boolean;
+    noExperience?: boolean;
   };
   alertChannel: 'sms' | 'email' | 'both' | 'none';
   alertActive: boolean;

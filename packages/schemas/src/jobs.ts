@@ -70,6 +70,9 @@ export const SavedSearchFiltersSchema = z
     startBefore: z.string().optional(),
     startAfter: z.string().optional(),
     q: z.string().max(120).optional(),
+    housing: z.boolean().optional(),
+    transport: z.boolean().optional(),
+    noExperience: z.boolean().optional(),
   })
   .strict();
 export type SavedSearchFilters = z.infer<typeof SavedSearchFiltersSchema>;

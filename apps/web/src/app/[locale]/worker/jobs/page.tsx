@@ -8,6 +8,7 @@ import { JobCard, type JobCardData } from '@/components/jobs/JobCard';
 import { LoadMoreButton } from '@/components/jobs/LoadMoreButton';
 import { fetchJobs, type JobsQuery } from '@/lib/api/jobs';
 import { fetchSavedSearches } from '@/lib/api/saved-searches';
+import { fetchProfile } from '@/lib/api/profile';
 import { inferCrop } from '@/lib/crop';
 
 type Props = {
@@ -20,8 +21,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'worker.jobs' });
   return { title: t('title') };
 }
-
-const COUNTY = 'Madera, CA';
 
 const PAGE_SIZE = 16;
 
@@ -40,14 +39,19 @@ function asArray(v: string | string[] | undefined): string[] | undefined {
 
 const SORT_OPTIONS = ['best', 'newest', 'wage_high', 'starts_soon'] as const;
 
-function buildQuery(sp: Record<string, string | string[] | undefined>): JobsQuery {
+function buildQuery(
+  sp: Record<string, string | string[] | undefined>,
+  workerCounty: string,
+): JobsQuery {
   const housing = asString(sp.housing);
   const transport = asString(sp.transport);
   const wageMin = asString(sp.wageMin);
   const sort = asString(sp.sort);
+  const myCounty = asString(sp.myCounty);
+  const counties = asArray(sp.county) ?? (myCounty === '1' ? [workerCounty] : undefined);
   return {
     q: asString(sp.q),
-    county: asArray(sp.county),
+    county: counties,
     skills: asArray(sp.skills),
     wageMin: wageMin ? Number(wageMin) : undefined,
     startBefore: asString(sp.startBefore),
@@ -63,23 +67,19 @@ function buildQuery(sp: Record<string, string | string[] | undefined>): JobsQuer
 }
 
 const enrich = (jobs: JobCardData[]): JobCardData[] =>
-  jobs.map((j, i) => ({
+  jobs.map((j) => ({
     ...j,
     crop: inferCrop(j.titleEn, j.skills),
-    badge:
-      j.employerVerified && i % 3 === 1
-        ? 'Hiring fast'
-        : j.employerVerified
-          ? 'Verified'
-          : undefined,
-    spots: 6 + ((i * 7) % 18),
+    badge: j.employerVerified ? 'Verified' : undefined,
   }));
 
 export default async function JobsPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const sp = await searchParams;
   const t = await getTranslations({ locale, namespace: 'worker.jobs.browse' });
-  const query = buildQuery(sp);
+  const profile = await fetchProfile();
+  const workerCounty = profile.county ?? 'Madera';
+  const query = buildQuery(sp, workerCounty);
   const [{ jobs: rawJobs, nextCursor, totalCount, cropCounts }, savedSearches] =
     await Promise.all([fetchJobs(query), fetchSavedSearches()]);
   const noExperience = asString(sp.noExperience) === '1';
@@ -91,8 +91,12 @@ export default async function JobsPage({ params, searchParams }: Props) {
 
   return (
     <div className="container mx-auto min-w-0 max-w-full px-5 pb-16 pt-6 md:px-8 lg:px-20">
-      <BrowseJobsHeader totalCount={totalCount} county={COUNTY} locale={locale} />
-      <BrowseJobsFilters />
+      <BrowseJobsHeader
+        totalCount={totalCount}
+        county={`${workerCounty}, CA`}
+        locale={locale}
+      />
+      <BrowseJobsFilters workerCounty={profile.county ?? null} />
       <CropChips counts={cropCounts} />
 
       <div className="grid min-w-0 grid-cols-1 gap-[22px] lg:grid-cols-[1.5fr_1fr]">

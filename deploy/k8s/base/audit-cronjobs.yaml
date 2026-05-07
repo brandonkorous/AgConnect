@@ -26,7 +26,6 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: audit-retention
-            azure.workload.identity/use: "true"
         spec:
           serviceAccountName: agconn
           restartPolicy: Never
@@ -43,14 +42,6 @@ spec:
               resources:
                 requests: { cpu: 100m, memory: 256Mi }
                 limits: { cpu: 1000m, memory: 1Gi }
-              volumeMounts:
-                - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
-          volumes:
-            - name: secrets-store
-              csi:
-                driver: secrets-store.csi.k8s.io
-                readOnly: true
-                volumeAttributes: { secretProviderClass: agconn-env }
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -72,7 +63,6 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: audit-verifier
-            azure.workload.identity/use: "true"
         spec:
           serviceAccountName: agconn
           restartPolicy: Never
@@ -89,11 +79,3 @@ spec:
               resources:
                 requests: { cpu: 100m, memory: 256Mi }
                 limits: { cpu: 1000m, memory: 1Gi }
-              volumeMounts:
-                - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
-          volumes:
-            - name: secrets-store
-              csi:
-                driver: secrets-store.csi.k8s.io
-                readOnly: true
-                volumeAttributes: { secretProviderClass: agconn-env }

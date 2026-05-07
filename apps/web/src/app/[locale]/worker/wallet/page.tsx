@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faAward, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { WorkerPageHeader } from '@/components/worker/WorkerPageHeader';
 import { fetchWallet } from '@/lib/api/wallet';
 
@@ -26,17 +26,28 @@ export default async function WalletPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-5 pb-16 pt-8 md:px-8 lg:px-20">
-      <WorkerPageHeader title={t('title')} sub={t('subtitle')} />
+      <WorkerPageHeader
+        title={
+          <>
+            {t('title.lead')}{' '}
+            <em className="text-primary font-light italic">{t('title.em')}</em>.
+          </>
+        }
+        sub={t('subtitle')}
+      />
       {items.length === 0 ? (
-        <div className="border-base-300 grid gap-3 rounded-2xl border bg-white p-8 text-center">
-          <p className="font-serif text-xl font-semibold">{t('empty.title')}</p>
-          <p className="text-base-content/70">{t('empty.body')}</p>
-          <Link
-            href={`/${locale}/training`}
-            className="btn btn-primary btn-sm justify-self-center"
-          >
-            {t('empty.cta')}
-          </Link>
+        <div className="grid gap-5">
+          <div className="border-base-300 grid gap-3 rounded-2xl border bg-white p-8 text-center">
+            <p className="font-serif text-xl font-semibold">{t('empty.title')}</p>
+            <p className="text-base-content/70">{t('empty.body')}</p>
+            <Link
+              href={`/${locale}/training`}
+              className="btn btn-primary btn-sm justify-self-center"
+            >
+              {t('empty.cta')}
+            </Link>
+          </div>
+          <SamplePreview locale={locale} />
         </div>
       ) : (
         <div className="grid gap-3">
@@ -87,5 +98,34 @@ export default async function WalletPage({ params }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+async function SamplePreview({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'worker.wallet.sample' });
+  return (
+    <section className="border-base-300 bg-base-200/40 grid gap-3 rounded-2xl border border-dashed p-6">
+      <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+        {t('eyebrow')}
+      </div>
+      <article className="border-base-300 bg-base-100 grid gap-3 rounded-2xl border p-5 sm:grid-cols-[1fr_auto] sm:items-start">
+        <div className="grid gap-2">
+          <span className="text-warning inline-flex items-center gap-1 text-xs font-semibold uppercase">
+            <FontAwesomeIcon icon={faAward} className="h-3 w-3" />
+            {t('badge')}
+          </span>
+          <h3 className="font-serif text-lg font-semibold">{t('title')}</h3>
+          <p className="text-base-content/60 text-sm">{t('meta')}</p>
+        </div>
+        <div className="bg-base-200 grid h-20 w-20 place-items-center rounded-xl justify-self-end">
+          <FontAwesomeIcon
+            icon={faQrcode}
+            className="text-base-content/30 h-10 w-10"
+            aria-hidden
+          />
+        </div>
+      </article>
+      <p className="text-base-content/60 text-xs">{t('hint')}</p>
+    </section>
   );
 }

@@ -48,6 +48,7 @@ export default async function ApplicationsPage({ params }: Props) {
                 a.status === 'reviewed' ||
                 a.status === 'hired',
         )
+        .sort((a, b) => b.appliedAt.localeCompare(a.appliedAt))
         .map((a) => ({
             id: a.id,
             status: a.status as 'applied' | 'reviewed' | 'hired',

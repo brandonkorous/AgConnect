@@ -48,6 +48,9 @@ coverage/
 .turbo/
 .cache/
 
+# One-shot secrets push script — never commit values.
+set-github-secrets.ps1
+
 # Playwright + dev artifacts
 .playwright-mcp/
 test-results/

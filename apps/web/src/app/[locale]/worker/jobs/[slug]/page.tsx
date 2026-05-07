@@ -205,16 +205,21 @@ export default async function JobDetailPage({ params }: Props) {
               </div>
             )}
           </div>
-          {job.applyBy && (
-            <div className="border-base-300 bg-base-100 grid gap-1 rounded-2xl border p-5">
-              <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
-                {t('apply_by_label')}
-              </div>
-              <div className="font-serif text-[24px] tracking-[-0.025em]">
-                {job.applyBy}
-              </div>
+          <div className="border-base-300 bg-base-100 grid gap-1 rounded-2xl border p-5">
+            <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+              {t('apply_by_label')}
             </div>
-          )}
+            <div className="font-serif text-[24px] tracking-[-0.025em]">
+              {job.applyBy
+                ? new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    timeZone: 'UTC',
+                  }).format(new Date(job.applyBy))
+                : t('apply_by_open')}
+            </div>
+          </div>
         </aside>
       </div>
     </div>

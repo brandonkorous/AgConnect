@@ -1,0 +1,14 @@
+project_id           = "agconn"
+region               = "us-west1"
+zone                 = "us-west1-a"
+cluster_name         = "agconn-prod"
+domain               = "agconn.com"
+github_repository    = "wizeworks/AgConnect"
+
+# Find this on dash.cloudflare.com → agconn.com → right sidebar.
+cloudflare_zone_id   = "REPLACE_WITH_ZONE_ID"
+
+# Set via env var instead of committing:
+#   $env:TF_VAR_cloudflare_api_token = "..."   # PowerShell
+#   export TF_VAR_cloudflare_api_token=...     # bash
+# cloudflare_api_token = "REPLACE_OR_USE_ENV"

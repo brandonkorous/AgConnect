@@ -14,7 +14,6 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: api
-        azure.workload.identity/use: "true"
     spec:
       serviceAccountName: agconn
       securityContext:
@@ -42,14 +41,6 @@ spec:
             httpGet: { path: /health, port: http }
             initialDelaySeconds: 15
             periodSeconds: 30
-          volumeMounts:
-            - { name: secrets-store, mountPath: /mnt/secrets-store, readOnly: true }
-      volumes:
-        - name: secrets-store
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes: { secretProviderClass: agconn-env }
 ---
 apiVersion: v1
 kind: Service
