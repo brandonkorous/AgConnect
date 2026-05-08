@@ -27,6 +27,8 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+        env:
+          FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
 
       - name: Generate Prisma client
         run: pnpm db:generate

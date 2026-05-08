@@ -20,8 +20,11 @@ COPY packages/ui/package.json packages/ui/
 COPY packages/audit/package.json packages/audit/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
+COPY .npmrc ./
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+RUN --mount=type=secret,id=fontawesome_token,required=true \
+    --mount=type=cache,id=pnpm,target=/pnpm/store \
+    FONTAWESOME_TOKEN="$(cat /run/secrets/fontawesome_token)" \
     pnpm config set store-dir /pnpm/store \
  && pnpm install --frozen-lockfile
 

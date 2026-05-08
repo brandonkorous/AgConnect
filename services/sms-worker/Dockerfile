@@ -14,8 +14,11 @@ COPY services/sms-worker/package.json services/sms-worker/
 COPY packages/db/package.json packages/db/
 COPY packages/audit/package.json packages/audit/
 COPY packages/sms/package.json packages/sms/
+COPY .npmrc ./
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+RUN --mount=type=secret,id=fontawesome_token,required=true \
+    --mount=type=cache,id=pnpm,target=/pnpm/store \
+    FONTAWESOME_TOKEN="$(cat /run/secrets/fontawesome_token)" \
     pnpm config set store-dir /pnpm/store \
  && pnpm install --frozen-lockfile
 

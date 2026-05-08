@@ -16,10 +16,6 @@ build/
 .env.sentry-build-plugin
 !.env.example
 
-# Registry auth (FontAwesome Pro token, etc.) — each dev/CI provisions their own.
-# See CLAUDE.md for setup.
-.npmrc
-
 # OS
 .DS_Store
 Thumbs.db
