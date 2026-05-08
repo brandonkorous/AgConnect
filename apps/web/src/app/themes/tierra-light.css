@@ -16,7 +16,7 @@
   --color-base-100:          #FFFFFF; /*oklch(98% 0.005 95);   /* #FAFAF8 */
   --color-base-200:          #F7F7F3;/*oklch(94% 0.012 80);   /* #F3EFE6 */
   --color-base-300:          #EFEFE7;
-  --color-base-content:      oklch(20% 0.005 80);
+  --color-base-content:      oklch(20% 0.005 80); /* #1C1C1A */
   --color-info:              #294778; /*oklch(40% 0.09 260);*/
   --color-info-content:      #f9f8f5; /*  oklch(98% 0.005 95);*/
   --color-success:           #1e6626; /*oklch(40% 0.09 120);*/

@@ -1,13 +1,11 @@
-'use client';
-
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
-import { PlanCard, type Cycle } from './PlanCard';
+import { getFounderSlots } from '@/lib/api/landing';
+import { PricingClient } from './PricingClient';
 
-export function Pricing() {
-    const t = useTranslations('landing.pricing');
-    const [cycle, setCycle] = useState<Cycle>('yearly');
+export async function Pricing() {
+    const t = await getTranslations('landing.pricing');
+    const founderSlots = await getFounderSlots();
 
     return (
         <section id="pricing" className="bg-base-200 w-full">
@@ -20,45 +18,23 @@ export function Pricing() {
                         <h2 className="text-base-content font-serif text-4xl font-medium tracking-tight md:text-5xl lg:text-6xl">
                             {t('headline')}
                         </h2>
-                        <p className="text-base-content  mt-2 font-sans text-lg leading-relaxed">
+                        <p className="text-base-content mt-2 font-sans text-lg leading-relaxed">
                             {t('body')}
                         </p>
                     </div>
-                    <div role="tablist" aria-label="Billing cycle" className="tabs tabs-box bg-base-100">
-                        <button
-                            type="button"
-                            role="tab"
-                            aria-selected={cycle === 'yearly'}
-                            onClick={() => setCycle('yearly')}
-                            className={`tab ${cycle === 'yearly' ? 'tab-active bg-primary text-primary-content' : 'text-secondary'}`}
-                        >
-                            {t('toggle.yearly')}
-                        </button>
-                        <button
-                            type="button"
-                            role="tab"
-                            aria-selected={cycle === 'monthly'}
-                            onClick={() => setCycle('monthly')}
-                            className={`tab ${cycle === 'monthly' ? 'tab-active bg-primary text-primary-content' : 'text-secondary'}`}
-                        >
-                            {t('toggle.monthly')}
-                        </button>
-                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    <PlanCard plan="free" cycle={cycle} />
-                    <PlanCard plan="pro" cycle={cycle} />
-                    <PlanCard plan="enterprise" cycle={cycle} />
-                </div>
-
-                <div className="flex flex-col items-center justify-center gap-3 pt-4 md:flex-row md:gap-6">
-                    <p className="text-secondary font-sans text-sm">{t('footnote')}</p>
-                    <span className="bg-secondary/30 hidden h-4 w-px md:block" aria-hidden />
-                    <a href="/pricing" className="link link-hover text-primary hover:text-base-content text-sm font-semibold">
-                        {t('compare_link')} →
-                    </a>
-                </div>
+                <PricingClient
+                    founderSlots={founderSlots}
+                    labels={{
+                        toggleMonthly: t('toggle.monthly'),
+                        toggleYearly: t('toggle.yearly'),
+                        founderBadgeActive: t('founder.badge_active', { remaining: founderSlots.remaining }),
+                        founderBadgeEnded: t('founder.badge_ended'),
+                        footnote: t('footnote'),
+                        compareLink: t('compare_link'),
+                    }}
+                />
             </div>
         </section>
     );

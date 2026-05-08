@@ -68,3 +68,14 @@ export async function getFeaturedTraining(): Promise<FeaturedProgram[]> {
 export async function getImpact(): Promise<Impact | null> {
   return fetchEnvelope<Impact>('/v1/landing/impact', 86400);
 }
+
+export type FounderSlots = {
+  remaining: number;
+  total: number;
+  active: boolean;
+};
+
+export async function getFounderSlots(): Promise<FounderSlots> {
+  const data = await fetchEnvelope<FounderSlots>('/v1/landing/founder-slots', 30);
+  return data ?? { remaining: 0, total: 50, active: false };
+}

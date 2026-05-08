@@ -1,3 +1,16 @@
+resource "google_service_account" "gke_node" {
+  account_id   = "agconn-gke-node"
+  display_name = "AgConn GKE node"
+  description  = "Identity used by GKE node VMs. Carries the bundled minimum-permissions role for node ops (logging, monitoring, autoscaling metrics, AR pull)."
+  depends_on   = [google_project_service.enabled]
+}
+
+resource "google_project_iam_member" "gke_node_default" {
+  project = var.project_id
+  role    = "roles/container.defaultNodeServiceAccount"
+  member  = "serviceAccount:${google_service_account.gke_node.email}"
+}
+
 resource "google_container_cluster" "agconn" {
   name     = var.cluster_name
   location = var.zone
@@ -53,10 +66,11 @@ resource "google_container_node_pool" "general" {
   }
 
   node_config {
-    machine_type = var.node_machine_type
-    disk_size_gb = 50
-    disk_type    = "pd-standard"
-    image_type   = "COS_CONTAINERD"
+    machine_type    = var.node_machine_type
+    disk_size_gb    = 50
+    disk_type       = "pd-standard"
+    image_type      = "COS_CONTAINERD"
+    service_account = google_service_account.gke_node.email
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -75,6 +89,8 @@ resource "google_container_node_pool" "general" {
       pool = "general"
     }
   }
+
+  depends_on = [google_project_iam_member.gke_node_default]
 }
 
 resource "google_compute_address" "ingress" {

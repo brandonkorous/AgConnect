@@ -1094,8 +1094,8 @@ export const landing: TranslationBundle = {
         es: "Capacitadores",
     },
     "pricing.body": {
-        en: "Workers and training organizations never pay. Employers start free with up to two postings — upgrade only when you need more. Annual saves two months.",
-        es: "Trabajadores y capacitadores nunca pagan. Empleadores empiezan gratis con hasta dos publicaciones — actualicen solo cuando necesiten más. Anual ahorra dos meses.",
+        en: "Workers and training organizations never pay. Employers start free on Seed with up to two postings — upgrade to Field or Farm when you need more. Annual saves two months. Founder pricing is locked in for the first 50 paid accounts.",
+        es: "Trabajadores y capacitadores nunca pagan. Empleadores empiezan gratis en Semilla con hasta dos publicaciones — actualizan a Campo o Rancho cuando necesitan más. Anual ahorra dos meses. El precio fundador se bloquea para las primeras 50 cuentas pagas.",
     },
     "pricing.compare_link": {
         en: "Compare plans in detail",
@@ -1113,221 +1113,245 @@ export const landing: TranslationBundle = {
         en: "Free for workers. Always.",
         es: "Gratis para trabajadores. Siempre.",
     },
-    "pricing.plan.enterprise.badge": {
-        en: "ENTERPRISE · MULTI-TENANT",
-        es: "EMPRESARIAL · MULTI-TENANT",
+    "pricing.founder.badge_active": {
+        en: "Founder pricing · {remaining} spots left",
+        es: "Precio fundador · quedan {remaining} lugares",
     },
-    "pricing.plan.enterprise.cta.href": {
-        en: "mailto:sales@agconn.com",
-        es: "mailto:sales@agconn.com",
+    "pricing.founder.badge_ended": {
+        en: "Founder pricing has ended — standard pricing applies",
+        es: "El precio fundador ha terminado — aplica el precio estándar",
     },
-    "pricing.plan.enterprise.cta.label": {
-        en: "Talk to sales",
-        es: "Hablar con ventas",
-    },
-    "pricing.plan.enterprise.feature1": {
-        en: "Everything in Pro",
-        es: "Todo lo de Pro",
-    },
-    "pricing.plan.enterprise.feature2": {
-        en: "Multi-user accounts & roles",
-        es: "Cuentas multi-usuario y roles",
-    },
-    "pricing.plan.enterprise.feature3": {
-        en: "Custom county coverage",
-        es: "Cobertura de condados personalizada",
-    },
-    "pricing.plan.enterprise.feature4": {
-        en: "Branded grant exports + cover sheets",
-        es: "Exportes de subvención con tu marca + portadas",
-    },
-    "pricing.plan.enterprise.feature5": {
-        en: "Dedicated success contact + SLA",
-        es: "Contacto de éxito dedicado + SLA",
-    },
-    "pricing.plan.enterprise.feature6": {
-        en: "White-label tenant available",
-        es: "Tenant de marca blanca disponible",
-    },
-    "pricing.plan.enterprise.intro": {
-        en: "For workforce boards and multi-county operators with grant reporting needs.",
-        es: "Para juntas laborales y operadores multi-condado con necesidades de reportes de subvención.",
-    },
-    "pricing.plan.enterprise.name": {
-        en: "Enterprise",
-        es: "Empresarial",
-    },
-    "pricing.plan.enterprise.price.monthly.amount": {
-        en: "$299",
-        es: "$299",
-    },
-    "pricing.plan.enterprise.price.monthly.note": {
-        en: "",
-        es: "",
-    },
-    "pricing.plan.enterprise.price.monthly.unit": {
-        en: "/ mo, billed monthly",
-        es: "/ mes, facturado mensualmente",
-    },
-    "pricing.plan.enterprise.price.yearly.amount": {
-        en: "$249.17",
-        es: "$249.17",
-    },
-    "pricing.plan.enterprise.price.yearly.note": {
-        en: "$2,990/yr · vs $299/mo monthly",
-        es: "$2,990/año · vs $299/mes mensual",
-    },
-    "pricing.plan.enterprise.price.yearly.unit": {
-        en: "/ mo, billed annually",
-        es: "/ mes, facturado anualmente",
-    },
-    "pricing.plan.free.badge": {
-        en: "FREE · COMMUNITY",
-        es: "GRATIS · COMUNIDAD",
-    },
-    "pricing.plan.free.cta.href": {
-        en: "#final-cta",
-        es: "#final-cta",
-    },
-    "pricing.plan.free.cta.label": {
-        en: "Start free",
-        es: "Empezar gratis",
-    },
-    "pricing.plan.free.feature1": {
-        en: "2 active job postings",
-        es: "2 publicaciones activas",
-    },
-    "pricing.plan.free.feature2": {
-        en: "Applicant kanban",
-        es: "Tablero de aplicantes",
-    },
-    "pricing.plan.free.feature3": {
-        en: "FLC verification included",
-        es: "Verificación FLC incluida",
-    },
-    "pricing.plan.free.feature4": {
-        en: "-Worker search",
-        es: "-Búsqueda de trabajadores",
-    },
-    "pricing.plan.free.feature5": {
-        en: "-Priority listing",
-        es: "-Listado prioritario",
-    },
-    "pricing.plan.free.feature6": {
-        en: "-Custom grant exports",
-        es: "-Exportes de subvención personalizados",
-    },
-    "pricing.plan.free.intro": {
-        en: "For small growers and seasonal hires. Onboard the long tail of the Valley.",
-        es: "Para pequeños productores y contrataciones de temporada. Para incorporar la cola larga del Valle.",
-    },
-    "pricing.plan.free.name": {
-        en: "Free",
-        es: "Gratis",
-    },
-    "pricing.plan.free.price.monthly.amount": {
-        en: "$0",
-        es: "$0",
-    },
-    "pricing.plan.free.price.monthly.note": {
-        en: "",
-        es: "",
-    },
-    "pricing.plan.free.price.monthly.unit": {
-        en: "/ forever",
-        es: "/ siempre",
-    },
-    "pricing.plan.free.price.yearly.amount": {
-        en: "$0",
-        es: "$0",
-    },
-    "pricing.plan.free.price.yearly.note": {
-        en: "",
-        es: "",
-    },
-    "pricing.plan.free.price.yearly.unit": {
-        en: "/ forever",
-        es: "/ siempre",
-    },
-    "pricing.plan.pro.badge": {
-        en: "PRO · GROWERS & FLCs",
-        es: "PRO · PRODUCTORES Y FLCs",
-    },
-    "pricing.plan.pro.cta.href": {
-        en: "#final-cta",
-        es: "#final-cta",
-    },
-    "pricing.plan.pro.cta.label": {
-        en: "Start a Pro trial",
-        es: "Iniciar prueba Pro",
-    },
-    "pricing.plan.pro.feature1": {
-        en: "Unlimited active postings",
-        es: "Publicaciones activas ilimitadas",
-    },
-    "pricing.plan.pro.feature2": {
-        en: "Worker search across the Valley pool",
-        es: "Búsqueda en la base de trabajadores del Valle",
-    },
-    "pricing.plan.pro.feature3": {
-        en: "Priority listing on the worker app",
-        es: "Listado prioritario en la app del trabajador",
-    },
-    "pricing.plan.pro.feature4": {
-        en: "Self-serve Stripe billing portal",
-        es: "Portal de facturación Stripe autoservicio",
-    },
-    "pricing.plan.pro.feature5": {
-        en: "WIOA exports (CSV + XLSX)",
-        es: "Exportes WIOA (CSV + XLSX)",
-    },
-    "pricing.plan.pro.feature6": {
-        en: "-Multi-user, custom branding",
-        es: "-Multi-usuario, marca personalizada",
-    },
-    "pricing.plan.pro.intro": {
-        en: "For working FLCs and growers running multiple postings per season.",
-        es: "Para FLCs en activo y productores con múltiples publicaciones por temporada.",
-    },
-    "pricing.plan.pro.name": {
-        en: "Pro",
-        es: "Pro",
-    },
-    "pricing.plan.pro.price.monthly.amount": {
-        en: "$99",
-        es: "$99",
-    },
-    "pricing.plan.pro.price.monthly.note": {
-        en: "",
-        es: "",
-    },
-    "pricing.plan.pro.price.monthly.unit": {
-        en: "/ mo, billed monthly",
-        es: "/ mes, facturado mensualmente",
-    },
-    "pricing.plan.pro.price.yearly.amount": {
-        en: "$82.50",
-        es: "$82.50",
-    },
-    "pricing.plan.pro.price.yearly.note": {
-        en: "$990/yr · vs $99/mo monthly",
-        es: "$990/año · vs $99/mes mensual",
-    },
-    "pricing.plan.pro.price.yearly.unit": {
-        en: "/ mo, billed annually",
-        es: "/ mes, facturado anualmente",
-    },
-    "pricing.plan.pro.ribbon": {
-        en: "Most popular",
-        es: "El más popular",
+    "pricing.founder.note": {
+        en: "Founder pricing · first 50 paid accounts",
+        es: "Precio fundador · primeras 50 cuentas pagas",
     },
     "pricing.toggle.monthly": {
         en: "Monthly",
         es: "Mensual",
     },
     "pricing.toggle.yearly": {
-        en: "Annual · save 2 mo",
-        es: "Anual · ahorra 2 mo",
+        en: "Annual · save 2 months",
+        es: "Anual · ahorra 2 meses",
+    },
+    "pricing.plan.free.eyebrow": {
+        en: "SEED · COMMUNITY",
+        es: "SEMILLA · COMUNIDAD",
+    },
+    "pricing.plan.free.name": {
+        en: "Seed",
+        es: "Semilla",
+    },
+    "pricing.plan.free.tagline": {
+        en: "For small growers and seasonal hires. Post your first jobs and see who's in the Valley pool.",
+        es: "Para pequeños agricultores y contrataciones de temporada. Publica tus primeros empleos y descubre quién está en el Valle.",
+    },
+    "pricing.plan.free.price.monthly.standard_amount": {
+        en: "$0",
+        es: "$0",
+    },
+    "pricing.plan.free.price.monthly.founder_amount": {
+        en: "$0",
+        es: "$0",
+    },
+    "pricing.plan.free.price.monthly.unit": {
+        en: "/ forever",
+        es: "/ siempre",
+    },
+    "pricing.plan.free.price.yearly.standard_amount": {
+        en: "$0",
+        es: "$0",
+    },
+    "pricing.plan.free.price.yearly.founder_amount": {
+        en: "$0",
+        es: "$0",
+    },
+    "pricing.plan.free.price.yearly.unit": {
+        en: "/ forever",
+        es: "/ siempre",
+    },
+    "pricing.plan.free.feature1": {
+        en: "2 active bilingual job postings",
+        es: "2 publicaciones de empleo bilingüe activas",
+    },
+    "pricing.plan.free.feature2": {
+        en: "Applicant kanban pipeline",
+        es: "Tablero kanban de solicitantes",
+    },
+    "pricing.plan.free.feature3": {
+        en: "FLC license verification badge",
+        es: "Verificación de licencia FLC",
+    },
+    "pricing.plan.free.feature4": {
+        en: "SEO-indexed public job board",
+        es: "Bolsa de trabajo pública indexada en buscadores",
+    },
+    "pricing.plan.free.feature5": {
+        en: "Worker skills wallet visibility",
+        es: "Visibilidad de la cartera de habilidades",
+    },
+    "pricing.plan.free.feature6": {
+        en: "Audit log (90 days)",
+        es: "Registro de auditoría (90 días)",
+    },
+    "pricing.plan.free.cta.label_founder": {
+        en: "Start free",
+        es: "Comenzar gratis",
+    },
+    "pricing.plan.free.cta.label_standard": {
+        en: "Start free",
+        es: "Comenzar gratis",
+    },
+    "pricing.plan.free.cta.href": {
+        en: "/employer/sign-up",
+        es: "/employer/sign-up",
+    },
+    "pricing.plan.pro.eyebrow": {
+        en: "FIELD · GROWERS & FLCs",
+        es: "CAMPO · PRODUCTORES Y FLCs",
+    },
+    "pricing.plan.pro.name": {
+        en: "Field",
+        es: "Campo",
+    },
+    "pricing.plan.pro.tagline": {
+        en: "For working FLCs and growers running crews all season. Hire faster, schedule smarter, stay compliant.",
+        es: "Para contratistas y agricultores que trabajan con cuadrillas toda la temporada. Contrata más rápido, organiza mejor, mantente en cumplimiento.",
+    },
+    "pricing.plan.pro.ribbon": {
+        en: "Most popular",
+        es: "Más popular",
+    },
+    "pricing.plan.pro.price.monthly.standard_amount": {
+        en: "$199",
+        es: "$199",
+    },
+    "pricing.plan.pro.price.monthly.founder_amount": {
+        en: "$99",
+        es: "$99",
+    },
+    "pricing.plan.pro.price.monthly.unit": {
+        en: "/ mo",
+        es: "/ mes",
+    },
+    "pricing.plan.pro.price.yearly.standard_amount": {
+        en: "$1,990",
+        es: "$1,990",
+    },
+    "pricing.plan.pro.price.yearly.founder_amount": {
+        en: "$990",
+        es: "$990",
+    },
+    "pricing.plan.pro.price.yearly.unit": {
+        en: "/ yr",
+        es: "/ año",
+    },
+    "pricing.plan.pro.feature1": {
+        en: "Unlimited active postings",
+        es: "Publicaciones de empleo ilimitadas",
+    },
+    "pricing.plan.pro.feature2": {
+        en: "Worker search & invite-to-apply",
+        es: "Búsqueda de trabajadores e invitación a aplicar",
+    },
+    "pricing.plan.pro.feature3": {
+        en: "SMS to applicants (received, interview, hired, rejected)",
+        es: "SMS a solicitantes (recibido, entrevista, contratado, rechazado)",
+    },
+    "pricing.plan.pro.feature4": {
+        en: "Crew & shift scheduling with SMS confirm",
+        es: "Gestión de cuadrillas y turnos con confirmación por SMS",
+    },
+    "pricing.plan.pro.feature5": {
+        en: "H-2A / MSPA / DOL compliance + 7-year audit log",
+        es: "Cumplimiento H-2A / MSPA / DOL + registro de auditoría 7 años",
+    },
+    "pricing.plan.pro.feature6": {
+        en: "WIOA exports + compliance print doc",
+        es: "Exportaciones WIOA + documento de auditoría de cumplimiento",
+    },
+    "pricing.plan.pro.cta.label_founder": {
+        en: "Start at founder pricing",
+        es: "Comenzar con precio fundador",
+    },
+    "pricing.plan.pro.cta.label_standard": {
+        en: "Get started",
+        es: "Comenzar",
+    },
+    "pricing.plan.pro.cta.href": {
+        en: "/employer/sign-up?plan=field",
+        es: "/employer/sign-up?plan=field",
+    },
+    "pricing.plan.enterprise.eyebrow": {
+        en: "FARM · MULTI-COUNTY OPERATORS",
+        es: "RANCHO · OPERADORES MULTI-CONDADO",
+    },
+    "pricing.plan.enterprise.name": {
+        en: "Farm",
+        es: "Rancho",
+    },
+    "pricing.plan.enterprise.tagline": {
+        en: "For multi-county operators and workforce boards with funder reporting obligations and large crew operations.",
+        es: "Para operadores multi-condado y juntas de fuerza laboral con obligaciones de informes a financiadores y grandes operaciones de cuadrillas.",
+    },
+    "pricing.plan.enterprise.price.monthly.standard_amount": {
+        en: "$499",
+        es: "$499",
+    },
+    "pricing.plan.enterprise.price.monthly.founder_amount": {
+        en: "$299",
+        es: "$299",
+    },
+    "pricing.plan.enterprise.price.monthly.unit": {
+        en: "/ mo",
+        es: "/ mes",
+    },
+    "pricing.plan.enterprise.price.yearly.standard_amount": {
+        en: "$4,990",
+        es: "$4,990",
+    },
+    "pricing.plan.enterprise.price.yearly.founder_amount": {
+        en: "$2,990",
+        es: "$2,990",
+    },
+    "pricing.plan.enterprise.price.yearly.unit": {
+        en: "/ yr",
+        es: "/ año",
+    },
+    "pricing.plan.enterprise.feature1": {
+        en: "Everything in Field",
+        es: "Todo lo incluido en Campo",
+    },
+    "pricing.plan.enterprise.feature2": {
+        en: "Multi-user accounts & roles",
+        es: "Cuentas multiusuario y roles",
+    },
+    "pricing.plan.enterprise.feature3": {
+        en: "Branded grant exports + PIRL compliance",
+        es: "Exportaciones de subvenciones con marca + cumplimiento PIRL",
+    },
+    "pricing.plan.enterprise.feature4": {
+        en: "Hire metrics dashboard (WIOA KPIs)",
+        es: "Panel de métricas de contratación (KPIs de WIOA)",
+    },
+    "pricing.plan.enterprise.feature5": {
+        en: "Tenant-isolated participant data",
+        es: "Datos de participantes aislados por inquilino",
+    },
+    "pricing.plan.enterprise.feature6": {
+        en: "Dedicated success contact + SLA",
+        es: "Contacto de éxito dedicado + SLA",
+    },
+    "pricing.plan.enterprise.cta.label_founder": {
+        en: "Talk to sales",
+        es: "Hablar con ventas",
+    },
+    "pricing.plan.enterprise.cta.label_standard": {
+        en: "Talk to sales",
+        es: "Hablar con ventas",
+    },
+    "pricing.plan.enterprise.cta.href": {
+        en: "mailto:sales@agconn.com?subject=Farm%20plan",
+        es: "mailto:sales@agconn.com?subject=Plan%20Rancho",
     },
     "testimonials.1.name": {
         en: "María Hernández",

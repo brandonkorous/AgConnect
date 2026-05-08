@@ -1,5 +1,38 @@
 # 05 — Subscription Billing: API
 
+## Public — landing
+
+### GET /v1/landing/founder-slots
+
+Public, unauthenticated. Drives the "X founder spots remaining" badge on the marketing pricing page and landing pricing card.
+
+```ts
+const FounderSlotsResponse = z.object({
+  remaining: z.number().int().min(0),
+  total:     z.number().int(),       // 50
+  active:    z.boolean(),            // true when remaining > 0
+});
+```
+
+Server logic:
+
+```ts
+const TOTAL = 50;
+const used = await db.employerProfile.count({
+  where: {
+    plan: { not: 'free' },
+    stripeSubId: { not: null },
+    planStatus: { in: ['active', 'trialing', 'past_due'] },
+  },
+});
+const remaining = Math.max(0, TOTAL - used);
+return ok(c, { remaining, total: TOTAL, active: remaining > 0 });
+```
+
+Caching: edge cache for 30s (`Cache-Control: public, max-age=30, s-maxage=30`). The badge tolerates short staleness; the price-ID picker (below) does not and recomputes live.
+
+Rate-limited like other public landing endpoints (60/min/IP).
+
 ## Employer-facing
 
 ### POST /v1/employer/billing/checkout
@@ -8,39 +41,46 @@ Create a Stripe Checkout Session for a new subscription.
 
 ```ts
 const CheckoutBody = z.object({
-  tier: z.enum(['pro', 'enterprise']),
+  tier:     z.enum(['pro', 'enterprise']),
   interval: z.enum(['monthly', 'yearly']),
+  locale:   z.enum(['en', 'es']).optional(),
 }).strict();
 ```
 
 Server logic:
 
-1. Verify employer is verified (`flcVerifiedAt != null`).
+1. Verify employer is FLC-verified (`flcVerifiedAt != null`).
 2. Verify employer doesn't already have an active subscription (would use Customer Portal instead).
 3. If `stripeCustomer` is null, create a Stripe Customer first; store ID.
-4. Resolve `priceId` from env based on `tier` + `interval`.
-5. Create Checkout Session with `success_url` and `cancel_url`.
-6. Return `{ url }`.
+4. **Resolve cohort live:** count active paid subscriptions; `cohort = (count < TOTAL_FOUNDER_SLOTS) ? 'founder' : 'standard'`.
+5. Resolve `priceId` from env using `priceIdFor(tier, interval, cohort)`.
+6. Create Checkout Session with `success_url` and `cancel_url`. Pass `cohort` in metadata so the webhook can dedupe state.
+7. Return `{ url }`.
 
 ```ts
+const cohort = await resolveFounderCohort(db);   // 'founder' | 'standard'
+const priceId = priceIdFor(body.tier, body.interval, cohort);
+
 const session = await stripe.checkout.sessions.create({
   customer: employer.stripeCustomer,
   mode: 'subscription',
   line_items: [{ price: priceId, quantity: 1 }],
   success_url: `${WEB_URL}/${locale}/employer/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-  cancel_url: `${WEB_URL}/${locale}/employer/billing`,
-  metadata: { employerId: employer.id, tier, interval },
-  automatic_tax: { enabled: true },
+  cancel_url:  `${WEB_URL}/${locale}/employer/billing`,
+  metadata:    { employerId: employer.id, tier: body.tier, interval: body.interval, cohort },
+  automatic_tax: { enabled: true },             // Stripe Tax handles CA SaaS sales tax
   allow_promotion_codes: true,
 });
 return c.json({ url: session.url });
 ```
 
+> Two checkouts initiated within the same second when only one slot remains will both see `remaining=1` and resolve `cohort='founder'`. Both Stripe Checkout sessions get the founder price ID. Stripe completes both subscriptions; the post-completion count reads 51. This is acceptable — the doc states "first 50 paying accounts" with the understanding that a small race at the boundary may admit one extra. If exactness ever matters, gate behind a Postgres advisory lock around the count + checkout creation.
+
 ### POST /v1/employer/billing/portal
 
 Create a Customer Portal session.
 
-Request body: empty.
+Request body: `{ locale?: 'en' | 'es' }`.
 
 Response: `{ url }`.
 
@@ -56,16 +96,16 @@ return c.json({ url: portal.url });
 
 Current billing state.
 
-Response:
-
 ```ts
 const BillingResponse = z.object({
-  plan: z.enum(['free', 'pro', 'enterprise']),
-  interval: z.enum(['monthly', 'yearly']).nullable(),
-  currentPeriodEnd: z.string().datetime().nullable(),
+  plan:              z.enum(['free', 'pro', 'enterprise']),
+  interval:          z.enum(['monthly', 'yearly']).nullable(),
+  currentPeriodEnd:  z.string().datetime().nullable(),
   cancelAtPeriodEnd: z.boolean(),
-  features: FeaturesSchema,
-  hasPaymentMethod: z.boolean(),
+  features:          FeaturesSchema,
+  hasPaymentMethod:  z.boolean(),
+  stripeConfigured:  z.boolean(),
+  priceCohort:       z.enum(['founder', 'standard']).nullable(),
 });
 ```
 
@@ -129,10 +169,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     where: { id: employerId },
     data: {
       stripeCustomer: session.customer as string,
-      stripeSubId: session.subscription as string,
+      stripeSubId:    session.subscription as string,
     },
   });
-  // Plan fields will be populated by customer.subscription.created shortly after.
+  // Plan fields (including priceCohort) populated by customer.subscription.created shortly after.
 }
 ```
 
@@ -143,26 +183,31 @@ async function handleSubUpdated(sub: Stripe.Subscription) {
   const employer = await db.employerProfile.findFirst({ where: { stripeCustomer: sub.customer as string } });
   if (!employer) return;
 
-  const tier = priceIdToTier(sub.items.data[0].price.id);          // pro | enterprise
-  const interval = priceIdToInterval(sub.items.data[0].price.id);   // monthly | yearly
+  const priceId = sub.items.data[0].price.id;
+  const tier     = priceIdToTier(priceId);       // pro | enterprise
+  const interval = priceIdToInterval(priceId);   // monthly | yearly
+  const cohort   = priceIdToCohort(priceId);     // founder | standard
   const isActive = ['active', 'trialing'].includes(sub.status);
 
   await db.employerProfile.update({
     where: { id: employer.id },
     data: {
-      plan: isActive ? tier : 'free',
-      planInterval: isActive ? interval : null,
-      planCurrentPeriodEnd: new Date(sub.current_period_end * 1000),
+      plan:                  isActive ? tier : 'free',
+      planInterval:          isActive ? interval : null,
+      planCurrentPeriodEnd:  new Date(sub.current_period_end * 1000),
       planCancelAtPeriodEnd: sub.cancel_at_period_end,
+      priceCohort:           isActive ? cohort : null,
+      planStatus:            sub.status,
     },
   });
 
-  // Email if newly active
   if (sub.status === 'active' && /* previous status was different */) {
-    await enqueueEmail({ ..., template: 'billing.subscription_started', vars: { plan: tier } });
+    await enqueueEmail({ ..., template: 'billing.subscription_started', vars: { plan: tier, cohort } });
   }
 }
 ```
+
+`priceIdToCohort(priceId)` is added to `@agconn/schemas` alongside the existing `priceIdToTier` / `priceIdToInterval` helpers and reads the same env vars.
 
 ### handleSubDeleted
 
@@ -173,12 +218,18 @@ async function handleSubDeleted(sub: Stripe.Subscription) {
 
   await db.employerProfile.update({
     where: { id: employer.id },
-    data: { plan: 'free', planInterval: null, stripeSubId: null, planCurrentPeriodEnd: null, planCancelAtPeriodEnd: false },
+    data: {
+      plan: 'free', planInterval: null, stripeSubId: null,
+      planCurrentPeriodEnd: null, planCancelAtPeriodEnd: false,
+      priceCohort: null, planStatus: 'canceled',
+    },
   });
 
   await enqueueEmail({ ..., template: 'billing.subscription_canceled' });
 }
 ```
+
+When `planStatus` flips to `canceled`, the founder-slot counter naturally re-includes the freed slot on its next read. No counter-bookkeeping needed.
 
 ### handlePaymentFailed
 
@@ -209,7 +260,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 ## Plan enforcement helper
 
 ```ts
-// packages/shared-types/src/plan-check.ts
+// packages/schemas/src/plans.ts
 export function canUseFeature(plan: EmployerPlanTier, feature: keyof Features): boolean {
   return PLAN_FEATURES[plan][feature] === true || PLAN_FEATURES[plan][feature] === Infinity;
 }
@@ -230,5 +281,6 @@ Used in:
 |---|---|---|
 | `not_verified` | 403 | checkout before FLC verification |
 | `already_subscribed` | 409 | checkout while active subscription exists; redirect to portal |
+| `stripe_unavailable` | 503 | Stripe not configured (no secret key, no price IDs for cohort) |
 | `invalid_signature` | 401 | Stripe webhook signature failed |
 | `webhook_replay` | 200 | duplicate event id |

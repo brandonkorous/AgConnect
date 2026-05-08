@@ -45,8 +45,8 @@ export const hmacKeys = new HmacKeyStore();
 
 let initialized = false;
 
-// Loads HMAC keys from env. Production wires Azure Key Vault → CSI driver →
-// pod env, so this single env-loaded path covers dev + prod.
+// Loads HMAC keys from env. Production flow: GitHub Actions secret → GKE
+// Secret → pod env, so this single env-loaded path covers dev + prod.
 //
 // Format:
 //   AUDIT_HMAC_KEY            — current key, base64-encoded (≥32 bytes)

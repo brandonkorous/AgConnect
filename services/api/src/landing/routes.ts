@@ -9,6 +9,7 @@ import {
 import { featuredJobsRoutes } from './featured-jobs';
 import { featuredTrainingRoutes } from './featured-training';
 import { impactRoutes } from './impact';
+import { founderSlotsRoutes } from './founder-slots';
 import { rateLimit } from '../middleware/rateLimit';
 import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
 
@@ -20,6 +21,7 @@ export const landingRoutes = new Hono<{ Variables: TenantVars }>();
 landingRoutes.route('/featured-jobs', featuredJobsRoutes);
 landingRoutes.route('/featured-training', featuredTrainingRoutes);
 landingRoutes.route('/impact', impactRoutes);
+landingRoutes.route('/founder-slots', founderSlotsRoutes);
 
 landingRoutes.use('*', publicTenantMiddleware('landing'));
 

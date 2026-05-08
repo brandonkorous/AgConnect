@@ -11,6 +11,7 @@ import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../mi
 import type { AuditCtxVars } from '../../middleware/audit';
 import { isVerified } from '../shared';
 import { getStripe, webUrl } from './stripe';
+import { resolveCheckoutCohort } from './founder-slots';
 
 // audit-required:exempt — checkout creates a Stripe customer + updates the
 // employer profile. The state-of-record audit row lands in billing_events
@@ -43,9 +44,11 @@ employerBillingRoutes.get('/', async (c) => {
       multiUser: features.multiUser,
       customCounties: features.customCounties,
       brandedReports: features.brandedReports,
+      applicantSms: features.applicantSms,
     },
     hasPaymentMethod: Boolean(profile.stripeSubId),
     stripeConfigured: stripe !== null,
+    priceCohort: null,
   });
 });
 
@@ -82,7 +85,9 @@ employerBillingRoutes.post('/checkout', validate('json', CheckoutBody), async (c
   if (!isVerified(profile)) return err(c, 403, 'not_verified');
   if (profile.stripeSubId) return err(c, 409, 'conflict', 'already_subscribed');
 
-  if (!hasPriceId(body.tier, body.interval)) {
+  const cohort = await resolveCheckoutCohort();
+
+  if (!hasPriceId(body.tier, body.interval, cohort)) {
     return err(c, 503, 'stripe_unavailable', 'price_not_configured');
   }
 
@@ -104,10 +109,10 @@ employerBillingRoutes.post('/checkout', validate('json', CheckoutBody), async (c
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
-    line_items: [{ price: priceIdFor(body.tier, body.interval), quantity: 1 }],
+    line_items: [{ price: priceIdFor(body.tier, body.interval, cohort), quantity: 1 }],
     success_url: `${webUrl()}/${locale}/employer/billing/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${webUrl()}/${locale}/employer/billing`,
-    metadata: { employerId: profile.id, tier: body.tier, interval: body.interval },
+    metadata: { employerId: profile.id, tier: body.tier, interval: body.interval, cohort },
     automatic_tax: { enabled: true },
     allow_promotion_codes: true,
   });

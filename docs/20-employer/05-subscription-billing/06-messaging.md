@@ -2,6 +2,8 @@
 
 All emails. No SMS for billing.
 
+`{plan}` resolves to the brand name (Seed / Field / Farm in EN; Semilla / Campo / Rancho in ES) via `planBrandName(tier, locale)`.
+
 ## billing.subscription_started
 
 Sent on `customer.subscription.created` (and the first transition to active).
@@ -13,6 +15,7 @@ Sent on `customer.subscription.created` (and the first transition to active).
 Body:
 
 - "You're now on the {plan} plan."
+- If `cohort === 'founder'`: "You're locked at founder pricing — your renewal stays at ${price} as long as you keep your subscription."
 - Feature highlights for the plan.
 - Link to dashboard.
 - Receipt info: "Your first invoice will arrive separately."
@@ -50,7 +53,8 @@ Body:
 - "We couldn't charge ${amount} on your card."
 - "Stripe will try again over the next 3 days."
 - "Update your card here: [link to portal]" — to prevent further failures.
-- Mention: "If we can't collect, your account will move to Free and existing postings will stay live until end_date."
+- Mention: "If we can't collect, your account will move to Seed and existing postings will stay live until end_date."
+- If founder: "Your founder pricing is preserved if your card is updated before the subscription cancels."
 
 Idempotency key: `billing-failed-{stripeInvoiceId}`.
 
@@ -75,6 +79,7 @@ Body covers:
 - Confirmation
 - What happens to active postings (stay live until end_date)
 - "Reactivate any time" link to plans page
+- If `cohort === 'founder'`: "Your founder slot is being released. If you re-subscribe later and founder pricing is still available, you can claim a new slot. If founder pricing has ended, standard pricing applies."
 - Feedback ask: "Why did you cancel?" with a one-click feedback form
 
 Idempotency key: `billing-canceled-{stripeSubId}`.
