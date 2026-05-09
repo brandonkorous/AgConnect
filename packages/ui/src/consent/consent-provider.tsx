@@ -12,10 +12,17 @@ import {
 type ConsentApi = {
   choices: ConsentChoices;
   hasDecided: boolean;
+  gpcActive: boolean;
   setChoices: (next: ConsentChoices) => void;
   acceptAll: () => void;
   rejectNonEssential: () => void;
   reset: () => void;
+};
+
+const detectGpc = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  type GpcNav = Navigator & { globalPrivacyControl?: boolean };
+  return Boolean((window.navigator as GpcNav).globalPrivacyControl);
 };
 
 const ConsentContext = createContext<ConsentApi | null>(null);
@@ -49,9 +56,11 @@ const writeRecord = (choices: ConsentChoices): ConsentRecord => {
 export function ConsentProvider({ children }: { children: React.ReactNode }) {
   const [record, setRecord] = useState<ConsentRecord | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [gpcActive, setGpcActive] = useState(false);
 
   useEffect(() => {
     setRecord(readRecord());
+    setGpcActive(detectGpc());
     setHydrated(true);
     const onChange = (e: Event) => {
       const detail = (e as CustomEvent<ConsentRecord>).detail;
@@ -66,9 +75,7 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const acceptAll = useCallback(() => {
-    setRecord(
-      writeRecord({ essential: true, functional: true, analytics: true, marketing: true }),
-    );
+    setRecord(writeRecord({ essential: true, functional: true, analytics: true }));
   }, []);
 
   const rejectNonEssential = useCallback(() => {
@@ -84,15 +91,22 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const api = useMemo<ConsentApi>(
-    () => ({
-      choices: record?.choices ?? defaultDenyChoices,
-      hasDecided: hydrated && record !== null,
-      setChoices,
-      acceptAll,
-      rejectNonEssential,
-      reset,
-    }),
-    [record, hydrated, setChoices, acceptAll, rejectNonEssential, reset],
+    () => {
+      const stored = record?.choices ?? defaultDenyChoices;
+      const choices: ConsentChoices = gpcActive
+        ? { ...stored, analytics: false }
+        : stored;
+      return {
+        choices,
+        hasDecided: hydrated && (record !== null || gpcActive),
+        gpcActive,
+        setChoices,
+        acceptAll,
+        rejectNonEssential,
+        reset,
+      };
+    },
+    [record, hydrated, gpcActive, setChoices, acceptAll, rejectNonEssential, reset],
   );
 
   return <ConsentContext.Provider value={api}>{children}</ConsentContext.Provider>;

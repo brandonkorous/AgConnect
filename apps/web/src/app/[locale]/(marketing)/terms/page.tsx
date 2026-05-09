@@ -10,7 +10,19 @@ type RouteProps = { params: Promise<{ locale: Locale }> };
 export const dynamicParams = false;
 export const revalidate = 86400;
 
-const SECTION_IDS = ['eligibility', 'account', 'conduct', 'payment', 'liability', 'disputes'] as const;
+const SECTION_IDS = [
+    'eligibility',
+    'account',
+    'conduct',
+    'content',
+    'payment',
+    'ip',
+    'termination',
+    'liability',
+    'disputes',
+    'changes',
+    'general',
+] as const;
 
 export async function generateMetadata({ params }: RouteProps) {
     const { locale } = await params;
@@ -45,7 +57,7 @@ export default async function TermsPage({ params }: RouteProps) {
                 intro={t('intro')}
                 sections={sections}
                 lastUpdatedLabel={legalT('last_updated')}
-                lastUpdatedDate="2026-05-01"
+                lastUpdatedDate="2026-05-09"
                 placeholderNotice={legalT('placeholder_notice')}
                 contactNote={legalT('contact')}
                 sectionsLabel={legalT('sections_label')}

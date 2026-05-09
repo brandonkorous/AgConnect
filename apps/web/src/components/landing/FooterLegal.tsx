@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from 'next-intl';
+import { CookiePreferencesLink } from './CookiePreferencesLink';
 
 export function FooterLegal() {
     const t = useTranslations('landing.legal');
@@ -7,6 +8,7 @@ export function FooterLegal() {
     const links = [
         { key: 'privacy_en', href: `/en/privacy` },
         { key: 'terms_en', href: `/en/terms` },
+        { key: 'subprocessors', href: `/${locale}/subprocessors` },
         { key: 'accessibility', href: `/${locale}/accessibility` },
         { key: 'privacy_es', href: `/es/privacy` },
         { key: 'terms_es', href: `/es/terms` },
@@ -38,6 +40,9 @@ export function FooterLegal() {
                             </a>
                         </li>
                     ))}
+                    <li>
+                        <CookiePreferencesLink label={t('cookie_preferences')} />
+                    </li>
                 </ul>
             </div>
         </div>

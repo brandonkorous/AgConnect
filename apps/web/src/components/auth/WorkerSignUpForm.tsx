@@ -403,6 +403,13 @@ export function WorkerSignUpForm({ locale }: Props) {
         </Link>
         .
       </p>
+      <p className="text-base-content/45 mt-1 text-center text-[11px] leading-relaxed">
+        {t('california_notice_prefix')}{' '}
+        <Link href={`/${locale}/privacy#ccpa` as Route} className="hover:underline">
+          {t('california_notice_link')}
+        </Link>
+        .
+      </p>
     </div>
   );
 }

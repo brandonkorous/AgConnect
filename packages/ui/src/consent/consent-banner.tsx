@@ -15,7 +15,6 @@ export type ConsentBannerCopy = {
     essential: { label: string; description: string };
     functional: { label: string; description: string };
     analytics: { label: string; description: string };
-    marketing: { label: string; description: string };
   };
   privacyLinkLabel: string;
   privacyLinkHref: string;
@@ -110,12 +109,6 @@ export function ConsentBanner({ copy }: { copy: ConsentBannerCopy }) {
                 description={copy.category.analytics.description}
                 checked={pending.analytics}
                 onChange={(v) => setPending((p) => ({ ...p, analytics: v }))}
-              />
-              <CategoryRow
-                label={copy.category.marketing.label}
-                description={copy.category.marketing.description}
-                checked={pending.marketing}
-                onChange={(v) => setPending((p) => ({ ...p, marketing: v }))}
               />
             </div>
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">

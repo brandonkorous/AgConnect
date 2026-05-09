@@ -81,14 +81,6 @@ export const shell: TranslationBundle = {
         en: "Functional",
         es: "Funcionales",
     },
-    "consent.category.marketing.description": {
-        en: "Lets us measure the effect of partner outreach. Off by default.",
-        es: "Nos permite medir el efecto del trabajo con socios. Apagado por defecto.",
-    },
-    "consent.category.marketing.label": {
-        en: "Marketing",
-        es: "Marketing",
-    },
     "consent.back": {
         en: "Back",
         es: "Atrás",

@@ -338,6 +338,14 @@ export const auth: TranslationBundle = {
         en: "Privacy policy",
         es: "Política de privacidad",
     },
+    "sign_up_worker.california_notice_prefix": {
+        en: "California residents:",
+        es: "Residentes de California:",
+    },
+    "sign_up_worker.california_notice_link": {
+        en: "see our Notice at Collection",
+        es: "consulta nuestro Aviso al momento de la recopilación",
+    },
     "sign_up_worker.hire_instead": {
         en: "Hiring crews?",
         es: "¿Contratando cuadrillas?",
@@ -447,5 +455,13 @@ export const auth: TranslationBundle = {
     "sign_up_employer.privacy_link": {
         en: "Privacy policy",
         es: "Política de privacidad",
+    },
+    "sign_up_employer.california_notice_prefix": {
+        en: "California residents:",
+        es: "Residentes de California:",
+    },
+    "sign_up_employer.california_notice_link": {
+        en: "see our Notice at Collection",
+        es: "consulta nuestro Aviso al momento de la recopilación",
     },
 };

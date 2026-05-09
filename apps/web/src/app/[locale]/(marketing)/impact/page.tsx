@@ -1,7 +1,17 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faCircleCheck, faScaleBalanced, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowRight,
+    faCircleCheck,
+    faGavel,
+    faLockOpen,
+    faMicrochip,
+    faScaleBalanced,
+    faServer,
+    faShieldHalved,
+    faUserShield,
+} from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { impactMetadata } from '@/lib/seo/metadata';
@@ -55,11 +65,12 @@ function formatTimestamp(iso: string | undefined, locale: Locale): string {
 
 export default async function ImpactPage({ params }: RouteProps) {
     const { locale } = await params;
-    const [pageT, tileT, sourceT, methodT, impact] = await Promise.all([
+    const [pageT, tileT, sourceT, methodT, transparencyT, impact] = await Promise.all([
         getTranslations({ locale, namespace: 'marketing.impact_page' }),
         getTranslations({ locale, namespace: 'landing.impact.tile' }),
         getTranslations({ locale, namespace: 'landing.impact' }),
         getTranslations({ locale, namespace: 'marketing.impact_page.methodology' }),
+        getTranslations({ locale, namespace: 'marketing.impact_page.transparency' }),
         getImpact(),
     ]);
 
@@ -70,6 +81,13 @@ export default async function ImpactPage({ params }: RouteProps) {
         { id: 'count', icon: faCircleCheck },
         { id: 'round', icon: faScaleBalanced },
         { id: 'suppress', icon: faShieldHalved },
+    ] as const;
+    const transparencyItems = [
+        { id: 'requests', icon: faGavel },
+        { id: 'security', icon: faLockOpen },
+        { id: 'subprocessors', icon: faServer },
+        { id: 'actions', icon: faUserShield },
+        { id: 'ai', icon: faMicrochip },
     ] as const;
 
     return (
@@ -185,6 +203,50 @@ export default async function ImpactPage({ params }: RouteProps) {
                             <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
                         </Link>
                     </div>
+                </div>
+            </section>
+
+            <section id="transparency" className="bg-base-200 w-full scroll-mt-24">
+                <div className="container mx-auto flex flex-col gap-12 px-5 py-20 md:px-8 md:py-24 lg:px-20 lg:py-28">
+                    <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] lg:items-end lg:gap-20">
+                        <div className="flex flex-col gap-5">
+                            <EyebrowLabel tone="soil" withRule>
+                                {transparencyT('eyebrow')}
+                            </EyebrowLabel>
+                            <h2 className="text-base-content font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">
+                                {transparencyT('headline')}
+                            </h2>
+                        </div>
+                        <p className="text-base-content max-w-prose font-sans text-base leading-relaxed">
+                            {transparencyT('intro')}
+                        </p>
+                    </div>
+
+                    <ul className="flex flex-col gap-px bg-secondary/15">
+                        {transparencyItems.map((item) => (
+                            <li
+                                key={item.id}
+                                className="bg-base-100 grid grid-cols-1 gap-4 p-7 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-start md:gap-8 md:p-9"
+                            >
+                                <FontAwesomeIcon icon={item.icon} className="text-primary text-2xl" />
+                                <div className="flex flex-col gap-2">
+                                    <h3 className="text-base-content font-serif text-xl font-semibold leading-tight tracking-tight">
+                                        {transparencyT(`${item.id}.title`)}
+                                    </h3>
+                                    <p className="text-base-content/80 font-sans text-sm leading-relaxed">
+                                        {transparencyT(`${item.id}.body`)}
+                                    </p>
+                                </div>
+                                <span className="text-accent font-mono text-xs font-bold uppercase tracking-[0.22em] tabular-nums md:self-center md:text-right">
+                                    {transparencyT(`${item.id}.value`)}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <p className="text-secondary font-sans text-sm leading-relaxed">
+                        {transparencyT('contact')}
+                    </p>
                 </div>
             </section>
         </>

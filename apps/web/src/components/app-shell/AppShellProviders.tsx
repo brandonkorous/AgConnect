@@ -50,10 +50,6 @@ export function AppShellProviders({
         label: t('consent.category.analytics.label'),
         description: t('consent.category.analytics.description'),
       },
-      marketing: {
-        label: t('consent.category.marketing.label'),
-        description: t('consent.category.marketing.description'),
-      },
     },
   };
 

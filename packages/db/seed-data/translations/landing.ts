@@ -1053,6 +1053,14 @@ export const landing: TranslationBundle = {
         en: "Términos",
         es: "Términos",
     },
+    "legal.cookie_preferences": {
+        en: "Cookie preferences",
+        es: "Preferencias de cookies",
+    },
+    "legal.subprocessors": {
+        en: "Subprocessors",
+        es: "Subprocesadores",
+    },
     "nav.cta_primary": {
         en: "Find work",
         es: "Encontrar trabajo",
