@@ -51,6 +51,16 @@ const NULLABLE_TENANT_MODELS = new Set([
   // strings shown to every tenant); rows with tenantId set are per-tenant
   // overrides. Uniqueness is enforced via partial indexes in SQL.
   'TranslationKey',
+  // Landing waitlist signups are pre-account (no owning tenant). Anonymous
+  // role inserts with tenant_id=NULL; the partial unique index
+  // waitlist_email_anonymous_key keeps duplicates out. See migration
+  // 20260504200000_three_bucket_tenancy and 20260509100000_anonymous_landing.
+  'Waitlist',
+  // email_log rows for waitlist confirm/welcome emails carry NULL tenant_id
+  // because the parent waitlist row is platform-level. Employer/tenant-scoped
+  // emails still set tenant_id; the email_log_service policy uses NULLIF to
+  // permit both shapes. See migration 20260509100000_anonymous_landing.
+  'EmailLog',
 ]);
 
 const text = readFileSync(SCHEMA, 'utf8');
