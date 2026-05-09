@@ -5,6 +5,10 @@
 // wages, schedule, working days, site, pickup, deadline, description, working
 // hours. Title + skills count too. Photo / contact / screening Q changes are
 // logged but DON'T trigger notifications by default.
+//
+// audit-required:exempt — helper that mutates inside the caller's transaction;
+// the calling route (employer/jobs/routes.ts) writes audit.log({ action:
+// 'job.posting.edited' }) on the return value.
 
 import type { Tx, Prisma } from '@agconn/db';
 import { AppStatus, JobEditEventKind } from '@agconn/db';

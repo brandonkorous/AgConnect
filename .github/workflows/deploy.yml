@@ -61,9 +61,16 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ matrix.target.image }}:latest
           cache-from: type=gha,scope=${{ matrix.target.name }}
           cache-to: type=gha,scope=${{ matrix.target.name }},mode=max
+          # NEXT_PUBLIC_* are inlined into the client bundle by Next.js at build
+          # time, so they have to live here rather than in the runtime K8s
+          # secret. Non-web Dockerfiles ignore unrecognized ARGs (warn-only).
           build-args: |
             NODE_VERSION=22.12.0
             PNPM_VERSION=10.9.0
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+            NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+            NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
           secrets: |
             fontawesome_token=${{ secrets.FONTAWESOME_TOKEN }}
 
@@ -129,6 +136,10 @@ jobs:
           STRIPE_PRICE_PRO_YEARLY:               ${{ secrets.STRIPE_PRICE_PRO_YEARLY }}
           STRIPE_PRICE_ENT_MONTHLY:              ${{ secrets.STRIPE_PRICE_ENT_MONTHLY }}
           STRIPE_PRICE_ENT_YEARLY:               ${{ secrets.STRIPE_PRICE_ENT_YEARLY }}
+          STRIPE_PRICE_PRO_FOUNDER_MONTHLY:      ${{ secrets.STRIPE_PRICE_PRO_FOUNDER_MONTHLY }}
+          STRIPE_PRICE_PRO_FOUNDER_YEARLY:       ${{ secrets.STRIPE_PRICE_PRO_FOUNDER_YEARLY }}
+          STRIPE_PRICE_ENT_FOUNDER_MONTHLY:      ${{ secrets.STRIPE_PRICE_ENT_FOUNDER_MONTHLY }}
+          STRIPE_PRICE_ENT_FOUNDER_YEARLY:       ${{ secrets.STRIPE_PRICE_ENT_FOUNDER_YEARLY }}
           TWILIO_ACCOUNT_SID:                    ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN:                     ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_MESSAGING_SERVICE_SID:          ${{ secrets.TWILIO_MESSAGING_SERVICE_SID }}
@@ -163,6 +174,10 @@ jobs:
             --from-literal=STRIPE_PRICE_PRO_YEARLY="$STRIPE_PRICE_PRO_YEARLY" \
             --from-literal=STRIPE_PRICE_ENT_MONTHLY="$STRIPE_PRICE_ENT_MONTHLY" \
             --from-literal=STRIPE_PRICE_ENT_YEARLY="$STRIPE_PRICE_ENT_YEARLY" \
+            --from-literal=STRIPE_PRICE_PRO_FOUNDER_MONTHLY="$STRIPE_PRICE_PRO_FOUNDER_MONTHLY" \
+            --from-literal=STRIPE_PRICE_PRO_FOUNDER_YEARLY="$STRIPE_PRICE_PRO_FOUNDER_YEARLY" \
+            --from-literal=STRIPE_PRICE_ENT_FOUNDER_MONTHLY="$STRIPE_PRICE_ENT_FOUNDER_MONTHLY" \
+            --from-literal=STRIPE_PRICE_ENT_FOUNDER_YEARLY="$STRIPE_PRICE_ENT_FOUNDER_YEARLY" \
             --from-literal=TWILIO_ACCOUNT_SID="$TWILIO_ACCOUNT_SID" \
             --from-literal=TWILIO_AUTH_TOKEN="$TWILIO_AUTH_TOKEN" \
             --from-literal=TWILIO_MESSAGING_SERVICE_SID="$TWILIO_MESSAGING_SERVICE_SID" \

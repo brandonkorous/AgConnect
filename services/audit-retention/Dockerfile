@@ -7,7 +7,7 @@ ARG PNPM_VERSION=10.9.0
 FROM node:${NODE_VERSION}-bookworm-slim AS deps
 ARG PNPM_VERSION
 WORKDIR /repo
-RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY services/audit-retention/package.json services/audit-retention/
@@ -24,7 +24,7 @@ RUN --mount=type=secret,id=fontawesome_token,required=true \
 FROM node:${NODE_VERSION}-bookworm-slim AS build
 ARG PNPM_VERSION
 WORKDIR /repo
-RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 COPY --from=deps /repo /repo
 COPY . .
