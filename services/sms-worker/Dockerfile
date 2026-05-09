@@ -18,8 +18,8 @@ COPY .npmrc ./
 
 RUN --mount=type=secret,id=fontawesome_token,required=true \
     --mount=type=cache,id=pnpm,target=/pnpm/store \
-    FONTAWESOME_TOKEN="$(cat /run/secrets/fontawesome_token)" \
-    pnpm config set store-dir /pnpm/store \
+    export FONTAWESOME_TOKEN="$(cat /run/secrets/fontawesome_token)" \
+ && pnpm config set store-dir /pnpm/store \
  && pnpm install --frozen-lockfile
 
 FROM node:${NODE_VERSION}-bookworm-slim AS build
