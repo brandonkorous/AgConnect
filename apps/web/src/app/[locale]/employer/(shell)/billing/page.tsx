@@ -3,7 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getEmployerProfile, getBilling } from '@/lib/api/employer';
-import { PLAN_FEATURES, PLAN_DISPLAY_PRICE, type EmployerPlanTier } from '@agconn/schemas';
+import { getFounderSlots } from '@/lib/api/landing';
+import { PLAN_FEATURES, PLAN_DISPLAY_PRICE, type EmployerPlanTier, type PriceCohort } from '@agconn/schemas';
 import { CheckoutButton } from '@/components/employer/CheckoutButton';
 import { PlanCheckoutControls } from '@/components/employer/BillingIntervalSwitch';
 import { DarkHeroCard } from '@/components/employer/primitives';
@@ -19,9 +20,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BillingPage({ params }: Props) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.billing' });
-    const [profile, billing] = await Promise.all([getEmployerProfile(), getBilling()]);
+    const [profile, billing, founderSlots] = await Promise.all([
+        getEmployerProfile(),
+        getBilling(),
+        getFounderSlots(),
+    ]);
     const plan: EmployerPlanTier = profile?.plan ?? 'free';
     const interval = profile?.planInterval;
+    // Subscribed employers stay on whatever cohort they checked out at — once
+    // you're on a Stripe price ID, the founder counter changing doesn't move you.
+    // Free employers see what they'd pay if they upgraded today.
+    const cohort: PriceCohort =
+        billing?.priceCohort ?? (founderSlots.active ? 'founder' : 'standard');
     const renewsLabel = profile?.planCurrentPeriodEnd
         ? profile.planCancelAtPeriodEnd
             ? t('ends_on', {
@@ -120,6 +130,7 @@ export default async function BillingPage({ params }: Props) {
                         key={tier}
                         tier={tier}
                         current={plan}
+                        cohort={cohort}
                         t={t}
                         stripeConfigured={billing?.stripeConfigured ?? false}
                     />
@@ -138,11 +149,13 @@ export default async function BillingPage({ params }: Props) {
 function PlanTierCard({
     tier,
     current,
+    cohort,
     t,
     stripeConfigured,
 }: {
     tier: EmployerPlanTier;
     current: EmployerPlanTier;
+    cohort: PriceCohort;
     t: Awaited<ReturnType<typeof getTranslations>>;
     stripeConfigured: boolean;
 }) {
@@ -162,7 +175,7 @@ function PlanTierCard({
     if (features.customCounties) featureLines.push(t('feature.custom_counties'));
     if (features.brandedReports) featureLines.push(t('feature.branded_reports'));
 
-    const price = PLAN_DISPLAY_PRICE[tier];
+    const price = PLAN_DISPLAY_PRICE[tier][cohort];
     const priceMonthly =
         price.monthly !== null ? `$${price.monthly}` : t('feature.active_postings_unlimited');
     const isEnterprise = tier === 'enterprise';
@@ -221,6 +234,7 @@ function PlanTierCard({
                     <div className="mt-5">
                         <PlanCheckoutControls
                             tier={tier as 'pro' | 'enterprise'}
+                            cohort={cohort}
                             disabled={!stripeConfigured}
                         />
                     </div>

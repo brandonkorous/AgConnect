@@ -2,18 +2,19 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { PLAN_DISPLAY_PRICE } from '@agconn/schemas';
+import { PLAN_DISPLAY_PRICE, type PriceCohort } from '@agconn/schemas';
 import { CheckoutButton } from './CheckoutButton';
 
 type Props = {
   tier: 'pro' | 'enterprise';
+  cohort: PriceCohort;
   disabled?: boolean;
 };
 
-export function PlanCheckoutControls({ tier, disabled }: Props) {
+export function PlanCheckoutControls({ tier, cohort, disabled }: Props) {
   const t = useTranslations('employer.billing');
   const [interval, setInterval] = useState<'monthly' | 'yearly'>('monthly');
-  const price = PLAN_DISPLAY_PRICE[tier];
+  const price = PLAN_DISPLAY_PRICE[tier][cohort];
   const monthly = price.monthly;
   const yearly = price.yearly;
 
