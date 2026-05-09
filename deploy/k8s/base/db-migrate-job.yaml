@@ -36,7 +36,7 @@ spec:
               # agconn-env secret, then re-seed translations + lookup tables.
               # Seed scripts run via npx tsx (devDep stripped from prod image)
               # — first run downloads tsx once, npx caches after.
-              cd /app/node_modules/@agconn/db
+              cd /app/packages/db
               npx --yes prisma migrate deploy --schema prisma/schema.prisma
               npx --yes tsx scripts/seed-translations.ts
               npx --yes tsx scripts/seed-lookups.ts
