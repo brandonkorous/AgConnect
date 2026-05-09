@@ -16,6 +16,13 @@ resource "google_artifact_registry_repository_iam_member" "deploy_writer" {
   member     = "serviceAccount:${google_service_account.deploy.email}"
 }
 
-# Node SA already gets `artifactregistry.reader` via the bundled
-# `roles/container.defaultNodeServiceAccount` role — no extra binding needed
-# for pulls.
+# GKE nodes pull images via the node SA. `container.defaultNodeServiceAccount`
+# (granted in cluster.tf) covers logging/monitoring/autoscaling but does NOT
+# include AR read, so we bind it explicitly here.
+resource "google_artifact_registry_repository_iam_member" "node_reader" {
+  project    = var.project_id
+  location   = google_artifact_registry_repository.containers.location
+  repository = google_artifact_registry_repository.containers.name
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.gke_node.email}"
+}
