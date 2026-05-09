@@ -22,22 +22,22 @@ variable "cluster_name" {
   default     = "agconn-prod"
 }
 
-variable "node_machine_type" {
-  description = "Machine type for the single node pool. e2-medium = 2 vCPU / 4 GiB, ~$24/mo idle."
-  type        = string
-  default     = "e2-medium"
-}
-
-variable "node_min_count" {
-  description = "Cluster autoscaler minimum nodes. With AgConn + ingress + cert-manager + GKE system pods, 2 × e2-medium is the realistic floor (~940m allocatable each, demand ~1.2 vCPU)."
+variable "app_node_min_count" {
+  description = "Autoscaler minimum nodes in the app pool (web + api). 1 covers pre-launch; raise to 2 for zero-downtime rolling deploys."
   type        = number
-  default     = 2
+  default     = 1
 }
 
-variable "node_max_count" {
-  description = "Cluster autoscaler maximum nodes."
+variable "app_node_max_count" {
+  description = "Autoscaler maximum nodes in the app pool."
   type        = number
   default     = 4
+}
+
+variable "worker_node_max_count" {
+  description = "Autoscaler maximum spot nodes in the worker pool. Min is always 0 (scale-to-zero when no workers are pending)."
+  type        = number
+  default     = 2
 }
 
 variable "domain" {

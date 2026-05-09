@@ -6,16 +6,17 @@ export const QUEUE_NAMES = {
   employer: 'email.employer',
 } as const;
 
+// Waitlist signups are platform-level (no owning tenant). The job runs
+// under role='service' without a pinned app.tenant_id; the relaxed
+// waitlist_service / email_log_service policies cover NULL-tenant rows.
 export type WaitlistConfirmJob = {
   waitlistId: string;
-  tenantId: string;
   email: string;
   locale: 'en' | 'es';
 };
 
 export type WaitlistWelcomeJob = {
   waitlistId: string;
-  tenantId: string;
   email: string;
   locale: 'en' | 'es';
 };

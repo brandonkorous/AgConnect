@@ -37,18 +37,25 @@ function buildOneClickUnsubscribeUrl(token: string): string {
 }
 
 /**
- * Wraps a unit of email work in a tenant-scoped Postgres transaction.
- * RLS policies require `app.role = 'service'` and `app.tenant_id = <tenantId>`
- * for the worker's reads/writes to succeed.
+ * Wraps a unit of email work in a service-role Postgres transaction.
+ * Pass `tenantId` to scope RLS to a specific tenant (employer emails);
+ * pass `null` for platform-level work (waitlist confirm/welcome) — the
+ * `*_service` policies on waitlist + email_log treat unset app.tenant_id
+ * as NULL via NULLIF and permit NULL-tenant rows.
  */
-async function withTenantTx<T>(tenantId: string, fn: (db: Tx) => Promise<T>): Promise<T> {
-  if (!UUID_RE.test(tenantId)) {
+async function withTenantTx<T>(
+  tenantId: string | null,
+  fn: (db: Tx) => Promise<T>,
+): Promise<T> {
+  if (tenantId !== null && !UUID_RE.test(tenantId)) {
     throw new Error(`worker received invalid tenantId: ${tenantId}`);
   }
   return prisma.$transaction(
     async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
-      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+      if (tenantId !== null) {
+        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+      }
       return fn(tx);
     },
     { timeout: 60_000, maxWait: 10_000 },
@@ -56,9 +63,9 @@ async function withTenantTx<T>(tenantId: string, fn: (db: Tx) => Promise<T>): Pr
 }
 
 async function handleWaitlistConfirm(job: Job<WaitlistConfirmJob>): Promise<void> {
-  const { waitlistId, tenantId, email, locale } = job.data;
+  const { waitlistId, email, locale } = job.data;
 
-  await withTenantTx(tenantId, async (db) => {
+  await withTenantTx(null, async (db) => {
     const row = await db.waitlist.findUnique({ where: { id: waitlistId } });
     if (!row || row.confirmedAt || row.unsubscribedAt) {
       return;
@@ -76,7 +83,6 @@ async function handleWaitlistConfirm(job: Job<WaitlistConfirmJob>): Promise<void
       unsubscribeUrl: buildUnsubscribeUrl(unsubToken, locale),
       oneClickUnsubscribeUrl: buildOneClickUnsubscribeUrl(unsubToken),
       waitlistId,
-      tenantId,
     });
   });
 }
@@ -122,9 +128,9 @@ async function handleEmployerEmail(job: Job<EmployerEmailJob>): Promise<void> {
 }
 
 async function handleWaitlistWelcome(job: Job<WaitlistWelcomeJob>): Promise<void> {
-  const { waitlistId, tenantId, email, locale } = job.data;
+  const { waitlistId, email, locale } = job.data;
 
-  await withTenantTx(tenantId, async (db) => {
+  await withTenantTx(null, async (db) => {
     const row = await db.waitlist.findUnique({ where: { id: waitlistId } });
     if (!row || !row.confirmedAt || row.welcomedAt || row.unsubscribedAt) {
       return;
@@ -139,7 +145,6 @@ async function handleWaitlistWelcome(job: Job<WaitlistWelcomeJob>): Promise<void
       unsubscribeUrl: buildUnsubscribeUrl(unsubToken, locale),
       oneClickUnsubscribeUrl: buildOneClickUnsubscribeUrl(unsubToken),
       waitlistId,
-      tenantId,
     });
 
     await db.waitlist.update({

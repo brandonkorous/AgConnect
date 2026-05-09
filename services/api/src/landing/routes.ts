@@ -11,21 +11,31 @@ import { featuredTrainingRoutes } from './featured-training.js';
 import { impactRoutes } from './impact.js';
 import { founderSlotsRoutes } from './founder-slots.js';
 import { rateLimit } from '../middleware/rateLimit.js';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import {
+  serviceNoTenantMiddleware,
+  type ServiceNoTenantVars,
+} from '../middleware/tenantContext.js';
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
-export const landingRoutes = new Hono<{ Variables: TenantVars }>();
+export const landingRoutes = new Hono();
 
 landingRoutes.route('/featured-jobs', featuredJobsRoutes);
 landingRoutes.route('/featured-training', featuredTrainingRoutes);
 landingRoutes.route('/impact', impactRoutes);
 landingRoutes.route('/founder-slots', founderSlotsRoutes);
 
-landingRoutes.use('*', publicTenantMiddleware('landing'));
+// Waitlist signup, confirm, and unsubscribe all run under the service role
+// without a pinned tenant. Anonymous role only grants INSERT on waitlist —
+// addToWaitlist needs SELECT/UPDATE for the upsert path, and
+// confirm/unsubscribe need SELECT/UPDATE too. The relaxed `waitlist_service`
+// and `email_log_service` policies cover NULL-tenant rows when
+// `app.tenant_id` is empty (NULLIF coerces to NULL).
+const tokenActionRoutes = new Hono<{ Variables: ServiceNoTenantVars }>();
+tokenActionRoutes.use('*', serviceNoTenantMiddleware('landing'));
 
-landingRoutes.post(
+tokenActionRoutes.post(
   '/waitlist',
   rateLimit({
     windows: [
@@ -36,29 +46,43 @@ landingRoutes.post(
   validate('json', waitlistRequestSchema),
   async (c) => {
     const body = c.var.body;
-    const result = await addToWaitlist(c.var.db, c.var.tenantId, body);
+    const result = await addToWaitlist(c.var.db, body);
     return ok(c, result);
   },
 );
 
-landingRoutes.get('/waitlist/confirm', validate('query', tokenQuerySchema), async (c) => {
-  const { token } = c.var.body;
-  const { result, locale } = await confirmWaitlist(c.var.db, token);
+tokenActionRoutes.get(
+  '/waitlist/confirm',
+  validate('query', tokenQuerySchema),
+  async (c) => {
+    const { token } = c.var.body;
+    const { result, locale } = await confirmWaitlist(c.var.db, token);
 
-  const webBase = (process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
-  return c.redirect(`${webBase}/${locale}/confirm?status=${result}`, 302);
-});
+    const webBase = (process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+    return c.redirect(`${webBase}/${locale}/confirm?status=${result}`, 302);
+  },
+);
 
-landingRoutes.get('/unsubscribe', validate('query', tokenQuerySchema), async (c) => {
-  const { token } = c.var.body;
-  const { result, locale } = await unsubscribeWaitlist(c.var.db, token);
+tokenActionRoutes.get(
+  '/unsubscribe',
+  validate('query', tokenQuerySchema),
+  async (c) => {
+    const { token } = c.var.body;
+    const { result, locale } = await unsubscribeWaitlist(c.var.db, token);
 
-  const webBase = (process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
-  return c.redirect(`${webBase}/${locale}/unsubscribe?status=${result}`, 302);
-});
+    const webBase = (process.env.PUBLIC_WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+    return c.redirect(`${webBase}/${locale}/unsubscribe?status=${result}`, 302);
+  },
+);
 
-landingRoutes.post('/unsubscribe', validate('query', tokenQuerySchema), async (c) => {
-  const { token } = c.var.body;
-  await unsubscribeWaitlist(c.var.db, token);
-  return ok(c, { unsubscribed: true });
-});
+tokenActionRoutes.post(
+  '/unsubscribe',
+  validate('query', tokenQuerySchema),
+  async (c) => {
+    const { token } = c.var.body;
+    await unsubscribeWaitlist(c.var.db, token);
+    return ok(c, { unsubscribed: true });
+  },
+);
+
+landingRoutes.route('/', tokenActionRoutes);

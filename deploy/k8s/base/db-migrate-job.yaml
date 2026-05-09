@@ -20,6 +20,11 @@ spec:
         app.kubernetes.io/name: db-migrate
     spec:
       serviceAccountName: agconn
+      nodeSelector: { pool: app }
+      tolerations:
+        - key: pool
+          value: app
+          effect: NoSchedule
       restartPolicy: Never
       securityContext:
         runAsNonRoot: true

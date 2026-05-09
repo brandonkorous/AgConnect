@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
 import { getFounderSlots } from '../employer/billing/founder-slots.js';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
-export const founderSlotsRoutes = new Hono<{ Variables: TenantVars }>();
-founderSlotsRoutes.use('*', publicTenantMiddleware('landing'));
+// `getFounderSlots` opens its own `runWithRlsContext({ role: 'service' })`
+// for the cross-tenant count, so this route deliberately runs without the
+// landing tenant middleware — there is no per-request RLS context to set.
+export const founderSlotsRoutes = new Hono();
 
 founderSlotsRoutes.get('/', async (c) => {
   const slots = await getFounderSlots();

@@ -45,7 +45,6 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
         data: {
           slug: generateTenantSlug(body.legalName),
           name: body.dbaName?.trim() || body.legalName,
-          isPublic: false,
         },
       });
       tenantId = tenant.id;

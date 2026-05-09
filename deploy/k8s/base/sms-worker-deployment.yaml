@@ -13,6 +13,11 @@ spec:
         app.kubernetes.io/name: sms-worker
     spec:
       serviceAccountName: agconn
+      nodeSelector: { pool: worker }
+      tolerations:
+        - key: cloud.google.com/gke-spot
+          value: "true"
+          effect: NoSchedule
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001

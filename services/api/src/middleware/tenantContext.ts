@@ -1,40 +1,47 @@
 import { createMiddleware } from 'hono/factory';
 import { dbClients, runWithRlsContext, type PoolName, type Tx } from '@agconn/db';
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export type TenantVars = {
   db: Tx;
   tenantId: string;
   role: 'service' | 'webhook' | 'admin';
 };
 
-function readPublicTenantId(): string {
-  const id = process.env.PUBLIC_TENANT_ID;
-  if (!id || !UUID_RE.test(id)) {
-    throw new Error(
-      `PUBLIC_TENANT_ID is missing or malformed; expected UUID, got ${JSON.stringify(id)}`,
-    );
-  }
-  return id;
-}
+export type AnonymousVars = {
+  db: Tx;
+  role: 'anonymous';
+};
+
+export type ServiceNoTenantVars = {
+  db: Tx;
+  role: 'service';
+};
 
 /**
- * Stamps the request with `app.role = 'service'` and `app.tenant_id = <PUBLIC_TENANT_ID>`
- * via AsyncLocalStorage. The rlsClient handed to handlers as `c.var.db` opens a short
- * Postgres transaction around each query and applies the context inside it, so a
- * pooled connection is held only for the duration of one statement (not the request).
- * RLS policies enforce tenant scoping; bypassing the middleware reads/writes nothing.
+ * Anonymous-role middleware for the public landing surface. No tenant is
+ * pinned — RLS marketplace policies on `job_postings` and `training_programs`
+ * grant SELECT to `app.role = 'anonymous'`, and the waitlist insert policy
+ * grants INSERT (when `tenant_id IS NULL`). No other tables are reachable.
  */
-export const publicTenantMiddleware = (poolName: PoolName) =>
-  createMiddleware<{ Variables: TenantVars }>(async (c, next) => {
-    const tenantId = readPublicTenantId();
-
+export const anonymousMiddleware = (poolName: PoolName) =>
+  createMiddleware<{ Variables: AnonymousVars }>(async (c, next) => {
     c.set('db', dbClients[poolName]);
-    c.set('tenantId', tenantId);
-    c.set('role', 'service');
+    c.set('role', 'anonymous');
+    await runWithRlsContext({ role: 'anonymous' }, () => next());
+  });
 
-    await runWithRlsContext({ role: 'service', tenantId }, () => next());
+/**
+ * Service role without a pinned tenant. Used by waitlist confirm /
+ * unsubscribe handlers that act on NULL-tenant waitlist rows looked up by
+ * an HMAC-signed token. RLS policies on `waitlist` and `email_log` permit
+ * the service role to touch NULL-tenant rows; tenant-scoped rows are
+ * unreachable because `app.tenant_id` is empty (NULLIF coerces it to NULL).
+ */
+export const serviceNoTenantMiddleware = (poolName: PoolName) =>
+  createMiddleware<{ Variables: ServiceNoTenantVars }>(async (c, next) => {
+    c.set('db', dbClients[poolName]);
+    c.set('role', 'service');
+    await runWithRlsContext({ role: 'service' }, () => next());
   });
 
 /**

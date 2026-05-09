@@ -1,14 +1,15 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { JobStatus, type County } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import { anonymousMiddleware, type AnonymousVars } from '../middleware/tenantContext.js';
 
 // Anonymous read-only job browse — used by SEO surfaces at /[locale]/jobs.
-// Pinned to PUBLIC_TENANT_ID via publicTenantMiddleware so RLS service role
-// can read; no auth required.
+// Reads are scoped by the marketplace RLS policy on `job_postings`, which
+// permits the `anonymous` role to SELECT active, non-deleted rows across
+// every tenant. No app-layer tenant filter required.
 
-export const publicJobsRoutes = new Hono<{ Variables: TenantVars }>();
-publicJobsRoutes.use('*', publicTenantMiddleware('landing'));
+export const publicJobsRoutes = new Hono<{ Variables: AnonymousVars }>();
+publicJobsRoutes.use('*', anonymousMiddleware('landing'));
 
 const PAGE_SIZE = 20;
 
@@ -20,7 +21,6 @@ publicJobsRoutes.get('/', async (c) => {
   const decoded = cursor ? decodeCursor(cursor) : null;
 
   const where = {
-    tenantId: c.var.tenantId,
     status: JobStatus.active,
     deletedAt: null,
     ...(county ? { county: county as County } : {}),
@@ -56,7 +56,7 @@ publicJobsRoutes.get('/', async (c) => {
 publicJobsRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug');
   const job = await c.var.db.jobPosting.findFirst({
-    where: { tenantId: c.var.tenantId, seoSlug: slug, deletedAt: null },
+    where: { seoSlug: slug, deletedAt: null },
     include: { employer: { include: { employerProfile: true } } },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -73,7 +73,7 @@ publicJobsRoutes.get('/:slug', async (c) => {
 
 publicJobsRoutes.get('/sitemap/list', async (c) => {
   const rows = await c.var.db.jobPosting.findMany({
-    where: { tenantId: c.var.tenantId, status: JobStatus.active, deletedAt: null },
+    where: { status: JobStatus.active, deletedAt: null },
     orderBy: { updatedAt: 'desc' },
     take: 5000,
     select: { seoSlug: true, updatedAt: true },

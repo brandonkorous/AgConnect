@@ -41,7 +41,9 @@ type DispatchArgs = {
   oneClickUnsubscribeUrl: string;
   refType: string;
   refId: string;
-  tenantId: string;
+  // Null for platform-level emails (waitlist confirm/welcome). The
+  // email_log_service RLS policy permits NULL-tenant rows.
+  tenantId: string | null;
 };
 
 async function isSuppressed(db: Tx, email: string): Promise<boolean> {
@@ -153,7 +155,6 @@ type WaitlistConfirmInput = {
   unsubscribeUrl: string;
   oneClickUnsubscribeUrl: string;
   waitlistId: string;
-  tenantId: string;
 };
 
 export async function sendWaitlistConfirm(
@@ -181,7 +182,7 @@ export async function sendWaitlistConfirm(
     oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
     refType: 'waitlist',
     refId: input.waitlistId,
-    tenantId: input.tenantId,
+    tenantId: null,
   });
 }
 
@@ -192,7 +193,6 @@ type WaitlistWelcomeInput = {
   unsubscribeUrl: string;
   oneClickUnsubscribeUrl: string;
   waitlistId: string;
-  tenantId: string;
 };
 
 export async function sendWaitlistWelcome(
@@ -220,7 +220,7 @@ export async function sendWaitlistWelcome(
     oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
     refType: 'waitlist',
     refId: input.waitlistId,
-    tenantId: input.tenantId,
+    tenantId: null,
   });
 }
 

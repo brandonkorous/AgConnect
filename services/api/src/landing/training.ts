@@ -1,13 +1,15 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { ProgramStatus, type County, type Funder } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import { anonymousMiddleware, type AnonymousVars } from '../middleware/tenantContext.js';
 
 // Anonymous read-only training browse — used by SEO surfaces at
-// /[locale]/training and /[locale]/training/[slug].
+// /[locale]/training and /[locale]/training/[slug]. The marketplace RLS
+// policy on `training_programs` permits the anonymous role to SELECT
+// active/full, non-deleted rows across every tenant.
 
-export const publicTrainingRoutes = new Hono<{ Variables: TenantVars }>();
-publicTrainingRoutes.use('*', publicTenantMiddleware('landing'));
+export const publicTrainingRoutes = new Hono<{ Variables: AnonymousVars }>();
+publicTrainingRoutes.use('*', anonymousMiddleware('landing'));
 
 const PAGE_SIZE = 20;
 
@@ -19,7 +21,6 @@ publicTrainingRoutes.get('/', async (c) => {
   const decoded = cursor ? decodeCursor(cursor) : null;
 
   const where = {
-    tenantId: c.var.tenantId,
     status: { in: [ProgramStatus.active, ProgramStatus.full] },
     deletedAt: null,
     ...(county ? { county: county as County } : {}),
@@ -52,7 +53,7 @@ publicTrainingRoutes.get('/', async (c) => {
 publicTrainingRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug');
   const program = await c.var.db.trainingProgram.findFirst({
-    where: { tenantId: c.var.tenantId, seoSlug: slug, deletedAt: null },
+    where: { seoSlug: slug, deletedAt: null },
     include: { org: { include: { employerProfile: true } } },
   });
   if (!program) return err(c, 404, 'not_found');
@@ -75,7 +76,6 @@ publicTrainingRoutes.get('/:slug', async (c) => {
 publicTrainingRoutes.get('/sitemap/list', async (c) => {
   const rows = await c.var.db.trainingProgram.findMany({
     where: {
-      tenantId: c.var.tenantId,
       status: { in: [ProgramStatus.active, ProgramStatus.full] },
       deletedAt: null,
     },

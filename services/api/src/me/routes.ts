@@ -22,7 +22,7 @@ meRoutes.get('/', async (c) => {
   const tenant = tenantId
     ? await c.var.db.tenant.findUnique({
         where: { id: tenantId },
-        select: { id: true, slug: true, name: true, isPublic: true },
+        select: { id: true, slug: true, name: true },
       })
     : null;
   return ok(c, {
@@ -60,7 +60,7 @@ meRoutes.get('/tenant', async (c) => {
 
   const tenant = await c.var.db.tenant.findUnique({
     where: { id: tenantId },
-    select: { id: true, slug: true, name: true, isPublic: true },
+    select: { id: true, slug: true, name: true },
   });
   if (!tenant) {
     return err(c, 404, 'not_found', 'Tenant not found');
@@ -75,7 +75,6 @@ meRoutes.get('/tenant', async (c) => {
       id: tenant.id,
       slug: tenant.slug,
       name: tenant.name,
-      isPublic: tenant.isPublic,
     },
   });
 });

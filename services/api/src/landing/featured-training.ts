@@ -1,17 +1,16 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
 import { ProgramStatus } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import { anonymousMiddleware, type AnonymousVars } from '../middleware/tenantContext.js';
 
-export const featuredTrainingRoutes = new Hono<{ Variables: TenantVars }>();
-featuredTrainingRoutes.use('*', publicTenantMiddleware('landing'));
+export const featuredTrainingRoutes = new Hono<{ Variables: AnonymousVars }>();
+featuredTrainingRoutes.use('*', anonymousMiddleware('landing'));
 
 const TAKE = 4;
 
 featuredTrainingRoutes.get('/', async (c) => {
   const rows = await c.var.db.trainingProgram.findMany({
     where: {
-      tenantId: c.var.tenantId,
       status: { in: [ProgramStatus.active, ProgramStatus.full] },
       deletedAt: null,
       startDate: { gte: new Date() },

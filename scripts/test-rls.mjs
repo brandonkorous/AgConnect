@@ -49,12 +49,12 @@ async function main() {
     await prisma.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
       await tx.$executeRaw`
-        INSERT INTO "tenants" (id, slug, name, is_public, settings, updated_at)
-        VALUES (${TENANT_A}::uuid, ${'rls-test-a-' + Date.now()}, 'RLS test A', false, '{}', NOW())
+        INSERT INTO "tenants" (id, slug, name, settings, updated_at)
+        VALUES (${TENANT_A}::uuid, ${'rls-test-a-' + Date.now()}, 'RLS test A', '{}', NOW())
         ON CONFLICT (id) DO NOTHING`;
       await tx.$executeRaw`
-        INSERT INTO "tenants" (id, slug, name, is_public, settings, updated_at)
-        VALUES (${TENANT_B}::uuid, ${'rls-test-b-' + Date.now()}, 'RLS test B', false, '{}', NOW())
+        INSERT INTO "tenants" (id, slug, name, settings, updated_at)
+        VALUES (${TENANT_B}::uuid, ${'rls-test-b-' + Date.now()}, 'RLS test B', '{}', NOW())
         ON CONFLICT (id) DO NOTHING`;
       await tx.$executeRaw`
         INSERT INTO users (id, tenant_id, role, preferred_lang, onboarded, permissions, created_at, updated_at)

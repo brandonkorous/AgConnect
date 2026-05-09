@@ -172,45 +172,56 @@ export default async function LandingPage({ params: { locale } }) {
 
 For v1, the three loaders return the static mock data behind the feature flags described in [02-data-model.md](02-data-model.md).
 
-## Service-role read pattern (for unauthenticated public reads)
+## RLS roles for unauthenticated public reads
 
-`apps/api/src/middleware/public-tenant.ts`:
+Three-bucket tenancy retired the `PUBLIC_TENANT_ID` "default tenant" pattern (see `migrations/20260504200000_three_bucket_tenancy`). Landing routes now use one of two RLS roles, both without a pinned `app.tenant_id`:
+
+- **`anonymous`** — marketplace SELECT only. The `job_postings_marketplace_read` and `training_programs_marketplace_read` policies grant `app.role IN ('authenticated','anonymous','service') AND status='active' AND deleted_at IS NULL`. The `waitlist_anonymous_insert` policy grants INSERT when `tenant_id IS NULL`. No other tables are reachable.
+- **`service` (no pinned tenant)** — used by `/impact` (cross-tenant aggregates over `applications`, `enrollments`, `employer_profiles` whose service policies are role-only) and by `/waitlist` + confirm/unsubscribe (NULL-tenant rows on `waitlist` and `email_log`, gated by NULLIF in the relaxed service policies).
+
+Middleware in [services/api/src/middleware/tenantContext.ts](../../../services/api/src/middleware/tenantContext.ts):
 
 ```ts
-export const publicTenantMiddleware = createMiddleware(async (c, next) => {
-    // Resolve the public tenant from env (single tenant for MVP)
-    const tenantId = process.env.PUBLIC_TENANT_ID!;
-    c.set('tenantId', tenantId);
-    c.set('userRole', 'service');
-    await db.$transaction(async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
-        c.set('db', tx);
-        await next();
-    });
-});
+export const anonymousMiddleware = (poolName) =>
+  createMiddleware(async (c, next) => {
+    c.set('db', dbClients[poolName]);
+    c.set('role', 'anonymous');
+    await runWithRlsContext({ role: 'anonymous' }, () => next());
+  });
 
-api.use('/v1/landing/*', publicTenantMiddleware);
+export const serviceNoTenantMiddleware = (poolName) =>
+  createMiddleware(async (c, next) => {
+    c.set('db', dbClients[poolName]);
+    c.set('role', 'service');
+    await runWithRlsContext({ role: 'service' }, () => next());
+  });
 ```
 
-The `'service'` role only matches read policies on `job_postings (status = 'active')`, `training_programs (status = 'active')`, and aggregations against `applications` / `enrollments` for the public KPI subset.
+Marketplace policies (active rows only, cross-tenant):
 
 ```sql
-CREATE POLICY landing_jobs_public ON job_postings FOR SELECT
+CREATE POLICY job_postings_marketplace_read ON job_postings FOR SELECT
   USING (
-    current_setting('app.role', true) = 'service'
+    current_setting('app.role', true) IN ('authenticated', 'anonymous', 'service')
     AND status = 'active'
     AND deleted_at IS NULL
-    AND tenant_id = current_setting('app.tenant_id', true)::uuid
   );
 
--- Similar for training_programs.
-
--- For aggregates, no row return — only counts via aggregate functions are exposed,
--- and only via specific stored procedures called by /v1/landing/impact.
+-- Same shape for training_programs (status IN ('active','full')).
 ```
 
-> **Inferred:** Aggregates over private tables (applications, enrollments) should be exposed via stored functions (`get_landing_impact()`) that the `service` role has EXECUTE on, NOT via direct table SELECT. This is more constrained than a generic RLS read policy and prevents any column from leaking. Implementation should use `CREATE FUNCTION ... SECURITY DEFINER` with explicit return shape.
+NULL-tenant policies on waitlist + email_log (NULLIF coerces empty `app.tenant_id` to NULL):
+
+```sql
+CREATE POLICY waitlist_service ON waitlist
+  USING (
+    current_setting('app.role', true) = 'service'
+    AND (
+      tenant_id IS NULL
+      OR tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid
+    )
+  );
+```
 
 ## Errors
 
@@ -219,4 +230,3 @@ CREATE POLICY landing_jobs_public ON job_postings FOR SELECT
 | `email_or_phone_required` | 422  | waitlist body missing both email and phone |
 | `too_many_requests`       | 429  | IP rate-limit                              |
 | `validation_failed`       | 422  | Zod schema fail                            |
-| `tenant_not_configured`   | 500  | `PUBLIC_TENANT_ID` env missing             |

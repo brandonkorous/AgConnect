@@ -35,9 +35,11 @@ const sourceMap: Record<WaitlistRequest['source'], WaitlistSource> = {
   landing_newsletter: WaitlistSource.landing_newsletter,
 };
 
+// Landing signups stamp tenant_id NULL — there is no owning tenant pre-account.
+// The partial unique index `waitlist_email_anonymous_key`
+// (WHERE tenant_id IS NULL AND email IS NOT NULL) backs the upsert path.
 export async function addToWaitlist(
   db: Tx,
-  tenantId: string,
   input: WaitlistRequest,
 ): Promise<WaitlistResponse> {
   const email = input.email?.trim().toLowerCase() ?? null;
@@ -54,9 +56,16 @@ export async function addToWaitlist(
     source,
   };
 
-  const existing = email
-    ? await db.waitlist.findFirst({ where: { tenantId, email } })
-    : null;
+  if (!email) {
+    await db.waitlist.create({
+      data: { tenantId: null, email: null, ...baseData },
+    });
+    return { status: 'queued', needsConfirm: false };
+  }
+
+  const existing = await db.waitlist.findFirst({
+    where: { tenantId: null, email },
+  });
 
   if (existing) {
     await db.waitlist.update({
@@ -67,42 +76,28 @@ export async function addToWaitlist(
       },
     });
 
-    if (existing.confirmedAt) {
-      return { status: 'already_confirmed', needsConfirm: false };
-    }
-    if (existing.unsubscribedAt) {
+    if (existing.confirmedAt || existing.unsubscribedAt) {
       return { status: 'already_confirmed', needsConfirm: false };
     }
 
-    if (email) {
-      await enqueueWaitlistConfirm({
-        waitlistId: existing.id,
-        tenantId,
-        email,
-        locale: input.locale,
-      });
-    }
-    return { status: 'queued', needsConfirm: Boolean(email) };
-  }
-
-  const created = await db.waitlist.create({
-    data: {
-      tenantId,
-      email,
-      ...baseData,
-    },
-  });
-
-  if (email) {
     await enqueueWaitlistConfirm({
-      waitlistId: created.id,
-      tenantId,
+      waitlistId: existing.id,
       email,
       locale: input.locale,
     });
+    return { status: 'queued', needsConfirm: true };
   }
 
-  return { status: 'queued', needsConfirm: Boolean(email) };
+  const created = await db.waitlist.create({
+    data: { tenantId: null, email, ...baseData },
+  });
+
+  await enqueueWaitlistConfirm({
+    waitlistId: created.id,
+    email,
+    locale: input.locale,
+  });
+  return { status: 'queued', needsConfirm: true };
 }
 
 export async function confirmWaitlist(
@@ -138,7 +133,6 @@ export async function confirmWaitlist(
   if (updated.email && !updated.welcomedAt) {
     await enqueueWaitlistWelcome({
       waitlistId: updated.id,
-      tenantId: updated.tenantId,
       email: updated.email,
       locale,
     });

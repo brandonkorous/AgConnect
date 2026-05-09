@@ -1,17 +1,16 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
 import { JobStatus } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import { anonymousMiddleware, type AnonymousVars } from '../middleware/tenantContext.js';
 
-export const featuredJobsRoutes = new Hono<{ Variables: TenantVars }>();
-featuredJobsRoutes.use('*', publicTenantMiddleware('landing'));
+export const featuredJobsRoutes = new Hono<{ Variables: AnonymousVars }>();
+featuredJobsRoutes.use('*', anonymousMiddleware('landing'));
 
 const TAKE = 4;
 
 featuredJobsRoutes.get('/', async (c) => {
   const rows = await c.var.db.jobPosting.findMany({
     where: {
-      tenantId: c.var.tenantId,
       status: JobStatus.active,
       deletedAt: null,
       employer: {

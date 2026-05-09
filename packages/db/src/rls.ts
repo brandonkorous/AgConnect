@@ -3,6 +3,7 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 import { pools, type PoolName } from './pools.js';
 
 export type RlsRole =
+  | 'anonymous'
   | 'authenticated'
   | 'service'
   | 'webhook'
@@ -18,6 +19,7 @@ export interface RlsContext {
 }
 
 const ALLOWED_ROLES: ReadonlySet<RlsRole> = new Set([
+  'anonymous',
   'authenticated',
   'service',
   'webhook',

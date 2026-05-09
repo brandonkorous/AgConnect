@@ -1,10 +1,18 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
 import { AppStatus, EnrollmentStatus } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import {
+  serviceNoTenantMiddleware,
+  type ServiceNoTenantVars,
+} from '../middleware/tenantContext.js';
 
-export const impactRoutes = new Hono<{ Variables: TenantVars }>();
-impactRoutes.use('*', publicTenantMiddleware('landing'));
+// `applications`, `enrollments`, and `employer_profiles` only expose
+// cross-tenant SELECT to the `service` role (their *_service policies are
+// role-only, no tenant_id match). The aggregate impact metrics need that
+// breadth, so this route runs under service-without-a-pinned-tenant rather
+// than under the anonymous role used by the marketplace endpoints.
+export const impactRoutes = new Hono<{ Variables: ServiceNoTenantVars }>();
+impactRoutes.use('*', serviceNoTenantMiddleware('landing'));
 
 const SUPPRESSION_THRESHOLD = 25;
 const WINDOW_MONTHS = 12;
@@ -24,7 +32,6 @@ impactRoutes.get('/', async (c) => {
   const [hiredCount, hiredWages, completedCount, verifiedEmployers] = await Promise.all([
     c.var.db.application.count({
       where: {
-        tenantId: c.var.tenantId,
         status: AppStatus.hired,
         hiredAt: { gte: since },
         deletedAt: null,
@@ -32,7 +39,6 @@ impactRoutes.get('/', async (c) => {
     }),
     c.var.db.application.findMany({
       where: {
-        tenantId: c.var.tenantId,
         status: AppStatus.hired,
         hiredAt: { gte: since },
         deletedAt: null,
@@ -42,7 +48,6 @@ impactRoutes.get('/', async (c) => {
     }),
     c.var.db.enrollment.count({
       where: {
-        tenantId: c.var.tenantId,
         status: EnrollmentStatus.completed,
         completedAt: { gte: since },
         deletedAt: null,
@@ -50,7 +55,6 @@ impactRoutes.get('/', async (c) => {
     }),
     c.var.db.employerProfile.count({
       where: {
-        tenantId: c.var.tenantId,
         flcVerifiedAt: { not: null },
         deletedAt: null,
       },
@@ -81,6 +85,6 @@ impactRoutes.get('/', async (c) => {
     verifiedEmployers,
     generatedAt: new Date().toISOString(),
     windowMonths: WINDOW_MONTHS,
-    source: 'WIOA-aligned · nightly · tenant=central-valley',
+    source: 'WIOA-aligned · nightly · cross-tenant',
   });
 });

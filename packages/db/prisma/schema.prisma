@@ -304,7 +304,6 @@ model Tenant {
   id        String    @id @default(uuid()) @db.Uuid
   slug      String    @unique
   name      String
-  isPublic  Boolean   @default(false) @map("is_public")
   settings  Json      @default("{}")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -351,7 +350,7 @@ model Tenant {
 
 model Waitlist {
   id             String            @id @default(uuid()) @db.Uuid
-  tenantId       String            @map("tenant_id") @db.Uuid
+  tenantId       String?           @map("tenant_id") @db.Uuid
   email          String?
   phone          String?
   county         String?
@@ -364,9 +363,8 @@ model Waitlist {
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime          @updatedAt @map("updated_at")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
 
-  @@unique([tenantId, email], map: "waitlist_tenant_email_key")
   @@index([tenantId])
   @@index([phone])
   @@index([county])
@@ -375,7 +373,7 @@ model Waitlist {
 
 model EmailLog {
   id           String      @id @default(uuid()) @db.Uuid
-  tenantId     String      @map("tenant_id") @db.Uuid
+  tenantId     String?     @map("tenant_id") @db.Uuid
   template     String
   locale       Lang
   toEmail      String      @map("to_email")
@@ -393,7 +391,7 @@ model EmailLog {
   complainedAt DateTime?   @map("complained_at")
   failedAt     DateTime?   @map("failed_at")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@index([toEmail])
