@@ -106,9 +106,13 @@ jobs:
         with:
           kustomize-version: "5.4.3"
 
-      - name: Ensure namespace exists
+      - name: Ensure namespace + ServiceAccount exist
         run: |
+          # Both are bootstrap resources the migrate Job needs before the
+          # full manifest apply later. Job spec references the agconn SA;
+          # without it K8s refuses to schedule the pod (FailedCreate).
           kubectl apply -f deploy/k8s/base/namespace.yaml
+          kubectl apply -f deploy/k8s/base/service-account.yaml
 
       - name: Apply runtime Secret (agconn-env) from GHA secrets
         env:
