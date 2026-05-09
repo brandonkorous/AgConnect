@@ -12,10 +12,15 @@ RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@$
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY services/api/package.json services/api/
+# All workspace package.json files — see apps/web/Dockerfile for the why.
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/audit/package.json packages/audit/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
+COPY packages/llm/package.json packages/llm/
+COPY packages/schemas/package.json packages/schemas/
+COPY packages/sms/package.json packages/sms/
+COPY packages/ui/package.json packages/ui/
 COPY .npmrc ./
 
 RUN --mount=type=secret,id=fontawesome_token,required=true \

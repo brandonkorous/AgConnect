@@ -15,11 +15,18 @@ RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@$
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/web/package.json apps/web/
+# All workspace package.json files. pnpm needs every workspace's manifest at
+# install time to set up the per-package node_modules symlinks correctly —
+# missing one means tsc can't resolve that package's third-party deps when
+# the build stage compiles across workspaces.
 COPY packages/api-client/package.json packages/api-client/
-COPY packages/ui/package.json packages/ui/
 COPY packages/audit/package.json packages/audit/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
+COPY packages/llm/package.json packages/llm/
+COPY packages/schemas/package.json packages/schemas/
+COPY packages/sms/package.json packages/sms/
+COPY packages/ui/package.json packages/ui/
 COPY .npmrc ./
 
 RUN --mount=type=secret,id=fontawesome_token,required=true \
