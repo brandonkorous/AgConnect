@@ -113,13 +113,15 @@ jobs:
         with:
           kustomize-version: "5.4.3"
 
-      - name: Ensure namespace + ServiceAccount exist
+      - name: Ensure namespace, ServiceAccount, and ConfigMap exist
         run: |
-          # Both are bootstrap resources the migrate Job needs before the
-          # full manifest apply later. Job spec references the agconn SA;
-          # without it K8s refuses to schedule the pod (FailedCreate).
+          # All three are bootstrap resources the migrate Job needs before
+          # the full manifest apply later. Job spec references the agconn SA
+          # AND envFrom configMapRef: agconn-config — both must exist before
+          # K8s will start the pod (FailedCreate / CreateContainerConfigError).
           kubectl apply -f deploy/k8s/base/namespace.yaml
           kubectl apply -f deploy/k8s/base/service-account.yaml
+          kubectl apply -f deploy/k8s/base/configmap.yaml
 
       - name: Apply runtime Secret (agconn-env) from GHA secrets
         env:
