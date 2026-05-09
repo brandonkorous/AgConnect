@@ -15,13 +15,23 @@ const here = dirname(fileURLToPath(import.meta.url));
 const SCHEMA = resolve(here, '..', 'packages/db/prisma/schema.prisma');
 const MIG_DIR = resolve(here, '..', 'packages/db/prisma/migrations');
 
-// Tables NOT requiring RLS. Most are global lookup tables (no tenant_id);
-// some are managed by Prisma migration tooling itself.
+// Tables NOT requiring RLS. Most are global reference catalogs (no
+// tenant_id, read by every tenant, edited only by ops via the admin
+// surface); some are managed by Prisma migration tooling itself.
+//
+// Worker-scoped tables (worker_profiles, saved_searches, search_views) are
+// NOT exempt here — they carry RLS keyed on the worker's user id rather
+// than tenant_id, so they pass this check naturally.
 const EXEMPT_TABLES = new Set([
   'tenants',
   'email_suppression',
   'sms_opt_out',
   '_prisma_migrations',
+  // Global reference catalogs — see EXEMPT_MODELS in check-tenant-id.mjs.
+  'compliance_item_content',
+  'crops',
+  'role_types',
+  'skill_tags',
 ]);
 
 // Discover @@map("...") values from schema.prisma — that's our authoritative

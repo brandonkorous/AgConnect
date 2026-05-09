@@ -13,12 +13,33 @@ import { dirname, resolve } from 'node:path';
 const here = dirname(fileURLToPath(import.meta.url));
 const SCHEMA = resolve(here, '..', 'packages/db/prisma/schema.prisma');
 
-// Global tables (no tenant_id by design). Adding to this list is a
+// Models with no tenant_id by design. Adding to this list is a
 // security-relevant decision; require review.
+//
+// Three categories live here:
+//   1. The tenant table itself.
+//   2. Cross-tenant compliance/safety tables (suppression lists).
+//   3. Worker-scoped tables — workers are platform-level in the AgConn
+//      multi-tenancy model (employers are tenants, workers are not). These
+//      tables still have RLS, but it is keyed off the worker's user id, not
+//      tenant_id. See docs/00-foundation/02-multi-tenancy.
+//   4. Global reference catalogs read by every tenant. These are owned by
+//      ops and edited via the admin surface, not the tenant API.
 const EXEMPT_MODELS = new Set([
+  // category 1
   'Tenant',
+  // category 2
   'EmailSuppression',
   'SmsOptOut',
+  // category 3 — worker-scoped (platform-level)
+  'WorkerProfile',
+  'SavedSearch',
+  'SearchView',
+  // category 4 — global reference catalogs
+  'ComplianceItemContent',
+  'Crop',
+  'RoleType',
+  'SkillTag',
 ]);
 
 // Models that are PRESENT but only optionally tied to a tenant. They MUST
@@ -26,6 +47,10 @@ const EXEMPT_MODELS = new Set([
 const NULLABLE_TENANT_MODELS = new Set([
   'User',
   'AuthEvent',
+  // Translations: rows with tenantId=null are the global bundle (default
+  // strings shown to every tenant); rows with tenantId set are per-tenant
+  // overrides. Uniqueness is enforced via partial indexes in SQL.
+  'TranslationKey',
 ]);
 
 const text = readFileSync(SCHEMA, 'utf8');
