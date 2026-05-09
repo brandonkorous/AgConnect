@@ -28,7 +28,7 @@ spec:
       containers:
         - name: migrate
           image: REPLACE_AR_BASE/api:REPLACE_TAG
-          command: ["sh", "-c"]
+          command: ["bash", "-c"]
           args:
             - |
               set -euo pipefail
