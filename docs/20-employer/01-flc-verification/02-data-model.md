@@ -5,54 +5,53 @@
 ```prisma
 model EmployerProfile {
   id                    String           @id @default(uuid()) @db.Uuid
-  userId                String           @unique                       @map("user_id")        // FK → User.id (Clerk userId)
+  userId                String           @unique                       @map("user_id")
   tenantId              String           @db.Uuid                      @map("tenant_id")
   clerkOrgId            String?          @unique                       @map("clerk_org_id")
-  legalName             String                                          @map("legal_name")    // legal entity — Stripe customer, 1099, MSA
-  dbaName               String?                                         @map("dba_name")      // doing-business-as / public-facing if different from legal
+  legalName             String                                          @map("legal_name")    // Stripe customer, 1099, MSA, DLSE comparison
+  dbaName               String?                                         @map("dba_name")      // public-facing if different from legal
   contactEmail          String?                                         @map("contact_email")
   licenseType           LicenseType                                     @map("license_type")
-  ein                   String?                                                                // employer ID number for grower verification
+  ein                   String?                                                                // grower EIN
   flcLicenseNum         String?                                         @map("flc_license_num")
-  dolMspaNum            String?                                         @map("dol_mspa_num")  // federal DOL MSPA registration number; optional
+  dolMspaNum            String?                                         @map("dol_mspa_num")  // federal DOL MSPA registration; optional self-report
   county                County?                                                                // primary county for grower verification
-  flcVerifiedAt         DateTime?                                       @map("flc_verified_at")
-  verifiedBy            String?          @db.Uuid                       @map("verified_by")   // admin user id
+
+  // ── Verification state (manual + auto) ─────────────────────────────────────
+  flcVerifiedAt         DateTime?                                       @map("flc_verified_at")            // promoted to "verified" badge
+  flcLastCheckedAt      DateTime?                                       @map("flc_last_checked_at")        // last DLSE auto-check attempt
+  flcCheckStatus        FlcCheckStatus?                                 @map("flc_check_status")           // outcome of last DLSE check
+  flcExpiresAt          DateTime?        @db.Date                       @map("flc_expires_at")             // DLSE expiration on record
+  flcLegalNameOnRecord  String?                                         @map("flc_legal_name_on_record")   // DLSE official legal name
+  mspaVerifiedAt        DateTime?                                       @map("mspa_verified_at")           // last successful MSPA registry match
+  mspaExpiresAt         DateTime?        @db.Date                       @map("mspa_expires_at")
+  mspaAuthHousing       Boolean?                                        @map("mspa_auth_housing")          // authorized to house workers
+  mspaAuthTransport     Boolean?                                        @map("mspa_auth_transport")        // authorized to transport workers
+  mspaAuthDriving       Boolean?                                        @map("mspa_auth_driving")          // authorized to drive transport vehicles
+  verifiedBy            String?                                         @map("verified_by")                // admin user id OR 'system:flc-verifier'
   rejectedAt            DateTime?                                       @map("rejected_at")
   rejectionReason       String?                                         @map("rejection_reason")
-  signatureName         String?                                         @map("signature_name")  // for cert signing (training orgs share table)
-  signatureTitle        String?                                         @map("signature_title")
-  signatureImageUrl     String?                                         @map("signature_image_url")
-  stripeCustomer        String?                                         @map("stripe_customer")
-  stripeSubId           String?                                         @map("stripe_sub_id")
-  plan                  EmployerPlanTier @default(free)
-  planInterval          PlanInterval?                                   @map("plan_interval")
-  planCurrentPeriodEnd  DateTime?                                       @map("plan_current_period_end")
-  planCancelAtPeriodEnd Boolean          @default(false)                @map("plan_cancel_at_period_end")
-  seoSlug               String           @unique                        @map("seo_slug")
-  createdAt             DateTime         @default(now())                @map("created_at")
-  updatedAt             DateTime         @updatedAt                     @map("updated_at")
-  deletedAt             DateTime?                                       @map("deleted_at")
 
-  user                  User             @relation(fields: [userId], references: [id])
+  // ... signature, plan, billing, address, etc.
 
-  @@index([tenantId])
   @@index([flcVerifiedAt])
-  @@index([licenseType])
-  @@index([stripeCustomer])
-  @@map("employer_profiles")
+  @@index([flcLastCheckedAt])
 }
 
-enum LicenseType      { grower flc labor_contractor }
-enum EmployerPlanTier { free pro enterprise }
-enum PlanInterval    { monthly yearly }
+enum FlcCheckStatus {
+  active
+  expired
+  not_found
+  suspended
+  error
+  captcha_blocked
+  not_applicable     // grower or non-FLC license type
+}
 ```
 
-**Display rule:** the public-facing employer name is `dbaName ?? legalName`. The legal name is used for Stripe customer creation, 1099/tax docs, and the DLSE comparison during FLC verification. Verified-badge tooltip surfaces both: `"AgConn verified — legal entity: {legalName}"`.
+**Display rule:** the public-facing employer name is `dbaName ?? legalName`. The legal name is used for Stripe customer creation, 1099/tax docs, and the DLSE comparison during verification. Verified-badge tooltip surfaces both: `"AgConn verified — legal entity: {legalName}"`.
 
-`flcVerifiedAt` doubles as the verification timestamp for both growers and FLCs (poorly named — could rename to `verifiedAt` post-MVP).
-
-> **Inferred:** Plan tier as enum + env-resolved Stripe price IDs is intentional for MVP. The feature matrix lives in `packages/schemas/src/plans.ts` (compile-time type-safe). Extract to a `plans` table when custom Enterprise contracts, per-tenant pricing, or live A/B price tests arrive — billing event payloads in `billing_events` already let us reconstruct any plan transition history.
+`flcVerifiedAt` is promoted automatically by the worker the first time DLSE returns `Active` for the registered license number. Once promoted, it stays set even if a later check returns an error — the snapshot fields tell the admin what happened, but a transient DLSE outage doesn't strip the badge.
 
 ## verification_log (audit)
 
@@ -62,17 +61,69 @@ model VerificationLog {
   tenantId        String   @db.Uuid              @map("tenant_id")
   employerId      String   @db.Uuid              @map("employer_id")
   action          VerificationAction
-  actorUserId     String   @db.Uuid              @map("actor_user_id")
+  actorUserId     String   @map("actor_user_id")  // 'system:flc-verifier' for auto-attempts
   notes           String?
-  payload         Json     @default("{}")        // license details checked, links visited
+  payload         Json     @default("{}")
   createdAt       DateTime @default(now())       @map("created_at")
-
-  @@index([tenantId])
-  @@index([employerId, createdAt])
-  @@map("verification_log")
 }
 
-enum VerificationAction { submitted approved rejected re_verified expired }
+enum VerificationAction {
+  submitted
+  approved
+  rejected
+  re_verified
+  expired
+  auto_verify_started      // worker picked up a flc.verify job
+  auto_verify_succeeded    // DLSE returned Active; flcVerifiedAt promoted (or kept)
+  auto_verify_failed       // any non-active outcome (not_found / expired / suspended / error / captcha_blocked)
+  mspa_match_found         // MSPA registry lookup matched
+  mspa_match_missing       // MSPA registry lookup missed (employer not in latest sync)
+}
+```
+
+Every auto-verify attempt writes three rows: `auto_verify_started`, then `auto_verify_succeeded`/`failed`, then `mspa_match_found`/`missing`. The DLSE result payload includes the parsed legal name, expiration date, and full address; the MSPA payload includes the certificate number and authorization flags.
+
+## mspa_flc_registry (platform-level reference data)
+
+Local cache of the federal DOL/WHD MSPA Farm Labor Contractor registry. Synced nightly from `catalog.data.gov/dataset/registered-farm-labor-contractor-listing-5cd50`. No `tenant_id` — every tenant reads the same source of truth.
+
+```prisma
+model MspaFlcRegistry {
+  id                String   @id @default(uuid()) @db.Uuid
+  certificateNumber String   @unique @map("certificate_number")
+  legalName         String   @map("legal_name")
+  streetAddress     String?  @map("street_address")
+  city              String?
+  stateCode         String?  @map("state_code")
+  postalCode        String?  @map("postal_code")
+  expirationDate    DateTime @db.Date @map("expiration_date")
+  authHousing       Boolean  @default(false) @map("auth_housing")
+  authTransport     Boolean  @default(false) @map("auth_transport")
+  authDriving       Boolean  @default(false) @map("auth_driving")
+  syncedAt          DateTime @default(now()) @map("synced_at")
+  removedAt         DateTime?                @map("removed_at")  // soft-delete when row disappears from upstream
+}
+```
+
+**Why bulk sync over scrape:** WHD only publishes *active* certificates. A row's absence in the latest sync means the cert lapsed/was revoked. We soft-delete (set `removedAt`) so we keep history but the per-employer lookup excludes them.
+
+## mspa_sync_run (observability)
+
+One-row-per-sync-attempt. Lets the admin surface "data freshness" and lets us alert when the nightly sync fails.
+
+```prisma
+model MspaSyncRun {
+  id              String   @id @default(uuid()) @db.Uuid
+  startedAt       DateTime @default(now()) @map("started_at")
+  finishedAt      DateTime?                 @map("finished_at")
+  status          String   @default("running")  // running | completed | skipped_unchanged | failed
+  rowsAdded       Int      @default(0) @map("rows_added")
+  rowsUpdated     Int      @default(0) @map("rows_updated")
+  rowsRemoved     Int      @default(0) @map("rows_removed")
+  sourceUrl       String?                  @map("source_url")
+  sourceUpdatedAt DateTime?                @map("source_updated_at")
+  errorMessage    String?                  @map("error_message")
+}
 ```
 
 ## Job-publish gate
@@ -129,9 +180,18 @@ CREATE POLICY ep_admin ON employer_profiles
 
 `verification_log`: admin-only read; insert via admin API.
 
+`mspa_flc_registry`: world-read (it's public reference data); writes restricted to `app.role IN ('service', 'admin')` — only the flc-verifier worker writes.
+
+`mspa_sync_run`: read + write restricted to `service` and `admin` roles.
+
 ## Indexes
 
 - `employer_profiles(flcVerifiedAt)` — list verified employers
+- `employer_profiles(flcLastCheckedAt)` — nightly sweep ordering (`NULLS FIRST` semantics)
 - `employer_profiles(seoSlug)` unique — public profile URL
-- `employer_profiles(stripeCustomer)` — webhook lookup (created when first checkout starts)
+- `employer_profiles(stripeCustomer)` — webhook lookup
 - `verification_log(employerId, createdAt)` — audit lookup
+- `mspa_flc_registry(certificateNumber)` unique — direct lookup
+- `mspa_flc_registry(legalName)` — fuzzy lookup fallback
+- `mspa_flc_registry(syncedAt)` — sync-freshness queries
+- `mspa_sync_run(startedAt)` — admin freshness display

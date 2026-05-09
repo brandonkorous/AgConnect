@@ -18,6 +18,9 @@ export type SmsJob<T extends SmsTemplateName = SmsTemplateName> = {
   // Bypass quiet-hours hold. Reserved for time-critical templates like
   // `application.hired` or two-hour training reminders, per spec section 06.
   bypassQuietHours?: boolean;
+  // When set, the SmsLog row written by the worker carries this messageId so
+  // a broadcast Message can list its per-recipient delivery state.
+  messageId?: string;
 };
 
 let cachedBoss: PgBoss | null = null;
@@ -97,6 +100,7 @@ export async function enqueueSms<T extends SmsTemplateName>(
     vars: args.vars,
     scheduledFor: args.scheduledFor,
     bypassQuietHours: bypass,
+    messageId: args.messageId,
   };
 
   return boss.send(SMS_QUEUE, payload, {

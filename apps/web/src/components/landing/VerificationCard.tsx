@@ -55,8 +55,9 @@ export function VerificationCard() {
             </div>
 
             <p className="border-base-300 border-t pt-3.5 text-secondary font-sans text-sm leading-snug">
-                Verified by AgConn admin against permits.dir.ca.gov · re-verified nightly · workers see only
-                the badge, never the raw record.
+                Auto-checked against the CA DIR/DLSE registry on signup and re-verified nightly,
+                cross-referenced against the federal DOL MSPA list. Workers see only the badge,
+                never the raw record.
             </p>
         </div>
     );

@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: RouteProps) {
 }
 
 const MATERIALS = [
-    { id: 'flyer', icon: faFilePdf, href: '/downloads/agconn-promotora-flyer.pdf' },
-    { id: 'script', icon: faComments, href: '/downloads/agconn-promotora-script.pdf' },
+    { id: 'flyer', icon: faFilePdf, href: 'mailto:partnerships@agconn.com?subject=Promotora%20flyer%20request' },
+    { id: 'script', icon: faComments, href: 'mailto:partnerships@agconn.com?subject=Promotora%20conversation%20script%20request' },
     { id: 'cards', icon: faIdCard, href: 'mailto:partnerships@agconn.com?subject=Wallet%20cards%20request' },
 ] as const;
 

@@ -17,6 +17,7 @@ import { twilioWebhookRoutes } from './webhooks/twilio.js';
 import { stripeWebhookRoutes } from './webhooks/stripe.js';
 import { adminAuditRoutes } from './admin/audit/routes.js';
 import { adminEmployersRoutes } from './admin/employers/routes.js';
+import { adminReportsRoutes } from './admin/reports/routes.js';
 import { meRoutes } from './me/routes.js';
 import { meInvitationsRoutes } from './me/invitations.js';
 import { meShiftsRoutes } from './me/shifts.js';
@@ -166,6 +167,7 @@ app.route('/v1/webhooks/twilio', twilioWebhookRoutes);
 app.route('/v1/webhooks/stripe', stripeWebhookRoutes);
 app.route('/admin/v1/audit', adminAuditRoutes);
 app.route('/admin/v1/employers', adminEmployersRoutes);
+app.route('/admin/v1/reports', adminReportsRoutes);
 
 const port = Number(process.env.PORT ?? 3001);
 

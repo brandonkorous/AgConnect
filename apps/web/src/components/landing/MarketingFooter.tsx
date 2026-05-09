@@ -50,7 +50,7 @@ function buildColumns(locale: string): Column[] {
                 { key: 'mission', href: `/${locale}/about#mission` },
                 { key: 'careers', href: `/${locale}/careers` },
                 { key: 'trust', href: `/${locale}/trust` },
-                { key: 'status', href: 'https://status.agconn.com' },
+                { key: 'status', href: `/${locale}/trust#status` },
                 { key: 'contact', href: `/${locale}/contact` },
             ],
         },

@@ -180,6 +180,21 @@ enum VerificationAction {
   rejected
   re_verified
   expired
+  auto_verify_started
+  auto_verify_succeeded
+  auto_verify_failed
+  mspa_match_found
+  mspa_match_missing
+}
+
+enum FlcCheckStatus {
+  active
+  expired
+  not_found
+  suspended
+  error
+  captcha_blocked
+  not_applicable
 }
 
 enum RejectionReason {
@@ -517,6 +532,15 @@ model EmployerProfile {
   addressLng              Decimal?          @map("address_lng") @db.Decimal(9, 6)
   mapboxId                String?           @map("mapbox_id")
   flcVerifiedAt           DateTime?         @map("flc_verified_at")
+  flcLastCheckedAt        DateTime?         @map("flc_last_checked_at")
+  flcCheckStatus          FlcCheckStatus?   @map("flc_check_status")
+  flcExpiresAt            DateTime?         @map("flc_expires_at") @db.Date
+  flcLegalNameOnRecord    String?           @map("flc_legal_name_on_record")
+  mspaVerifiedAt          DateTime?         @map("mspa_verified_at")
+  mspaExpiresAt           DateTime?         @map("mspa_expires_at") @db.Date
+  mspaAuthHousing         Boolean?          @map("mspa_auth_housing")
+  mspaAuthTransport       Boolean?          @map("mspa_auth_transport")
+  mspaAuthDriving         Boolean?          @map("mspa_auth_driving")
   verifiedBy              String?           @map("verified_by")
   rejectedAt              DateTime?         @map("rejected_at")
   rejectionReason         String?           @map("rejection_reason")
@@ -549,7 +573,52 @@ model EmployerProfile {
   @@index([tenantId])
   @@index([flcVerifiedAt])
   @@index([licenseType])
+  @@index([flcLastCheckedAt])
   @@map("employer_profiles")
+}
+
+// Cached snapshot of the federal DOL/WHD MSPA Farm Labor Contractor registry,
+// synced nightly from the data.gov bulk dataset. Platform-level reference data
+// (no tenant_id) — every employer's MSPA verification is a local lookup against
+// this table, avoiding per-onboarding outbound calls to dol.gov.
+//
+// See docs/20-employer/01-flc-verification/02-data-model.md.
+model MspaFlcRegistry {
+  id                String   @id @default(uuid()) @db.Uuid
+  certificateNumber String   @unique @map("certificate_number")
+  legalName         String   @map("legal_name")
+  streetAddress     String?  @map("street_address")
+  city              String?
+  stateCode         String?  @map("state_code")
+  postalCode        String?  @map("postal_code")
+  expirationDate    DateTime @map("expiration_date") @db.Date
+  authHousing       Boolean  @default(false) @map("auth_housing")
+  authTransport     Boolean  @default(false) @map("auth_transport")
+  authDriving       Boolean  @default(false) @map("auth_driving")
+  syncedAt          DateTime @default(now()) @map("synced_at")
+  removedAt         DateTime? @map("removed_at")
+
+  @@index([legalName])
+  @@index([syncedAt])
+  @@map("mspa_flc_registry")
+}
+
+// One-row table that records the last successful MSPA dataset sync. Used by the
+// scheduler to gate retries and by admins to surface "data freshness" to humans.
+model MspaSyncRun {
+  id              String   @id @default(uuid()) @db.Uuid
+  startedAt       DateTime @default(now()) @map("started_at")
+  finishedAt      DateTime? @map("finished_at")
+  status          String   @default("running")
+  rowsAdded       Int      @default(0) @map("rows_added")
+  rowsUpdated     Int      @default(0) @map("rows_updated")
+  rowsRemoved     Int      @default(0) @map("rows_removed")
+  sourceUrl       String?  @map("source_url")
+  sourceUpdatedAt DateTime? @map("source_updated_at")
+  errorMessage    String?  @map("error_message")
+
+  @@index([startedAt])
+  @@map("mspa_sync_run")
 }
 
 // Audit log for FLC / grower verification state changes.
@@ -642,6 +711,7 @@ model SmsLog {
   id          String    @id @default(uuid()) @db.Uuid
   tenantId    String    @map("tenant_id") @db.Uuid
   userId      String?   @map("user_id")
+  messageId   String?   @map("message_id") @db.Uuid
   template    String
   locale      Lang
   toPhone     String    @map("to_phone")
@@ -661,6 +731,7 @@ model SmsLog {
   @@index([tenantId])
   @@index([userId])
   @@index([toPhone])
+  @@index([messageId])
   @@index([template, queuedAt])
   @@index([status])
   @@map("sms_log")
@@ -1115,21 +1186,31 @@ model PayrollPeriod {
 }
 
 model PayrollLine {
-  id            String    @id @default(uuid()) @db.Uuid
-  tenantId      String    @map("tenant_id") @db.Uuid
-  periodId      String    @map("period_id") @db.Uuid
-  workerUserId  String    @map("worker_user_id")
-  role          String?
-  hours         Decimal   @default(0) @db.Decimal(6, 2)
-  overtimeHours Decimal   @default(0) @map("overtime_hours") @db.Decimal(6, 2)
-  grossCents    Int       @default(0) @map("gross_cents")
-  bonusCents    Int       @default(0) @map("bonus_cents")
-  taxesCents    Int       @default(0) @map("taxes_cents")
-  netCents      Int       @default(0) @map("net_cents")
-  notes         String?
-  approvedAt    DateTime? @map("approved_at")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id                    String    @id @default(uuid()) @db.Uuid
+  tenantId              String    @map("tenant_id") @db.Uuid
+  periodId              String    @map("period_id") @db.Uuid
+  workerUserId          String    @map("worker_user_id")
+  role                  String?
+  hours                 Decimal   @default(0) @db.Decimal(6, 2)
+  overtimeHours         Decimal   @default(0) @map("overtime_hours") @db.Decimal(6, 2)
+  nonProductiveHours    Decimal   @default(0) @map("non_productive_hours") @db.Decimal(6, 2)
+  restPeriodHours       Decimal   @default(0) @map("rest_period_hours") @db.Decimal(6, 2)
+  regularPayCents       Int       @default(0) @map("regular_pay_cents")
+  overtimePayCents      Int       @default(0) @map("overtime_pay_cents")
+  pieceRatePayCents     Int       @default(0) @map("piece_rate_pay_cents")
+  nonProductivePayCents Int       @default(0) @map("non_productive_pay_cents")
+  restPeriodPayCents    Int       @default(0) @map("rest_period_pay_cents")
+  aewrTopUpCents        Int       @default(0) @map("aewr_top_up_cents")
+  appliedFloorCents     Int       @default(0) @map("applied_floor_cents")
+  isH2a                 Boolean   @default(false) @map("is_h2a")
+  grossCents            Int       @default(0) @map("gross_cents")
+  bonusCents            Int       @default(0) @map("bonus_cents")
+  taxesCents            Int       @default(0) @map("taxes_cents")
+  netCents              Int       @default(0) @map("net_cents")
+  notes                 String?
+  approvedAt            DateTime? @map("approved_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   tenant Tenant        @relation(fields: [tenantId], references: [id])
   period PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
@@ -1139,6 +1220,24 @@ model PayrollLine {
   @@index([tenantId])
   @@index([workerUserId])
   @@map("payroll_lines")
+}
+
+// Federal H-2A Adverse Effect Wage Rate by state. Platform-level reference
+// data (no tenant_id). Updated annually by USDOL ETA. Lookup is by state +
+// effective date range.
+model AewrRate {
+  id            String    @id @default(uuid()) @db.Uuid
+  stateCode     String    @map("state_code") @db.VarChar(2)
+  effectiveFrom DateTime  @map("effective_from") @db.Date
+  effectiveTo   DateTime? @map("effective_to") @db.Date
+  hourlyCents   Int       @map("hourly_cents")
+  source        String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@unique([stateCode, effectiveFrom])
+  @@index([stateCode, effectiveFrom])
+  @@map("aewr_rates")
 }
 
 // Compliance — flat item registry per employer.
@@ -1525,4 +1624,24 @@ model SmsKeyword {
   @@index([tenantId])
   @@index([kind, entityId])
   @@map("sms_keywords")
+}
+
+// One row per admin-generated grant report (placement, training, employer).
+// Used for compliance audit ("show me every export of placement data in 2026").
+// Admin-only; tenantId nullable so cross-tenant exports are representable.
+// See docs/30-admin/02-placement-report/02-data-model.md.
+model ReportRun {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String?  @map("tenant_id") @db.Uuid
+  reportType  String   @map("report_type")
+  filters     Json
+  rowCount    Int      @map("row_count")
+  format      String
+  generatedBy String   @map("generated_by")
+  generatedAt DateTime @default(now()) @map("generated_at")
+  blobPath    String?  @map("blob_path")
+
+  @@index([reportType, generatedAt])
+  @@index([tenantId, generatedAt])
+  @@map("report_runs")
 }

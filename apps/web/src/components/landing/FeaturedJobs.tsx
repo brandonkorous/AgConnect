@@ -3,18 +3,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { FeaturedJobCard } from './FeaturedJobCard';
-import { getFeaturedJobs } from '@/lib/api/landing';
+import { getFeaturedJobs, getImpact } from '@/lib/api/landing';
 
 const counties = ['all', 'fresno', 'tulare', 'kern', 'madera', 'kings'] as const;
 
 export async function FeaturedJobs() {
-    const [t, locale, jobs] = await Promise.all([
+    const [t, locale, jobs, impact] = await Promise.all([
         getTranslations('landing.featured_jobs'),
         getLocale(),
         getFeaturedJobs(),
+        getImpact(),
     ]);
 
     if (jobs.length === 0) return null;
+
+    const activeCount = impact?.activePostings ?? 0;
+    const eyebrow = activeCount > 0 ? t('eyebrow_dynamic', { count: activeCount }) : t('eyebrow');
+    const viewAll = activeCount > 0 ? t('view_all_dynamic', { count: activeCount }) : t('view_all');
 
     return (
         <section className="bg-base-300 w-full">
@@ -22,14 +27,14 @@ export async function FeaturedJobs() {
                 <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-end lg:gap-16">
                     <div className="flex flex-1 flex-col gap-4">
                         <EyebrowLabel tone="soil" withRule>
-                            {t('eyebrow')}
+                            {eyebrow}
                         </EyebrowLabel>
                         <h2 className="text-base-content font-serif text-4xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
                             {t('headline')}
                         </h2>
                     </div>
                     <a href={`/${locale}/jobs`} className="btn btn-link text-primary hover:text-base-content pb-4 whitespace-nowrap">
-                        <span>{t('view_all')}</span>
+                        <span>{viewAll}</span>
                         <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
                     </a>
                 </div>

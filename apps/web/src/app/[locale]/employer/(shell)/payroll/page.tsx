@@ -4,6 +4,7 @@ import {
     getCurrentPayrollPeriod,
     getPayrollSeasonToDate,
     listPayrollLines,
+    fetchH2aPayrollContext,
 } from '@/lib/api/employer-ops';
 import { PayrollActions } from '@/components/employer/payroll/PayrollActions';
 import { PayrollLineRow } from '@/components/employer/payroll/PayrollLineRow';
@@ -21,10 +22,13 @@ export default async function PayrollPage({ params }: Props) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.payroll' });
     const period = await getCurrentPayrollPeriod();
-    const [lines, season] = await Promise.all([
+    const [lines, season, h2a] = await Promise.all([
         listPayrollLines(period.id),
         getPayrollSeasonToDate(),
+        fetchH2aPayrollContext(),
     ]);
+    const h2aTopUpCents = lines.reduce((acc, l) => acc + (l.aewrTopUpCents ?? 0), 0);
+    const h2aLineCount = lines.filter((l) => l.isH2a).length;
 
     const fmtCents = (c: number, withSign = false) => {
         const n = Math.abs(c) / 100;
@@ -128,23 +132,47 @@ export default async function PayrollPage({ params }: Props) {
                             </div>
                         )}
                     </div>
-                    <div
-                        className={[
-                            'bg-accent text-accent-content rounded-2xl p-5',
-                            hasLines ? '' : 'opacity-60',
-                        ].join(' ')}
-                    >
-                        <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
-                            {t('h2a_eyebrow')}
-                            {!hasLines && (
-                                <span className="ml-2 font-normal opacity-80">{t('h2a_no_data')}</span>
-                            )}
+                    {h2a?.participatesInH2a ? (
+                        <div className="bg-accent text-accent-content rounded-2xl p-5">
+                            <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
+                                {t('h2a_eyebrow')}
+                                {!hasLines && (
+                                    <span className="ml-2 font-normal opacity-80">{t('h2a_no_data')}</span>
+                                )}
+                            </div>
+                            <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
+                                {h2a.aewrHourlyCents != null
+                                    ? t('h2a_headline_dynamic', {
+                                          rate: fmtCents(h2a.aewrHourlyCents),
+                                          state: h2a.stateCode,
+                                      })
+                                    : t('h2a_headline_no_rate')}
+                            </h2>
+                            <div className="mt-2 text-xs opacity-90">
+                                {hasLines
+                                    ? t('h2a_sub_dynamic', {
+                                          workers: h2aLineCount,
+                                          topUp: fmtCents(h2aTopUpCents),
+                                      })
+                                    : t('h2a_sub_idle')}
+                            </div>
+                            {h2a.effectiveFrom ? (
+                                <div className="mt-2 font-mono text-[10px] uppercase tracking-wider opacity-70">
+                                    {t('h2a_effective', { date: h2a.effectiveFrom })}
+                                </div>
+                            ) : null}
                         </div>
-                        <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
-                            {t('h2a_headline')}
-                        </h2>
-                        <div className="mt-2 text-xs opacity-90">{t('h2a_sub')}</div>
-                    </div>
+                    ) : (
+                        <div className="bg-base-100 border-base-300 text-base-content/70 rounded-2xl border p-5">
+                            <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
+                                {t('h2a_eyebrow_off')}
+                            </div>
+                            <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
+                                {t('h2a_headline_off')}
+                            </h2>
+                            <div className="mt-2 text-xs">{t('h2a_sub_off')}</div>
+                        </div>
+                    )}
                 </div>
             </div>
 

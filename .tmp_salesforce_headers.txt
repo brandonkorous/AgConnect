@@ -1,0 +1,18 @@
+HTTP/1.1 200 OK
+Date: Sat, 09 May 2026 10:14:14 GMT
+Vary: Accept-Encoding
+Set-Cookie: CookieConsentPolicy=0:1; path=/; expires=Sun, 09-May-2027 10:14:14 GMT; Max-Age=31536000; secure
+Set-Cookie: LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Sun, 09-May-2027 10:14:14 GMT; Max-Age=31536000; secure
+Content-Security-Policy: upgrade-insecure-requests
+Strict-Transport-Security: max-age=63072000; includeSubDomains
+Cache-Control: public,max-age=600
+Set-Cookie: BrowserId=1MYtYUuPEfGkjW12cgOTCQ; path=/; expires=Sun, 09-May-2027 10:14:14 GMT; Max-Age=31536000; secure; SameSite=None
+X-Content-Type-Options: nosniff
+P3P: CP="CUR OTR STA"
+Expires: Sat, 09 May 2026 10:24:14 GMT
+Last-Modified: Sat, 09 May 2026 10:14:14 GMT
+Content-Security-Policy: frame-ancestors 'self'
+X-FRAME-OPTIONS: SAMEORIGIN
+Content-Type: text/html;charset=UTF-8
+Transfer-Encoding: chunked
+

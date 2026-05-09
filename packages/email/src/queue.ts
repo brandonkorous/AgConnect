@@ -4,6 +4,7 @@ export const QUEUE_NAMES = {
   waitlistConfirm: 'email.waitlist.confirm',
   waitlistWelcome: 'email.waitlist.welcome',
   employer: 'email.employer',
+  grantReport: 'email.grant.report',
 } as const;
 
 // Waitlist signups are platform-level (no owning tenant). The job runs
@@ -35,6 +36,17 @@ export type EmployerEmailJob = {
   employerId: string;
   tenantId: string;
   to: string | null;                           // null → resolved from employer_profiles.contactEmail at send time
+  locale: 'en' | 'es';
+  vars: Record<string, string | number | null>;
+  idempotencyKey: string;
+};
+
+export type GrantReportEmailTemplate = 'grant.report_ready';
+
+export type GrantReportEmailJob = {
+  template: GrantReportEmailTemplate;
+  reportRunId: string;
+  to: string;
   locale: 'en' | 'es';
   vars: Record<string, string | number | null>;
   idempotencyKey: string;
@@ -73,6 +85,7 @@ export async function getBoss(): Promise<PgBoss> {
       boss.createQueue(QUEUE_NAMES.waitlistConfirm),
       boss.createQueue(QUEUE_NAMES.waitlistWelcome),
       boss.createQueue(QUEUE_NAMES.employer),
+      boss.createQueue(QUEUE_NAMES.grantReport),
     ]);
     cachedBoss = boss;
     return boss;
@@ -125,6 +138,17 @@ export async function enqueueWaitlistWelcome(payload: WaitlistWelcomeJob): Promi
 export async function enqueueEmployerEmail(payload: EmployerEmailJob): Promise<string | null> {
   const boss = await getBoss();
   return boss.send(QUEUE_NAMES.employer, payload, {
+    ...SEND_OPTS,
+    singletonKey: payload.idempotencyKey,
+    singletonSeconds: 24 * 60 * 60,
+  });
+}
+
+export async function enqueueGrantReportEmail(
+  payload: GrantReportEmailJob,
+): Promise<string | null> {
+  const boss = await getBoss();
+  return boss.send(QUEUE_NAMES.grantReport, payload, {
     ...SEND_OPTS,
     singletonKey: payload.idempotencyKey,
     singletonSeconds: 24 * 60 * 60,

@@ -309,37 +309,41 @@ export const landing: TranslationBundle = {
         en: "VERIFIED GROWER",
         es: "PRODUCTOR VERIFICADO",
     },
+    "featured_jobs.eyebrow_dynamic": {
+        en: "Featured · live this week · {count} active",
+        es: "Destacados · esta semana · {count} activos",
+    },
     "featured_jobs.eyebrow": {
-        en: "Featured · live this week · 142 active",
-        es: "Destacados · esta semana · 142 activos",
+        en: "Featured · live this week",
+        es: "Destacados · esta semana",
     },
     "featured_jobs.filter.all": {
-        en: "All 142",
-        es: "Todos · 142",
+        en: "All",
+        es: "Todos",
     },
     "featured_jobs.filter.fresno": {
-        en: "Fresno · 48",
-        es: "Fresno · 48",
+        en: "Fresno",
+        es: "Fresno",
     },
     "featured_jobs.filter.kern": {
-        en: "Kern · 28",
-        es: "Kern · 28",
+        en: "Kern",
+        es: "Kern",
     },
     "featured_jobs.filter.kings": {
-        en: "Kings · 14",
-        es: "Kings · 14",
+        en: "Kings",
+        es: "Kings",
     },
     "featured_jobs.filter.label": {
         en: "Filter by county",
         es: "Filtrar por condado",
     },
     "featured_jobs.filter.madera": {
-        en: "Madera · 21",
-        es: "Madera · 21",
+        en: "Madera",
+        es: "Madera",
     },
     "featured_jobs.filter.tulare": {
-        en: "Tulare · 31",
-        es: "Tulare · 31",
+        en: "Tulare",
+        es: "Tulare",
     },
     "featured_jobs.headline": {
         en: "Real work, posted by name.",
@@ -445,9 +449,13 @@ export const landing: TranslationBundle = {
         en: "Sort: Wage, high → low",
         es: "Ordenar: Salario, alto → bajo",
     },
+    "featured_jobs.view_all_dynamic": {
+        en: "Browse all {count} jobs",
+        es: "Ver los {count} trabajos",
+    },
     "featured_jobs.view_all": {
-        en: "Browse all 142 jobs",
-        es: "Ver los 142 trabajos",
+        en: "Browse all jobs",
+        es: "Ver todos los trabajos",
     },
     "featured_training.body": {
         en: "Programs run by Fresno EOC, CRLA, and other regional partners — funded by CDFA, F3, and CalOSBA. Every completion produces a bilingual, e-signed certificate that lives in your skills wallet.",
@@ -662,8 +670,8 @@ export const landing: TranslationBundle = {
         es: "Misión y valores",
     },
     "footer.col.company.status": {
-        en: "Status · 99.94%",
-        es: "Estado · 99.94%",
+        en: "Status · coming soon",
+        es: "Estado · próximamente",
     },
     "footer.col.company.title": {
         en: "Company",
@@ -885,9 +893,13 @@ export const landing: TranslationBundle = {
         en: "AgConn connects Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs — bilingual from day one, with a portable record of your skills that travels with you to the next harvest.",
         es: "AgConn conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA — bilingüe desde el primer día, con un registro portátil de tus habilidades que te acompaña a la siguiente cosecha.",
     },
-    "hero.trust.line": {
-        en: "Trusted by 2,400+ workers and 180+ verified employers across the Valley",
-        es: "2,400+ trabajadores y 180+ empleadores verificados confían en AgConn",
+    "hero.trust.line_dynamic": {
+        en: "Trusted by {workers} workers and {employers} verified employers across the Valley",
+        es: "{workers} trabajadores y {employers} empleadores verificados confían en AgConn",
+    },
+    "hero.trust.line_fallback": {
+        en: "Built with Central Valley farmworkers and verified employers",
+        es: "Construido con trabajadores del Valle Central y empleadores verificados",
     },
     "hero.trust.rating": {
         en: "4.9 / 5",
@@ -1042,8 +1054,8 @@ export const landing: TranslationBundle = {
         es: "Sitemap",
     },
     "legal.status": {
-        en: "All systems normal",
-        es: "Todos los sistemas normales",
+        en: "Status · coming soon",
+        es: "Estado · próximamente",
     },
     "legal.terms_en": {
         en: "Terms",

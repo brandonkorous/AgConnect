@@ -22,8 +22,8 @@ export const marketing: TranslationBundle = {
         es: "¿Cuándo se cobra a un empleador en AgConn?",
     },
     "faq_extras.platform_uptime.answer": {
-        en: "AgConn targets 99.9% uptime measured monthly. SMS sign-in, job browse, and applications are the highest-priority paths. Status updates publish at status.agconn.com when an incident affects more than five minutes of a public surface.",
-        es: "AgConn tiene como meta 99.9% de disponibilidad medida mensualmente. El inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones son las prioridades más altas. Los avisos de incidentes se publican en status.agconn.com cuando un incidente afecta más de cinco minutos a una superficie pública.",
+        en: "AgConn targets 99.9% uptime measured monthly. SMS sign-in, job browse, and applications are the highest-priority paths. A public status page is coming soon; until then, incidents that affect a public surface for more than five minutes are posted to security@agconn.com subscribers and on the trust page.",
+        es: "AgConn tiene como meta 99.9% de disponibilidad medida mensualmente. El inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones son las prioridades más altas. La página pública de estado estará disponible próximamente; mientras tanto, los incidentes que afectan una superficie pública por más de cinco minutos se publican a las personas suscritas a security@agconn.com y en la página de confianza.",
     },
     "faq_extras.platform_uptime.question": {
         en: "What is the platform uptime guarantee?",
@@ -126,8 +126,8 @@ export const marketing: TranslationBundle = {
         es: "Cómo aparece el trabajo.",
     },
     "impact_page.intro": {
-        en: "Live numbers on placements, wages, training completions, and verified employers — refreshed nightly, WIOA-aligned, and grant-defensible.",
-        es: "Números en vivo sobre colocaciones, salarios, capacitaciones completadas y empleadores verificados — actualizados cada noche, alineados con WIOA y defendibles para subvenciones.",
+        en: "Public numbers on placements, wages, training completions, and verified employers — refreshed nightly, WIOA-aligned, and grant-defensible. Each tile stays under \"coming soon\" until enough records have accrued to publish without re-identifying anyone.",
+        es: "Números públicos sobre colocaciones, salarios, capacitaciones completadas y empleadores verificados — actualizados cada noche, alineados con WIOA y defendibles para subvenciones. Cada bloque permanece como \"próximamente\" hasta que se hayan acumulado suficientes registros para publicarlo sin que nadie pueda ser identificado.",
     },
     "impact_page.last_updated": {
         en: "Last updated {time}",
@@ -136,6 +136,10 @@ export const marketing: TranslationBundle = {
     "impact_page.live_label": {
         en: "Live · last 12 months",
         es: "En vivo · últimos 12 meses",
+    },
+    "impact_page.pre_live_label": {
+        en: "Refreshed nightly · first numbers post-launch",
+        es: "Actualizado cada noche · primeros números después del lanzamiento",
     },
     "impact_page.meta.description": {
         en: "Live impact dashboard for AgConn — Central Valley placements, median wage at hire, training completions, and verified employers, refreshed nightly.",
@@ -524,64 +528,64 @@ export const marketing: TranslationBundle = {
     // ========================================================================
     // /promotora (Workers → Promotora resources)
     // ========================================================================
-    "promotora.eyebrow": { en: "Promotora resources", es: "Recursos para promotoras" },
+    "promotora.eyebrow": { en: "Promotora resources · coming soon", es: "Recursos para promotoras · próximamente" },
     "promotora.headline": {
-        en: "Built with promotora networks, not around them.",
-        es: "Construido con redes de promotoras, no a su alrededor.",
+        en: "Building with promotora networks, not around them.",
+        es: "Construyendo con redes de promotoras, no a su alrededor.",
     },
     "promotora.intro": {
-        en: "AgConn launches in partnership with the promotora networks already trusted across the Central Valley. If you're a community health worker or outreach educator, here's what you need to introduce AgConn to the workers you serve.",
-        es: "AgConn se lanza en alianza con las redes de promotoras ya confiables en todo el Valle Central. Si eres trabajadora comunitaria de salud o educadora de extensión, aquí tienes lo que necesitas para presentar AgConn a los trabajadores que sirves.",
+        en: "AgConn is forming partnerships with promotora networks already trusted across the Central Valley. The full resource library — bilingual flyers, conversation scripts, wallet cards, monthly training webinars — is coming soon. If you're a community health worker or outreach educator, email partnerships@agconn.com to be in the first cohort.",
+        es: "AgConn está formando alianzas con redes de promotoras ya confiables en todo el Valle Central. La biblioteca completa de recursos — folletos bilingües, guías de conversación, tarjetas de bolsillo, webinars mensuales de capacitación — estará disponible próximamente. Si eres trabajadora comunitaria de salud o educadora de extensión, escribe a partnerships@agconn.com para estar en la primera cohorte.",
     },
     "promotora.meta.title": { en: "Promotora resources — AgConn", es: "Recursos para promotoras — AgConn" },
     "promotora.meta.description": {
         en: "Bilingual outreach materials, training webinars, and partnership info for promotora networks introducing AgConn to Central Valley farmworker communities.",
         es: "Materiales bilingües de extensión, webinars de capacitación e información de alianzas para redes de promotoras que presentan AgConn a comunidades de trabajadores agrícolas del Valle Central.",
     },
-    "promotora.materials.eyebrow": { en: "Outreach materials", es: "Materiales de extensión" },
+    "promotora.materials.eyebrow": { en: "Outreach materials · coming soon", es: "Materiales de extensión · próximamente" },
     "promotora.materials.headline": {
-        en: "Print, share, and distribute.",
-        es: "Imprime, comparte y distribuye.",
+        en: "Designed with promotoras, in production now.",
+        es: "Diseñados con promotoras, en producción ahora.",
     },
     "promotora.materials.flyer.title": { en: "One-page flyer (PDF)", es: "Folleto de una página (PDF)" },
     "promotora.materials.flyer.body": {
-        en: "Bilingual single-page introduction. Print at home or any FedEx — designed for clipboard distribution at the worksite, parking lot, or community event.",
-        es: "Introducción bilingüe de una página. Imprime en casa o en cualquier FedEx — diseñado para distribución con portapapeles en el sitio de trabajo, estacionamiento o evento comunitario.",
+        en: "Bilingual single-page introduction, designed for clipboard distribution at the worksite, parking lot, or community event. Coming soon. Email to receive the first version when it ships.",
+        es: "Introducción bilingüe de una página, diseñada para distribución con portapapeles en el sitio de trabajo, estacionamiento o evento comunitario. Próximamente. Escribe para recibir la primera versión cuando esté disponible.",
     },
-    "promotora.materials.flyer.cta": { en: "Download flyer →", es: "Descargar folleto →" },
+    "promotora.materials.flyer.cta": { en: "Request the flyer →", es: "Solicitar el folleto →" },
     "promotora.materials.script.title": { en: "Conversation script", es: "Guía de conversación" },
     "promotora.materials.script.body": {
-        en: "5-minute talking points for door-to-door or worksite intros. Written by promotoras, reviewed by AgConn. Covers the most common worker questions about signup, privacy, and what AgConn does.",
-        es: "Puntos de conversación de 5 minutos para presentaciones puerta a puerta o en sitios de trabajo. Escrito por promotoras, revisado por AgConn. Cubre las preguntas más comunes sobre registro, privacidad y qué hace AgConn.",
+        en: "5-minute talking points for door-to-door or worksite intros. Written with promotora networks, covers the most common worker questions about signup, privacy, and what AgConn does. Coming soon.",
+        es: "Puntos de conversación de 5 minutos para presentaciones puerta a puerta o en sitios de trabajo. Escrita con redes de promotoras, cubre las preguntas más comunes sobre registro, privacidad y qué hace AgConn. Próximamente.",
     },
-    "promotora.materials.script.cta": { en: "Download script →", es: "Descargar guía →" },
-    "promotora.materials.cards.title": { en: "Wallet cards (50/pack)", es: "Tarjetas de bolsillo (paquete de 50)" },
+    "promotora.materials.script.cta": { en: "Request the script →", es: "Solicitar la guía →" },
+    "promotora.materials.cards.title": { en: "Wallet cards", es: "Tarjetas de bolsillo" },
     "promotora.materials.cards.body": {
-        en: "Pocket-sized bilingual signup card. The phone number to text and the QR code to scan, no longer than a credit card. We mail packs free to verified promotora networks.",
-        es: "Tarjeta bilingüe de registro tamaño bolsillo. El número de SMS y el código QR para escanear, no más grande que una tarjeta de crédito. Enviamos paquetes gratis a redes de promotoras verificadas.",
+        en: "Pocket-sized bilingual signup card — the SMS number and the QR code, no larger than a credit card. We'll mail packs free to verified promotora networks once the first run prints. Email to be on the list.",
+        es: "Tarjeta bilingüe de registro tamaño bolsillo — el número de SMS y el código QR, no más grande que una tarjeta de crédito. Enviaremos paquetes gratis a redes de promotoras verificadas en cuanto se imprima la primera tirada. Escribe para estar en la lista.",
     },
     "promotora.materials.cards.cta": { en: "Request wallet cards →", es: "Solicitar tarjetas →" },
-    "promotora.training.eyebrow": { en: "Training", es: "Capacitación" },
+    "promotora.training.eyebrow": { en: "Training · coming soon", es: "Capacitación · próximamente" },
     "promotora.training.headline": {
-        en: "Monthly bilingual webinar.",
-        es: "Webinar bilingüe mensual.",
+        en: "Bilingual webinars, starting soon.",
+        es: "Webinars bilingües, empezando pronto.",
     },
     "promotora.training.body": {
-        en: "First Wednesday of every month, 6 PM Pacific. Walk through new features, hear from other promotora networks, ask questions. Recorded and posted in English and Spanish.",
-        es: "Primer miércoles de cada mes, 6 PM Pacífico. Recorrido de nuevas funciones, escucha de otras redes de promotoras, preguntas y respuestas. Grabado y publicado en inglés y español.",
+        en: "We're launching a monthly bilingual webinar with promotora networks — new features, questions, and learnings from the field. Recorded and posted in English and Spanish. Sign up to hear when the first session lands.",
+        es: "Estamos lanzando un webinar bilingüe mensual con redes de promotoras — nuevas funciones, preguntas y aprendizajes del campo. Grabado y publicado en inglés y español. Suscríbete para enterarte cuándo es la primera sesión.",
     },
     "promotora.training.cta": {
         en: "Sign up for training updates →",
         es: "Suscribirse a avisos de capacitación →",
     },
-    "promotora.partner.eyebrow": { en: "Partnership", es: "Alianza" },
+    "promotora.partner.eyebrow": { en: "Partnership · coming soon", es: "Alianza · próximamente" },
     "promotora.partner.headline": {
-        en: "Run your own AgConn instance.",
-        es: "Maneja tu propia instancia de AgConn.",
+        en: "Your own AgConn instance, on the roadmap.",
+        es: "Tu propia instancia de AgConn, en el plan.",
     },
     "promotora.partner.body": {
-        en: "Workforce boards, county agencies, and large promotora networks can run AgConn as their own tenant — your branding, your reporting, your county set. Free for community-serving organizations through end of 2026.",
-        es: "Juntas laborales, agencias del condado y grandes redes de promotoras pueden manejar AgConn como su propia instancia — tu marca, tus reportes, tu conjunto de condados. Gratis para organizaciones comunitarias hasta fin de 2026.",
+        en: "Workforce boards, county agencies, and large promotora networks will be able to run AgConn as their own tenant — your branding, your reporting, your county set. Free for community-serving organizations through end of 2026 once the program opens. Email partnerships@agconn.com to be considered for the first cohort.",
+        es: "Juntas laborales, agencias del condado y grandes redes de promotoras podrán manejar AgConn como su propia instancia — tu marca, tus reportes, tu conjunto de condados. Gratis para organizaciones comunitarias hasta fin de 2026 una vez que el programa abra. Escribe a partnerships@agconn.com para ser considerado en la primera cohorte.",
     },
     "promotora.partner.cta": { en: "Email partnerships@agconn.com", es: "Escribir a partnerships@agconn.com" },
 
@@ -844,6 +848,20 @@ export const marketing: TranslationBundle = {
         en: "Every privileged action — admin reads, exports, deletions — is logged with HMAC tamper-evidence. Workers can request their audit trail.",
         es: "Cada acción privilegiada — lecturas de admin, exportaciones, eliminaciones — se registra con evidencia HMAC contra manipulación. Los trabajadores pueden solicitar su registro de auditoría.",
     },
+    "trust.status.eyebrow": { en: "Service status", es: "Estado del servicio" },
+    "trust.status.headline": {
+        en: "A public status page is coming soon.",
+        es: "La página pública de estado estará disponible próximamente.",
+    },
+    "trust.status.body": {
+        en: "AgConn targets 99.9% uptime measured monthly across SMS sign-in, job browse, and applications. Until the public status page ships, we post incidents that affect a public surface for more than five minutes here on the trust page and to anyone subscribed at security@agconn.com.",
+        es: "AgConn tiene como meta 99.9% de disponibilidad medida mensualmente en el inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones. Hasta que la página pública de estado esté disponible, publicamos los incidentes que afectan una superficie pública por más de cinco minutos aquí en la página de confianza y a quienes se suscriban en security@agconn.com.",
+    },
+    "trust.status.subscribe": {
+        en: "To receive incident notices, email",
+        es: "Para recibir avisos de incidentes, escribe a",
+    },
+
     "trust.report.eyebrow": { en: "Report a concern", es: "Reportar una preocupación" },
     "trust.report.headline": { en: "If something looks wrong, tell us.", es: "Si algo se ve mal, dinos." },
     "trust.report.body": {
@@ -1037,8 +1055,8 @@ export const marketing: TranslationBundle = {
         es: "Reportes que tu financiador aceptará.",
     },
     "partners_page.wioa.body": {
-        en: "Built-in CSV and XLSX exports for WIOA quarterly reporting and CalJOBS workforce data. Field mappings reviewed against the most recent CDFA / EDD reporting templates. No manual reformatting; auditable from raw data to final number.",
-        es: "Exportaciones CSV y XLSX integradas para reportes trimestrales WIOA y datos laborales CalJOBS. Mapeo de campos revisado contra las plantillas de reporte CDFA / EDD más recientes. Sin reformateo manual; auditable desde los datos en bruto hasta el número final.",
+        en: "Built-in CSV and XLSX exports of placement data for WIOA quarterly reporting and CalJOBS submissions. Anonymized participant IDs by default, with an opt-in for names. Field labels follow WIOA Title I conventions and are validated with a CDFA or EDD partner before each program year. Every export is logged and re-downloadable — auditable from raw data to final number.",
+        es: "Exportaciones CSV y XLSX integradas de datos de colocación para reportes trimestrales WIOA y envíos a CalJOBS. IDs anónimos de participantes por defecto, con opción para incluir nombres. Los nombres de campo siguen las convenciones del Título I de WIOA y los validamos con un socio de CDFA o EDD antes de cada año del programa. Cada exportación queda registrada y se puede volver a descargar — auditable desde los datos en bruto hasta el número final.",
     },
     "partners_page.wioa.cta": { en: "See the impact dashboard →", es: "Ver el panel de impacto →" },
 
@@ -1836,7 +1854,7 @@ export const marketing: TranslationBundle = {
     "pricing_page.compare.row.in_app_inbox.seed": { en: "✓", es: "✓" },
     "pricing_page.compare.row.in_app_inbox.field": { en: "✓", es: "✓" },
     "pricing_page.compare.row.in_app_inbox.farm": { en: "✓", es: "✓" },
-    "pricing_page.compare.row.broadcast.label": { en: "Broadcast SMS / WhatsApp / in-app", es: "Difusión SMS / WhatsApp / interna" },
+    "pricing_page.compare.row.broadcast.label": { en: "Broadcast SMS + in-app (WhatsApp coming soon)", es: "Difusión SMS + interna (WhatsApp próximamente)" },
     "pricing_page.compare.row.broadcast.seed": { en: "—", es: "—" },
     "pricing_page.compare.row.broadcast.field": { en: "✓", es: "✓" },
     "pricing_page.compare.row.broadcast.farm": { en: "✓", es: "✓" },

@@ -283,6 +283,16 @@ export type PayrollLineView = {
   role: string;
   hours: number;
   overtimeHours: number;
+  nonProductiveHours: number;
+  restPeriodHours: number;
+  regularPayCents: number;
+  overtimePayCents: number;
+  pieceRatePayCents: number;
+  nonProductivePayCents: number;
+  restPeriodPayCents: number;
+  aewrTopUpCents: number;
+  appliedFloorCents: number;
+  isH2a: boolean;
   grossCents: number;
   bonusCents: number;
   netCents: number;
@@ -309,6 +319,16 @@ type ApiPayrollLine = {
   role: string | null;
   hours: number;
   overtimeHours: number;
+  nonProductiveHours: number;
+  restPeriodHours: number;
+  regularPayCents: number;
+  overtimePayCents: number;
+  pieceRatePayCents: number;
+  nonProductivePayCents: number;
+  restPeriodPayCents: number;
+  aewrTopUpCents: number;
+  appliedFloorCents: number;
+  isH2a: boolean;
   grossCents: number;
   bonusCents: number;
   netCents: number;
@@ -442,6 +462,16 @@ export async function listPayrollLines(periodId?: string): Promise<PayrollLineVi
       role: l.role ?? '',
       hours: l.hours,
       overtimeHours: l.overtimeHours,
+      nonProductiveHours: l.nonProductiveHours,
+      restPeriodHours: l.restPeriodHours,
+      regularPayCents: l.regularPayCents,
+      overtimePayCents: l.overtimePayCents,
+      pieceRatePayCents: l.pieceRatePayCents,
+      nonProductivePayCents: l.nonProductivePayCents,
+      restPeriodPayCents: l.restPeriodPayCents,
+      aewrTopUpCents: l.aewrTopUpCents,
+      appliedFloorCents: l.appliedFloorCents,
+      isH2a: l.isH2a,
       grossCents: l.grossCents,
       bonusCents: l.bonusCents,
       netCents: l.netCents,
@@ -450,6 +480,85 @@ export async function listPayrollLines(periodId?: string): Promise<PayrollLineVi
   } catch (e) {
     console.error('listPayrollLines failed', e);
     return [];
+  }
+}
+
+export type H2aPayrollContext = {
+  participatesInH2a: boolean;
+  aewrHourlyCents: number | null;
+  stateCode: string;
+  effectiveFrom: string | null;
+  source: string | null;
+};
+
+export async function fetchH2aPayrollContext(): Promise<H2aPayrollContext | null> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<H2aPayrollContext>('/v1/employer/payroll/h2a-context', {
+      handleErrorInline: true,
+    });
+    if (!isOk(res)) return null;
+    return res.data;
+  } catch (e) {
+    console.error('fetchH2aPayrollContext failed', e);
+    return null;
+  }
+}
+
+export type WageStatementView = {
+  line: {
+    id: string;
+    hours: number;
+    overtimeHours: number;
+    nonProductiveHours: number;
+    restPeriodHours: number;
+    regularPayCents: number;
+    overtimePayCents: number;
+    pieceRatePayCents: number;
+    nonProductivePayCents: number;
+    restPeriodPayCents: number;
+    aewrTopUpCents: number;
+    appliedFloorCents: number;
+    isH2a: boolean;
+    grossCents: number;
+    bonusCents: number;
+    taxesCents: number;
+    netCents: number;
+  };
+  period: {
+    id: string;
+    startDate: string;
+    endDate: string;
+    payDate: string;
+    status: 'draft' | 'approved' | 'paid';
+  };
+  worker: { id: string; firstName: string; lastName: string };
+  employer: {
+    legalName: string;
+    dbaName: string | null;
+    streetAddress: string | null;
+    city: string | null;
+    stateCode: string | null;
+    postalCode: string | null;
+    flcLicenseNum: string | null;
+  };
+};
+
+export async function fetchWageStatement(
+  periodId: string,
+  lineId: string,
+): Promise<WageStatementView | null> {
+  try {
+    const client = await getServerApiClient();
+    const res = await client.get<WageStatementView>(
+      `/v1/employer/payroll/periods/${periodId}/lines/${lineId}/wage-statement`,
+      { handleErrorInline: true },
+    );
+    if (!isOk(res)) return null;
+    return res.data;
+  } catch (e) {
+    console.error('fetchWageStatement failed', e);
+    return null;
   }
 }
 
@@ -640,6 +749,12 @@ export type FolderKey = 'all' | 'candidates' | 'crew' | 'foremen' | 'broadcasts'
 
 export type FolderCounts = Record<FolderKey, number>;
 
+export type BroadcastDeliverySummary = {
+  queued: number;
+  optedOut: number;
+  noPhone: number;
+};
+
 export type MessageView = {
   id: string;
   threadId: string;
@@ -648,6 +763,7 @@ export type MessageView = {
   whenLabel: string;
   /** Short-time label of when a counterparty read this message; null if unread. */
   readByOthersLabel: string | null;
+  broadcastDelivery: BroadcastDeliverySummary | null;
 };
 
 type ApiConversation = {
@@ -671,6 +787,7 @@ type ApiMessage = {
   channel: 'app' | 'sms' | 'whatsapp' | 'broadcast';
   direction: 'inbound' | 'outbound';
   createdAt: string;
+  broadcastDelivery: BroadcastDeliverySummary | null;
 };
 
 export async function listThreads(folder: FolderKey = 'all'): Promise<{
@@ -737,6 +854,7 @@ export async function listMessages(threadId: string, employerUserId?: string): P
         body: m.body,
         whenLabel: shortTime(m.createdAt),
         readByOthersLabel,
+        broadcastDelivery: m.broadcastDelivery,
       };
     });
   } catch (e) {

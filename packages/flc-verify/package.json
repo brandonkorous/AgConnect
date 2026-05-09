@@ -1,0 +1,27 @@
+{
+  "name": "@agconn/flc-verify",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "types": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agconn/db": "workspace:*",
+    "pg-boss": "12.18.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "6.0.3"
+  }
+}

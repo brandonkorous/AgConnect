@@ -84,7 +84,7 @@ async function emitAudit(args: {
 }
 
 async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Promise<void> {
-  const { tenantId, userId, template, vars, bypassQuietHours } = job.data;
+  const { tenantId, userId, template, vars, bypassQuietHours, messageId } = job.data;
 
   if (!bypassQuietHours && isQuietHours()) {
     throw new Error('quiet-hours-deferred');
@@ -102,6 +102,7 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
         data: {
           tenantId,
           userId,
+          messageId: messageId ?? null,
           template,
           locale: user?.preferredLang ?? 'es',
           toPhone: '',
@@ -126,6 +127,7 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
         data: {
           tenantId,
           userId,
+          messageId: messageId ?? null,
           template,
           locale: user.preferredLang,
           toPhone: user.phone,
@@ -150,6 +152,7 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
       data: {
         tenantId,
         userId,
+        messageId: messageId ?? null,
         template,
         locale: user.preferredLang,
         toPhone: user.phone,

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { CreateConversationBody, SendMessageBody, ConversationListQuery } from '@agconn/schemas';
+import { enqueueSms } from '@agconn/sms';
 import {
   requireAuth,
   requireRole,
@@ -289,15 +290,19 @@ employerMessagesRoutes.get('/:id/messages', async (c) => {
   });
 
   return ok(c, {
-    messages: msgs.map((m) => ({
-      id: m.id,
-      conversationId: m.conversationId,
-      senderUserId: m.senderUserId,
-      body: m.body,
-      channel: m.channel,
-      direction: m.direction,
-      createdAt: m.createdAt.toISOString(),
-    })),
+    messages: msgs.map((m) => {
+      const meta = (m.metadata ?? {}) as { broadcast?: { queued: number; optedOut: number; noPhone: number } };
+      return {
+        id: m.id,
+        conversationId: m.conversationId,
+        senderUserId: m.senderUserId,
+        body: m.body,
+        channel: m.channel,
+        direction: m.direction,
+        createdAt: m.createdAt.toISOString(),
+        broadcastDelivery: meta.broadcast ?? null,
+      };
+    }),
     counterpartiesRead: otherParticipants.map((p) => ({
       userId: p.userId,
       lastReadAt: p.lastReadAt?.toISOString() ?? null,
@@ -316,6 +321,35 @@ employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), 
   });
   if (!co) return err(c, 404, 'not_found');
 
+  const isBroadcast = co.channel === 'broadcast';
+
+  let queued = 0;
+  let optedOut = 0;
+  let noPhone = 0;
+
+  if (isBroadcast) {
+    const recipients = await c.var.db.conversationParticipant.findMany({
+      where: { conversationId: id, userId: { not: userId }, leftAt: null },
+      include: { user: { select: { id: true, phone: true } } },
+    });
+    const phones = recipients.map((r) => r.user.phone).filter((p): p is string => Boolean(p));
+    const optOuts = phones.length
+      ? await c.var.db.smsOptOut.findMany({ where: { phone: { in: phones } } })
+      : [];
+    const optOutSet = new Set(optOuts.map((o) => o.phone));
+    for (const r of recipients) {
+      if (!r.user.phone) noPhone += 1;
+      else if (optOutSet.has(r.user.phone)) optedOut += 1;
+      else queued += 1;
+    }
+  }
+
+  const employer = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: { dbaName: true, legalName: true },
+  });
+  const employerLabel = employer?.dbaName ?? employer?.legalName ?? 'AgConn';
+
   const msg = await c.var.db.$transaction(async (tx) => {
     const created = await tx.message.create({
       data: {
@@ -324,13 +358,15 @@ employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), 
         senderUserId: userId,
         body: body.body,
         channel: body.channel ?? co.channel,
+        metadata: isBroadcast
+          ? { broadcast: { queued, optedOut, noPhone } }
+          : {},
       },
     });
     await tx.conversation.update({
       where: { id },
       data: { lastMessageAt: created.createdAt },
     });
-    // Bump unread on every other participant.
     await tx.conversationParticipant.updateMany({
       where: { conversationId: id, userId: { not: userId }, leftAt: null },
       data: { unreadCount: { increment: 1 } },
@@ -338,10 +374,43 @@ employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), 
     return created;
   });
 
+  if (isBroadcast) {
+    const recipients = await c.var.db.conversationParticipant.findMany({
+      where: { conversationId: id, userId: { not: userId }, leftAt: null },
+      include: { user: { select: { id: true, phone: true } } },
+    });
+    for (const r of recipients) {
+      if (!r.user.phone) continue;
+      try {
+        await enqueueSms({
+          tenantId,
+          userId: r.userId,
+          template: 'employer.broadcast',
+          vars: { employer: employerLabel, body: body.body },
+          jobKey: `broadcast-${msg.id}-${r.userId}`,
+          messageId: msg.id,
+        });
+      } catch (e) {
+        console.error('[broadcast] enqueueSms failed', {
+          messageId: msg.id,
+          recipient: r.userId,
+          err: e instanceof Error ? e.message : String(e),
+        });
+      }
+    }
+  }
+
   await c.var.audit.log({
     action: 'employer.message.sent',
     resourceId: msg.id,
-    metadata: { conversationId: id, channel: msg.channel },
+    metadata: {
+      conversationId: id,
+      channel: msg.channel,
+      broadcast: isBroadcast,
+      queued,
+      optedOut,
+      noPhone,
+    },
   });
 
   return ok(c, {
@@ -353,6 +422,66 @@ employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), 
       channel: msg.channel,
       direction: msg.direction,
       createdAt: msg.createdAt.toISOString(),
+      broadcastDelivery: isBroadcast ? { queued, optedOut, noPhone } : null,
     },
   });
 });
+
+// Per-recipient delivery state for a broadcast message.
+employerMessagesRoutes.get('/:id/messages/:messageId/deliveries', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+  const messageId = c.req.param('messageId');
+
+  const co = await c.var.db.conversation.findFirst({
+    where: { id, tenantId, employerId: userId, deletedAt: null },
+  });
+  if (!co) return err(c, 404, 'not_found');
+
+  const message = await c.var.db.message.findFirst({
+    where: { id: messageId, conversationId: id, tenantId },
+  });
+  if (!message) return err(c, 404, 'not_found');
+
+  const logs = await c.var.db.smsLog.findMany({
+    where: { tenantId, messageId },
+    orderBy: { queuedAt: 'asc' },
+  });
+
+  return ok(c, {
+    deliveries: logs.map((l) => ({
+      id: l.id,
+      userId: l.userId,
+      toPhone: l.toPhone,
+      status: l.status,
+      queuedAt: l.queuedAt.toISOString(),
+      sentAt: l.sentAt?.toISOString() ?? null,
+      deliveredAt: l.deliveredAt?.toISOString() ?? null,
+      failedAt: l.failedAt?.toISOString() ?? null,
+      optedOutAt: l.optedOutAt?.toISOString() ?? null,
+      errorCode: l.errorCode,
+    })),
+    summary: summarize(logs.map((l) => l.status)),
+  });
+});
+
+function summarize(statuses: string[]): {
+  queued: number;
+  sending: number;
+  sent: number;
+  delivered: number;
+  failed: number;
+  dropped: number;
+} {
+  const out = { queued: 0, sending: 0, sent: 0, delivered: 0, failed: 0, dropped: 0 };
+  for (const s of statuses) {
+    if (s === 'queued') out.queued += 1;
+    else if (s === 'sending') out.sending += 1;
+    else if (s === 'sent') out.sent += 1;
+    else if (s === 'delivered') out.delivered += 1;
+    else if (s === 'failed') out.failed += 1;
+    else if (s === 'dropped') out.dropped += 1;
+  }
+  return out;
+}

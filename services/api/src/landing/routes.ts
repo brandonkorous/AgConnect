@@ -10,6 +10,7 @@ import { featuredJobsRoutes } from './featured-jobs.js';
 import { featuredTrainingRoutes } from './featured-training.js';
 import { impactRoutes } from './impact.js';
 import { founderSlotsRoutes } from './founder-slots.js';
+import { verifyCertRoutes } from './verify-cert.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 import {
   serviceNoTenantMiddleware,
@@ -25,6 +26,7 @@ landingRoutes.route('/featured-jobs', featuredJobsRoutes);
 landingRoutes.route('/featured-training', featuredTrainingRoutes);
 landingRoutes.route('/impact', impactRoutes);
 landingRoutes.route('/founder-slots', founderSlotsRoutes);
+landingRoutes.route('/verify-cert', verifyCertRoutes);
 
 // Waitlist signup, confirm, and unsubscribe all run under the service role
 // without a pinned tenant. Anonymous role only grants INSERT on waitlist —

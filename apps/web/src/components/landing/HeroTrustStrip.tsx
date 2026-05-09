@@ -1,6 +1,7 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { getImpact } from '@/lib/api/landing';
 
 const avatars = [
     { initial: 'M', bg: 'bg-accent', fg: 'text-accent-content' },
@@ -9,8 +10,24 @@ const avatars = [
     { initial: 'L', bg: 'bg-base-300', fg: 'text-base-content' },
 ];
 
-export function HeroTrustStrip() {
-    const t = useTranslations('landing.hero.trust');
+function formatCount(n: number): string {
+    return n.toLocaleString('en-US') + '+';
+}
+
+export async function HeroTrustStrip() {
+    const t = await getTranslations('landing.hero.trust');
+    const impact = await getImpact();
+
+    const workers = impact?.workersTotal ?? null;
+    const employers = impact?.verifiedEmployers ?? 0;
+
+    const line =
+        workers && employers > 0
+            ? t('line_dynamic', {
+                  workers: formatCount(workers),
+                  employers: formatCount(employers),
+              })
+            : t('line_fallback');
 
     return (
         <div className="flex items-center gap-4 pt-4">
@@ -35,7 +52,7 @@ export function HeroTrustStrip() {
                     ))}
                     <span className="text-base-content ml-1 font-sans text-sm font-semibold">{t('rating')}</span>
                 </div>
-                <p className="text-secondary font-sans text-sm leading-snug">{t('line')}</p>
+                <p className="text-secondary font-sans text-sm leading-snug">{line}</p>
             </div>
         </div>
     );

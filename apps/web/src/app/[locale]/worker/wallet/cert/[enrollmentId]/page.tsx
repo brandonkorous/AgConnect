@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faAward, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faAward } from '@fortawesome/free-solid-svg-icons';
 import { fetchCert } from '@/lib/api/wallet';
+import { PrintCertButton } from '@/components/worker/PrintCertButton';
 
 type Props = { params: Promise<{ locale: string; enrollmentId: string }> };
 
@@ -19,13 +20,13 @@ export default async function CertPreviewPage({ params }: Props) {
     <div className="px-6 pb-16 pt-8 lg:px-8">
       <Link
         href={`/${locale}/worker/wallet`}
-        className="text-base-content/70 hover:text-base-content mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium"
+        className="text-base-content/70 hover:text-base-content mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium print:hidden"
       >
         <FontAwesomeIcon icon={faArrowLeft} className="h-3 w-3" />
         {locale === 'es' ? 'Volver' : 'Back'}
       </Link>
 
-      <div className="bg-primary text-primary-content relative mx-auto max-w-3xl overflow-hidden rounded-3xl p-10">
+      <div className="bg-primary text-primary-content relative mx-auto max-w-3xl overflow-hidden rounded-3xl p-10 print:rounded-none print:shadow-none">
         <div
           aria-hidden
           className="absolute inset-0"
@@ -78,25 +79,13 @@ export default async function CertPreviewPage({ params }: Props) {
             </div>
           </div>
 
-          {cert.signedUrl ? (
-            <a
-              href={cert.signedUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-2.5 text-[13px] font-semibold no-underline"
-            >
-              <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
-              {t('download')}
-            </a>
-          ) : (
-            <div className="mt-8 text-[12px] opacity-75">
-              {locale === 'es'
-                ? 'PDF en generación. Disponible en breve.'
-                : 'PDF generating. Available soon.'}
-            </div>
-          )}
+          <PrintCertButton label={t('download')} />
         </div>
       </div>
+
+      <p className="text-base-content/60 mt-4 max-w-3xl text-center text-xs leading-relaxed print:hidden">
+        {t('print_hint')}
+      </p>
     </div>
   );
 }

@@ -13,6 +13,8 @@ import {
 } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 import { enqueueEmployerEmail } from '@agconn/email';
+import { enqueueFlcVerify } from '@agconn/flc-verify';
+import { LicenseType } from '@agconn/db';
 import { shapeEmployer } from '../../employer/shared.js';
 
 export const adminEmployersRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
@@ -174,6 +176,32 @@ adminEmployersRoutes.post(
     }
 
     return ok(c, { employer: shapeEmployer(updated) });
+  },
+);
+
+// Trigger an immediate auto-verify pass against DLSE + MSPA for one employer.
+// Useful when an admin wants to retry a captcha_blocked / error case without
+// waiting for the nightly sweep.
+adminEmployersRoutes.post(
+  '/:id/recheck',
+  requirePermission('employers.verify'),
+  async (c) => {
+    const id = c.req.param('id');
+    const employer = await c.var.db.employerProfile.findUnique({ where: { id } });
+    if (!employer) return err(c, 404, 'not_found');
+    if (employer.licenseType !== LicenseType.flc) {
+      return err(c, 422, 'invalid', 'recheck_only_supports_flc');
+    }
+    if (!employer.flcLicenseNum) {
+      return err(c, 422, 'invalid', 'no_license_number_on_profile');
+    }
+    await enqueueFlcVerify({
+      employerId: id,
+      tenantId: employer.tenantId,
+      reason: 'admin_requested',
+      jobKey: `flc-verify-${id}-admin-${Date.now()}`,
+    });
+    return ok(c, { enqueued: true });
   },
 );
 

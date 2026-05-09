@@ -106,6 +106,11 @@ export const smsTemplates = {
     es: 'Turno actualizado: {shiftDate} a las {startTime} · {location}. Revisa tu horario en AgConn.',
     vars: ['shiftDate', 'startTime', 'location'] as const,
   }),
+  'employer.broadcast': def({
+    en: '{employer}: {body} (Reply STOP to opt out.)',
+    es: '{employer}: {body} (Responde STOP para cancelar.)',
+    vars: ['employer', 'body'] as const,
+  }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;

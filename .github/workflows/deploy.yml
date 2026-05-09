@@ -38,6 +38,7 @@ jobs:
           - { name: api,             dockerfile: services/api/Dockerfile,             image: api }
           - { name: email-worker,    dockerfile: services/email-worker/Dockerfile,    image: email-worker }
           - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,      image: sms-worker }
+          - { name: flc-verifier,    dockerfile: services/flc-verifier/Dockerfile,    image: flc-verifier }
           - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile, image: audit-retention }
           - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile,  image: audit-verifier }
     steps:
@@ -130,6 +131,7 @@ jobs:
           AUDIT_HMAC_KEY:                        ${{ secrets.AUDIT_HMAC_KEY }}
           AUDIT_HMAC_KEY_VERSION:                ${{ secrets.AUDIT_HMAC_KEY_VERSION }}
           ADMIN_BEARER_TOKEN:                    ${{ secrets.ADMIN_BEARER_TOKEN }}
+          PARTICIPANT_PEPPER:                    ${{ secrets.PARTICIPANT_PEPPER }}
           CLERK_SECRET_KEY:                      ${{ secrets.CLERK_SECRET_KEY }}
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:     ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           CLERK_WEBHOOK_SECRET:                  ${{ secrets.CLERK_WEBHOOK_SECRET }}
@@ -168,6 +170,7 @@ jobs:
             --from-literal=AUDIT_HMAC_KEY="$AUDIT_HMAC_KEY" \
             --from-literal=AUDIT_HMAC_KEY_VERSION="$AUDIT_HMAC_KEY_VERSION" \
             --from-literal=ADMIN_BEARER_TOKEN="$ADMIN_BEARER_TOKEN" \
+            --from-literal=PARTICIPANT_PEPPER="$PARTICIPANT_PEPPER" \
             --from-literal=CLERK_SECRET_KEY="$CLERK_SECRET_KEY" \
             --from-literal=NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" \
             --from-literal=CLERK_WEBHOOK_SECRET="$CLERK_WEBHOOK_SECRET" \
@@ -206,7 +209,7 @@ jobs:
           set -euo pipefail
           AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
           TAG=${{ env.TAG }}
-          for img in web api email-worker sms-worker audit-retention audit-verifier; do
+          for img in web api email-worker sms-worker flc-verifier audit-retention audit-verifier; do
             kustomize edit set image ${AR_BASE}/${img}=${AR_BASE}/${img}:${TAG}
           done
 
@@ -230,3 +233,4 @@ jobs:
           kubectl -n agconn rollout status deployment/api --timeout=10m
           kubectl -n agconn rollout status deployment/email-worker --timeout=5m
           kubectl -n agconn rollout status deployment/sms-worker --timeout=5m
+          kubectl -n agconn rollout status deployment/flc-verifier --timeout=5m

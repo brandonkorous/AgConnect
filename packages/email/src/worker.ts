@@ -6,8 +6,14 @@ import {
   type WaitlistConfirmJob,
   type WaitlistWelcomeJob,
   type EmployerEmailJob,
+  type GrantReportEmailJob,
 } from './queue.js';
-import { sendWaitlistConfirm, sendWaitlistWelcome, sendEmployerNotice } from './sender.js';
+import {
+  sendWaitlistConfirm,
+  sendWaitlistWelcome,
+  sendEmployerNotice,
+  sendGrantReportNotice,
+} from './sender.js';
 import { signConfirmToken, signUnsubscribeToken } from './tokens.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -83,6 +89,38 @@ async function handleWaitlistConfirm(job: Job<WaitlistConfirmJob>): Promise<void
       unsubscribeUrl: buildUnsubscribeUrl(unsubToken, locale),
       oneClickUnsubscribeUrl: buildOneClickUnsubscribeUrl(unsubToken),
       waitlistId,
+    });
+  });
+}
+
+async function handleGrantReportEmail(job: Job<GrantReportEmailJob>): Promise<void> {
+  const { template, reportRunId, to, locale, vars } = job.data;
+  const downloadUrl = typeof vars['downloadUrl'] === 'string' ? vars['downloadUrl'] : '';
+  if (!downloadUrl) {
+    console.warn('[worker] grant report email skipped — no downloadUrl', {
+      template,
+      reportRunId,
+    });
+    return;
+  }
+
+  await withTenantTx(null, async (db) => {
+    const unsubscribeUrl = `${publicWebUrl()}/${locale}/admin/reports/runs`;
+    const oneClickUnsubscribeUrl = `${publicApiUrl()}/v1/landing/unsubscribe?email=${encodeURIComponent(to)}`;
+    await sendGrantReportNotice(db, {
+      template,
+      to,
+      locale,
+      vars: Object.fromEntries(
+        Object.entries(vars).filter((entry): entry is [string, string | number] => {
+          const v = entry[1];
+          return v !== null && v !== undefined && typeof v !== 'boolean';
+        }),
+      ),
+      downloadUrl,
+      unsubscribeUrl,
+      oneClickUnsubscribeUrl,
+      reportRunId,
     });
   });
 }
@@ -200,6 +238,25 @@ export async function runEmailWorker(): Promise<EmailWorkerHandle> {
           await handleEmployerEmail(job);
         } catch (err) {
           console.error('[worker] employer email failed', {
+            jobId: job.id,
+            template: job.data.template,
+            err,
+          });
+          throw err;
+        }
+      }
+    },
+  );
+
+  await boss.work<GrantReportEmailJob>(
+    QUEUE_NAMES.grantReport,
+    { batchSize: 5, pollingIntervalSeconds: 2 },
+    async (jobs) => {
+      for (const job of jobs) {
+        try {
+          await handleGrantReportEmail(job);
+        } catch (err) {
+          console.error('[worker] grant report email failed', {
             jobId: job.id,
             template: job.data.template,
             err,

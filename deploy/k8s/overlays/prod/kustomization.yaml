@@ -21,6 +21,9 @@ images:
   - name: us-west1-docker.pkg.dev/agconn/containers/sms-worker
     newName: us-west1-docker.pkg.dev/agconn/containers/sms-worker
     newTag: latest
+  - name: us-west1-docker.pkg.dev/agconn/containers/flc-verifier
+    newName: us-west1-docker.pkg.dev/agconn/containers/flc-verifier
+    newTag: latest
   - name: us-west1-docker.pkg.dev/agconn/containers/audit-retention
     newName: us-west1-docker.pkg.dev/agconn/containers/audit-retention
     newTag: latest

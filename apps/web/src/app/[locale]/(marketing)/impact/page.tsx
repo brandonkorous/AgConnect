@@ -115,15 +115,23 @@ export default async function ImpactPage({ params }: RouteProps) {
             <section className="bg-primary text-primary-content w-full">
                 <div className="container mx-auto flex flex-col gap-12 px-5 py-20 md:px-8 md:py-24 lg:px-20 lg:py-28">
                     <div className="flex flex-wrap items-center gap-3 lg:gap-4">
-                        <span className="bg-accent inline-block size-2 shrink-0 animate-pulse rounded-full" aria-hidden />
-                        <span className="text-accent font-mono text-xs font-bold uppercase tracking-[0.22em]">
-                            {pageT('live_label')}
-                        </span>
-                        {lastUpdated ? (
-                            <span className="text-primary-content/60 font-mono text-xs uppercase tracking-[0.18em]">
-                                · {pageT('last_updated', { time: lastUpdated })}
+                        {allSuppressed ? (
+                            <span className="text-accent font-mono text-xs font-bold uppercase tracking-[0.22em]">
+                                {pageT('pre_live_label')}
                             </span>
-                        ) : null}
+                        ) : (
+                            <>
+                                <span className="bg-accent inline-block size-2 shrink-0 animate-pulse rounded-full" aria-hidden />
+                                <span className="text-accent font-mono text-xs font-bold uppercase tracking-[0.22em]">
+                                    {pageT('live_label')}
+                                </span>
+                                {lastUpdated ? (
+                                    <span className="text-primary-content/60 font-mono text-xs uppercase tracking-[0.18em]">
+                                        · {pageT('last_updated', { time: lastUpdated })}
+                                    </span>
+                                ) : null}
+                            </>
+                        )}
                     </div>
 
                     {allSuppressed ? (

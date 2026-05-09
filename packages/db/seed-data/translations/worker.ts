@@ -3065,13 +3065,45 @@ export const worker: TranslationBundle = {
         en: "Training programs",
         es: "Programas de capacitación",
     },
-    "verify.coming_soon": {
-        en: "Verification page coming soon. Contact support@agconn.com to verify a certificate.",
-        es: "Próximamente. Contacta support@agconn.com para verificar un certificado.",
-    },
     "verify.title": {
         en: "Verify a certificate",
         es: "Verificar un certificado",
+    },
+    "verify.valid_badge": {
+        en: "Verified · this certificate was issued by AgConn.",
+        es: "Verificado · este certificado fue emitido por AgConn.",
+    },
+    "verify.not_found": {
+        en: "We couldn't verify this certificate. The ID may be mistyped, or the record may have been removed. To check, contact support@agconn.com.",
+        es: "No pudimos verificar este certificado. El ID puede estar mal escrito o el registro puede haber sido eliminado. Para confirmar, escribe a support@agconn.com.",
+    },
+    "verify.cert_id": {
+        en: "CERT ID",
+        es: "ID DE CERT",
+    },
+    "verify.certificate_of_completion": {
+        en: "CERTIFICATE OF COMPLETION",
+        es: "CERTIFICADO DE FINALIZACIÓN",
+    },
+    "verify.issued_to": {
+        en: "Issued to",
+        es: "Emitido a",
+    },
+    "verify.issued_by": {
+        en: "Issued by",
+        es: "Emitido por",
+    },
+    "verify.funded_by": {
+        en: "Funded by",
+        es: "Financiado por",
+    },
+    "verify.completed": {
+        en: "Completed",
+        es: "Completado",
+    },
+    "verify.footnote": {
+        en: "AgConn shows the recipient's first name and last initial only. To request the full record, the worker can share it with you directly from their skills wallet.",
+        es: "AgConn muestra solo el primer nombre y la inicial del apellido del destinatario. Para solicitar el registro completo, el trabajador puede compartirlo directamente desde su cartera de habilidades.",
     },
     "wallet.back": {
         en: "Dashboard",
@@ -3086,8 +3118,12 @@ export const worker: TranslationBundle = {
         es: "Compartir",
     },
     "wallet.cert.download": {
-        en: "Download PDF",
-        es: "Descargar PDF",
+        en: "Save as PDF",
+        es: "Guardar como PDF",
+    },
+    "wallet.cert.print_hint": {
+        en: "Tip: in the print dialog, choose \"Save as PDF\" as the destination to keep a copy on your phone or computer.",
+        es: "Sugerencia: en el cuadro de impresión, elige \"Guardar como PDF\" como destino para conservar una copia en tu teléfono o computadora.",
     },
     "wallet.cert.placeholder": {
         en: "Cert details + PDF preview will load here once cert generation ships.",

@@ -22,6 +22,7 @@
     "i18n:seed": "tsx scripts/seed-translations.ts",
     "i18n:check": "tsx scripts/check-i18n-parity.ts",
     "lookups:seed": "tsx scripts/seed-lookups.ts",
+    "aewr:seed": "tsx scripts/seed-aewr-rates.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

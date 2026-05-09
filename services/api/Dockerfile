@@ -32,6 +32,7 @@ COPY services/audit-retention/package.json services/audit-retention/
 COPY services/audit-verifier/package.json  services/audit-verifier/
 COPY services/cert-generator/package.json  services/cert-generator/
 COPY services/email-worker/package.json    services/email-worker/
+COPY services/flc-verifier/package.json    services/flc-verifier/
 COPY services/resume-parser/package.json   services/resume-parser/
 COPY services/scheduler/package.json       services/scheduler/
 COPY services/sms-worker/package.json      services/sms-worker/
@@ -39,6 +40,7 @@ COPY packages/api-client/package.json      packages/api-client/
 COPY packages/audit/package.json           packages/audit/
 COPY packages/db/package.json              packages/db/
 COPY packages/email/package.json           packages/email/
+COPY packages/flc-verify/package.json      packages/flc-verify/
 COPY packages/llm/package.json             packages/llm/
 COPY packages/schemas/package.json         packages/schemas/
 COPY packages/sms/package.json             packages/sms/

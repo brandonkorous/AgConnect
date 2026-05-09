@@ -45,6 +45,16 @@ const BUCKETS: BucketSpec[] = [
     ],
     notes: 'I-9 forms, signed audit binders, etc. Contains PII (SSN, signatures). PRIVATE — signed URLs only.',
   },
+  {
+    name: 'grant-reports',
+    public: false,
+    fileSizeLimit: 25 * 1024 * 1024,
+    allowedMimeTypes: [
+      'text/csv',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ],
+    notes: 'Archived WIOA / CalJOBS placement-report exports. PRIVATE — signed URLs only.',
+  },
 ];
 
 async function ensureBucket(spec: BucketSpec) {
@@ -82,10 +92,16 @@ async function ensureBucket(spec: BucketSpec) {
 const PRIVATE_BUCKET_DENY_SQL = `
 DROP POLICY IF EXISTS "deny_anon_read_compliance_evidence" ON storage.objects;
 DROP POLICY IF EXISTS "deny_anon_write_compliance_evidence" ON storage.objects;
+DROP POLICY IF EXISTS "deny_anon_read_grant_reports" ON storage.objects;
+DROP POLICY IF EXISTS "deny_anon_write_grant_reports" ON storage.objects;
 CREATE POLICY "deny_anon_read_compliance_evidence" ON storage.objects
   FOR SELECT TO anon USING (bucket_id != 'compliance-evidence');
 CREATE POLICY "deny_anon_write_compliance_evidence" ON storage.objects
   FOR ALL TO anon USING (bucket_id != 'compliance-evidence');
+CREATE POLICY "deny_anon_read_grant_reports" ON storage.objects
+  FOR SELECT TO anon USING (bucket_id != 'grant-reports');
+CREATE POLICY "deny_anon_write_grant_reports" ON storage.objects
+  FOR ALL TO anon USING (bucket_id != 'grant-reports');
 `.trim();
 
 async function applyPrivateBucketRls() {

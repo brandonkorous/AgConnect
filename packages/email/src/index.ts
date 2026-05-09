@@ -16,6 +16,7 @@ export {
   enqueueWaitlistConfirm,
   enqueueWaitlistWelcome,
   enqueueEmployerEmail,
+  enqueueGrantReportEmail,
   getBoss,
   stopBoss,
 } from './queue.js';
@@ -24,6 +25,8 @@ export type {
   WaitlistWelcomeJob,
   EmployerEmailJob,
   EmployerEmailTemplate,
+  GrantReportEmailJob,
+  GrantReportEmailTemplate,
 } from './queue.js';
 export { runEmailWorker } from './worker.js';
 export type { EmailWorkerHandle } from './worker.js';

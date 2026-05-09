@@ -17,6 +17,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 const BUCKETS = {
   jobPhotos: 'job-photos',
   complianceEvidence: 'compliance-evidence',
+  grantReports: 'grant-reports',
 } as const;
 
 let cached: SupabaseClient | null = null;
@@ -199,6 +200,38 @@ export async function signComplianceEvidenceUrl(
   expiresInSeconds: number = 60,
 ): Promise<string> {
   return signedUrl(complianceEvidenceBucket(), storageKey, expiresInSeconds);
+}
+
+// ─────────────────────────────────────────────────── Grant reports (private bucket)
+//
+// Layout: `<reportType>/<runId>.<ext>`. Cross-tenant by design — admin-only.
+
+export type UploadGrantReportArgs = {
+  runId: string;
+  reportType: string;
+  format: 'csv' | 'xlsx';
+  contentType: string;
+  body: ArrayBuffer | Buffer | Uint8Array;
+};
+
+export async function uploadGrantReport(args: UploadGrantReportArgs): Promise<string> {
+  const bucket = BUCKETS.grantReports;
+  const storageKey = `${args.reportType}/${args.runId}.${args.format}`;
+  await uploadToBucket({
+    bucket,
+    storageKey,
+    contentType: args.contentType,
+    body: args.body,
+    cacheControl: '0',
+  });
+  return storageKey;
+}
+
+export async function signGrantReportUrl(
+  storageKey: string,
+  expiresInSeconds: number = 300,
+): Promise<string> {
+  return signedUrl(BUCKETS.grantReports, storageKey, expiresInSeconds);
 }
 
 const ALLOWED_EVIDENCE_TYPES = new Set([

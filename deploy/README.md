@@ -54,7 +54,7 @@ before the first deploy:
 | Cloudflare | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID` |
 | Database | `DATABASE_URL` (Supabase pooler), `DIRECT_URL` (Supabase direct, migrations) |
 | Audit | `AUDIT_HMAC_KEY`, `AUDIT_HMAC_KEY_VERSION` |
-| Admin | `ADMIN_BEARER_TOKEN` |
+| Admin | `ADMIN_BEARER_TOKEN`, `PARTICIPANT_PEPPER` (immutable — never rotate) |
 | Clerk | `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_WEBHOOK_SECRET` |
 | Resend | `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET` |
 | Waitlist | `WAITLIST_TOKEN_SECRET` |

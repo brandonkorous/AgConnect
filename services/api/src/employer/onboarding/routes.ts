@@ -9,6 +9,7 @@ import {
 import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 import { enqueueEmployerEmail } from '@agconn/email';
+import { enqueueFlcVerify } from '@agconn/flc-verify';
 import { shapeEmployer, verificationStatus } from '../shared.js';
 import { seedDefaultComplianceItems, seedInitialPayrollPeriod } from './seed-defaults.js';
 
@@ -119,6 +120,24 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
     idempotencyKey: `verify-pending-${profile.id}`,
   });
 
+  if (profile.licenseType === LicenseType.flc && profile.flcLicenseNum) {
+    try {
+      await enqueueFlcVerify({
+        employerId: profile.id,
+        tenantId: profile.tenantId,
+        reason: 'onboarding',
+      });
+    } catch (e) {
+      // Auto-verify is best-effort on the request path. The nightly sweep
+      // will pick this employer up if the enqueue failed (queue down,
+      // network blip) — do not fail onboarding because of it.
+      console.error('[employer.onboarding] FLC verify enqueue failed', {
+        employerId: profile.id,
+        err: e instanceof Error ? e.message : String(e),
+      });
+    }
+  }
+
   return ok(c, {
     employer: shapeEmployer(profile),
     status: 'pending',
@@ -207,6 +226,22 @@ employerOnboardingRoutes.patch('/', requireTenant, validate('json', PatchEmploye
       resourceId: profile.id,
       metadata: { licenseNumber: body.flcLicenseNum ?? '' },
     });
+
+    if (updated.licenseType === LicenseType.flc && updated.flcLicenseNum) {
+      try {
+        await enqueueFlcVerify({
+          employerId: updated.id,
+          tenantId: updated.tenantId,
+          reason: 'license_changed',
+          jobKey: `flc-verify-${updated.id}-${updated.updatedAt.toISOString()}`,
+        });
+      } catch (e) {
+        console.error('[employer.patch] FLC verify enqueue failed', {
+          employerId: updated.id,
+          err: e instanceof Error ? e.message : String(e),
+        });
+      }
+    }
   }
 
   return ok(c, { employer: shapeEmployer(updated) });

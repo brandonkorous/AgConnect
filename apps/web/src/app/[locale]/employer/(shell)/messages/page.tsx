@@ -361,10 +361,17 @@ function Conversation({
                                 ].join(' ')}
                             >
                                 {m.whenLabel}
-                                {m.senderRole === 'me' &&
+                                {m.senderRole === 'me' && !m.broadcastDelivery &&
                                     (m.readByOthersLabel
                                         ? ` · ${t('read_indicator', { time: m.readByOthersLabel })}`
                                         : ` · ${t('sent_indicator')}`)}
+                                {m.broadcastDelivery
+                                    ? ` · ${t('broadcast_delivery_summary', {
+                                          queued: m.broadcastDelivery.queued,
+                                          optedOut: m.broadcastDelivery.optedOut,
+                                          noPhone: m.broadcastDelivery.noPhone,
+                                      })}`
+                                    : ''}
                             </div>
                         </div>
                     </div>
@@ -375,6 +382,10 @@ function Conversation({
                 conversationId={thread.id}
                 initialChannel={initialChannel}
                 smsCount={thread.participantCount}
+                mode={thread.channel === 'broadcast' ? 'broadcast' : 'thread'}
+                recipientCount={
+                    thread.channel === 'broadcast' ? Math.max(0, thread.participantCount - 1) : 0
+                }
             />
         </div>
     );

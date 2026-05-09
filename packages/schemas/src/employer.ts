@@ -9,6 +9,17 @@ export type LicenseType = z.infer<typeof LicenseTypeEnum>;
 export const VerificationStatusEnum = z.enum(['pending', 'verified', 'rejected']);
 export type VerificationStatus = z.infer<typeof VerificationStatusEnum>;
 
+export const FlcCheckStatusEnum = z.enum([
+  'active',
+  'expired',
+  'not_found',
+  'suspended',
+  'error',
+  'captcha_blocked',
+  'not_applicable',
+]);
+export type FlcCheckStatus = z.infer<typeof FlcCheckStatusEnum>;
+
 const flcLicenseRegex = /^[A-Z0-9-]{4,20}$/;
 const einRegex = /^\d{2}-\d{7}$/;
 
@@ -75,6 +86,15 @@ export const EmployerProfileSchema = z.object({
   addressLng: z.number().nullable(),
   mapboxId: z.string().nullable(),
   flcVerifiedAt: z.string().datetime().nullable(),
+  flcLastCheckedAt: z.string().datetime().nullable(),
+  flcCheckStatus: FlcCheckStatusEnum.nullable(),
+  flcExpiresAt: z.string().date().nullable(),
+  flcLegalNameOnRecord: z.string().nullable(),
+  mspaVerifiedAt: z.string().datetime().nullable(),
+  mspaExpiresAt: z.string().date().nullable(),
+  mspaAuthHousing: z.boolean().nullable(),
+  mspaAuthTransport: z.boolean().nullable(),
+  mspaAuthDriving: z.boolean().nullable(),
   rejectedAt: z.string().datetime().nullable(),
   rejectionReason: z.string().nullable(),
   participatesInH2a: z.boolean(),

@@ -42,11 +42,15 @@ export default async function WorkerLayout({ children, params }: Props) {
     const counts = await fetchWorkerNavCounts();
     return (
         <div className="flex min-h-screen items-start">
-            <WorkerSidebar locale={locale} counts={counts} />
+            <div className="print:hidden">
+                <WorkerSidebar locale={locale} counts={counts} />
+            </div>
             <main className="min-w-0 flex-1">
-                <FieldModeSoftPrompt locale={locale} />
-                <WorkerMobileShell locale={locale} counts={counts} />
-                <WorkerTopBar />
+                <div className="print:hidden">
+                    <FieldModeSoftPrompt locale={locale} />
+                    <WorkerMobileShell locale={locale} counts={counts} />
+                    <WorkerTopBar />
+                </div>
                 {children}
             </main>
         </div>

@@ -1,0 +1,645 @@
+
+<!DOCTYPE HTML>
+
+    <head><script src="/RegistrationSearch/static/111213/js/perf/stub.js" type="text/javascript"></script><script src="/RegistrationSearch/faces/a4j/g/3_3_3.Finalorg.ajax4jsf.javascript.AjaxScript?rel=1777665698000" type="text/javascript"></script><script src="/RegistrationSearch/jslibrary/1752551382260/ui-sfdc-javascript-impl/SfdcCore.js" type="text/javascript"></script><script src="/RegistrationSearch/jslibrary/1746634855260/sfdc/IframeThirdPartyContextLogging.js" type="text/javascript"></script><script src="https://www.dir.ca.gov/_v4_template/js/libs/modernizr-2.0.6.min.js" type="text/javascript"></script><script src="/RegistrationSearch/static/111213/js/picklist4.js" type="text/javascript"></script><script src="/RegistrationSearch/jslibrary/1686615502260/sfdc/VFState.js" type="text/javascript"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js" type="text/javascript"></script><script src="https://www.dir.ca.gov/_v4_template/js/cagov.core.js" type="text/javascript"></script><script src="https://www.dir.ca.gov/_v4_template/js/search.js" type="text/javascript"></script><script src="https://www.dir.ca.gov/_v4_template/javascript/custom_scripts.js" type="text/javascript"></script><script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js" type="text/javascript"></script><link class="user" href="/RegistrationSearch/sCSS/66.0/sprites/1774324485000/Theme3/default/gc/zen-componentsCompatible.css" rel="stylesheet" type="text/css" /><link class="user" href="/RegistrationSearch/sCSS/66.0/sprites/1774324485000/Theme3/default/gc/elements.css" rel="stylesheet" type="text/css" /><link class="user" href="/RegistrationSearch/sCSS/66.0/sprites/1774324485000/Theme3/default/gc/common.css" rel="stylesheet" type="text/css" /><link class="user" href="/sCSS/66.0/sprites/1776365045000/Theme3/gc/dStandard.css" rel="stylesheet" type="text/css" /><link class="user" href="/sCSS/66.0/sprites/1776365045000/Theme3/00Dd0000000fe2H/005t00000013nFq/gc/dCustom0.css" rel="stylesheet" type="text/css" /><link class="user" href="/sCSS/66.0/sprites/1776365045000/Theme3/00Dd0000000fe2H/005t00000013nFq/gc/dCustom1.css" rel="stylesheet" type="text/css" /><link class="user" href="/sCSS/66.0/sprites/1776365045000/Theme3/00Dd0000000fe2H/005t00000013nFq/gc/dCustom2.css" rel="stylesheet" type="text/css" /><link class="user" href="/sCSS/66.0/sprites/1776365045000/Theme3/00Dd0000000fe2H/005t00000013nFq/gc/dCustom3.css" rel="stylesheet" type="text/css" /><link class="user" href="/sCSS/66.0/sprites/1776365045000/Theme3/00Dd0000000fe2H/005t00000013nFq/gc/dCustom4.css" rel="stylesheet" type="text/css" /><link class="user" href="/RegistrationSearch/sCSS/66.0/sprites/1774324485000/Theme3/default/gc/extended.css" rel="stylesheet" type="text/css" /><link class="user" href="/RegistrationSearch/sCSS/66.0/sprites/1774324485000/Theme3/default/gc/setup.css" rel="stylesheet" type="text/css" /><link class="user" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" /><link class="user" href="https://www.dir.ca.gov/_v4_template/css/cagov.core.ALTERED.css" rel="stylesheet" type="text/css" /><link class="user" href="https://www.dir.ca.gov/_v4_template/css/tabs.css" rel="stylesheet" type="text/css" /><link class="user" href="https://www.dir.ca.gov/_v4_template/css/colorscheme-oceanside.ALTERED.css" rel="stylesheet" type="text/css" /><link class="user" href="https://www.dir.ca.gov/_v4_template/css/custom.css" rel="stylesheet" type="text/css" /><link class="user" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" /><link class="user" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" /><script src="/RegistrationSearch/jslibrary/1647410351260/sfdc/NetworkTracking.js" type="text/javascript"></script><script>try{ NetworkTracking.init('/RegistrationSearch/_ui/networks/tracking/NetworkTrackingServlet', 'network', '066t0000000Gtts'); }catch(x){}</script><script>(function(UITheme) {
+    UITheme.getUITheme = function() { 
+        return UserContext.uiTheme;
+    };
+}(window.UITheme = window.UITheme || {}));</script></head><script>
+        $j = jQuery.noConflict();
+    </script> 
+    <style>
+        .multiSelectPicklistRow select option:before,
+        .multiSelectPicklistRow select option:after {display:none;}
+    </style>
+    <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+    <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+    <!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+    
+    <html class="no-js" lang="en"> 
+        <head>
+<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
+<meta HTTP-EQUIV="Expires" content="Mon, 01 Jan 1990 12:00:00 GMT" />
+
+            <meta charset="utf-8" />
+            <title>Registrations</title>
+            <meta content="width=device-width, initial-scale=1" name="viewport" />
+            
+  
+            
+            <!--[if (lt IE 9) & (!IEMobile)]>
+<apex:includescript value="https://www.dir.ca.gov/_v4_template/js/libs/selectivizr-min.js"/>
+<![endif]-->
+            
+            <script src="https://www.google.com/recaptcha/api.js"></script>
+            
+            
+            <link href="https://www.dir.ca.gov/_v4_template/images/template2014/apple-touch-icon-144x144.png" rel="apple-touch-icon" sizes="144x144" />
+            
+            <link href="https://www.dir.ca.gov/_v4_template/images/template2014/apple-touch-icon-114x114.png" rel="apple-touch-icon" sizes="114x114" />
+            
+            <link href="https://www.dir.ca.gov/_v4_template/images/template2014/apple-touch-icon-72x72.png" rel="apple-touch-icon" sizes="72x72" />
+            
+            <link href="https://www.dir.ca.gov/_v4_template/images/template2014/apple-touch-icon-57x57.png" rel="apple-touch-icon" />
+            
+            <link href="https://www.dir.ca.gov/_v4_template/images/template2014/apple-touch-icon-57x57.png" rel="shortcut icon" />
+            
+            <link href="https://www.dir.ca.gov/_v4_template/favicon.ico" rel="shortcut icon" />
+            
+            <style>
+                .errorMsg {
+                    color:red;
+                }
+                ul, ol, .footer_links ul li {
+                    margin-left:0;
+                }
+                .search-container .textfield-container {width:97%;}
+                .breadcrumb li:first-child,
+                .top-level-nav li{
+                    margin-left:0;
+                }
+                .breadcrumb li:first-child {
+                    padding-right:0;
+                }
+                h1, h2 {display:block;}
+                label {
+                    font-weight:bold;
+                    margin-bottom: 3px;
+                }
+                .form-group.required label:after {
+                    content:'*';
+                    color:#CC6600;
+                    display:inline;
+                    font-size: 18px;
+                font-weight:bold;
+                    margin-left: 2px;
+                } 
+                .form-control {
+                    border-radius:3px;
+                    padding-top:4px;
+                    badding-bottom:4px;
+                    height:31px;
+                    box-shadow:none;
+                    border-color:#637383;
+                }
+                .panel {border-radius:0;}
+                .panel-body {
+                    background-color:#F4F4F4;
+                    padding:6px 0;
+                }
+                .mb {
+                    margin-bottom:5px;
+                }
+                .btn-custom {
+                    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4887c2+0,295b8f+100 */
+                    background: #4887c2; /* Old browsers */
+                    background: -moz-linear-gradient(top, #4887c2 0%, #295b8f 100%); /* FF3.6-15 */
+                    background: -webkit-linear-gradient(top, #4887c2 0%,#295b8f 100%); /* Chrome10-25,Safari5.1-6 */
+                    background: linear-gradient(to bottom, #4887c2 0%,#295b8f 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4887c2', endColorstr='#295b8f',GradientType=0 ); /* IE6-9 */
+                color:#fff;
+                font-weight:normal;
+                border-radius:5px;
+                border:0;
+                }
+                .btn-custom:hover {
+                /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#295b8f+3,4887c2+100 */
+background: #295b8f; /* Old browsers */
+background: -moz-linear-gradient(top, #295b8f 3%, #4887c2 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #295b8f 3%,#4887c2 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #295b8f 3%,#4887c2 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#295b8f', endColorstr='#4887c2',GradientType=0 ); /* IE6-9 */
+                    color:#fff;
+                }
+                a {
+                    color:#0254b7;
+                    cursor:pointer;
+                }
+                .input-group-addon {
+                    color:#53688e;
+                    top: 33px;
+                    right: 25px;
+                    position: absolute;
+                }
+                
+                table.dataTable.cell-border tbody tr th:first-child,
+                table.dataTable.cell-border tbody tr td:first-child,
+                table.dataTable.cell-border tbody th, table.dataTable.cell-border tbody td,
+                table.dataTable thead th, table.dataTable thead td,
+                table.dataTable.no-footer {
+                    border-color:#979797;
+                }
+                table.dataTable thead {
+                    background: #4887c2; /* Old browsers */
+                    background: -moz-linear-gradient(top, #708AA6 0%, #52697F 100%); /* FF3.6-15 */
+                    background: -webkit-linear-gradient(top, #708AA6 0%,#52697F 100%); /* Chrome10-25,Safari5.1-6 */
+                    background: linear-gradient(to bottom, #708AA6 0%,#52697F 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4887c2', endColorstr='#295b8f',GradientType=0 ); /* IE6-9 */
+                color:#fff;
+                }
+                .dataTables_wrapper .dataTables_info {
+                    font-weight:bold;
+                }
+                .dataTables_wrapper .dataTables_paginate .paginate_button,
+                .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+                .dataTables_wrapper .dataTables_paginate .paginate_button:active {
+                    background:transparent!important;
+                    color:#002b57!important;
+                    font-weight:bold;
+                border:0!important;
+                box-shadow:none!important;
+                }
+                .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+                .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+                .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+                    color:#9b9b9b!important;
+                }
+               
+                table.dataTable thead .sorting_asc,
+                table.dataTable thead .sorting_desc,
+                table.dataTable thead .sorting {
+                    background:none;
+                }
+                table.dataTable thead tr th {
+                    position:relative;
+                }
+                table.dataTable thead .sorting_asc:after {
+                   content: '\f0d8';
+                   font-family: 'FontAwesome';
+                   color: #fbb944;
+                   position: absolute;
+                   right: 5px;
+                   top: 8px;
+                }
+                table.dataTable thead .sorting_desc:after {
+                   content: '\f0d7';
+                   font-family: 'FontAwesome';
+                   color: #fbb944;
+                   position: absolute;
+                   right: 5px;
+                   bottom: 7px;
+                }
+                table.dataTable thead .sorting:after {
+                       content: '\f0dc';
+                       font-family: 'FontAwesome';
+                       color: #fff;
+                       position: absolute;
+                       right: 5px;
+                       bottom: 8px;
+                }
+             
+                .multiSelectPicklistCell a img {
+                    display:none;
+                    
+                }
+                .multiSelectPicklistCell a:first-child:before {
+                    content:'\f0a9';
+                    font-family:'FontAwesome';
+                font-size:16px;
+                margin:10px;
+                }
+                .multiSelectPicklistCell a:last-child:before {
+                    content:'\f0a8 ';
+                    font-family:'FontAwesome';
+                font-size:16px;
+                margin:10px;
+                }
+                .btn-group-lg>.btn, .btn-md {
+            padding: 8px 12px;
+            font-size: 15px;
+            line-height: 1.42857143;
+            border-radius: 6px;
+        }
+        .dateFormat  {
+            display:none;visibility:hidden;
+        }
+        th { font-size: 12px; }
+        td { font-size: 12px; }
+        a.disabled {
+            background: linear-gradient(to bottom, #A9A9A9 100%,#D3D3D3 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#A9A9A9', endColorstr='#D3D3D3',GradientType=0 );
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            border: 0;
+            padding: 8px 12px;
+            font-size: 15px;
+            line-height: 1.42857143;
+            pointer-events: none;
+            cursor: default;
+        }
+                .table-responsive {
+                    width:100%;
+
+                }
+                .username {
+                    margin:10px 5px;
+                }
+                @media only screen and (min-width : 768px) {
+                .top-reference-links {
+                    right:320px;
+                }
+                .search-container {
+                    right:150px;
+                }
+                    .username {
+                        margin:0;
+                        position:absolute;
+                        top:20px;
+                        right:15px;
+                        z-index:200;
+                        width:150px;
+                        text-align:right;
+                    }
+                    .dropdown-menu {
+                        left:initial;
+                        right:0;
+                    }
+                }
+                
+                @media only screen and (min-width : 992px) {
+                .top-reference-links {
+                    right:10px;
+                }
+                .search-container {
+                    right:150px;
+                }
+                    .username {
+                        margin:0;
+                        position:absolute;
+                        top:60px;
+                        right:15px;
+                        z-index:200;
+                        width:200px;
+                        text-align:right;
+                    }
+                    .dropdown-menu {
+                        left:initial;
+                        right:0;
+                    }
+                }
+                .dropdown-toggle,
+                .dropdown-toggle:hover, 
+                .dropdown-toggle:active,
+                .dropdown-toggle:focus {
+                color:white;
+                text-transform:uppercase;
+                }
+                .email {
+                    color:white;  
+                    position:relative;
+                    float:right;
+                } 
+                
+                .body{
+                    font-size: 17px;
+                    overflow-x: hidden;
+                    transition: font-size 0.25s ease-in;
+                    font-family: "Source Sans Pro", sans-serif;
+                    line-height: 1.42857143;
+                    color: #333333;
+                    background-color: #fff;
+                    margin: 0;
+                    background: #fff;
+                }
+                
+                .headerBranding{
+                    margin-bottom: 20px;
+                    min-height: 101px;
+                    position: relative;
+                    background: #0a628a;
+                    color: #ffffff;
+                    top: 0;
+                    width: 100%;
+                }
+                
+                .mobileControl{
+                        font-size: 2.5rem;
+                        padding: .2em;
+                        cursor: pointer;
+                        text-align: right;
+                        position: relative;
+                        color: #046B99;
+                        background: #fff;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        padding-right: 0;
+                }
+                
+                .templateBody{
+                    margin-left: 70px;
+                    min-height: calc(10vh);
+                    margin-right: 70px;
+                    background: #fff;
+                    border-left: none;
+                    border-right: none;
+                    padding-left: 0px;
+                    padding-right: 0px;
+                    padding-bottom: 0px;
+                    width: auto;
+                }
+
+                @media only screen and (max-width: 528px) {
+                    .templateBody {
+                        margin-left: 30px;
+                    }
+                    
+                    .headerBranding {
+                        margin: 0px;
+                    }
+                }
+            
+                .h1Styling{
+                    font-size: 33px;
+                    font-weight: 600;
+                    color: #bf5a42;
+                    margin-top: 12px;
+                    margin-bottom: 17px;
+                }
+                
+                .footerClass{
+                    background: #222222;
+                    background-image: initial;
+                    background-position-x: initial;
+                    background-position-y: initial;
+                    background-size: initial;
+                    background-repeat-x: initial;
+                    background-repeat-y: initial;
+                    background-attachment: initial;
+                    background-origin: initial;
+                    background-clip: initial;
+                    background-color: rgb(34, 34, 34);
+                    color: #333333;
+                    border-left: none;
+                    border-right: none;
+                    padding: 0px;
+                    width: auto;
+                    margin-right: 0px;
+                    margin-left: 0px;     
+                    font-size: .97em;
+                }
+                
+                .linksClass{
+                    width: 1280px;
+                    margin-right: auto;
+                    margin-left: auto;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                    color: #333333;
+                }
+                
+                .sectionClass{
+                    background-color: #444;
+                    padding-top: 25px;
+                    padding-bottom: 25px;
+                    position: relative;
+                    overflow: hidden;
+                    font-size: .97em;
+                }
+                .ContainerClass{
+                    width: 100%;
+                    margin: 0px auto;
+                    font-size: .97em;
+                }
+                .copyrightClass{
+                    margin-left: -70px;
+                    background: #777373;
+                    color: #fff;
+                    padding: 3px 0 10px;
+                }
+                
+                .anchorClass{
+                    text-decoration: none;
+                    transition: all 0.25s;
+                    background: transparent;
+                }
+                .dirLogoClass{
+                    top: 17px;
+                    height: 32px;
+                    position: absolute;
+                    left: 27px;
+                    list-style: none;
+                    line-height: 1.42857143;
+                }
+                .dirbrandingClass{
+                        color: #ffffff;
+                        display: inline-block;
+                        padding: 3px 0;
+                        width: 780px;
+                        height: 70px;
+                        position: absolute;
+                        top: 0;
+                        left: 55px;
+                        z-index: 100;
+                        text-decoration: none; 
+                        background: transparent; 
+                        font-size: .97em;
+                        bottom:30px;
+                }
+                .dirlogocontainer{
+                    left: 35px;
+                    position: absolute;
+                    bottom: -27px;
+                    color: #ffffff;
+                    text-align: right;
+                    font-size: .97em;
+                }
+                .titlPart1{
+                    font-size: 16px;
+                    text-align: left;
+                    margin-top: 17px;
+                    margin-left: 170px;
+                    line-height: 15px;
+                    margin-bottom: 0;
+                    color: #ffffff;                    
+                }
+                .titlepart2{
+                        font-size: 37px;
+                        text-align: left;
+                        margin-top: -15px;
+                        margin-left: 170px;
+                        vertical-align: top;
+                        line-height: 25px;
+                        color: #fff;
+                        font-weight: normal;
+                        height: 25px;
+                }
+                .socialsharer-container {
+                    float: left;
+                }
+                .socialsharer-container a {
+                    display: inline-block !important;
+                    margin-left: 25px !important;
+                }
+            </style>
+            
+        </head>
+        
+        <body class="body">
+            <!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+            
+            <div class="main-content templateBody" id="main-content">
+                <div class="wrapper" style="margin-left: 0px;margin-right: 0px;">
+                    <main class="main-primary" role="main" style="padding-left: 0px;padding-right: 0px;">
+<form id="j_id0:Template:j_id14" name="j_id0:Template:j_id14" method="post" action="/RegistrationSearch" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_id0:Template:j_id14" value="j_id0:Template:j_id14" />
+<span id="j_id0:Template:j_id14:mainPanel">
+                    <ol class="breadcrumb">
+                        <li><a href="https://www.dir.ca.gov/dlse/dlse.html">Department of Industrial Relations (DIR)</a></li>
+                        <li class="active">Registration Search</li>
+                    </ol>
+                    <h1>Registration Search</h1>
+                    <br />
+ 
+                    
+                    <div class="row mb">
+                        <div class="col-md-5">
+                            <i>Use the drop-down menu under <b>"Registration Type"</b> to select the registration type you are searching, and enter at least one other search criteria.</i>
+                            <br /> 
+                        <label>Registration Type: * </label><select id="j_id0:Template:j_id14:selectedRecordType" name="j_id0:Template:j_id14:selectedRecordType" class="form-control" size="1">	<option value="Select">Select One...</option>
+	<option value="Car Wash">Car Wash</option>
+	<option value="Farm Labor Contractor">Farm Labor</option>
+	<option value="Garment Manufacturers and Contractors">Garment Manufacturers and Contractors</option>
+	<option value="Janitorial">Janitorial</option>
+	<option value="Talent Agency">Talent Agency</option>
+	<option value="Permit to Employ Minors">Entertainment Permit to Employ Minors</option>
+</select>
+                        </div>                  
+                    </div>
+                    <div class="row mb">
+                        <div class="col-md-5">
+                            <label>License Type: * </label><select id="j_id0:Template:j_id14:serviceType" name="j_id0:Template:j_id14:serviceType" class="form-control" size="1">	<option value="All">All</option>
+	<option value="Temporary">Temporary</option>
+</select>
+                        </div>                  
+                    </div>
+                    <div class="row mb">
+                        <div class="col-md-5">
+                            <label>Registration Status: * </label><select id="j_id0:Template:j_id14:selectedStatus" name="j_id0:Template:j_id14:selectedStatus" class="form-control" size="1">	<option value="ALL">ALL</option>
+	<option value="Approved">Approved</option>
+	<option value="Closed - Denied">Closed - Denied</option>
+	<option value="Closed - Revoked">Closed - Revoked</option>
+	<option value="Closed - Suspended">Closed - Suspended</option>
+</select>
+                        </div>                  
+                    </div>
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>Registration Number:</label><input id="j_id0:Template:j_id14:registrationNumberStr" type="text" name="j_id0:Template:j_id14:registrationNumberStr" value="" class="form-control" />
+                            
+                        </div>
+                    </div>  
+                    
+                    
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>Legal Entity Name:</label><input id="j_id0:Template:j_id14:legalEntityStr" type="text" name="j_id0:Template:j_id14:legalEntityStr" value="" class="form-control" />
+                            
+                        </div>
+                    </div>  
+
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>DBA Name:</label><input id="j_id0:Template:j_id14:dbaNameStr" type="text" name="j_id0:Template:j_id14:dbaNameStr" value="" class="form-control" />
+                        </div>
+                    </div>
+
+
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>Location Address:</label><input id="j_id0:Template:j_id14:locationAddressStr" type="text" name="j_id0:Template:j_id14:locationAddressStr" value="" class="form-control" />
+                        </div>
+                    </div> 
+
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>Location City:</label><input id="j_id0:Template:j_id14:locationCityStr" type="text" name="j_id0:Template:j_id14:locationCityStr" value="" class="form-control" />
+                        </div>
+                    </div> 
+                    
+                    
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>Location State:</label><input id="j_id0:Template:j_id14:locationStateStr" type="text" name="j_id0:Template:j_id14:locationStateStr" value="" class="form-control" />
+                        </div>
+                    </div>                     
+
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label>Location Zip:</label><input id="j_id0:Template:j_id14:locationZipStr" type="text" name="j_id0:Template:j_id14:locationZipStr" value="" class="form-control" />
+                        </div>
+                    </div> 
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label><b>Effective Date Range</b></label>
+                            
+                        </div>
+                    </div>  
+                    <div class="row mb">
+                        <div class="form-group col-md-2">
+                            <label>Start Date:</label><input id="j_id0:Template:j_id14:effectiveDateStart" type="date" name="j_id0:Template:j_id14:effectiveDateStart" class="form-control" />
+                            
+                        </div>
+                        <div class="form-group col-md-1"></div>
+                        <div class="form-group col-md-2">
+                            <label>End Date:</label><input id="j_id0:Template:j_id14:effectiveDateEnd" type="date" name="j_id0:Template:j_id14:effectiveDateEnd" class="form-control" />
+                            
+                        </div>
+                    </div>
+                      
+                    <div class="row mb">
+                        <div class="form-group col-md-5">
+                            <label><b>Expiration Date Range</b></label>
+                            
+                        </div>
+                    </div>  
+                    <div class="row mb">
+                        <div class="form-group col-md-2">
+                            <label>Start Date:</label><input id="j_id0:Template:j_id14:expirationDateStart" type="date" name="j_id0:Template:j_id14:expirationDateStart" class="form-control" />
+                            
+                        </div>
+                        <div class="form-group col-md-1"></div>
+                        <div class="form-group col-md-2">
+                            <label>End Date:</label><input id="j_id0:Template:j_id14:expirationDateEnd" type="date" name="j_id0:Template:j_id14:expirationDateEnd" class="form-control" />
+                            
+                        </div>
+                    </div>
+<script type="text/javascript" language="Javascript">function dpf(f) {var adp = f.adp;if (adp != null) {for (var i = 0;i < adp.length;i++) {adp[i].parentNode.removeChild(adp[i]);}}};function apf(f, pvp) {var adp = new Array();f.adp = adp;var ps = pvp.split(',');for (var i = 0,ii = 0;i < ps.length;i++,ii++) {var p = document.createElement("input");p.type = "hidden";p.name = ps[i];p.value = ps[i + 1];f.appendChild(p);adp[ii] = p;i += 1;}};function jsfcljs(f, pvp, t) {apf(f, pvp);var ft = f.target;if (t) {f.target = t;}f.submit();f.target = ft;dpf(f);};</script>
+<a id="j_id0:Template:j_id14:searchbt" href="#" style="text-decoration:none;" onclick="if(typeof jsfcljs == 'function'){jsfcljs(document.getElementById('j_id0:Template:j_id14'),'j_id0:Template:j_id14:searchbt,j_id0:Template:j_id14:searchbt','');}return false" class="btn-custom btn-lg">Search</a>&nbsp;&nbsp;<a href="#" id="j_id0:Template:j_id14:clearbt" name="j_id0:Template:j_id14:clearbt" onclick="clearDataFields();if(window != window.top){var f = document.getElementById('j_id0:Template:j_id14');f.action += (f.action.indexOf('?') == -1 ? '?' : '&amp;');};A4J.AJAX.Submit('j_id0:Template:j_id14',event,{'similarityGroupingId':'j_id0:Template:j_id14:clearbt','parameters':{'j_id0:Template:j_id14:clearbt':'j_id0:Template:j_id14:clearbt'} } );return false;">Clear Fields</a></span>
+                
+                <script type="text/javascript">
+                    $j(document).keypress(function(event) {
+                        var keycode = (event.keyCode ? event.keyCode : event.which);
+                        if (keycode == '13') {
+                             document.getElementById('j_id0:Template:j_id14:searchbt').click();
+                             
+                        }
+                    });
+                    function clearDataFields() {
+
+                    }
+                </script><div id="j_id0:Template:j_id14:j_id46"></div>
+</form><span id="ajax-view-state-page-container" style="display: none"><span id="ajax-view-state" style="display: none"><input type="hidden"  id="com.salesforce.visualforce.ViewState" name="com.salesforce.visualforce.ViewState" value="i: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" /><input type="hidden"  id="com.salesforce.visualforce.ViewStateVersion" name="com.salesforce.visualforce.ViewStateVersion" value="202605012001380000" /><input type="hidden"  id="com.salesforce.visualforce.ViewStateMAC" name="com.salesforce.visualforce.ViewStateMAC" value="AGV5SnViMjVqWlNJNkltWnVVV2hhYTJZMWJWbzVWRmRwUkdoUU0yb3hOemgzTFhBMFExRk1VamxrV1d0UGRWZFJZamRaY0RCY2RUQXdNMlFpTENKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUlzSW10cFpDSTZJbnRjSW5SY0lqcGNJakF3UkdRd01EQXdNREF3Wm1VeVNGd2lMRndpZGx3aU9sd2lNREpIZERBd01EQXdNREEwYkVJMlhDSXNYQ0poWENJNlhDSjJabk5wWjI1cGJtZHJaWGxjSWl4Y0luVmNJanBjSWpBd05YUXdNREF3TURBeE0yNUdjVndpZlNJc0ltTnlhWFFpT2xzaWFXRjBJbDBzSW1saGRDSTZNVGMzT0RNeU1UWTFORGcwTVN3aVpYaHdJam93ZlE9PS4uOGlMMDZDLUpkNUc1amxjZ3oxOE1MQkxsQkNYU2dpLWZfM01wUjVvaWhfWT0=" /></span></span>
+                        
+                    </main>
+                </div> 
+            </div>
+            
+            <script>
+            //Fall back to local copy if no jquery found
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='https://www.dir.ca.gov/_v4_template/js/libs/jquery-1.11.1.min.js' type='text/javascript'%3E%3C/script%3E"));
+            }
+            
+            </script>
+            
+            
+        </body>
+    </html><script type="text/javascript">Sfdc.onReady(function(){
+	SfdcApp && SfdcApp.Visualforce && SfdcApp.Visualforce.VSManager && SfdcApp.Visualforce.VSManager.vfPrepareForms(["j_id0:Template:j_id14"]);
+
+});</script>

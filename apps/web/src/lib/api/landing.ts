@@ -37,6 +37,8 @@ export type Impact = {
   medianWage: number | null;
   trainingsCompleted: number | null;
   verifiedEmployers: number;
+  workersTotal: number | null;
+  activePostings: number;
   generatedAt: string;
   windowMonths: 12;
   source: string;
@@ -78,4 +80,26 @@ export type FounderSlots = {
 export async function getFounderSlots(): Promise<FounderSlots> {
   const data = await fetchEnvelope<FounderSlots>('/v1/landing/founder-slots', 30);
   return data ?? { remaining: 0, total: 50, active: false };
+}
+
+export type PublicCert =
+  | {
+      valid: true;
+      certificateId: string;
+      programTitleEn: string;
+      programTitleEs: string;
+      workerFirstName: string;
+      workerLastInitial: string;
+      org: string;
+      funder: string;
+      completedAt: string | null;
+    }
+  | {
+      valid: false;
+      certificateId: string;
+    };
+
+export async function getPublicCert(certificateId: string): Promise<PublicCert | null> {
+  const safe = encodeURIComponent(certificateId);
+  return fetchEnvelope<PublicCert>(`/v1/landing/verify-cert/${safe}`, 60);
 }

@@ -3,8 +3,9 @@
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faFileLines } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
@@ -137,6 +138,14 @@ export function PayrollLineRow({ periodId, line, border, locked, approved }: Pro
       </span>
       <span className="font-mono font-bold">{fmtCents(line.netCents)}</span>
       <div className="flex justify-end gap-1.5">
+        <Link
+          href={`/${locale}/employer/payroll/${periodId}/wage-statement/${line.id}`}
+          aria-label={t('table.wage_statement')}
+          title={t('table.wage_statement')}
+          className="border-base-300 hover:bg-base-200 inline-flex items-center justify-center rounded-md border bg-transparent px-2 py-1 text-[11px] font-medium"
+        >
+          <FontAwesomeIcon icon={faFileLines} className="h-3 w-3" />
+        </Link>
         <button
           type="button"
           onClick={() => setEditing(true)}

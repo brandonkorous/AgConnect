@@ -10,6 +10,7 @@ import {
     faKey,
     faServer,
     faClipboardList,
+    faSignal,
 } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -106,6 +107,35 @@ export default async function TrustPage({ params }: RouteProps) {
                                 </p>
                             </article>
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            <section id="status" className="bg-base-200 w-full border-secondary/15 border-t">
+                <div className="container mx-auto flex flex-col gap-8 px-5 py-20 md:px-8 md:py-24 lg:px-20 lg:py-28">
+                    <div className="flex flex-col gap-4">
+                        <EyebrowLabel tone="soil" withRule>
+                            {t('status.eyebrow')}
+                        </EyebrowLabel>
+                        <h2 className="text-base-content font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl lg:text-5xl">
+                            {t('status.headline')}
+                        </h2>
+                    </div>
+                    <div className="bg-base-100 border-secondary/15 flex flex-col gap-4 border p-8 lg:max-w-3xl lg:p-10">
+                        <FontAwesomeIcon icon={faSignal} className="text-primary text-2xl" />
+                        <p className="text-secondary font-sans text-base leading-relaxed">
+                            {t('status.body')}
+                        </p>
+                        <p className="text-secondary font-sans text-sm leading-relaxed">
+                            {t('status.subscribe')}{' '}
+                            <a
+                                className="text-primary font-medium underline-offset-4 hover:underline"
+                                href="mailto:security@agconn.com"
+                            >
+                                security@agconn.com
+                            </a>
+                            .
+                        </p>
                     </div>
                 </div>
             </section>

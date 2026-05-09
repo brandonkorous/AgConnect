@@ -7,7 +7,8 @@ import { WaitlistWelcome } from './templates/WaitlistWelcome.js';
 import { EmployerNotice } from './templates/EmployerNotice.js';
 import { waitlistStrings, type Locale } from './strings/waitlist.js';
 import { getEmployerCopy } from './strings/employer.js';
-import type { EmployerEmailTemplate } from './queue.js';
+import { getGrantReportCopy } from './strings/grant.js';
+import type { EmployerEmailTemplate, GrantReportEmailTemplate } from './queue.js';
 
 let cachedResend: Resend | null = null;
 function getResend(): Resend {
@@ -31,7 +32,11 @@ export type SendOutcome =
   | { skipped: true; reason: 'no_api_key' | 'suppressed'; logId?: string };
 
 type DispatchArgs = {
-  template: 'waitlist_confirm' | 'waitlist_welcome' | EmployerEmailTemplate;
+  template:
+    | 'waitlist_confirm'
+    | 'waitlist_welcome'
+    | EmployerEmailTemplate
+    | GrantReportEmailTemplate;
   to: string;
   locale: Locale;
   subject: string;
@@ -41,8 +46,8 @@ type DispatchArgs = {
   oneClickUnsubscribeUrl: string;
   refType: string;
   refId: string;
-  // Null for platform-level emails (waitlist confirm/welcome). The
-  // email_log_service RLS policy permits NULL-tenant rows.
+  // Null for platform-level emails (waitlist confirm/welcome, grant reports).
+  // The email_log_service RLS policy permits NULL-tenant rows.
   tenantId: string | null;
 };
 
@@ -268,5 +273,47 @@ export async function sendEmployerNotice(
     refType: 'employer',
     refId: input.employerId,
     tenantId: input.tenantId,
+  });
+}
+
+type GrantReportNoticeInput = {
+  template: GrantReportEmailTemplate;
+  to: string;
+  locale: Locale;
+  vars: Record<string, string | number | null | undefined>;
+  downloadUrl: string;
+  unsubscribeUrl: string;
+  oneClickUnsubscribeUrl: string;
+  reportRunId: string;
+};
+
+export async function sendGrantReportNotice(
+  db: Tx,
+  input: GrantReportNoticeInput,
+): Promise<SendOutcome> {
+  const copy = getGrantReportCopy(input.template, input.locale, input.vars);
+  const element = React.createElement(EmployerNotice, {
+    locale: input.locale,
+    copy,
+    ctaUrl: input.downloadUrl,
+    unsubscribeUrl: input.unsubscribeUrl,
+  });
+  const [html, text] = await Promise.all([
+    render(element),
+    render(element, { plainText: true }),
+  ]);
+
+  return dispatch(db, {
+    template: input.template,
+    to: input.to,
+    locale: input.locale,
+    subject: copy.subject,
+    html,
+    text,
+    unsubscribeUrl: input.unsubscribeUrl,
+    oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
+    refType: 'report_run',
+    refId: input.reportRunId,
+    tenantId: null,
   });
 }

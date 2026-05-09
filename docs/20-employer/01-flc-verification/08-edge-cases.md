@@ -1,13 +1,35 @@
 # 01 — FLC Verification: Edge Cases & Risks
 
-## DLSE database changes format
+## DLSE form structure changes
 
-DLSE form structure changes; the future scraper breaks.
+Salesforce rotates the dynamic `j_id<N>:` prefix on the Visualforce form, or moves the result table.
 
-**Mitigation (Phase 2 scraper):**
+**Mitigation:**
 
-- Daily scraper smoke test against a known-good license number; alert on parse failure.
-- Manual fallback always available — admin can verify via the live form.
+- The DLSE scraper parses the `j_id` prefix on every request rather than hardcoding it; suffix-matched field-name lookup survives most redeploys.
+- `auto_verify_failed` rows with `kind: 'error'` and `message: 'form_field_names_missing'` or `unknown_status:*` are the canary — alert when these spike.
+- Manual fallback always available — admin can verify via the live form and call `POST /admin/v1/employers/:id/verify`.
+
+## DLSE turns on reCAPTCHA enforcement
+
+The reCAPTCHA v2 widget is loaded on the search page today but not gating the submit. If DLSE flips enforcement on, every scrape returns the challenge HTML.
+
+**Mitigation:**
+
+- The scraper returns `kind: 'captcha_blocked'` when it sees the marker. The handler writes `flcCheckStatus = captcha_blocked` and an `auto_verify_failed` audit row — it does NOT auto-reject.
+- The employer stays in the admin pending queue with the CAPTCHA reason visible.
+- `flcVerifiedAt` for previously-verified employers is unaffected — they keep their badge.
+- Follow-up: build a Playwright + 2Captcha escalation behind a feature flag if enforcement persists.
+
+## DLSE site is down
+
+Network timeout, 5xx response, DNS failure during a verify attempt.
+
+**Mitigation:**
+
+- pg-boss retries the job 3× with exponential backoff (60s base) within the 23h expiration window.
+- After exhaustion, the snapshot records `flcCheckStatus = error` with the failure message; the nightly sweep re-enqueues the next day.
+- Already-verified employers keep their badge — we don't strip on transient failure.
 
 ## License numbers reused / similar
 
@@ -15,9 +37,20 @@ Bad-actor registers with another business's license number.
 
 **Mitigation:**
 
-- Admin's job to compare business name against DLSE record; if mismatch, reject.
-- Phase 2 scraper can detect duplicate license-num across employers (alert).
-- Verification log preserves admin reasoning.
+- DLSE returns the legal name on record; the auto-verify writes it to `flcLegalNameOnRecord`. The admin pending list highlights mismatches between submitted `legalName` and `flcLegalNameOnRecord`.
+- A future job can flag duplicate `flcLicenseNum` across employers.
+- Verification log preserves the DLSE legal name in the audit payload.
+
+## MSPA dataset stale or missing
+
+The data.gov dataset is updated monthly upstream. A registered FLC could be absent from the cache for up to 30 days after their first registration.
+
+**Mitigation:**
+
+- `mspaVerifiedAt = null` does NOT block the FLC verified badge — the DLSE check is the primary signal.
+- The MSPA snapshot is shown on the public profile when present (with the housing/transport/driving auth flags) but not absent-shamed.
+- `mspa_sync_run.status = failed` triggers a Sentry alert; the prior dataset stays in place rather than being nuked.
+- The bulk sync refuses to ingest a parsed file with zero rows (parser regression guard).
 
 ## Re-verification cadence
 
@@ -25,9 +58,9 @@ Licenses expire annually. We need to catch expirations.
 
 **Mitigation:**
 
-- Phase 2: nightly scraper re-checks all `flcVerifiedAt IS NOT NULL` employers.
-- For MVP, admin runs a quarterly batch re-check manually.
-- Per-employer "last re-verified" displayed in admin UI.
+- The nightly sweep re-checks every FLC employer whose `flcLastCheckedAt` is older than 24h.
+- DLSE's "Expired" status maps to `flcCheckStatus = expired`. Per-employer "last re-verified" displays in the admin queue and on the employer's own dashboard.
+- An expired re-check does not strip `flcVerifiedAt` automatically (see "expiry" item below) — the admin makes that call.
 
 ## Grower verification ambiguity
 
@@ -35,9 +68,9 @@ Small growers may not have a clear SOS entity (sole proprietor with DBA).
 
 **Mitigation:**
 
-- Admin uses judgment based on county agricultural commissioner records, business license, etc.
-- Notes field captures their reasoning for the audit trail.
-- For MVP, accept some ambiguity; tighten policy after observing fraud patterns.
+- Grower profiles are not auto-verified — they always go through admin spot-check.
+- The flc-verifier worker writes `flcCheckStatus = not_applicable` on grower rows so the sweep doesn't keep retrying.
+- Notes field captures the admin's reasoning for the audit trail.
 
 ## Employer publishes draft, then is rejected
 
@@ -55,13 +88,13 @@ Employer's `flcVerifiedAt` is cleared (license expired). Active jobs shouldn't a
 
 ## Multi-user employer org
 
-Phase 2: an employer org has multiple users (owner + assistants). Verification is per-employer-profile, not per-user.
+An employer org has multiple users (owner + assistants). Verification is per-employer-profile, not per-user.
 
 **Mitigation:** Clerk Organization → one `employer_profile`. Members of the Clerk org all see the same verification status.
 
 ## Wrong tenant
 
-Employer signs up under wrong tenant (chose Salinas, should be Central Valley).
+Employer signs up under wrong tenant.
 
 **Mitigation:**
 
@@ -79,22 +112,13 @@ Race condition: two admins simultaneously verify the same employer.
 
 ## Employer info change after publish
 
-Employer changes business name post-verification. SEO slug doesn't update (immutable).
-
-**Mitigation:**
-
-- Business name update is allowed; sluggotcha noted.
-- New jobs use the new name; old jobs keep their snapshot... wait, jobs link to employer by ID, so they show the current employer name. UPDATE: jobs always show current employer name. SEO slug for old URLs still works.
+Employer changes business name post-verification. SEO slug doesn't update (immutable). Jobs always show current employer name; SEO slug for old URLs still works.
 
 ## Public profile of unverified employer
-
-Should an unverified employer have any public presence?
 
 **Decision:** No. RLS hides them. The `seo_slug` is reserved at create time but the page returns 404 until verified.
 
 ## Employer requests deletion
-
-GDPR / CCPA: employer wants their data deleted.
 
 **Mitigation:**
 
@@ -105,13 +129,11 @@ GDPR / CCPA: employer wants their data deleted.
 
 ## License number leakage
 
-`flc_license_num` is mildly sensitive. Should it be hashed or encrypted?
-
-**Decision:** plaintext, RLS-protected. Admin needs to read it to verify; hashing prevents that. Encryption adds complexity without much gain when access is RLS-controlled. Encrypted at rest via Azure Postgres TDE.
+`flc_license_num` is mildly sensitive. Decision: plaintext, RLS-protected. Admin needs to read it to verify. Encrypted at rest via Postgres TDE.
 
 ## Open questions
 
-1. DOL MSPA verification — does any partner org require it before launch? If so, add as a hard requirement.
-2. Vouching by other employers (Phase 2) — how does it integrate with admin verification? Probably as a "1 of 3 vouches → fast-track admin review" model.
-3. Re-verification cadence — annual, biannual? DLSE licenses are annual; we should match.
-4. Grower verification automation — county agricultural commissioner records aren't centralized. Likely stays manual.
+1. **MSPA gating:** should `mspaVerifiedAt = null` block the verified badge? Currently no — DLSE is primary, MSPA is supplementary. Revisit if a partner org requires both.
+2. **Vouching by other employers (post-launch):** how does it integrate with verification? Probably as a "3 vouches → fast-track admin review" model.
+3. **Re-verification cadence:** 24h works for MVP scale. As employer count grows, consider weekly + on-publish re-checks instead of nightly across the whole table.
+4. **Grower verification automation:** county agricultural commissioner records aren't centralized. Likely stays manual.

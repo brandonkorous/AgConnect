@@ -23,10 +23,9 @@ export function FooterLegal() {
                     <span>{t('built_in')}</span>
                     <span aria-hidden className="opacity-60">|</span>
                     <a
-                        href="https://status.agconn.com"
-                        className="badge badge-success badge-sm gap-1.5 border-0 hover:opacity-80"
+                        href={`/${locale}/trust#status`}
+                        className="badge badge-ghost badge-sm gap-1.5 border-0 hover:opacity-80"
                     >
-                        <span className="size-1.5 shrink-0 rounded-full bg-current" aria-hidden />
                         <span>{t('status')}</span>
                     </a>
                 </div>

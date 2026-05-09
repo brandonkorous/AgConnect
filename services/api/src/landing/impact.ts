@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
-import { AppStatus, EnrollmentStatus } from '@agconn/db';
+import { AppStatus, EnrollmentStatus, JobStatus, UserRole } from '@agconn/db';
 import {
   serviceNoTenantMiddleware,
   type ServiceNoTenantVars,
@@ -29,7 +29,14 @@ impactRoutes.get('/', async (c) => {
   const since = new Date();
   since.setMonth(since.getMonth() - WINDOW_MONTHS);
 
-  const [hiredCount, hiredWages, completedCount, verifiedEmployers] = await Promise.all([
+  const [
+    hiredCount,
+    hiredWages,
+    completedCount,
+    verifiedEmployers,
+    workersTotal,
+    activePostings,
+  ] = await Promise.all([
     c.var.db.application.count({
       where: {
         status: AppStatus.hired,
@@ -59,6 +66,16 @@ impactRoutes.get('/', async (c) => {
         deletedAt: null,
       },
     }),
+    c.var.db.user.count({
+      where: { role: UserRole.worker },
+    }),
+    c.var.db.jobPosting.count({
+      where: {
+        status: JobStatus.active,
+        deletedAt: null,
+        employer: { employerProfile: { flcVerifiedAt: { not: null } } },
+      },
+    }),
   ]);
 
   const wages = hiredWages
@@ -83,6 +100,8 @@ impactRoutes.get('/', async (c) => {
         : suppress(hiredCount, Math.round(medianWage * 100) / 100),
     trainingsCompleted: suppress(completedCount, roundToNearest(completedCount, 10)),
     verifiedEmployers,
+    workersTotal: suppress(workersTotal, roundToNearest(workersTotal, 10)),
+    activePostings,
     generatedAt: new Date().toISOString(),
     windowMonths: WINDOW_MONTHS,
     source: 'WIOA-aligned · nightly · cross-tenant',

@@ -13,6 +13,14 @@ import {
   type AuthVars,
 } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
+import {
+  calcWorker,
+  CA_STATE_MIN_WAGE_CENTS_2026,
+  DEFAULT_CONTRACT_HOURLY_CENTS,
+  DEFAULT_TAX_RATE,
+  type CalcAssignment,
+  type CalcContext,
+} from './calc.js';
 
 export const employerPayrollRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerPayrollRoutes.use('*', requireAuth('crews'));
@@ -168,6 +176,16 @@ employerPayrollRoutes.get('/periods/:id/lines', async (c) => {
         role: l.role,
         hours: Number(l.hours.toString()),
         overtimeHours: Number(l.overtimeHours.toString()),
+        nonProductiveHours: Number(l.nonProductiveHours.toString()),
+        restPeriodHours: Number(l.restPeriodHours.toString()),
+        regularPayCents: l.regularPayCents,
+        overtimePayCents: l.overtimePayCents,
+        pieceRatePayCents: l.pieceRatePayCents,
+        nonProductivePayCents: l.nonProductivePayCents,
+        restPeriodPayCents: l.restPeriodPayCents,
+        aewrTopUpCents: l.aewrTopUpCents,
+        appliedFloorCents: l.appliedFloorCents,
+        isH2a: l.isH2a,
         grossCents: l.grossCents,
         bonusCents: l.bonusCents,
         taxesCents: l.taxesCents,
@@ -237,6 +255,112 @@ employerPayrollRoutes.patch(
   },
 );
 
+// H-2A payroll context: surfaces participation flag + active AEWR row for
+// the employer's state. Used by the payroll page H-2A callout to render
+// real numbers instead of placeholder text.
+employerPayrollRoutes.get('/h2a-context', async (c) => {
+  const userId = c.var.userId;
+  const employer = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: { participatesInH2a: true, stateCode: true },
+  });
+  const stateCode = employer?.stateCode ?? 'CA';
+  const today = new Date();
+  const aewr = await c.var.db.aewrRate.findFirst({
+    where: {
+      stateCode,
+      effectiveFrom: { lte: today },
+      OR: [{ effectiveTo: null }, { effectiveTo: { gte: today } }],
+    },
+    orderBy: { effectiveFrom: 'desc' },
+  });
+  return ok(c, {
+    participatesInH2a: Boolean(employer?.participatesInH2a),
+    aewrHourlyCents: aewr?.hourlyCents ?? null,
+    stateCode,
+    effectiveFrom: aewr?.effectiveFrom?.toISOString().slice(0, 10) ?? null,
+    source: aewr?.source ?? null,
+  });
+});
+
+// Wage statement (CA Labor Code §226-aligned). Returns a single line's
+// full breakdown plus the period and employer details needed to print the
+// itemized statement.
+employerPayrollRoutes.get('/periods/:id/lines/:lineId/wage-statement', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const id = c.req.param('id');
+  const lineId = c.req.param('lineId');
+
+  const period = await c.var.db.payrollPeriod.findFirst({
+    where: { id, tenantId, employerId: userId },
+  });
+  if (!period) return err(c, 404, 'not_found');
+
+  const line = await c.var.db.payrollLine.findFirst({
+    where: { id: lineId, periodId: id, tenantId },
+    include: { worker: { include: { workerProfile: true } } },
+  });
+  if (!line) return err(c, 404, 'not_found');
+
+  const employer = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: {
+      legalName: true,
+      dbaName: true,
+      streetAddress: true,
+      city: true,
+      stateCode: true,
+      postalCode: true,
+      flcLicenseNum: true,
+    },
+  });
+
+  const wp = line.worker.workerProfile;
+  return ok(c, {
+    line: {
+      id: line.id,
+      hours: Number(line.hours.toString()),
+      overtimeHours: Number(line.overtimeHours.toString()),
+      nonProductiveHours: Number(line.nonProductiveHours.toString()),
+      restPeriodHours: Number(line.restPeriodHours.toString()),
+      regularPayCents: line.regularPayCents,
+      overtimePayCents: line.overtimePayCents,
+      pieceRatePayCents: line.pieceRatePayCents,
+      nonProductivePayCents: line.nonProductivePayCents,
+      restPeriodPayCents: line.restPeriodPayCents,
+      aewrTopUpCents: line.aewrTopUpCents,
+      appliedFloorCents: line.appliedFloorCents,
+      isH2a: line.isH2a,
+      grossCents: line.grossCents,
+      bonusCents: line.bonusCents,
+      taxesCents: line.taxesCents,
+      netCents: line.netCents,
+    },
+    period: {
+      id: period.id,
+      startDate: period.startDate.toISOString().slice(0, 10),
+      endDate: period.endDate.toISOString().slice(0, 10),
+      payDate: period.payDate.toISOString().slice(0, 10),
+      status: period.status,
+    },
+    worker: {
+      id: line.workerUserId,
+      firstName: wp?.firstName ?? '',
+      lastName: wp?.lastName ?? '',
+    },
+    employer: {
+      legalName: employer?.legalName ?? '',
+      dbaName: employer?.dbaName ?? null,
+      streetAddress: employer?.streetAddress ?? null,
+      city: employer?.city ?? null,
+      stateCode: employer?.stateCode ?? null,
+      postalCode: employer?.postalCode ?? null,
+      flcLicenseNum: employer?.flcLicenseNum ?? null,
+    },
+  });
+});
+
 // Generates one payroll line per worker who had completed shift assignments
 // inside the period window. Hours rolled up from shift_assignments.hoursWorked
 // (or estimated from the shift duration when null), OT computed >40h/week,
@@ -254,62 +378,108 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
   if (!period) return err(c, 404, 'not_found');
   if (period.status !== PayrollPeriodStatus.draft) return err(c, 422, 'period_locked');
 
-  const assignments = await c.var.db.shiftAssignment.findMany({
-    where: {
-      tenantId,
-      shift: {
-        employerId: userId,
-        shiftDate: { gte: period.startDate, lte: period.endDate },
+  const [assignments, employerProfile, aewrRow] = await Promise.all([
+    c.var.db.shiftAssignment.findMany({
+      where: {
+        tenantId,
+        shift: {
+          employerId: userId,
+          shiftDate: { gte: period.startDate, lte: period.endDate },
+        },
+        status: { in: [ShiftAssignmentStatus.completed, ShiftAssignmentStatus.confirmed] },
       },
-      status: { in: [ShiftAssignmentStatus.completed, ShiftAssignmentStatus.confirmed] },
-    },
-    include: {
-      shift: { select: { startTime: true, endTime: true, shiftDate: true } },
-      worker: { include: { workerProfile: true } },
-    },
-  });
+      include: {
+        shift: {
+          select: { startTime: true, endTime: true, shiftDate: true, shiftType: true, crew: true },
+        },
+        worker: { include: { workerProfile: true } },
+      },
+    }),
+    c.var.db.employerProfile.findUnique({
+      where: { userId },
+      select: { participatesInH2a: true, stateCode: true },
+    }),
+    c.var.db.aewrRate.findFirst({
+      where: {
+        stateCode: 'CA',
+        effectiveFrom: { lte: period.endDate },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gte: period.startDate } }],
+      },
+      orderBy: { effectiveFrom: 'desc' },
+    }),
+  ]);
+
+  const isH2a = Boolean(employerProfile?.participatesInH2a);
+  const stateCode = employerProfile?.stateCode ?? 'CA';
 
   const byWorker = new Map<
     string,
-    { hours: number; pieces: number; pieceCents: number; firstName: string; lastName: string }
+    { rows: CalcAssignment[]; firstName: string; lastName: string; contractCents: number }
   >();
 
   for (const a of assignments) {
-    const acc = byWorker.get(a.workerUserId) ?? {
-      hours: 0,
-      pieces: 0,
-      pieceCents: 0,
-      firstName: a.worker.workerProfile?.firstName ?? '',
-      lastName: a.worker.workerProfile?.lastName ?? '',
-    };
     let hrs = a.hoursWorked ? Number(a.hoursWorked.toString()) : 0;
     if (hrs === 0) {
-      // estimate from shift block
       const [sh = 0, sm = 0] = a.shift.startTime.split(':').map(Number);
       const eh = a.shift.endTime ? Number(a.shift.endTime.split(':')[0] ?? 0) : sh + 8;
       const em = a.shift.endTime ? Number(a.shift.endTime.split(':')[1] ?? 0) : 0;
       hrs = Math.max(0, eh + em / 60 - (sh + sm / 60));
     }
-    acc.hours += hrs;
-    if (a.piecesCount && a.pieceRateCents) {
-      acc.pieces += a.piecesCount;
-      acc.pieceCents += a.piecesCount * a.pieceRateCents;
-    }
+
+    const crewBase = a.shift.crew?.baseWageCents ?? null;
+    const acc = byWorker.get(a.workerUserId) ?? {
+      rows: [],
+      firstName: a.worker.workerProfile?.firstName ?? '',
+      lastName: a.worker.workerProfile?.lastName ?? '',
+      contractCents: crewBase ?? DEFAULT_CONTRACT_HOURLY_CENTS,
+    };
+    if (crewBase && crewBase > acc.contractCents) acc.contractCents = crewBase;
+
+    acc.rows.push({
+      workerId: a.workerUserId,
+      shiftDate: a.shift.shiftDate,
+      shiftType: a.shift.shiftType,
+      hoursWorked: hrs,
+      piecesCount: a.piecesCount ?? 0,
+      pieceRateCents: a.pieceRateCents ?? 0,
+      hourlyRateCents: acc.contractCents,
+    });
     byWorker.set(a.workerUserId, acc);
   }
 
-  const DEFAULT_HOURLY_CENTS = 2000; // $20/hr
-  const TAX_RATE = 0.142;
   let writes = 0;
 
   for (const [workerUserId, agg] of byWorker.entries()) {
-    const ot = Math.max(0, agg.hours - 40);
-    const reg = Math.min(40, agg.hours);
-    const grossCents = Math.round(reg * DEFAULT_HOURLY_CENTS + ot * DEFAULT_HOURLY_CENTS * 1.5);
-    const bonusCents = agg.pieceCents;
-    const taxesCents = Math.round((grossCents + bonusCents) * TAX_RATE);
-    const netCents = grossCents + bonusCents - taxesCents;
+    const ctx: CalcContext = {
+      isH2a,
+      stateCode,
+      aewrHourlyCents: aewrRow?.hourlyCents ?? null,
+      stateMinWageCents: CA_STATE_MIN_WAGE_CENTS_2026,
+      contractHourlyCents: agg.contractCents,
+      taxRate: DEFAULT_TAX_RATE,
+    };
+    const result = calcWorker(workerUserId, agg.rows, ctx);
     const role = `${agg.firstName} ${agg.lastName}`.trim() || null;
+
+    const lineData = {
+      role,
+      hours: result.hours,
+      overtimeHours: result.overtimeHours,
+      nonProductiveHours: result.nonProductiveHours,
+      restPeriodHours: result.restPeriodHours,
+      regularPayCents: result.regularPayCents,
+      overtimePayCents: result.overtimePayCents,
+      pieceRatePayCents: result.pieceRatePayCents,
+      nonProductivePayCents: result.nonProductivePayCents,
+      restPeriodPayCents: result.restPeriodPayCents,
+      aewrTopUpCents: result.aewrTopUpCents,
+      appliedFloorCents: result.appliedFloorCents,
+      isH2a: result.isH2a,
+      grossCents: result.grossCents,
+      bonusCents: result.bonusCents,
+      taxesCents: result.taxesCents,
+      netCents: result.netCents,
+    };
 
     await c.var.db.payrollLine.upsert({
       where: { periodId_workerUserId: { periodId: id, workerUserId } },
@@ -317,22 +487,9 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
         tenantId,
         periodId: id,
         workerUserId,
-        role,
-        hours: agg.hours,
-        overtimeHours: ot,
-        grossCents,
-        bonusCents,
-        taxesCents,
-        netCents,
+        ...lineData,
       },
-      update: {
-        hours: agg.hours,
-        overtimeHours: ot,
-        grossCents,
-        bonusCents,
-        taxesCents,
-        netCents,
-      },
+      update: lineData,
     });
     writes += 1;
   }

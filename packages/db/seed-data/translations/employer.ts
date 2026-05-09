@@ -3700,6 +3700,18 @@ export const employer: TranslationBundle = {
         en: "Could not send.",
         es: "No se pudo enviar.",
     },
+    "messages.composer.broadcast_chip": {
+        en: "Broadcast · SMS",
+        es: "Difusión · SMS",
+    },
+    "messages.composer.broadcast_summary": {
+        en: "Sending to {reachable} of {total} recipients · {optedOut} opted out",
+        es: "Enviando a {reachable} de {total} destinatarios · {optedOut} cancelaron",
+    },
+    "messages.composer.quiet_hours_notice": {
+        en: "It's currently quiet hours (9pm–7am Pacific). This message will queue and send at 7am.",
+        es: "Estamos en horario de silencio (9pm–7am Pacífico). Este mensaje se enviará a las 7am.",
+    },
     "messages.composer.placeholder": {
         en: "Type a message — auto-translates to Spanish",
         es: "Escribe un mensaje — se traduce al inglés automáticamente",
@@ -3887,6 +3899,10 @@ export const employer: TranslationBundle = {
     "messages.read_indicator": {
         en: "read at {time}",
         es: "leído a las {time}",
+    },
+    "messages.broadcast_delivery_summary": {
+        en: "queued to {queued} · {optedOut} opted out · {noPhone} no phone",
+        es: "en cola a {queued} · {optedOut} cancelaron · {noPhone} sin teléfono",
     },
     "messages.sent_indicator": {
         en: "sent",
@@ -4104,6 +4120,146 @@ export const employer: TranslationBundle = {
         en: "Approve & run payroll",
         es: "Aprobar y ejecutar nómina",
     },
+    "payroll.wage_statement.title": {
+        en: "Wage statement",
+        es: "Recibo de pago",
+    },
+    "payroll.wage_statement.back": {
+        en: "Back to payroll",
+        es: "Volver a nómina",
+    },
+    "payroll.wage_statement.print": {
+        en: "Print / Save as PDF",
+        es: "Imprimir / Guardar como PDF",
+    },
+    "payroll.wage_statement.header_eyebrow": {
+        en: "Itemized wage statement · CA Labor Code §226",
+        es: "Recibo de pago detallado · Código Laboral CA §226",
+    },
+    "payroll.wage_statement.header_title": {
+        en: "Wage statement",
+        es: "Recibo de pago",
+    },
+    "payroll.wage_statement.employer_label": {
+        en: "Employer",
+        es: "Empleador",
+    },
+    "payroll.wage_statement.dba_prefix": {
+        en: "dba",
+        es: "operando como",
+    },
+    "payroll.wage_statement.flc_label": {
+        en: "FLC #",
+        es: "FLC #",
+    },
+    "payroll.wage_statement.worker_label": {
+        en: "Employee",
+        es: "Empleado",
+    },
+    "payroll.wage_statement.period_label": {
+        en: "Pay period",
+        es: "Periodo de pago",
+    },
+    "payroll.wage_statement.pay_date_label": {
+        en: "Pay date",
+        es: "Fecha de pago",
+    },
+    "payroll.wage_statement.earnings_heading": {
+        en: "Earnings",
+        es: "Ingresos",
+    },
+    "payroll.wage_statement.col_description": {
+        en: "Description",
+        es: "Descripción",
+    },
+    "payroll.wage_statement.col_hours": {
+        en: "Hours",
+        es: "Horas",
+    },
+    "payroll.wage_statement.col_rate": {
+        en: "Rate",
+        es: "Tarifa",
+    },
+    "payroll.wage_statement.col_amount": {
+        en: "Amount",
+        es: "Cantidad",
+    },
+    "payroll.wage_statement.row_regular": {
+        en: "Regular hourly time",
+        es: "Tiempo regular por hora",
+    },
+    "payroll.wage_statement.row_piece_rate": {
+        en: "Piece-rate earnings",
+        es: "Ganancias a destajo",
+    },
+    "payroll.wage_statement.row_overtime": {
+        en: "Overtime premium (1.5×)",
+        es: "Prima por horas extras (1.5×)",
+    },
+    "payroll.wage_statement.row_non_productive": {
+        en: "Non-productive time",
+        es: "Tiempo no productivo",
+    },
+    "payroll.wage_statement.row_non_productive_hint": {
+        en: "AB 1513 · paid at the higher of contract rate or minimum wage",
+        es: "AB 1513 · pagado al mayor de la tarifa contratada o el salario mínimo",
+    },
+    "payroll.wage_statement.row_rest_period": {
+        en: "Paid rest & recovery periods",
+        es: "Periodos de descanso y recuperación pagados",
+    },
+    "payroll.wage_statement.row_rest_period_hint": {
+        en: "AB 1513 · paid at the higher of workweek average hourly or minimum wage",
+        es: "AB 1513 · pagado al mayor del promedio por hora de la semana o el salario mínimo",
+    },
+    "payroll.wage_statement.row_aewr_top_up": {
+        en: "AEWR floor adjustment",
+        es: "Ajuste al piso AEWR",
+    },
+    "payroll.wage_statement.row_aewr_top_up_hint": {
+        en: "H-2A · top-up to the federal Adverse Effect Wage Rate",
+        es: "H-2A · complemento al Salario por Efecto Adverso federal",
+    },
+    "payroll.wage_statement.row_gross": {
+        en: "Gross earnings",
+        es: "Ganancias brutas",
+    },
+    "payroll.wage_statement.row_taxes": {
+        en: "Estimated taxes & withholdings",
+        es: "Impuestos y retenciones estimados",
+    },
+    "payroll.wage_statement.row_net": {
+        en: "Net pay",
+        es: "Pago neto",
+    },
+    "payroll.wage_statement.floor_label": {
+        en: "Applied wage floor",
+        es: "Piso salarial aplicado",
+    },
+    "payroll.wage_statement.hour_unit": {
+        en: "hr",
+        es: "hr",
+    },
+    "payroll.wage_statement.floor_state_note": {
+        en: "Higher of California minimum wage and contract hourly rate.",
+        es: "El mayor entre el salario mínimo de California y la tarifa por hora contratada.",
+    },
+    "payroll.wage_statement.floor_h2a_note": {
+        en: "Higher of California minimum wage, federal AEWR, and contract hourly rate.",
+        es: "El mayor entre el salario mínimo de California, el AEWR federal y la tarifa contratada.",
+    },
+    "payroll.wage_statement.compliance_label": {
+        en: "Compliance",
+        es: "Cumplimiento",
+    },
+    "payroll.wage_statement.compliance_note": {
+        en: "Itemized in accordance with CA Labor Code §226 and §226.2 (AB 1513). H-2A workers also receive the federal AEWR floor.",
+        es: "Detallado conforme al Código Laboral CA §226 y §226.2 (AB 1513). Los trabajadores H-2A también reciben el piso AEWR federal.",
+    },
+    "payroll.wage_statement.footer_note": {
+        en: "Generated by AgConn. Keep this statement for your records.",
+        es: "Generado por AgConn. Guarda este recibo para tus registros.",
+    },
     "payroll.approve_modal.title": {
         en: "Approve and run payroll",
         es: "Aprobar y ejecutar nómina",
@@ -4217,8 +4373,40 @@ export const employer: TranslationBundle = {
         es: "AEWR + transporte reembolsado automáticamente",
     },
     "payroll.h2a_sub": {
-        en: "3-fourths guarantee tracked · Adverse Effect Wage $19.97/hr applied",
-        es: "3/4 garantía rastreada · Salario AEWR $19.97/hr aplicado",
+        en: "3-fourths guarantee tracked · Adverse Effect Wage applied",
+        es: "3/4 garantía rastreada · Salario AEWR aplicado",
+    },
+    "payroll.h2a_headline_dynamic": {
+        en: "AEWR floor {rate}/hr ({state}) applied to H-2A workers.",
+        es: "Piso AEWR {rate}/hr ({state}) aplicado a trabajadores H-2A.",
+    },
+    "payroll.h2a_headline_no_rate": {
+        en: "H-2A floor active — no published AEWR rate found for this state.",
+        es: "Piso H-2A activo — no se encontró un AEWR publicado para este estado.",
+    },
+    "payroll.h2a_sub_dynamic": {
+        en: "{workers} H-2A workers in this period · {topUp} AEWR top-up applied",
+        es: "{workers} trabajadores H-2A este periodo · {topUp} ajuste AEWR aplicado",
+    },
+    "payroll.h2a_sub_idle": {
+        en: "Generate lines from shifts to compute the AEWR floor for this period.",
+        es: "Genera líneas desde los turnos para calcular el piso AEWR de este periodo.",
+    },
+    "payroll.h2a_effective": {
+        en: "Effective from {date}",
+        es: "Vigente desde {date}",
+    },
+    "payroll.h2a_eyebrow_off": {
+        en: "H-2A · not enabled",
+        es: "H-2A · desactivado",
+    },
+    "payroll.h2a_headline_off": {
+        en: "H-2A workforce program is off.",
+        es: "El programa H-2A está desactivado.",
+    },
+    "payroll.h2a_sub_off": {
+        en: "Enable H-2A in your employer profile to apply the federal AEWR floor and 3/4 guarantee tracking.",
+        es: "Activa H-2A en tu perfil de empleador para aplicar el piso federal AEWR y el seguimiento de la garantía 3/4.",
     },
     "payroll.hero_eyebrow": {
         en: "Net payout · this period",
@@ -4339,6 +4527,10 @@ export const employer: TranslationBundle = {
     "payroll.table.edit": {
         en: "Edit",
         es: "Editar",
+    },
+    "payroll.table.wage_statement": {
+        en: "Wage statement",
+        es: "Recibo de pago",
     },
     "payroll.table.showing": {
         en: "Showing {n} of {total}",
