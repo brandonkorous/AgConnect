@@ -64,6 +64,7 @@ COPY --from=deps /repo /repo
 COPY . .
 
 RUN pnpm --filter @agconn/db db:generate \
+ && pnpm --filter "./packages/**" build \
  && pnpm --filter @agconn/web build
 
 # ─── runtime: minimal node + standalone server ───────────────────────────────
