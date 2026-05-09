@@ -4,12 +4,12 @@ import type { Context } from 'hono';
 import type { ContentfulStatusCode, StatusCode } from 'hono/utils/http-status';
 import { z } from 'zod';
 
-import type { ApiErr, ToastHint } from './envelope';
+import type { ApiErr, ToastHint } from './envelope.js';
 import {
   defaultMessageForCode,
   defaultToastForCode,
   type ErrorCode,
-} from './errors';
+} from './errors.js';
 
 export type ErrExtra = {
   fields?: Record<string, string>;

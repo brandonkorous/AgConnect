@@ -6,9 +6,9 @@ import {
   type WaitlistConfirmJob,
   type WaitlistWelcomeJob,
   type EmployerEmailJob,
-} from './queue';
-import { sendWaitlistConfirm, sendWaitlistWelcome, sendEmployerNotice } from './sender';
-import { signConfirmToken, signUnsubscribeToken } from './tokens';
+} from './queue.js';
+import { sendWaitlistConfirm, sendWaitlistWelcome, sendEmployerNotice } from './sender.js';
+import { signConfirmToken, signUnsubscribeToken } from './tokens.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

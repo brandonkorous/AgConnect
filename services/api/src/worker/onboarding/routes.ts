@@ -7,8 +7,8 @@ import {
 } from '@agconn/schemas';
 import { Lang } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
-import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   OnboardingError,
   completeOnboarding,
@@ -16,7 +16,7 @@ import {
   patchOnboardingProfile,
   setLanguage,
   startOnboarding,
-} from './service';
+} from './service.js';
 
 export const onboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 

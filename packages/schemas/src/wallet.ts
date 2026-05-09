@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FunderEnum } from './training';
+import { FunderEnum } from './training.js';
 
 export const WalletItemSchema = z.discriminatedUnion('source', [
   z.object({

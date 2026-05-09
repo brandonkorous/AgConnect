@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { PayrollPeriodStatus } from '@agconn/db';
-import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext';
-import type { AuditCtxVars } from '../middleware/audit';
+import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
+import type { AuditCtxVars } from '../middleware/audit.js';
 
 // Worker-facing pay history. Reads PayrollLine rows where workerUserId matches
 // and the parent PayrollPeriod has been approved (i.e. paid or pending pay).

@@ -8,10 +8,10 @@ import {
   initHmacKeysFromEnv,
   type AuditEventInput,
 } from '@agconn/audit';
-import { getSmsBoss, SMS_QUEUE, type SmsJob } from './queue';
-import { renderSms, smsTemplates, type SmsTemplateName, type TemplateVars } from './templates';
-import { isQuietHours } from './quiet-hours';
-import { classifyTwilioError, getMessagingServiceSid, getTwilioClient } from './twilio';
+import { getSmsBoss, SMS_QUEUE, type SmsJob } from './queue.js';
+import { renderSms, smsTemplates, type SmsTemplateName, type TemplateVars } from './templates/index.js';
+import { isQuietHours } from './quiet-hours.js';
+import { classifyTwilioError, getMessagingServiceSid, getTwilioClient } from './twilio.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

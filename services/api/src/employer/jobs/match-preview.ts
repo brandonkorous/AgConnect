@@ -8,9 +8,9 @@
 import { Hono } from 'hono';
 import { ok, validate } from '@agconn/api-client/server';
 import { MatchPreviewQuery } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
-import { COUNTY_CENTROIDS, haversineMiles } from '../../lib/distance';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
+import { COUNTY_CENTROIDS, haversineMiles } from '../../lib/distance.js';
 
 const QUALIFY_THRESHOLD = 0.55;
 const TOP_MATCH_CAP = 30;

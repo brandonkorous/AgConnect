@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Hr, Link, Section, Text } from '@react-email/components';
-import { colors, fonts, labelStyle } from './tokens';
-import { waitlistStrings, type Locale } from '../strings/waitlist';
+import { colors, fonts, labelStyle } from './tokens.js';
+import { waitlistStrings, type Locale } from '../strings/waitlist.js';
 
 type Props = {
   locale: Locale;

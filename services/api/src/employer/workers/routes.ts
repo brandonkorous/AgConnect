@@ -7,8 +7,8 @@ import {
   canUseFeature,
 } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 
 // audit-required:exempt — worker_search_log is itself the audit record for
 // search activity (per docs/20-employer/04-worker-search/02-data-model.md).

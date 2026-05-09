@@ -11,14 +11,14 @@ import {
   requireRole,
   requireTenant,
   type AuthVars,
-} from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+} from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   uploadComplianceEvidence,
   deleteComplianceEvidence,
   signComplianceEvidenceUrl,
   isAllowedEvidenceType,
-} from '../../lib/supabase-storage';
+} from '../../lib/supabase-storage.js';
 
 const MAX_EVIDENCE_BYTES = 25 * 1024 * 1024;
 

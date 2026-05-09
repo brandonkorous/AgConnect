@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { CountyEnum } from './common';
-import { JobCardSchema, JobFullSchema } from './jobs';
+import { CountyEnum } from './common.js';
+import { JobCardSchema, JobFullSchema } from './jobs.js';
 
 export const AppStatusEnum = z.enum(['applied', 'reviewed', 'hired', 'rejected', 'withdrawn']);
 export type AppStatusV = z.infer<typeof AppStatusEnum>;

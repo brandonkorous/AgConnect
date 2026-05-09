@@ -1,6 +1,6 @@
 import { PgBoss } from 'pg-boss';
-import { computeQuietHoursDefer } from './quiet-hours';
-import type { SmsTemplateName, TemplateVars } from './templates';
+import { computeQuietHoursDefer } from './quiet-hours.js';
+import type { SmsTemplateName, TemplateVars } from './templates/index.js';
 
 export const SMS_QUEUE = 'sms.send' as const;
 

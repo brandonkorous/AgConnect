@@ -1,4 +1,4 @@
-import type { ApiErr, ApiResponse } from './envelope';
+import type { ApiErr, ApiResponse } from './envelope.js';
 
 export type ApiClientOptions = {
   baseUrl: string;

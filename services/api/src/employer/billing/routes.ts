@@ -7,11 +7,11 @@ import {
   planFeatures,
   priceIdFor,
 } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
-import { isVerified } from '../shared';
-import { getStripe, webUrl } from './stripe';
-import { resolveCheckoutCohort } from './founder-slots';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
+import { isVerified } from '../shared.js';
+import { getStripe, webUrl } from './stripe.js';
+import { resolveCheckoutCohort } from './founder-slots.js';
 
 // audit-required:exempt — checkout creates a Stripe customer + updates the
 // employer profile. The state-of-record audit row lands in billing_events

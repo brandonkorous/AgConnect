@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EmployerPlanTierEnum, PlanIntervalEnum } from './plans';
+import { EmployerPlanTierEnum, PlanIntervalEnum } from './plans.js';
 
 export const CheckoutBody = z
   .object({

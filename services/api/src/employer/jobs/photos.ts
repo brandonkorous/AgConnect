@@ -6,13 +6,13 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { PhotoReorderBody } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   uploadJobPhoto,
   deleteJobPhoto,
   isAllowedPhotoType,
-} from '../../lib/supabase-storage';
+} from '../../lib/supabase-storage.js';
 
 const MAX_PHOTOS_PER_JOB = 6;
 const MAX_BYTES = 10 * 1024 * 1024;

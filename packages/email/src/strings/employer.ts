@@ -1,5 +1,5 @@
-import type { Locale } from './waitlist';
-import type { EmployerEmailTemplate } from '../queue';
+import type { Locale } from './waitlist.js';
+import type { EmployerEmailTemplate } from '../queue.js';
 
 export type EmployerEmailCopy = {
   subject: string;

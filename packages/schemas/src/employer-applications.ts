@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { CountyEnum } from './common';
-import { AppStatusEnum } from './applications';
+import { CountyEnum } from './common.js';
+import { AppStatusEnum } from './applications.js';
 
 export const RejectionReasonEnum = z.enum([
   'not_qualified',

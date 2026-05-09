@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CountyEnum } from './common';
+import { CountyEnum } from './common.js';
 
 export const FunderEnum = z.enum(['CDFA', 'F3', 'CalOSBA', 'EDD', 'other']);
 export type FunderV = z.infer<typeof FunderEnum>;

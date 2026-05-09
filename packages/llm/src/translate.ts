@@ -1,4 +1,4 @@
-import { getLlmRouter } from './router';
+import { getLlmRouter } from './router.js';
 
 export type TranslateInput = {
   text: string;

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Heading, Section, Text } from '@react-email/components';
-import { Layout } from '../components/Layout';
-import { Button } from '../components/Button';
-import { Footer } from '../components/Footer';
-import { colors, fonts, labelStyle } from '../components/tokens';
-import { waitlistStrings, type Locale } from '../strings/waitlist';
+import { Layout } from '../components/Layout.js';
+import { Button } from '../components/Button.js';
+import { Footer } from '../components/Footer.js';
+import { colors, fonts, labelStyle } from '../components/tokens.js';
+import { waitlistStrings, type Locale } from '../strings/waitlist.js';
 
 export type WaitlistWelcomeProps = {
   locale: Locale;

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { CountyEnum, LocaleEnum } from './common';
-import { ResumeSchema } from './resume';
+import { CountyEnum, LocaleEnum } from './common.js';
+import { ResumeSchema } from './resume.js';
 
 // 7-day weekly availability, half-day granularity. See
 // docs/10-worker/01-onboarding/02-data-model.md.

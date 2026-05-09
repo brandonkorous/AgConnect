@@ -3,9 +3,9 @@ import type Stripe from 'stripe';
 import { prisma, EmployerPlanTier, PlanInterval } from '@agconn/db';
 import { priceIdToInterval, priceIdToTier } from '@agconn/schemas';
 import { enqueueEmployerEmail } from '@agconn/email';
-import { getStripe, stripeWebhookSecret } from '../employer/billing/stripe';
+import { getStripe, stripeWebhookSecret } from '../employer/billing/stripe.js';
 import { ok, err } from '@agconn/api-client/server';
-import { emitSystemAudit } from '../middleware/audit';
+import { emitSystemAudit } from '../middleware/audit.js';
 
 export const stripeWebhookRoutes = new Hono();
 

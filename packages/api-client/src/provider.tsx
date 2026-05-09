@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useMemo } from 'react';
-import { createApiClient, type ApiClient, type ApiClientOptions } from './client';
+import { createApiClient, type ApiClient, type ApiClientOptions } from './client.js';
 
 const ApiContext = createContext<ApiClient | null>(null);
 

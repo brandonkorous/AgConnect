@@ -3,9 +3,9 @@ export type {
   ApiErr,
   ApiResponse,
   ToastHint,
-} from './envelope';
+} from './envelope.js';
 
-export { isOk, isErr } from './envelope';
+export { isOk, isErr } from './envelope.js';
 
 export {
   StandardErrors,
@@ -14,4 +14,4 @@ export {
   httpStatusForCode,
   type StandardErrorCode,
   type ErrorCode,
-} from './errors';
+} from './errors.js';

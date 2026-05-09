@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
 import { JobStatus } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
+import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 export const featuredJobsRoutes = new Hono<{ Variables: TenantVars }>();
 featuredJobsRoutes.use('*', publicTenantMiddleware('landing'));

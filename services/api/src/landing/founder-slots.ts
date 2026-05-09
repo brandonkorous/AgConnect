@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
-import { getFounderSlots } from '../employer/billing/founder-slots';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
+import { getFounderSlots } from '../employer/billing/founder-slots.js';
+import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 export const founderSlotsRoutes = new Hono<{ Variables: TenantVars }>();
 founderSlotsRoutes.use('*', publicTenantMiddleware('landing'));

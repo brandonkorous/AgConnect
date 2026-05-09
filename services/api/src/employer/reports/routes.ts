@@ -7,8 +7,8 @@ import {
   requireRole,
   requireTenant,
   type AuthVars,
-} from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+} from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 
 // audit-required:exempt — CSV exports are read-only views over already-audited
 // payroll/application data; the underlying GETs are themselves not mutations.

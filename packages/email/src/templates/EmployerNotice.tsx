@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Heading, Section, Text } from '@react-email/components';
-import { Layout } from '../components/Layout';
-import { Button } from '../components/Button';
-import { Footer } from '../components/Footer';
-import { colors, fonts } from '../components/tokens';
-import type { Locale } from '../strings/waitlist';
-import type { EmployerEmailCopy } from '../strings/employer';
+import { Layout } from '../components/Layout.js';
+import { Button } from '../components/Button.js';
+import { Footer } from '../components/Footer.js';
+import { colors, fonts } from '../components/tokens.js';
+import type { Locale } from '../strings/waitlist.js';
+import type { EmployerEmailCopy } from '../strings/employer.js';
 
 export type EmployerNoticeProps = {
   locale: Locale;

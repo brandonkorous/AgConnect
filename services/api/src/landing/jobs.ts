@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { JobStatus, type County } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
+import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 // Anonymous read-only job browse — used by SEO surfaces at /[locale]/jobs.
 // Pinned to PUBLIC_TENANT_ID via publicTenantMiddleware so RLS service role

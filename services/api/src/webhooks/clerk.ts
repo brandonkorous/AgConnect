@@ -5,7 +5,7 @@ import { Hono } from 'hono';
 import { Webhook } from 'svix';
 import { ok, err } from '@agconn/api-client/server';
 import { Lang, UserRole, pools, type Tx } from '@agconn/db';
-import { webhookMiddleware, type TenantVars } from '../middleware/tenantContext';
+import { webhookMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 // Clerk → DB mirror. Per docs/00-foundation/02-auth/03-api.md the contract is:
 //   user.created      → upsert User

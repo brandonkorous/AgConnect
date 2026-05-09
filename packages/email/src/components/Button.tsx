@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button as RButton } from '@react-email/components';
-import { colors, fonts } from './tokens';
+import { colors, fonts } from './tokens.js';
 
 type Props = {
   href: string;

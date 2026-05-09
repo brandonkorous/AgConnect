@@ -6,11 +6,11 @@ import {
   PatchEmployerBody,
   type EmployerProfile,
 } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 import { enqueueEmployerEmail } from '@agconn/email';
-import { shapeEmployer, verificationStatus } from '../shared';
-import { seedDefaultComplianceItems, seedInitialPayrollPeriod } from './seed-defaults';
+import { shapeEmployer, verificationStatus } from '../shared.js';
+import { seedDefaultComplianceItems, seedInitialPayrollPeriod } from './seed-defaults.js';
 
 export const employerOnboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerOnboardingRoutes.use('*', requireAuth('employer'));

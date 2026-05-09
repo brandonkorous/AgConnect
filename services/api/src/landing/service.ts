@@ -19,7 +19,7 @@ import type {
   WaitlistResponse,
   WaitlistConfirmResult,
   WaitlistUnsubscribeResult,
-} from './schemas';
+} from './schemas.js';
 
 const audienceMap: Record<NonNullable<WaitlistRequest['audience']>, WaitlistAudience> = {
   worker: WaitlistAudience.worker,

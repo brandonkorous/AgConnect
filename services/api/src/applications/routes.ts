@@ -4,8 +4,8 @@ import { ok, err, validate } from '@agconn/api-client/server';
 import { AppStatus, JobStatus, UserRole, type Tx } from '@agconn/db';
 import { ApplicationsQuery } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
-import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext';
-import type { AuditCtxVars } from '../middleware/audit';
+import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
+import type { AuditCtxVars } from '../middleware/audit.js';
 
 export const applicationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 

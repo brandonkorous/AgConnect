@@ -1,6 +1,6 @@
 import { runSmsWorker, getSmsBoss } from '@agconn/sms';
-import { startRenotifyWorker } from './renotify';
-import { startAutomatchWorker } from './automatch';
+import { startRenotifyWorker } from './renotify.js';
+import { startAutomatchWorker } from './automatch.js';
 
 const ENV_KEYS_REQUIRED = ['DATABASE_URL', 'AUDIT_HMAC_KEY', 'PUBLIC_API_URL'] as const;
 

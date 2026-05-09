@@ -3,7 +3,7 @@
 // the original write with the redaction.
 import { canonicalize, computeHmac, hmacKeys, verifyHmac } from '@agconn/audit';
 import { getRlsContext, runWithRlsContext, type Tx } from '@agconn/db';
-import type { ListAuditQuery } from './schemas';
+import type { ListAuditQuery } from './schemas.js';
 
 export type AuditEventDto = {
   id: string;

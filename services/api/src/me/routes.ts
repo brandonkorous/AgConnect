@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
-import { requireAuth, type AuthVars } from '../middleware/authContext';
-import type { AuditCtxVars } from '../middleware/audit';
+import { requireAuth, type AuthVars } from '../middleware/authContext.js';
+import type { AuditCtxVars } from '../middleware/audit.js';
 
 // /v1/me/* — the authenticated session inspection surface.
 //

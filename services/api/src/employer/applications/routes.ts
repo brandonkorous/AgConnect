@@ -8,8 +8,8 @@ import {
   NoteBody,
   SendMessageBody,
 } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerInboxRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerInboxRoutes.use('*', requireAuth('employer'));

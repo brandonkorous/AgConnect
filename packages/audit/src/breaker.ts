@@ -1,4 +1,4 @@
-import type { AuditEventRow } from './types';
+import type { AuditEventRow } from './types.js';
 
 export type BreakerState = 'closed' | 'open' | 'half_open';
 

@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { ShiftAssignmentStatus } from '@agconn/db';
-import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext';
-import type { AuditCtxVars } from '../middleware/audit';
+import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
+import type { AuditCtxVars } from '../middleware/audit.js';
 
 // Worker-facing view of their assigned Shifts. Reads through ShiftAssignment
 // (the join row) and surfaces the parent Shift + employer name.

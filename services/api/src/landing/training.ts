@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { ProgramStatus, type County, type Funder } from '@agconn/db';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
+import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 // Anonymous read-only training browse — used by SEO surfaces at
 // /[locale]/training and /[locale]/training/[slug].

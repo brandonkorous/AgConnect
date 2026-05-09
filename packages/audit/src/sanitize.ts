@@ -1,4 +1,4 @@
-import { auditRegistry, type AuditAction } from './registry';
+import { auditRegistry, type AuditAction } from './registry.js';
 
 export type SanitizeWarning = {
   action: AuditAction;

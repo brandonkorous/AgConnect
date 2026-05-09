@@ -11,14 +11,14 @@ import {
   activePostingLimit,
 } from '@agconn/schemas';
 import { translate } from '@agconn/llm';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
-import { isVerified } from '../shared';
-import { shapeJob } from './shape';
-import { recordEditAndMaybeRenotify } from './edit-events';
-import { enqueueAutomatch } from './automatch-queue';
-import { employerJobPhotosRoutes } from './photos';
-import { employerJobScreeningRoutes } from './screening';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
+import { isVerified } from '../shared.js';
+import { shapeJob } from './shape.js';
+import { recordEditAndMaybeRenotify } from './edit-events.js';
+import { enqueueAutomatch } from './automatch-queue.js';
+import { employerJobPhotosRoutes } from './photos.js';
+import { employerJobScreeningRoutes } from './screening.js';
 
 export const employerJobsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerJobsRoutes.use('*', requireAuth('employer'));

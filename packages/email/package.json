@@ -1,34 +1,44 @@
 {
-  "name": "@agconn/email",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": "./src/index.ts",
-    "./tokens": "./src/tokens.ts",
-    "./strings/waitlist": "./src/strings/waitlist.ts"
-  },
-  "scripts": {
-    "email:dev": "email dev --dir ./src/templates",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@agconn/db": "workspace:*",
-    "@react-email/components": "1.0.12",
-    "@react-email/render": "2.0.8",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
-    "resend": "6.12.2",
-    "jose": "6.2.3",
-    "pg-boss": "12.18.1"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "react-email": "6.0.5",
-    "typescript": "6.0.3"
-  }
+    "name": "@agconn/email",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./tokens": {
+            "import": "./dist/tokens.js",
+            "types": "./dist/tokens.d.ts"
+        },
+        "./strings/waitlist": {
+            "import": "./dist/strings/waitlist.js",
+            "types": "./dist/strings/waitlist.d.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "email:dev": "email dev --dir ./src/templates",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@agconn/db": "workspace:*",
+        "@react-email/components": "1.0.12",
+        "@react-email/render": "2.0.8",
+        "react": "19.2.5",
+        "react-dom": "19.2.5",
+        "resend": "6.12.2",
+        "jose": "6.2.3",
+        "pg-boss": "12.18.1"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.0",
+        "@types/react": "^19.2.0",
+        "@types/react-dom": "^19.2.0",
+        "react-email": "6.0.5",
+        "typescript": "6.0.3"
+    }
 }

@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { AppStatus, dbClients, JobStatus, UserRole } from '@agconn/db';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../middleware/authContext';
-import type { AuditCtxVars } from '../middleware/audit';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../middleware/authContext.js';
+import type { AuditCtxVars } from '../middleware/audit.js';
 
 export const meInvitationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 meInvitationsRoutes.use('*', requireAuth('me'));

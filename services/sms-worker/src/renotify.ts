@@ -8,7 +8,7 @@
 import type { Job, PgBoss } from 'pg-boss';
 import { prisma } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
-import { RENOTIFY_QUEUE, type RenotifyJob } from './renotify-queue';
+import { RENOTIFY_QUEUE, type RenotifyJob } from './renotify-queue.js';
 
 const FIELD_LABEL_EN: Record<string, string> = {
   titleEn: 'title',

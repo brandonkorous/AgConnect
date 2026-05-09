@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CountyEnum } from './common';
+import { CountyEnum } from './common.js';
 
 export const JobCardSchema = z.object({
   id: z.string().uuid(),

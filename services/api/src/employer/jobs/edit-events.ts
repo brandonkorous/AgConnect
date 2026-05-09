@@ -12,7 +12,7 @@
 
 import type { Tx, Prisma } from '@agconn/db';
 import { AppStatus, JobEditEventKind } from '@agconn/db';
-import { enqueueRenotify } from './renotify-queue';
+import { enqueueRenotify } from './renotify-queue.js';
 
 const MATERIAL_FIELDS: Array<keyof JobLikeShape> = [
   'titleEn',

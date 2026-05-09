@@ -1,4 +1,4 @@
-import type { ToastHint } from './envelope';
+import type { ToastHint } from './envelope.js';
 
 type StandardErrorEntry = {
   http: number;

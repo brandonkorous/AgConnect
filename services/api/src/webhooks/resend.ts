@@ -5,7 +5,7 @@ import { Hono } from 'hono';
 import { Webhook } from 'svix';
 import { EmailStatus, SuppressionReason, type Tx } from '@agconn/db';
 import { ok, err } from '@agconn/api-client/server';
-import { webhookMiddleware, type TenantVars } from '../middleware/tenantContext';
+import { webhookMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 type ResendEventType =
   | 'email.sent'

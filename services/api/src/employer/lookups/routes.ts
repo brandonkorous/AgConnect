@@ -4,8 +4,8 @@
 
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
-import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerLookupsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerLookupsRoutes.use('*', requireAuth('employer'));

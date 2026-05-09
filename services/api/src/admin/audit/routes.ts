@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { adminMiddleware, type AdminVars } from '../../middleware/adminContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { adminMiddleware, type AdminVars } from '../../middleware/adminContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   getEvent,
   listByActor,
@@ -10,8 +10,8 @@ import {
   listEvents,
   redactActor,
   verifyEvent,
-} from './service';
-import { listAuditQuery, redactBody } from './schemas';
+} from './service.js';
+import { listAuditQuery, redactBody } from './schemas.js';
 
 export const adminAuditRoutes = new Hono<{ Variables: AdminVars & AuditCtxVars }>();
 

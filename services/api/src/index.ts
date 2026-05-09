@@ -1,73 +1,73 @@
-import './instrument';
+import './instrument.js';
 import * as Sentry from '@sentry/node';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { ok, err, onErrorEnvelope } from '@agconn/api-client/server';
-import { auditMiddleware, emitSystemAudit, type AuditCtxVars } from './middleware/audit';
-import { clerkAuthMiddleware } from './middleware/authContext';
-import { landingRoutes } from './landing/routes';
-import { publicJobsRoutes } from './landing/jobs';
-import { publicTrainingRoutes } from './landing/training';
-import { i18nRoutes } from './i18n/routes';
-import { resendWebhookRoutes } from './webhooks/resend';
-import { clerkWebhookRoutes } from './webhooks/clerk';
-import { twilioWebhookRoutes } from './webhooks/twilio';
-import { stripeWebhookRoutes } from './webhooks/stripe';
-import { adminAuditRoutes } from './admin/audit/routes';
-import { adminEmployersRoutes } from './admin/employers/routes';
-import { meRoutes } from './me/routes';
-import { meInvitationsRoutes } from './me/invitations';
-import { meShiftsRoutes } from './me/shifts';
-import { mePayRoutes } from './me/pay';
-import { meMessagesRoutes } from './me/messages';
-import { onboardingRoutes, onboardingWaitlistRoute } from './worker/onboarding/routes';
-import { profileRoutes } from './worker/profile/routes';
-import { jobsRoutes, savedSearchRoutes } from './jobs/routes';
-import { applicationsRoutes, jobApplyRoute } from './applications/routes';
+import { auditMiddleware, emitSystemAudit, type AuditCtxVars } from './middleware/audit.js';
+import { clerkAuthMiddleware } from './middleware/authContext.js';
+import { landingRoutes } from './landing/routes.js';
+import { publicJobsRoutes } from './landing/jobs.js';
+import { publicTrainingRoutes } from './landing/training.js';
+import { i18nRoutes } from './i18n/routes.js';
+import { resendWebhookRoutes } from './webhooks/resend.js';
+import { clerkWebhookRoutes } from './webhooks/clerk.js';
+import { twilioWebhookRoutes } from './webhooks/twilio.js';
+import { stripeWebhookRoutes } from './webhooks/stripe.js';
+import { adminAuditRoutes } from './admin/audit/routes.js';
+import { adminEmployersRoutes } from './admin/employers/routes.js';
+import { meRoutes } from './me/routes.js';
+import { meInvitationsRoutes } from './me/invitations.js';
+import { meShiftsRoutes } from './me/shifts.js';
+import { mePayRoutes } from './me/pay.js';
+import { meMessagesRoutes } from './me/messages.js';
+import { onboardingRoutes, onboardingWaitlistRoute } from './worker/onboarding/routes.js';
+import { profileRoutes } from './worker/profile/routes.js';
+import { jobsRoutes, savedSearchRoutes } from './jobs/routes.js';
+import { applicationsRoutes, jobApplyRoute } from './applications/routes.js';
 import {
-  enrollmentsRoutes,
-  orgTrainingRoutes,
-  trainingRoutes,
-} from './training/routes';
-import { walletRoutes } from './wallet/routes';
-import { employerOnboardingRoutes } from './employer/onboarding/routes';
-import { employerJobsRoutes } from './employer/jobs/routes';
-import { employerJobMatchPreviewRoutes } from './employer/jobs/match-preview';
-import { employerContactsRoutes } from './employer/contacts/routes';
-import { employerLookupsRoutes } from './employer/lookups/routes';
+    enrollmentsRoutes,
+    orgTrainingRoutes,
+    trainingRoutes,
+} from './training/routes.js';
+import { walletRoutes } from './wallet/routes.js';
+import { employerOnboardingRoutes } from './employer/onboarding/routes.js';
+import { employerJobsRoutes } from './employer/jobs/routes.js';
+import { employerJobMatchPreviewRoutes } from './employer/jobs/match-preview.js';
+import { employerContactsRoutes } from './employer/contacts/routes.js';
+import { employerLookupsRoutes } from './employer/lookups/routes.js';
 import {
-  employerInboxRoutes,
-  employerJobApplicantsRoute,
-  employerApplicationsRoutes,
-} from './employer/applications/routes';
+    employerInboxRoutes,
+    employerJobApplicantsRoute,
+    employerApplicationsRoutes,
+} from './employer/applications/routes.js';
 import {
-  employerWorkersRoutes,
-  employerInvitationsRoutes,
-} from './employer/workers/routes';
-import { employerBillingRoutes } from './employer/billing/routes';
-import { employerCrewsRoutes } from './employer/crews/routes';
-import { employerShiftsRoutes } from './employer/shifts/routes';
-import { employerHiresRoutes } from './employer/hires/routes';
-import { employerWeatherRoutes } from './employer/weather/routes';
-import { employerPayrollRoutes } from './employer/payroll/routes';
-import { employerComplianceRoutes } from './employer/compliance/routes';
-import { employerMessagesRoutes } from './employer/messages/routes';
-import { employerReportsRoutes } from './employer/reports/routes';
+    employerWorkersRoutes,
+    employerInvitationsRoutes,
+} from './employer/workers/routes.js';
+import { employerBillingRoutes } from './employer/billing/routes.js';
+import { employerCrewsRoutes } from './employer/crews/routes.js';
+import { employerShiftsRoutes } from './employer/shifts/routes.js';
+import { employerHiresRoutes } from './employer/hires/routes.js';
+import { employerWeatherRoutes } from './employer/weather/routes.js';
+import { employerPayrollRoutes } from './employer/payroll/routes.js';
+import { employerComplianceRoutes } from './employer/compliance/routes.js';
+import { employerMessagesRoutes } from './employer/messages/routes.js';
+import { employerReportsRoutes } from './employer/reports/routes.js';
 
 const app = new Hono<{ Variables: AuditCtxVars }>();
 
 app.use('*', logger());
 app.use(
-  '*',
-  cors({
-    origin: (origin) => origin ?? '*',
-    allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'x-correlation-id'],
-    exposeHeaders: ['x-correlation-id'],
-    credentials: true,
-  }),
+    '*',
+    cors({
+        origin: (origin) => origin ?? '*',
+        allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+        allowHeaders: ['Content-Type', 'Authorization', 'x-correlation-id'],
+        exposeHeaders: ['x-correlation-id'],
+        credentials: true,
+    }),
 );
 
 // Clerk parses the session cookie / Authorization header into c.var.auth.
@@ -79,41 +79,41 @@ app.use('*', clerkAuthMiddleware);
 app.use('*', auditMiddleware);
 
 app.onError(
-  onErrorEnvelope({
-    log: (info) => {
-      console.error('[api] unhandled error', {
-        correlationId: info.correlationId,
-        status: info.status,
-        message: info.err instanceof Error ? info.err.message : String(info.err),
-        stack: info.err instanceof Error ? info.err.stack : undefined,
-      });
-      if (info.status >= 500) {
-        Sentry.captureException(info.err, {
-          tags: { correlationId: info.correlationId, status: String(info.status) },
-        });
-      }
-    },
-    onUnhandled: async ({ err: e, correlationId }) => {
-      // Best-effort: never throw out of the audit emit so the caller still
-      // receives the envelope.
-      try {
-        await emitSystemAudit({
-          action: 'error.unhandled',
-          outcome: 'failure',
-          metadata: {
-            errorCode: e instanceof Error ? e.name : 'unknown',
-            route: '',
-            method: '',
-          },
-        });
-      } catch (logErr) {
-        console.error('[api] failed to record error.unhandled audit', {
-          correlationId,
-          err: logErr instanceof Error ? logErr.message : String(logErr),
-        });
-      }
-    },
-  }),
+    onErrorEnvelope({
+        log: (info) => {
+            console.error('[api] unhandled error', {
+                correlationId: info.correlationId,
+                status: info.status,
+                message: info.err instanceof Error ? info.err.message : String(info.err),
+                stack: info.err instanceof Error ? info.err.stack : undefined,
+            });
+            if (info.status >= 500) {
+                Sentry.captureException(info.err, {
+                    tags: { correlationId: info.correlationId, status: String(info.status) },
+                });
+            }
+        },
+        onUnhandled: async ({ err: e, correlationId }) => {
+            // Best-effort: never throw out of the audit emit so the caller still
+            // receives the envelope.
+            try {
+                await emitSystemAudit({
+                    action: 'error.unhandled',
+                    outcome: 'failure',
+                    metadata: {
+                        errorCode: e instanceof Error ? e.name : 'unknown',
+                        route: '',
+                        method: '',
+                    },
+                });
+            } catch (logErr) {
+                console.error('[api] failed to record error.unhandled audit', {
+                    correlationId,
+                    err: logErr instanceof Error ? logErr.message : String(logErr),
+                });
+            }
+        },
+    }),
 );
 
 app.notFound((c) => err(c, 404, 'not_found'));
@@ -170,5 +170,5 @@ app.route('/admin/v1/employers', adminEmployersRoutes);
 const port = Number(process.env.PORT ?? 3001);
 
 serve({ fetch: app.fetch, port }, (info) => {
-  console.log(`api listening on http://localhost:${info.port}`);
+    console.log(`api listening on http://localhost:${info.port}`);
 });

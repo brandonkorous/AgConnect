@@ -9,8 +9,8 @@ import {
   requireRole,
   requireTenant,
   type AuthVars,
-} from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+} from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerWeatherRoutes = new Hono<{
   Variables: AuthVars & AuditCtxVars;

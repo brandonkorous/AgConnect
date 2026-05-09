@@ -2,12 +2,12 @@ import * as React from 'react';
 import { render } from '@react-email/render';
 import { Resend } from 'resend';
 import { EmailStatus, Lang, type EmailLog, type Tx } from '@agconn/db';
-import { WaitlistConfirm } from './templates/WaitlistConfirm';
-import { WaitlistWelcome } from './templates/WaitlistWelcome';
-import { EmployerNotice } from './templates/EmployerNotice';
-import { waitlistStrings, type Locale } from './strings/waitlist';
-import { getEmployerCopy } from './strings/employer';
-import type { EmployerEmailTemplate } from './queue';
+import { WaitlistConfirm } from './templates/WaitlistConfirm.js';
+import { WaitlistWelcome } from './templates/WaitlistWelcome.js';
+import { EmployerNotice } from './templates/EmployerNotice.js';
+import { waitlistStrings, type Locale } from './strings/waitlist.js';
+import { getEmployerCopy } from './strings/employer.js';
+import type { EmployerEmailTemplate } from './queue.js';
 
 let cachedResend: Resend | null = null;
 function getResend(): Resend {

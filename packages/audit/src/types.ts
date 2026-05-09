@@ -1,4 +1,4 @@
-import type { AuditAction } from './registry';
+import type { AuditAction } from './registry.js';
 
 export type ActorType = 'worker' | 'employer' | 'training_org' | 'admin' | 'system';
 export type AuditOutcome = 'success' | 'failure';

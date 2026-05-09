@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { CountyEnum, LocaleEnum } from './common';
-import { JobCardSchema } from './jobs';
-import { SKILL_SLUGS } from './skill-slugs';
+import { CountyEnum, LocaleEnum } from './common.js';
+import { JobCardSchema } from './jobs.js';
+import { SKILL_SLUGS } from './skill-slugs.js';
 
 const SkillSlugEnum = z.enum(SKILL_SLUGS);
 

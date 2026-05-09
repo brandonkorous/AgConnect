@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { CountyEnum } from './common';
-import { CertSummarySchema } from './employer-applications';
+import { CountyEnum } from './common.js';
+import { CertSummarySchema } from './employer-applications.js';
 
 export const WorkerSearchQuery = z
   .object({

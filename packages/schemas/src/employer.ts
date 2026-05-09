@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AddressInputSchema } from './address';
-import { CountyEnum } from './common';
-import { EmployerPlanTierEnum, PlanIntervalEnum } from './plans';
+import { AddressInputSchema } from './address.js';
+import { CountyEnum } from './common.js';
+import { EmployerPlanTierEnum, PlanIntervalEnum } from './plans.js';
 
 export const LicenseTypeEnum = z.enum(['grower', 'flc', 'labor_contractor']);
 export type LicenseType = z.infer<typeof LicenseTypeEnum>;

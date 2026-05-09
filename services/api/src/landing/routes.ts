@@ -1,17 +1,17 @@
 import { Hono } from 'hono';
 import { ok, validate } from '@agconn/api-client/server';
-import { waitlistRequestSchema, tokenQuerySchema } from './schemas';
+import { waitlistRequestSchema, tokenQuerySchema } from './schemas.js';
 import {
   addToWaitlist,
   confirmWaitlist,
   unsubscribeWaitlist,
-} from './service';
-import { featuredJobsRoutes } from './featured-jobs';
-import { featuredTrainingRoutes } from './featured-training';
-import { impactRoutes } from './impact';
-import { founderSlotsRoutes } from './founder-slots';
-import { rateLimit } from '../middleware/rateLimit';
-import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext';
+} from './service.js';
+import { featuredJobsRoutes } from './featured-jobs.js';
+import { featuredTrainingRoutes } from './featured-training.js';
+import { impactRoutes } from './impact.js';
+import { founderSlotsRoutes } from './founder-slots.js';
+import { rateLimit } from '../middleware/rateLimit.js';
+import { publicTenantMiddleware, type TenantVars } from '../middleware/tenantContext.js';
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;

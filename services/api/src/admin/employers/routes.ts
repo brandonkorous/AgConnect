@@ -10,10 +10,10 @@ import {
   requireAdmin,
   requirePermission,
   type AuthVars,
-} from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+} from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 import { enqueueEmployerEmail } from '@agconn/email';
-import { shapeEmployer } from '../../employer/shared';
+import { shapeEmployer } from '../../employer/shared.js';
 
 export const adminEmployersRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 adminEmployersRoutes.use('*', requireAuth('admin'));

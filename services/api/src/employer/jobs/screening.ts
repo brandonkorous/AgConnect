@@ -7,8 +7,8 @@ import { z } from 'zod';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { ScreeningQuestionInput } from '@agconn/schemas';
 import { JobEditEventKind } from '@agconn/db';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
+import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
 
 const ReplaceBody = z
   .object({

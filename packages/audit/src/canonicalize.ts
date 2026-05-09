@@ -1,4 +1,4 @@
-import type { AuditEventInput } from './types';
+import type { AuditEventInput } from './types.js';
 
 // Deterministic JSON serialization following RFC 8785 conventions:
 // sorted object keys (lexicographic on UTF-16 code units), no whitespace,

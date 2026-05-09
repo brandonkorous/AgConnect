@@ -2,23 +2,23 @@ export {
   auditRegistry,
   isKnownAction,
   type AuditAction,
-} from './registry';
+} from './registry.js';
 
 export type {
   ActorType,
   AuditOutcome,
   AuditEventInput,
   AuditEventRow,
-} from './types';
+} from './types.js';
 
-export { canonicalize, canonicalJSON } from './canonicalize';
+export { canonicalize, canonicalJSON } from './canonicalize.js';
 
 export {
   hmacKeys,
   initHmacKeysFromEnv,
   computeHmac,
   verifyHmac,
-} from './hmac';
+} from './hmac.js';
 
 export {
   AuditBreaker,
@@ -28,7 +28,7 @@ export {
   type BreakerHooks,
   type BreakerState,
   type WriteFn,
-} from './breaker';
+} from './breaker.js';
 
 export {
   sanitizeMetadata,
@@ -36,4 +36,4 @@ export {
   clipForwardedIp,
   type SanitizeResult,
   type SanitizeWarning,
-} from './sanitize';
+} from './sanitize.js';

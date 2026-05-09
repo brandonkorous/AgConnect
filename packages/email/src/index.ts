@@ -1,16 +1,16 @@
-export { sendWaitlistConfirm, sendWaitlistWelcome } from './sender';
-export type { SendOutcome } from './sender';
+export { sendWaitlistConfirm, sendWaitlistWelcome } from './sender.js';
+export type { SendOutcome } from './sender.js';
 export {
   signConfirmToken,
   verifyConfirmToken,
   signUnsubscribeToken,
   verifyUnsubscribeToken,
-} from './tokens';
-export type { VerifyResult } from './tokens';
-export { WaitlistConfirm } from './templates/WaitlistConfirm';
-export { WaitlistWelcome } from './templates/WaitlistWelcome';
-export { waitlistStrings } from './strings/waitlist';
-export type { Locale } from './strings/waitlist';
+} from './tokens.js';
+export type { VerifyResult } from './tokens.js';
+export { WaitlistConfirm } from './templates/WaitlistConfirm.js';
+export { WaitlistWelcome } from './templates/WaitlistWelcome.js';
+export { waitlistStrings } from './strings/waitlist.js';
+export type { Locale } from './strings/waitlist.js';
 export {
   QUEUE_NAMES,
   enqueueWaitlistConfirm,
@@ -18,12 +18,12 @@ export {
   enqueueEmployerEmail,
   getBoss,
   stopBoss,
-} from './queue';
+} from './queue.js';
 export type {
   WaitlistConfirmJob,
   WaitlistWelcomeJob,
   EmployerEmailJob,
   EmployerEmailTemplate,
-} from './queue';
-export { runEmailWorker } from './worker';
-export type { EmailWorkerHandle } from './worker';
+} from './queue.js';
+export { runEmailWorker } from './worker.js';
+export type { EmailWorkerHandle } from './worker.js';

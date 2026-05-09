@@ -12,9 +12,9 @@ import {
   requireRole,
   requireTenant,
   type AuthVars,
-} from '../../middleware/authContext';
-import type { AuditCtxVars } from '../../middleware/audit';
-import { shapeCrew, shapeMember } from './shape';
+} from '../../middleware/authContext.js';
+import type { AuditCtxVars } from '../../middleware/audit.js';
+import { shapeCrew, shapeMember } from './shape.js';
 
 export const employerCrewsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerCrewsRoutes.use('*', requireAuth('crews'));

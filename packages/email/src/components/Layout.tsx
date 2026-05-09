@@ -8,7 +8,7 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import { colors, fonts, sizes } from './tokens';
+import { colors, fonts, sizes } from './tokens.js';
 
 type Props = {
   preview: string;

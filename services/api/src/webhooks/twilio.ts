@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { validateTwilioSignature, enqueueSms } from '@agconn/sms';
 import { pools, SmsStatus, AppStatus } from '@agconn/db';
-import { emitSystemAudit } from '../middleware/audit';
+import { emitSystemAudit } from '../middleware/audit.js';
 
 // Twilio webhook contracts:
 //   /v1/webhooks/twilio/status   — message status callback. Body is form-encoded;
