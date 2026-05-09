@@ -41,7 +41,11 @@ RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@$
 COPY --from=deps /repo /repo
 COPY . .
 
-RUN pnpm --filter @agconn/db db:generate \
+# pnpm deploy --legacy re-installs across the workspace, so apps/web's
+# FontAwesome Pro dep is touched here too — mount the registry token.
+RUN --mount=type=secret,id=fontawesome_token,required=true \
+    export FONTAWESOME_TOKEN="$(cat /run/secrets/fontawesome_token)" \
+ && pnpm --filter @agconn/db db:generate \
  && pnpm --filter @agconn/sms-worker build \
  && pnpm deploy --legacy --filter=@agconn/sms-worker --prod /app
 
