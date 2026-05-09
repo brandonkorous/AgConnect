@@ -16,6 +16,25 @@ jobs:
     timeout-minutes: 15
     env:
       FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+      # Real Postgres for steps that need it (i18n parity reads translation_keys
+      # rows). Same URL for DATABASE_URL + DIRECT_URL since the CI Postgres has
+      # no pgbouncer in front of it.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+      DIRECT_URL:   postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: agconn_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -32,15 +51,21 @@ jobs:
 
       - name: Generate Prisma client
         run: pnpm db:generate
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/skip?schema=public
-          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/skip?schema=public
 
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Convention checks (tenant_id, RLS)
         run: pnpm check:conventions
+
+      # Apply migrations + seed translations against the CI Postgres so the
+      # next step can run the live parity check. (Eventually: refactor the
+      # check to read seed bundles directly and drop the Postgres service.)
+      - name: Migrate CI database
+        run: pnpm --filter @agconn/db db:migrate:deploy
+
+      - name: Seed translations
+        run: pnpm --filter @agconn/db i18n:seed
 
       - name: i18n parity
         run: pnpm --filter @agconn/web run i18n:check
@@ -49,8 +74,5 @@ jobs:
         run: pnpm --filter @agconn/web build
         env:
           NEXT_TELEMETRY_DISABLED: "1"
-          # Build needs Prisma generation success, but no runtime DB:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/skip?schema=public
-          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/skip?schema=public
           # Disable Sentry source map upload during PR builds.
           SENTRY_AUTH_TOKEN: ""
