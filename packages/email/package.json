@@ -7,14 +7,17 @@
   "types": "./src/index.ts",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "import": "./dist/index.js",
       "types": "./src/index.ts"
     },
     "./tokens": {
+      "source": "./src/tokens.ts",
       "import": "./dist/tokens.js",
       "types": "./src/tokens.ts"
     },
     "./strings/waitlist": {
+      "source": "./src/strings/waitlist.ts",
       "import": "./dist/strings/waitlist.js",
       "types": "./src/strings/waitlist.ts"
     }

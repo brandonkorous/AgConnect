@@ -1,78 +1,81 @@
 name: CI
 
 on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+    pull_request:
+        branches: [main]
+    push:
+        branches: [main]
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
-      # Real Postgres for steps that need it (i18n parity reads translation_keys
-      # rows). Same URL for DATABASE_URL + DIRECT_URL since the CI Postgres has
-      # no pgbouncer in front of it.
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
-      DIRECT_URL:   postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
-    services:
-      postgres:
-        image: postgres:16
+    check:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: agconn_ci
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    steps:
-      - uses: actions/checkout@v4
+            FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+            # Real Postgres for steps that need it (i18n parity reads translation_keys
+            # rows). Same URL for DATABASE_URL + DIRECT_URL since the CI Postgres has
+            # no pgbouncer in front of it.
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+            DIRECT_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: agconn_ci
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 10
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.9.0
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 10.9.0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.12.0
-          cache: pnpm
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.12.0
+                  cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+            - run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        run: pnpm db:generate
+            - name: Generate Prisma client
+              run: pnpm db:generate
 
-      - name: Typecheck
-        run: pnpm typecheck
+            - name: Typecheck
+              run: pnpm typecheck
 
-      - name: Convention checks (tenant_id, RLS)
-        run: pnpm check:conventions
+            - name: Convention checks (tenant_id, RLS)
+              run: pnpm check:conventions
 
-      # Apply migrations + seed translations against the CI Postgres so the
-      # next step can run the live parity check. (Eventually: refactor the
-      # check to read seed bundles directly and drop the Postgres service.)
-      - name: Migrate CI database
-        run: pnpm --filter @agconn/db db:migrate:deploy
+            # Apply migrations + seed translations against the CI Postgres so the
+            # next step can run the live parity check. (Eventually: refactor the
+            # check to read seed bundles directly and drop the Postgres service.)
+            - name: Migrate CI database
+              run: pnpm --filter @agconn/db db:migrate:deploy
 
-      - name: Seed translations
-        run: pnpm --filter @agconn/db i18n:seed
+            - name: Seed translations
+              run: pnpm --filter @agconn/db i18n:seed
 
-      - name: i18n parity
-        run: pnpm --filter @agconn/web run i18n:check
+            - name: i18n parity
+              run: pnpm --filter @agconn/web run i18n:check
 
-      - name: Build apps/web (smoke)
-        run: pnpm --filter @agconn/web build
-        env:
-          NEXT_TELEMETRY_DISABLED: "1"
-          # Disable Sentry source map upload during PR builds.
-          SENTRY_AUTH_TOKEN: ""
+            - name: Build packages
+              run: pnpm --filter "./packages/**" build
+
+            - name: Build apps/web (smoke)
+              run: pnpm --filter @agconn/web build
+              env:
+                  NEXT_TELEMETRY_DISABLED: "1"
+                  # Disable Sentry source map upload during PR builds.
+                  SENTRY_AUTH_TOKEN: ""

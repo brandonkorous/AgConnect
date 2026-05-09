@@ -7,18 +7,22 @@
   "types": "./src/index.ts",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "import": "./dist/index.js",
       "types": "./src/index.ts"
     },
     "./server": {
+      "source": "./src/server.ts",
       "import": "./dist/server.js",
       "types": "./src/server.ts"
     },
     "./client": {
+      "source": "./src/client.ts",
       "import": "./dist/client.js",
       "types": "./src/client.ts"
     },
     "./react": {
+      "source": "./src/provider.tsx",
       "import": "./dist/provider.js",
       "types": "./src/provider.tsx"
     }
