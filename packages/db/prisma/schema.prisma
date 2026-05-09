@@ -12,9 +12,10 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // Connection URLs live in prisma.config.ts (Prisma 7+ removed `url` /
+  // `directUrl` from the schema). At runtime the Prisma client uses the
+  // PrismaPg adapter wired up in packages/db/src/pools.ts.
+  provider = "postgresql"
 }
 
 enum Lang {

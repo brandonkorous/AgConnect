@@ -29,15 +29,15 @@ variable "node_machine_type" {
 }
 
 variable "node_min_count" {
-  description = "Cluster autoscaler minimum nodes."
+  description = "Cluster autoscaler minimum nodes. With AgConn + ingress + cert-manager + GKE system pods, 2 × e2-medium is the realistic floor (~940m allocatable each, demand ~1.2 vCPU)."
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "node_max_count" {
   description = "Cluster autoscaler maximum nodes."
   type        = number
-  default     = 3
+  default     = 4
 }
 
 variable "domain" {
