@@ -35,10 +35,6 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    nginx.ingress.kubernetes.io/server-snippet: |
-      add_header X-Frame-Options "SAMEORIGIN" always;
-      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-      add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
 spec:
   ingressClassName: nginx
   tls:
