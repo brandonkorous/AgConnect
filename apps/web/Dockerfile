@@ -41,11 +41,15 @@ ARG NEXT_PUBLIC_SENTRY_DSN=""
 ARG NEXT_PUBLIC_POSTHOG_KEY=""
 ARG NEXT_PUBLIC_MAPBOX_TOKEN=""
 
+# prisma.config.ts requires DATABASE_URL + DIRECT_URL for codegen; the build
+# never connects, so dummy localhost values are fine.
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY \
     NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN \
     NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY \
-    NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN
+    NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN \
+    DATABASE_URL=postgresql://build:build@localhost:5432/build \
+    DIRECT_URL=postgresql://build:build@localhost:5432/build
 
 RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
