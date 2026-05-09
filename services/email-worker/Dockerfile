@@ -43,7 +43,7 @@ COPY . .
 
 RUN pnpm --filter @agconn/db db:generate \
  && pnpm --filter @agconn/email-worker build \
- && pnpm deploy --filter=@agconn/email-worker --prod /app
+ && pnpm deploy --legacy --filter=@agconn/email-worker --prod /app
 
 FROM node:${NODE_VERSION}-bookworm-slim AS runtime
 WORKDIR /app

@@ -43,7 +43,7 @@ COPY . .
 
 RUN pnpm --filter @agconn/db db:generate \
  && pnpm --filter @agconn/audit-verifier build \
- && pnpm deploy --filter=@agconn/audit-verifier --prod /app
+ && pnpm deploy --legacy --filter=@agconn/audit-verifier --prod /app
 
 FROM node:${NODE_VERSION}-bookworm-slim AS runtime
 WORKDIR /app

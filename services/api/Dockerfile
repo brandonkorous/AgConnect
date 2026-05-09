@@ -44,7 +44,7 @@ COPY . .
 
 RUN pnpm --filter @agconn/db db:generate \
  && pnpm --filter @agconn/api build \
- && pnpm deploy --filter=@agconn/api --prod /app
+ && pnpm deploy --legacy --filter=@agconn/api --prod /app
 
 # Runtime carries Prisma's generated client and Node-only deps.
 FROM node:${NODE_VERSION}-bookworm-slim AS runtime
