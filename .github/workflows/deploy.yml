@@ -22,8 +22,8 @@ permissions:
   id-token: write
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_OWNER: ${{ github.repository_owner }}
+  REGISTRY: us-west1-docker.pkg.dev
+  AR_PATH: ${{ secrets.GCP_PROJECT_ID }}/containers
   TAG: ${{ github.sha }}
 
 jobs:
@@ -34,22 +34,29 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - { name: web,             dockerfile: apps/web/Dockerfile,                 image: agconn-web }
-          - { name: api,             dockerfile: services/api/Dockerfile,             image: agconn-api }
-          - { name: email-worker,    dockerfile: services/email-worker/Dockerfile,    image: agconn-email-worker }
-          - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,      image: agconn-sms-worker }
-          - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile, image: agconn-audit-retention }
-          - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile,  image: agconn-audit-verifier }
+          - { name: web,             dockerfile: apps/web/Dockerfile,                 image: web }
+          - { name: api,             dockerfile: services/api/Dockerfile,             image: api }
+          - { name: email-worker,    dockerfile: services/email-worker/Dockerfile,    image: email-worker }
+          - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,      image: sms-worker }
+          - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile, image: audit-retention }
+          - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile,  image: audit-verifier }
     steps:
       - uses: actions/checkout@v4
 
       - uses: docker/setup-buildx-action@v3
 
-      - uses: docker/login-action@v3
+      - id: auth
+        uses: google-github-actions/auth@v2
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Configure docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
       - uses: docker/build-push-action@v6
         with:
@@ -57,8 +64,8 @@ jobs:
           file: ${{ matrix.target.dockerfile }}
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ matrix.target.image }}:${{ env.TAG }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ matrix.target.image }}:latest
+            ${{ env.REGISTRY }}/${{ env.AR_PATH }}/${{ matrix.target.image }}:${{ env.TAG }}
+            ${{ env.REGISTRY }}/${{ env.AR_PATH }}/${{ matrix.target.image }}:latest
           cache-from: type=gha,scope=${{ matrix.target.name }}
           cache-to: type=gha,scope=${{ matrix.target.name }},mode=max
           # NEXT_PUBLIC_* are inlined into the client bundle by Next.js at build
@@ -195,18 +202,18 @@ jobs:
         working-directory: deploy/k8s/overlays/prod
         run: |
           set -euo pipefail
-          OWNER=${{ env.IMAGE_OWNER }}
+          AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
           TAG=${{ env.TAG }}
-          for img in agconn-web agconn-api agconn-email-worker agconn-sms-worker agconn-audit-retention agconn-audit-verifier; do
-            kustomize edit set image ghcr.io/REPLACE_OWNER/${img}=ghcr.io/${OWNER}/${img}:${TAG}
+          for img in web api email-worker sms-worker audit-retention audit-verifier; do
+            kustomize edit set image ${AR_BASE}/${img}=${AR_BASE}/${img}:${TAG}
           done
 
       - name: Run DB migrate Job (waits for completion)
         run: |
           set -euo pipefail
-          OWNER=${{ env.IMAGE_OWNER }}
+          AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
           TAG=${{ env.TAG }}
-          sed -e "s|REPLACE_OWNER|${OWNER}|g" -e "s|REPLACE_TAG|${TAG}|g" \
+          sed -e "s|REPLACE_AR_BASE|${AR_BASE}|g" -e "s|REPLACE_TAG|${TAG}|g" \
             deploy/k8s/base/db-migrate-job.yaml | kubectl apply -f -
           kubectl -n agconn wait --for=condition=complete --timeout=10m \
             job/db-migrate-${TAG} || {

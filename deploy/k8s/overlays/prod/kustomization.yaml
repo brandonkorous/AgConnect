@@ -9,21 +9,21 @@ resources:
 # CI inserts the deploy tag here via `kustomize edit set image`. Each entry
 # pins a digest after the first push so repeated rollouts don't drift.
 images:
-  - name: ghcr.io/REPLACE_OWNER/agconn-web
-    newName: ghcr.io/REPLACE_OWNER/agconn-web
+  - name: us-west1-docker.pkg.dev/agconn/containers/web
+    newName: us-west1-docker.pkg.dev/agconn/containers/web
     newTag: latest
-  - name: ghcr.io/REPLACE_OWNER/agconn-api
-    newName: ghcr.io/REPLACE_OWNER/agconn-api
+  - name: us-west1-docker.pkg.dev/agconn/containers/api
+    newName: us-west1-docker.pkg.dev/agconn/containers/api
     newTag: latest
-  - name: ghcr.io/REPLACE_OWNER/agconn-email-worker
-    newName: ghcr.io/REPLACE_OWNER/agconn-email-worker
+  - name: us-west1-docker.pkg.dev/agconn/containers/email-worker
+    newName: us-west1-docker.pkg.dev/agconn/containers/email-worker
     newTag: latest
-  - name: ghcr.io/REPLACE_OWNER/agconn-sms-worker
-    newName: ghcr.io/REPLACE_OWNER/agconn-sms-worker
+  - name: us-west1-docker.pkg.dev/agconn/containers/sms-worker
+    newName: us-west1-docker.pkg.dev/agconn/containers/sms-worker
     newTag: latest
-  - name: ghcr.io/REPLACE_OWNER/agconn-audit-retention
-    newName: ghcr.io/REPLACE_OWNER/agconn-audit-retention
+  - name: us-west1-docker.pkg.dev/agconn/containers/audit-retention
+    newName: us-west1-docker.pkg.dev/agconn/containers/audit-retention
     newTag: latest
-  - name: ghcr.io/REPLACE_OWNER/agconn-audit-verifier
-    newName: ghcr.io/REPLACE_OWNER/agconn-audit-verifier
+  - name: us-west1-docker.pkg.dev/agconn/containers/audit-verifier
+    newName: us-west1-docker.pkg.dev/agconn/containers/audit-verifier
     newTag: latest

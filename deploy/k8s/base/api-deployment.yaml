@@ -22,7 +22,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: api
-          image: ghcr.io/REPLACE_OWNER/agconn-api:REPLACE_TAG
+          image: us-west1-docker.pkg.dev/agconn/containers/api:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3001

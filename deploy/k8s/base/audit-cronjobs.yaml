@@ -35,7 +35,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: ghcr.io/REPLACE_OWNER/agconn-audit-retention:REPLACE_TAG
+              image: us-west1-docker.pkg.dev/agconn/containers/audit-retention:latest
               envFrom:
                 - configMapRef: { name: agconn-config }
                 - secretRef: { name: agconn-env }
@@ -72,7 +72,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: ghcr.io/REPLACE_OWNER/agconn-audit-verifier:REPLACE_TAG
+              image: us-west1-docker.pkg.dev/agconn/containers/audit-verifier:latest
               envFrom:
                 - configMapRef: { name: agconn-config }
                 - secretRef: { name: agconn-env }

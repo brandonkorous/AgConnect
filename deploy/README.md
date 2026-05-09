@@ -1,9 +1,9 @@
 # Deploy
 
-GKE + GHCR + GitHub Actions, with Cloudflare in front. The pipeline builds 6
-images, pushes to GHCR, runs Prisma migrations as a one-shot Job, then rolls
-out web + api + email-worker + sms-worker. Audit retention + verifier are
-CronJobs.
+GKE + Artifact Registry + GitHub Actions, with Cloudflare in front. The
+pipeline builds 6 images, pushes to `us-west1-docker.pkg.dev/agconn/containers/*`,
+runs Prisma migrations as a one-shot Job, then rolls out web + api +
+email-worker + sms-worker. Audit retention + verifier are CronJobs.
 
 The first deploy requires one-time GCP infra (via Terraform) and cluster
 bootstrap (nginx-ingress + cert-manager). After that, every push to `main`
@@ -93,31 +93,33 @@ kubectl -n cert-manager create secret generic cloudflare-api-token \
   --from-literal=api-token='YOUR_CLOUDFLARE_API_TOKEN'
 ```
 
-### 4. Replace placeholders in manifests
+### 4. Replace one placeholder in manifests
 
-The kustomize overlay and the migrate Job reference `ghcr.io/REPLACE_OWNER/...`
-and the ClusterIssuer references `REPLACE_OPS_EMAIL`. Run once:
+The cert-manager `ClusterIssuer` references `REPLACE_OPS_EMAIL`. Replace it
+once:
 
 ```bash
-OWNER=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
 OPS_EMAIL=ops@agconn.com   # used by Let's Encrypt for expiry notices
-find deploy/k8s -type f -name '*.yaml' -exec \
-  sed -i "s|REPLACE_OWNER|${OWNER}|g; s|REPLACE_OPS_EMAIL|${OPS_EMAIL}|g" {} +
-git commit -am "chore(deploy): pin GHCR owner + Let's Encrypt email"
+sed -i "s|REPLACE_OPS_EMAIL|${OPS_EMAIL}|g" deploy/k8s/base/ingress.yaml
+git commit -am "chore(deploy): pin Let's Encrypt email"
 ```
+
+(Image paths are fully qualified in the manifests now — no per-owner placeholder
+because Artifact Registry is project-namespaced.)
 
 ## Routine deploys
 
 After setup, `git push` to `main` triggers
 [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml):
 
-1. Builds all 6 images in parallel and pushes to GHCR with the commit SHA + `latest` tag.
-2. Authenticates to GCP via Workload Identity Federation; pulls cluster credentials.
-3. Applies the namespace and the `agconn-env` Secret (rebuilt every deploy from GH secrets — rotation = redeploy).
-4. Pins kustomize image tags to the commit SHA.
-5. Runs `db-migrate-<sha>` Job and waits for completion (rollout fails if migrations fail).
-6. `kubectl apply -k deploy/k8s/overlays/prod`.
-7. Waits on `web`, `api`, `email-worker`, `sms-worker` rollout to finish.
+1. Authenticates to GCP via Workload Identity Federation in the build job and configures docker for Artifact Registry.
+2. Builds all 6 images in parallel and pushes to `us-west1-docker.pkg.dev/agconn/containers/*` with the commit SHA + `latest` tag.
+3. Authenticates to GCP again in the deploy job; pulls cluster credentials.
+4. Applies the namespace + ServiceAccount, then the `agconn-env` Secret (rebuilt every deploy from GH secrets — rotation = redeploy).
+5. Pins kustomize image tags to the commit SHA.
+6. Runs `db-migrate-<sha>` Job and waits for completion (rollout fails if migrations fail).
+7. `kubectl apply -k deploy/k8s/overlays/prod`.
+8. Waits on `web`, `api`, `email-worker`, `sms-worker` rollout to finish.
 
 CronJobs (`audit-retention`, `audit-verifier`) update on apply but only run on schedule.
 

@@ -33,6 +33,11 @@ output "workload_identity_provider" {
   description = "Set as GH Actions secret GCP_WORKLOAD_IDENTITY_PROVIDER."
 }
 
+output "artifact_registry_repo" {
+  description = "Full Artifact Registry repository path used by the deploy workflow."
+  value       = "${google_artifact_registry_repository.containers.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.containers.repository_id}"
+}
+
 output "github_actions_secrets" {
   description = "Copy these three values into GitHub repo secrets."
   value = {

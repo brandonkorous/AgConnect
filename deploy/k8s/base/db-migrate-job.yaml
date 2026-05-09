@@ -27,7 +27,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: migrate
-          image: ghcr.io/REPLACE_OWNER/agconn-api:REPLACE_TAG
+          image: REPLACE_AR_BASE/api:REPLACE_TAG
           command: ["sh", "-c"]
           args:
             - |

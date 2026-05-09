@@ -25,7 +25,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: web
-          image: ghcr.io/REPLACE_OWNER/agconn-web:REPLACE_TAG
+          image: us-west1-docker.pkg.dev/agconn/containers/web:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
