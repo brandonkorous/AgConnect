@@ -1061,6 +1061,14 @@ export const landing: TranslationBundle = {
         en: "Subprocessors",
         es: "Subprocesadores",
     },
+    "legal.privacy": {
+        en: "Privacy",
+        es: "Política de privacidad",
+    },
+    "legal.terms": {
+        en: "Terms",
+        es: "Términos",
+    },
     "nav.cta_primary": {
         en: "Find work",
         es: "Encontrar trabajo",

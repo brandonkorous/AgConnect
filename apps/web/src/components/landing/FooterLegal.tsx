@@ -6,12 +6,10 @@ export function FooterLegal() {
     const locale = useLocale();
 
     const links = [
-        { key: 'privacy_en', href: `/en/privacy` },
-        { key: 'terms_en', href: `/en/terms` },
+        { key: 'privacy', href: `/${locale}/privacy` },
+        { key: 'terms', href: `/${locale}/terms` },
         { key: 'subprocessors', href: `/${locale}/subprocessors` },
         { key: 'accessibility', href: `/${locale}/accessibility` },
-        { key: 'privacy_es', href: `/es/privacy` },
-        { key: 'terms_es', href: `/es/terms` },
         { key: 'sitemap', href: '/sitemap.xml' },
         { key: 'llms_txt', href: '/llms.txt' },
     ];
