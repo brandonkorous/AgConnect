@@ -10,6 +10,14 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 4.42"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.5"
+    }
   }
 
   backend "gcs" {

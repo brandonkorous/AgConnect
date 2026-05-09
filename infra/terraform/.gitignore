@@ -5,3 +5,6 @@ terraform.tfstate.backup
 terraform.tfvars
 *.auto.tfvars
 crash.log
+
+# Tempfiles produced by null_resource provisioners (manifest patches, secrets).
+.tmp/

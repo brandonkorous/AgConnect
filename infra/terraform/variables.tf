@@ -61,3 +61,15 @@ variable "github_repository" {
   description = "GitHub repository in OWNER/REPO form, used to bind Workload Identity Federation."
   type        = string
 }
+
+variable "ingress_nginx_version" {
+  description = "ingress-nginx controller version. https://github.com/kubernetes/ingress-nginx/releases"
+  type        = string
+  default     = "v1.11.3"
+}
+
+variable "cert_manager_version" {
+  description = "cert-manager version. https://github.com/cert-manager/cert-manager/releases"
+  type        = string
+  default     = "v1.16.2"
+}

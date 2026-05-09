@@ -65,33 +65,13 @@ before the first deploy:
 | Supabase Storage | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |
 | Mapbox | `NEXT_PUBLIC_MAPBOX_TOKEN` |
 
-### 3. Install cluster controllers (nginx-ingress + cert-manager)
+### 3. Cluster controllers (Terraform-managed)
 
-```bash
-gcloud container clusters get-credentials agconn-prod --zone us-west1-a --project agconn
-
-# Static IP from terraform output:
-INGRESS_IP=$(terraform -chdir=infra/terraform output -raw ingress_ip)
-
-# nginx-ingress, pinned to the static IP we allocated.
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-  -n ingress-nginx --create-namespace \
-  --set controller.service.loadBalancerIP="${INGRESS_IP}" \
-  --set controller.service.externalTrafficPolicy=Local
-
-# cert-manager (DNS01 with Cloudflare).
-helm repo add jetstack https://charts.jetstack.io
-helm upgrade --install cert-manager jetstack/cert-manager \
-  -n cert-manager --create-namespace --version v1.16.0 \
-  --set crds.enabled=true
-
-# Cloudflare API token Secret in the cert-manager namespace, used by the
-# DNS01 ClusterIssuer in deploy/k8s/base/ingress.yaml. Same token value as
-# the GH Actions CLOUDFLARE_API_TOKEN secret.
-kubectl -n cert-manager create secret generic cloudflare-api-token \
-  --from-literal=api-token='YOUR_CLOUDFLARE_API_TOKEN'
-```
+`terraform apply` from step 1 installs nginx-ingress, cert-manager, and the
+`cloudflare-api-token` Secret automatically — see
+[`infra/terraform/cluster-bootstrap.tf`](../infra/terraform/cluster-bootstrap.tf).
+Versions are pinned via `var.ingress_nginx_version` / `var.cert_manager_version`
+and reapply when bumped. No manual `kubectl` or `helm` commands needed.
 
 ### 4. Replace one placeholder in manifests
 
