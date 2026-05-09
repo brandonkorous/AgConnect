@@ -5,7 +5,9 @@
 // surfaces in dev. Empty real data is treated as truth — never mocked.
 
 import 'server-only';
+import type { z } from 'zod';
 import type { EmployerPlanTier, PlanInterval } from '@agconn/schemas';
+import { BillingResponse } from '@agconn/schemas';
 import { isOk } from '@agconn/api-client';
 import { getServerApiClient } from './server-client';
 
@@ -156,22 +158,7 @@ export type ApplicantCardView = {
   };
 };
 
-export type BillingView = {
-  plan: EmployerPlanTier;
-  interval: PlanInterval | null;
-  currentPeriodEnd: string | null;
-  cancelAtPeriodEnd: boolean;
-  features: {
-    activePostings: number;
-    workerSearch: boolean;
-    priorityListing: boolean;
-    multiUser: boolean;
-    customCounties: boolean;
-    brandedReports: boolean;
-  };
-  hasPaymentMethod: boolean;
-  stripeConfigured: boolean;
-};
+export type BillingView = z.infer<typeof BillingResponse>;
 
 export async function getEmployerProfile(): Promise<EmployerProfileView | null> {
   try {
