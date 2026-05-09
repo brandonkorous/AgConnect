@@ -1,8 +1,9 @@
-# Runs Prisma migrations during deploy. Wired as a kubectl-applied Job whose
-# name includes the image tag so each deploy creates a fresh Job and the
+# Runs Prisma migrations + seeds during deploy. Wired as a kubectl-applied Job
+# whose name includes the image tag so each deploy creates a fresh Job and the
 # rollout waits on its completion before flipping web/api Deployments.
 #
-# Image is the API image — it already has Prisma + the migrations bundled.
+# Image is the API image — it already has Prisma + the migrations + the seed
+# scripts bundled. Seeds are idempotent, so re-running on every deploy is safe.
 
 apiVersion: batch/v1
 kind: Job
@@ -31,11 +32,14 @@ spec:
           args:
             - |
               set -euo pipefail
-              # The api image bundles the prisma CLI + migrations under
-              # node_modules/@agconn/db. Run migrate deploy with the real
-              # DATABASE_URL injected from the agconn-env secret.
+              # Run migrate deploy with the real DATABASE_URL injected from the
+              # agconn-env secret, then re-seed translations + lookup tables.
+              # Seed scripts run via npx tsx (devDep stripped from prod image)
+              # — first run downloads tsx once, npx caches after.
               cd /app/node_modules/@agconn/db
               npx --yes prisma migrate deploy --schema prisma/schema.prisma
+              npx --yes tsx scripts/seed-translations.ts
+              npx --yes tsx scripts/seed-lookups.ts
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }
