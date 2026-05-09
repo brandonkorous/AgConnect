@@ -1,38 +1,38 @@
 {
-    "name": "@agconn/sms",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        },
-        "./worker": {
-            "import": "./dist/worker.js",
-            "types": "./dist/worker.d.ts"
-        },
-        "./templates": {
-            "import": "./dist/templates/index.js",
-            "types": "./dist/templates/index.d.ts"
-        }
+  "name": "@agconn/sms",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./src/index.ts"
     },
-    "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "typecheck": "tsc --noEmit"
+    "./worker": {
+      "import": "./dist/worker.js",
+      "types": "./src/worker.ts"
     },
-    "dependencies": {
-        "@agconn/audit": "workspace:*",
-        "@agconn/db": "workspace:*",
-        "luxon": "3.5.0",
-        "pg-boss": "12.18.1",
-        "twilio": "6.0.0"
-    },
-    "devDependencies": {
-        "@types/luxon": "3.4.2",
-        "@types/node": "^22.10.0",
-        "typescript": "6.0.3"
+    "./templates": {
+      "import": "./dist/templates/index.js",
+      "types": "./src/templates/index.ts"
     }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agconn/audit": "workspace:*",
+    "@agconn/db": "workspace:*",
+    "luxon": "3.5.0",
+    "pg-boss": "12.18.1",
+    "twilio": "6.0.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "3.4.2",
+    "@types/node": "^22.10.0",
+    "typescript": "6.0.3"
+  }
 }

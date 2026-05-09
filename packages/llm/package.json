@@ -1,39 +1,39 @@
 {
-    "name": "@agconn/llm",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        }
-    },
-    "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "llm-harness": "0.2.0"
-    },
-    "peerDependencies": {
-        "@anthropic-ai/sdk": "*",
-        "openai": "*"
-    },
-    "peerDependenciesMeta": {
-        "@anthropic-ai/sdk": {
-            "optional": true
-        },
-        "openai": {
-            "optional": true
-        }
-    },
-    "devDependencies": {
-        "@anthropic-ai/sdk": "0.92.0",
-        "@types/node": "^22.10.0",
-        "openai": "6.35.0",
-        "typescript": "6.0.3"
+  "name": "@agconn/llm",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./src/index.ts"
     }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "llm-harness": "0.2.0"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": "*",
+    "openai": "*"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    },
+    "openai": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "0.92.0",
+    "@types/node": "^22.10.0",
+    "openai": "6.35.0",
+    "typescript": "6.0.3"
+  }
 }
