@@ -25,6 +25,9 @@ const SCHEMA = resolve(here, '..', 'packages/db/prisma/schema.prisma');
 //      tenant_id. See docs/00-foundation/02-multi-tenancy.
 //   4. Global reference catalogs read by every tenant. These are owned by
 //      ops and edited via the admin surface, not the tenant API.
+//   5. Platform-level federal datasets and their sync metadata. Synced from
+//      external sources (DOL/WHD, USDOL ETA) and read cross-tenant; no
+//      tenant owns the rows.
 const EXEMPT_MODELS = new Set([
   // category 1
   'Tenant',
@@ -40,6 +43,10 @@ const EXEMPT_MODELS = new Set([
   'Crop',
   'RoleType',
   'SkillTag',
+  // category 5 — federal datasets + sync metadata
+  'MspaFlcRegistry',
+  'MspaSyncRun',
+  'AewrRate',
 ]);
 
 // Models that are PRESENT but only optionally tied to a tenant. They MUST
@@ -61,6 +68,10 @@ const NULLABLE_TENANT_MODELS = new Set([
   // emails still set tenant_id; the email_log_service policy uses NULLIF to
   // permit both shapes. See migration 20260509100000_anonymous_landing.
   'EmailLog',
+  // Admin grant-report exports. tenant_id is set when an admin scopes the
+  // export to a single tenant, NULL when the export is cross-tenant (e.g.
+  // statewide placement reporting). See docs/30-admin/02-placement-report.
+  'ReportRun',
 ]);
 
 const text = readFileSync(SCHEMA, 'utf8');

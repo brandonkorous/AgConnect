@@ -3925,8 +3925,8 @@ export const employer: TranslationBundle = {
         es: "Buscar mensajes…",
     },
     "messages.summary": {
-        en: "SMS, WhatsApp & in-app · automatic translation EN ⇄ ES",
-        es: "SMS, WhatsApp y en-app · traducción automática EN ⇄ ES",
+        en: "SMS + in-app · automatic translation EN ⇄ ES (WhatsApp coming soon)",
+        es: "SMS + en-app · traducción automática EN ⇄ ES (WhatsApp próximamente)",
     },
     "messages.template_bodies.heat": {
         en: "Heat advisory: 102°F forecast. Lunch at 11:30, plus 10-min shade breaks at 9 AM and 1 PM.",

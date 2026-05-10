@@ -78,8 +78,8 @@ export default async function MessagesPage({ params, searchParams }: Props) {
                     <div className="text-base-content/70 mt-2 text-sm">{t('summary')}</div>
                 </div>
                 <div className="flex gap-2">
-                    <NewConversationButton variant="thread" />
-                    <NewConversationButton variant="broadcast" />
+                    <NewConversationButton key="thread" variant="thread" />
+                    <NewConversationButton key="broadcast" variant="broadcast" />
                 </div>
             </div>
 

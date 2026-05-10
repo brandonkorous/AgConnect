@@ -44,6 +44,10 @@ export const Modal = forwardRef<ModalHandle, Props>(function Modal(
 ) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // True when the close is being driven by our own unmount cleanup, so the
+  // `close` event listener can suppress the redundant onClose() that would
+  // otherwise re-set the parent state mid-unmount.
+  const closingByCleanup = useRef(false);
 
   useImperativeHandle(
     ref,
@@ -67,16 +71,27 @@ export const Modal = forwardRef<ModalHandle, Props>(function Modal(
       }
     }
     return () => {
-      if (el.open) el.close();
+      if (el.open) {
+        closingByCleanup.current = true;
+        el.close();
+      }
     };
   }, []);
 
   // Native <dialog> emits `close` when ESC is pressed or close() is called.
-  // We forward that to the caller's onClose so the parent can unmount.
+  // Forward to the caller's onClose so the parent can unmount — but ignore
+  // close events triggered by our own unmount cleanup (above), since the
+  // parent has already decided to unmount us.
   useEffect(() => {
     const el = dialogRef.current;
     if (!el) return;
-    const handler = () => onClose();
+    const handler = () => {
+      if (closingByCleanup.current) {
+        closingByCleanup.current = false;
+        return;
+      }
+      onClose();
+    };
     el.addEventListener('close', handler);
     return () => el.removeEventListener('close', handler);
   }, [onClose]);
