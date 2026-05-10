@@ -23,6 +23,7 @@ COPY packages/api-client/package.json packages/api-client/
 COPY packages/audit/package.json packages/audit/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
+COPY packages/flc-verify/package.json packages/flc-verify/
 COPY packages/llm/package.json packages/llm/
 COPY packages/reporting/package.json packages/reporting/
 COPY packages/schemas/package.json packages/schemas/
