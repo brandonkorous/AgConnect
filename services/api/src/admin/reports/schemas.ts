@@ -3,11 +3,16 @@ import { z } from 'zod';
 const FunderEnum = z.enum(['CDFA', 'F3', 'CalOSBA', 'EDD', 'other']);
 const CountyEnum = z.enum(['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare']);
 
+// Hono's query parser hands single repeats as a string and multiples as an
+// array. Wrap singles so Zod's array validators don't 422 on `?counties=Fresno`.
+const arrayOf = <T extends z.ZodTypeAny>(item: T) =>
+  z.preprocess((v) => (typeof v === 'string' ? [v] : v), z.array(item));
+
 export const placementReportQuery = z
   .object({
-    tenantIds: z.array(z.string().uuid()).optional(),
-    counties: z.array(CountyEnum).optional(),
-    funders: z.array(FunderEnum).optional(),
+    tenantIds: arrayOf(z.string().uuid()).optional(),
+    counties: arrayOf(CountyEnum).optional(),
+    funders: arrayOf(FunderEnum).optional(),
     start: z.string().date(),
     end: z.string().date(),
     includeNames: z.coerce.boolean().default(false),

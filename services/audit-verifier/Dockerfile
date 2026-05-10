@@ -34,6 +34,7 @@ COPY packages/db/package.json              packages/db/
 COPY packages/email/package.json           packages/email/
 COPY packages/flc-verify/package.json      packages/flc-verify/
 COPY packages/llm/package.json             packages/llm/
+COPY packages/reporting/package.json       packages/reporting/
 COPY packages/schemas/package.json         packages/schemas/
 COPY packages/sms/package.json             packages/sms/
 COPY packages/ui/package.json              packages/ui/

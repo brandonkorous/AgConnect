@@ -51,6 +51,14 @@ type DispatchArgs = {
   tenantId: string | null;
 };
 
+// Resend rejects tag values containing characters outside [A-Za-z0-9_-].
+// Our template ids use dots ('grant.report_ready', 'employer.flc_pending').
+// Replace any disallowed character with '_' so the tag still surfaces in the
+// Resend dashboard for filtering without breaking the send.
+function sanitizeTag(value: string): string {
+  return value.replace(/[^A-Za-z0-9_-]/g, '_');
+}
+
 async function isSuppressed(db: Tx, email: string): Promise<boolean> {
   const hit = await db.emailSuppression.findUnique({
     where: { email: email.toLowerCase() },
@@ -112,7 +120,7 @@ async function dispatch(db: Tx, args: DispatchArgs): Promise<SendOutcome> {
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       },
       tags: [
-        { name: 'template', value: args.template },
+        { name: 'template', value: sanitizeTag(args.template) },
         { name: 'locale', value: args.locale },
       ],
     });

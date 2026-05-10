@@ -1,4 +1,3 @@
-import { getTranslations } from 'next-intl/server';
 import { fetchPlacementPreview } from '../client';
 import { PlacementReportBuilder } from './PlacementReportBuilder';
 
@@ -46,12 +45,6 @@ export default async function PlacementReportPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
-  const t = await getTranslations('admin.reports.placement');
-  const tFallback = (k: string, en: string) => {
-    const out = t(k, { default: '' });
-    return out && out.length > 0 ? out : en;
-  };
-
   const { qs, start, end } = buildPreviewQs(sp);
   const preview = await fetchPlacementPreview(qs);
   const includeNames = sp['includeNames'] === 'true';
@@ -71,14 +64,11 @@ export default async function PlacementReportPage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-serif text-2xl font-medium">
-          {tFallback('title', 'Placement report')}
-        </h2>
+        <h2 className="font-serif text-2xl font-medium">Placement report</h2>
         <p className="text-base-content/70 mt-1 max-w-2xl text-sm">
-          {tFallback(
-            'subtitle',
-            'WIOA / CalJOBS-aligned hire export with anonymized participant IDs. All dates are America/Los_Angeles. Q2 / Q4 retention columns are placeholders for grantee follow-up.',
-          )}
+          WIOA / CalJOBS-aligned hire export with anonymized participant IDs. All
+          dates are America/Los_Angeles. Q2 / Q4 retention columns are placeholders
+          for grantee follow-up.
         </p>
       </div>
 
@@ -95,23 +85,19 @@ export default async function PlacementReportPage({
           email,
         }}
         copy={{
-          start: tFallback('filter.start', 'Start date'),
-          end: tFallback('filter.end', 'End date'),
-          counties: tFallback('filter.counties', 'Counties'),
-          funders: tFallback('filter.funders', 'Training funders'),
-          includeNames: tFallback('filter.includeNames', 'Include worker names'),
-          includeNamesHint: tFallback(
-            'filter.includeNamesHint',
+          start: 'Start date',
+          end: 'End date',
+          counties: 'Counties',
+          funders: 'Training funders',
+          includeNames: 'Include worker names',
+          includeNamesHint:
             'Off by default. Names appear in CSV / XLSX and in the export audit log.',
-          ),
-          format: tFallback('filter.format', 'Format'),
-          email: tFallback('filter.email', 'Email delivery (optional)'),
-          emailHint: tFallback(
-            'filter.emailHint',
+          format: 'Format',
+          email: 'Email delivery (optional)',
+          emailHint:
             'Leave blank to download immediately. Provide an address to send the report with a 24-hour signed download link.',
-          ),
-          generate: tFallback('action.generate', 'Download export'),
-          generateEmail: tFallback('action.generateEmail', 'Send by email'),
+          generate: 'Download export',
+          generateEmail: 'Send by email',
         }}
       />
 
@@ -123,10 +109,10 @@ export default async function PlacementReportPage({
         errorCode={!preview.ok ? preview.error.code : undefined}
         errorMsg={!preview.ok ? preview.error.message : undefined}
         copy={{
-          previewTitle: tFallback('preview.title', 'Preview'),
-          previewSubtitle: tFallback('preview.subtitle', 'First {n} of {total} rows'),
-          empty: tFallback('preview.empty', 'No placements match these filters.'),
-          error: tFallback('preview.error', 'Preview failed:'),
+          previewTitle: 'Preview',
+          previewSubtitle: 'First {n} of {total} rows',
+          empty: 'No placements match these filters.',
+          error: 'Preview failed:',
         }}
       />
     </div>

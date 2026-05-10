@@ -80,11 +80,15 @@ adminReportsRoutes.post(
 
     let blobPath: string | null = null;
     try {
+      const storageMime =
+        body.format === 'csv'
+          ? 'text/csv'
+          : FORMAT_MIME.xlsx;
       blobPath = await uploadGrantReport({
         runId: run.id,
         reportType: 'placement',
         format: body.format,
-        contentType: FORMAT_MIME[body.format],
+        contentType: storageMime,
         body: buffer,
       });
       await c.var.db.reportRun.update({
