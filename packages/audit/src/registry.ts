@@ -243,6 +243,46 @@ export const auditRegistry = {
     retentionDays: 2555,
     metadata: ['namespace', 'key', 'locale', 'tenantScope'],
   },
+  'admin.flag.updated': {
+    resourceType: 'feature_flag',
+    retentionDays: 2555,
+    metadata: ['key', 'tenantScope', 'enabledBefore', 'enabledAfter'],
+  },
+  'admin.flag.deleted': {
+    resourceType: 'feature_flag',
+    retentionDays: 2555,
+    metadata: ['key', 'tenantScope'],
+  },
+  'admin.lookup.created': {
+    resourceType: 'lookup_row',
+    retentionDays: 2555,
+    metadata: ['table', 'slug'],
+  },
+  'admin.lookup.updated': {
+    resourceType: 'lookup_row',
+    retentionDays: 2555,
+    metadata: ['table', 'slug', 'fields'],
+  },
+  'admin.lookup.deleted': {
+    resourceType: 'lookup_row',
+    retentionDays: 2555,
+    metadata: ['table', 'slug'],
+  },
+  'admin.aewr.updated': {
+    resourceType: 'aewr_rate',
+    retentionDays: 2555,
+    metadata: ['stateCode', 'effectiveFrom', 'hourlyCents'],
+  },
+  'admin.aewr.deleted': {
+    resourceType: 'aewr_rate',
+    retentionDays: 2555,
+    metadata: ['stateCode', 'effectiveFrom'],
+  },
+  'admin.job.replayed': {
+    resourceType: 'pgboss_job',
+    retentionDays: 395,
+    metadata: ['jobId', 'queueName'],
+  },
   'system.audit.retention.purged': {
     resourceType: 'audit_event',
     retentionDays: 2555,

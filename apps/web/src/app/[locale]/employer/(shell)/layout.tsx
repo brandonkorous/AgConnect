@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { requireRole, UserRole } from '@agconn/auth';
 import { EmployerSidebar } from '@/components/employer/EmployerSidebar';
 import { EmployerTopBar } from '@/components/employer/EmployerTopBar';
 import { EmployerMobileShell } from '@/components/employer/EmployerMobileShell';
@@ -17,6 +18,7 @@ type Props = {
 
 export default async function EmployerShellLayout({ children, params }: Props) {
     const { locale } = await params;
+    await requireRole(locale, UserRole.employer);
     const [profile, jobs, inbox] = await Promise.all([
         getEmployerProfile(),
         listEmployerJobs(),

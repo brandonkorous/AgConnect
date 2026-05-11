@@ -1,3 +1,4 @@
+import { requireRole, UserRole } from '@agconn/auth';
 import { WorkerSidebar, type WorkerNavCounts } from '@/components/worker/WorkerSidebar';
 import { WorkerTopBar } from '@/components/worker/WorkerTopBar';
 import { WorkerMobileShell } from '@/components/worker/WorkerMobileShell';
@@ -39,6 +40,7 @@ async function fetchWorkerNavCounts(): Promise<WorkerNavCounts> {
 
 export default async function WorkerLayout({ children, params }: Props) {
     const { locale } = await params;
+    await requireRole(locale, UserRole.worker);
     const counts = await fetchWorkerNavCounts();
     return (
         <div className="flex min-h-screen items-start">

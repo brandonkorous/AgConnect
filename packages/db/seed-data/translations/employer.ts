@@ -3992,6 +3992,18 @@ export const employer: TranslationBundle = {
         en: "· {unread} unread",
         es: "· {unread} sin leer",
     },
+    "onboarding.account_chip.aria_label": {
+        en: "Account menu",
+        es: "Menú de cuenta",
+    },
+    "onboarding.account_chip.sign_out": {
+        en: "Sign out",
+        es: "Cerrar sesión",
+    },
+    "onboarding.account_chip.signed_in_as": {
+        en: "Signed in as",
+        es: "Sesión iniciada como",
+    },
     "onboarding.address.help": {
         en: "Used for FLC verification and on official documents. We never share it publicly.",
         es: "Se usa para la verificación FLC y en documentos oficiales. Nunca la compartimos públicamente.",

@@ -359,6 +359,7 @@ model Tenant {
   jobEditEvents               JobEditEvent[]
   jobRenotifications          JobRenotification[]
   smsKeywords                 SmsKeyword[]
+  featureFlags                FeatureFlag[]
 
   @@map("tenants")
 }
@@ -1494,6 +1495,28 @@ model SkillTag {
   @@index([active, sortOrder])
   @@index([category])
   @@map("skill_tags")
+}
+
+// Tenant-scoped (or platform-default when tenantId is null) feature flags.
+// Admin app reads/writes through /admin/v1/system/flags. Resolution order
+// at runtime: tenant override → platform default → code default.
+model FeatureFlag {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String
+  tenantId  String?  @map("tenant_id") @db.Uuid
+  enabled   Boolean  @default(false)
+  payload   Json?
+  notes     String?
+  updatedBy String?  @map("updated_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Uniqueness enforced by partial indexes in the migration so platform-default
+  // (tenant_id IS NULL) and tenant-override rows each get one slot per key.
+  @@index([tenantId, key])
+  @@map("feature_flags")
 }
 
 model EmployerContact {

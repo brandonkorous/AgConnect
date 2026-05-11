@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source "../../../../packages/*/src/**/*.{ts,tsx,js,jsx}";
+
+@plugin 'daisyui' {
+  logs: false;
+  themes: tierra-light --default;
+}
+
+@import './themes/tierra-light.css';
+
+@theme {
+  --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: var(--font-inter-tight), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-dm-mono), 'JetBrains Mono', Menlo, monospace;
+  --ease-tierra: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@utility duration-state {
+  transition-duration: 120ms;
+  animation-duration: 120ms;
+}
+@utility duration-transition {
+  transition-duration: 200ms;
+  animation-duration: 200ms;
+}
+@utility duration-modal {
+  transition-duration: 240ms;
+  animation-duration: 240ms;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv11' on, 'ss01' on;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  white-space: normal;
+}
+
+.menu a {
+  &:hover {
+    @apply bg-primary/5 text-primary rounded-lg shadow-none;
+  }
+  @apply rounded-lg;
+}
+.menu-active {
+  @apply bg-primary/10 text-primary rounded-lg font-semibold shadow-none;
+}
+
+.input,
+.select,
+.textarea,
+.file-input {
+  --input-color: var(--color-base-300);
+  border-color: var(--color-base-300);
+  @apply rounded bg-base-100;
+}
+
+.fieldset {
+  grid-template-columns: minmax(0, 1fr);
+}
+.fieldset > * {
+  min-width: 0;
+}

@@ -12,6 +12,9 @@ images:
   - name: us-west1-docker.pkg.dev/agconn/containers/web
     newName: us-west1-docker.pkg.dev/agconn/containers/web
     newTag: latest
+  - name: us-west1-docker.pkg.dev/agconn/containers/admin
+    newName: us-west1-docker.pkg.dev/agconn/containers/admin
+    newTag: latest
   - name: us-west1-docker.pkg.dev/agconn/containers/api
     newName: us-west1-docker.pkg.dev/agconn/containers/api
     newTag: latest

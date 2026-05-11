@@ -77,3 +77,25 @@ spec:
             pathType: Prefix
             backend:
               service: { name: api, port: { number: 80 } }
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: admin
+  namespace: agconn
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["admin.agconn.com"]
+      secretName: agconn-admin-tls
+  rules:
+    - host: admin.agconn.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: admin, port: { number: 80 } }

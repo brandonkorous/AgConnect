@@ -35,6 +35,7 @@ jobs:
       matrix:
         target:
           - { name: web,             dockerfile: apps/web/Dockerfile,                 image: web }
+          - { name: admin,           dockerfile: apps/admin/Dockerfile,               image: admin }
           - { name: api,             dockerfile: services/api/Dockerfile,             image: api }
           - { name: email-worker,    dockerfile: services/email-worker/Dockerfile,    image: email-worker }
           - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,      image: sms-worker }
@@ -79,6 +80,9 @@ jobs:
             NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
             NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
             NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+            NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_ADMIN_URL=${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
+            NEXT_PUBLIC_SENTRY_DSN_ADMIN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
           secrets: |
             fontawesome_token=${{ secrets.FONTAWESOME_TOKEN }}
 
@@ -209,7 +213,7 @@ jobs:
           set -euo pipefail
           AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
           TAG=${{ env.TAG }}
-          for img in web api email-worker sms-worker flc-verifier audit-retention audit-verifier; do
+          for img in web admin api email-worker sms-worker flc-verifier audit-retention audit-verifier; do
             kustomize edit set image ${AR_BASE}/${img}=${AR_BASE}/${img}:${TAG}
           done
 
@@ -230,6 +234,7 @@ jobs:
         run: |
           kubectl apply -k deploy/k8s/overlays/prod
           kubectl -n agconn rollout status deployment/web --timeout=10m
+          kubectl -n agconn rollout status deployment/admin --timeout=10m
           kubectl -n agconn rollout status deployment/api --timeout=10m
           kubectl -n agconn rollout status deployment/email-worker --timeout=5m
           kubectl -n agconn rollout status deployment/sms-worker --timeout=5m

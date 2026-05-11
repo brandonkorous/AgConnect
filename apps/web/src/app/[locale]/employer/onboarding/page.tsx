@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { requireRole, UserRole } from '@agconn/auth';
+import { AccountChip } from '@/components/shell/AccountChip';
 import { OnboardingForm } from '@/components/employer/OnboardingForm';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { getEmployerProfile, verificationStatus } from '@/lib/api/employer';
@@ -19,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EmployerOnboardingPage({ params }: Props) {
   const { locale } = await params;
+  await requireRole(locale, UserRole.employer);
   const t = await getTranslations({ locale, namespace: 'employer.onboarding' });
   const profile = await getEmployerProfile();
   if (profile && verificationStatus(profile) === 'verified') {
@@ -45,15 +48,25 @@ export default async function EmployerOnboardingPage({ params }: Props) {
         >
           <Wordmark size="sm" tone="ink" />
         </Link>
-        <Link
-          href={altHref}
-          prefetch={false}
-          aria-label={t('locale_switch_aria')}
-          className="bg-base-100 border-base-300 text-base-content/70 hover:text-base-content inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[11px] font-bold tracking-wider no-underline"
-        >
-          <FontAwesomeIcon icon={faGlobe} className="h-3 w-3" />
-          {altLocale.toUpperCase()}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={altHref}
+            prefetch={false}
+            aria-label={t('locale_switch_aria')}
+            className="bg-base-100 border-base-300 text-base-content/70 hover:text-base-content inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[11px] font-bold tracking-wider no-underline"
+          >
+            <FontAwesomeIcon icon={faGlobe} className="h-3 w-3" />
+            {altLocale.toUpperCase()}
+          </Link>
+          <AccountChip
+            locale={locale}
+            labels={{
+              ariaLabel: t('account_chip.aria_label'),
+              signedInAs: t('account_chip.signed_in_as'),
+              signOut: t('account_chip.sign_out'),
+            }}
+          />
+        </div>
       </header>
 
       <div className="mx-auto flex w-full max-w-xl flex-1 items-center justify-center py-6">

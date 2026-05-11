@@ -1,0 +1,43 @@
+
+@plugin 'daisyui/theme' {
+  name: "tierra-light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-primary:           #5B6E2E;
+  --color-primary-content:   #f9f8f5;
+  --color-secondary:         #3F4E1F;
+  --color-secondary-content: #f9f8f5;
+  --color-accent:            #D9B441;
+  --color-accent-content:    #f9f8f5;
+  --color-neutral:           #1C1C1A;
+  --color-neutral-content:   #f9f8f5;
+  --color-base-100:          #FFFFFF;
+  --color-base-200:          #F7F7F3;
+  --color-base-300:          #EFEFE7;
+  --color-base-content:      oklch(20% 0.005 80);
+  --color-info:              #294778;
+  --color-info-content:      #f9f8f5;
+  --color-success:           #1e6626;
+  --color-success-content:   oklch(98% 0.005 95);
+  --color-warning:           #a75c00;
+  --color-warning-content:   oklch(98% 0.005 95);
+  --color-error:             #ba2c25;
+  --color-error-content:     oklch(98% 0.005 95);
+
+  --radius-selector: 0.5rem;
+  --radius-field:    9999px;
+  --radius-box:      1rem;
+
+  --shadow-card: 0 1px 2px rgba(28,28,26,0.06), 0 1px 1px rgba(28,28,26,0.04);
+  --shadow-pop:  0 12px 24px -8px rgba(28,28,26,0.18), 0 4px 8px -4px rgba(28,28,26,0.10);
+  --shadow-hi:   0 24px 48px -12px rgba(28,28,26,0.25), 0 8px 16px -6px rgba(28,28,26,0.12);
+
+  --size-selector: 0.25rem;
+  --size-field:    0.25rem;
+
+  --border: 1px;
+  --depth:  1;
+  --noise:  0;
+}

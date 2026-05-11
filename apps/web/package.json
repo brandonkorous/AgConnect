@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@agconn/api-client": "workspace:*",
+    "@agconn/auth": "workspace:*",
     "@agconn/schemas": "workspace:*",
     "@agconn/sms": "workspace:*",
     "@agconn/ui": "workspace:*",
