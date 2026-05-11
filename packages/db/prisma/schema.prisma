@@ -473,8 +473,23 @@ model User {
   email         String?
   phone         String?
   onboarded     Boolean  @default(false)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  // SMS A2P consent provenance for Twilio 10DLC dispute traceability.
+  //   consentMethod  — 'web_otp' (signed up at agconn.com, verified phone
+  //                    OTP) or 'sms_double_opt_in' (texted an opt-in keyword
+  //                    to the published number, replied YES to the
+  //                    confirmation prompt). NULL for non-worker roles and
+  //                    legacy users predating consent capture.
+  //   consentedAt    — Timestamp when the user completed the consent flow.
+  //   smsOptInState  — 'pending_confirm' (stub created from inbound keyword,
+  //                    awaiting YES) or 'consented' (confirmed). NULL for
+  //                    users that never went through the SMS opt-in flow.
+  // See docs/00-foundation/05-sms-pipeline/ and the Twilio A2P 10DLC campaign
+  // registration.
+  consentMethod String?   @map("consent_method")
+  consentedAt   DateTime? @map("consented_at")
+  smsOptInState String?   @map("sms_opt_in_state")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   tenant                     Tenant?                   @relation(fields: [tenantId], references: [id])
   employerProfile            EmployerProfile?

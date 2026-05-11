@@ -228,6 +228,21 @@ export const auditRegistry = {
     retentionDays: 2555,
     metadata: ['targetActorId', 'eventCount', 'requestId'],
   },
+  'admin.translation.created': {
+    resourceType: 'translation_key',
+    retentionDays: 2555,
+    metadata: ['namespace', 'key', 'locale', 'tenantScope'],
+  },
+  'admin.translation.updated': {
+    resourceType: 'translation_key',
+    retentionDays: 2555,
+    metadata: ['namespace', 'key', 'locale', 'tenantScope', 'valueBytes'],
+  },
+  'admin.translation.deleted': {
+    resourceType: 'translation_key',
+    retentionDays: 2555,
+    metadata: ['namespace', 'key', 'locale', 'tenantScope'],
+  },
   'system.audit.retention.purged': {
     resourceType: 'audit_event',
     retentionDays: 2555,
@@ -267,6 +282,21 @@ export const auditRegistry = {
     resourceType: 'sms_opt_out',
     retentionDays: 2555,
     metadata: ['phone', 'source'],
+  },
+  'system.sms.opt_in_pending': {
+    resourceType: 'user',
+    retentionDays: 2555,
+    metadata: ['phone', 'keyword', 'lang'],
+  },
+  'system.sms.opt_in_confirmed': {
+    resourceType: 'user',
+    retentionDays: 2555,
+    metadata: ['phone', 'userId', 'lang'],
+  },
+  'system.sms.opt_in_expired': {
+    resourceType: 'user',
+    retentionDays: 2555,
+    metadata: ['phone', 'userId', 'pendingSince'],
   },
   'auth.tenant.access_denied': {
     resourceType: 'tenant',

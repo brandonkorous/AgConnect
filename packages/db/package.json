@@ -23,6 +23,7 @@
     "i18n:check": "tsx scripts/check-i18n-parity.ts",
     "lookups:seed": "tsx scripts/seed-lookups.ts",
     "aewr:seed": "tsx scripts/seed-aewr-rates.ts",
+    "sweep:sms-optin": "tsx scripts/sweep-stale-sms-optin.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

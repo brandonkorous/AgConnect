@@ -8,3 +8,8 @@ export {
   validateTwilioSignature,
 } from './twilio.js';
 export { runSmsWorker, type SmsWorkerHandle } from './worker.js';
+export {
+  inboundPhoneTel,
+  inboundPhoneDisplay,
+  inboundOptInKeyword,
+} from './inbound-number.js';

@@ -1,8 +1,14 @@
+import { randomBytes } from 'node:crypto';
 import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { validateTwilioSignature, enqueueSms } from '@agconn/sms';
-import { pools, SmsStatus, AppStatus } from '@agconn/db';
+import { pools, SmsStatus, AppStatus, UserRole, Lang } from '@agconn/db';
 import { emitSystemAudit } from '../middleware/audit.js';
+
+// Platform-level operations (workers, opt-in flow) live under this tenant
+// per docs/00-foundation/01-multi-tenancy. SMS log rows for opt-in must
+// reference a real tenant; the system tenant is the right home for them.
+const SYSTEM_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
 // Twilio webhook contracts:
 //   /v1/webhooks/twilio/status   — message status callback. Body is form-encoded;
@@ -81,6 +87,14 @@ twilioWebhookRoutes.post('/status', async (c) => {
 
 const STOP_KEYWORDS = new Set(['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']);
 
+// Mobile-originated double opt-in. Worker texts one of these from a flyer
+// or the worker landing page; we reply with sms.optin.confirm; they reply
+// YES (or SI/SÍ/Y) and become consented. See the Twilio A2P 10DLC
+// campaign description for the published list.
+const OPT_IN_KEYWORDS = new Set(['JOBS', 'TRABAJO', 'AGCONN', 'JOIN', 'START']);
+const ES_OPT_IN_KEYWORDS = new Set(['TRABAJO']);
+const CONFIRM_KEYWORDS = new Set(['YES', 'Y', 'SI', 'SÍ', 'YEP', 'YEAH', 'OK']);
+
 twilioWebhookRoutes.post('/inbound', async (c) => {
   const params = Object.fromEntries(new URLSearchParams(await c.req.text())) as Record<string, string>;
   const valid = validateTwilioSignature({
@@ -95,28 +109,51 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
   const text = (params.Body ?? '').trim().toUpperCase();
   const from = params.From ?? '';
 
+  // 1. STOP keywords — always wins, even on a pending stub.
   if (from && STOP_KEYWORDS.has(text)) {
-    await pools.webhooks.$transaction(async (tx) => {
-      await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-      await tx.smsOptOut.upsert({
-        where: { phone: from },
-        create: { phone: from, source: 'STOP' },
-        update: {},
-      });
-    });
-    await emitSystemAudit({
-      action: 'system.sms.opt_out_received',
-      resourceType: 'sms_opt_out',
-      resourceId: from,
-      metadata: { phone: from, source: 'STOP' },
-    });
+    await handleStop(from);
     return ok(c, { received: true });
   }
 
-  // SMS-apply keyword routing — workers text APPLY-ALMD (or whatever the
-  // job's keyword is) to apply. Match the first whitespace-delimited token
-  // case-insensitively against sms_keywords.
+  if (!from) return ok(c, { received: true });
+
+  // 2. Pending stub awaiting confirmation — YES advances; anything else
+  //    re-prompts. We look up by phone so this works whether the existing
+  //    user came from web signup or a prior SMS opt-in.
+  const existing = await pools.webhooks.user.findFirst({
+    where: { phone: from, role: UserRole.worker },
+  });
+
+  if (existing?.smsOptInState === 'pending_confirm') {
+    if (CONFIRM_KEYWORDS.has(text)) {
+      await confirmOptIn(existing.id);
+      return ok(c, { received: true, optIn: 'confirmed' });
+    }
+    await enqueueSms({
+      tenantId: SYSTEM_TENANT_ID,
+      userId: existing.id,
+      template: 'sms.optin.invalid',
+      vars: {},
+      jobKey: `optin-invalid-${existing.id}-${Date.now()}`,
+    });
+    return ok(c, { received: true, optIn: 'pending' });
+  }
+
   const tokens = text.split(/\s+/);
+
+  // 3. New opt-in via published keyword. Only for unknown phones — known
+  //    workers texting JOBS again don't get re-onboarded.
+  if (!existing) {
+    const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
+    if (optInToken) {
+      await startOptIn(from, optInToken);
+      return ok(c, { received: true, optIn: 'started', keyword: optInToken });
+    }
+  }
+
+  // 4. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
+  //    the job's keyword is) to apply. Only for already-consented workers;
+  //    handleJobApply itself drops on unknown phone.
   for (const token of tokens) {
     if (token.length < 4 || token.length > 24) continue;
     const keyword = await pools.webhooks.smsKeyword.findFirst({
@@ -130,6 +167,103 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
 
   return ok(c, { received: true });
 });
+
+async function handleStop(from: string): Promise<void> {
+  await pools.webhooks.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+    await tx.smsOptOut.upsert({
+      where: { phone: from },
+      create: { phone: from, source: 'STOP' },
+      update: {},
+    });
+  });
+  await emitSystemAudit({
+    action: 'system.sms.opt_out_received',
+    resourceType: 'sms_opt_out',
+    resourceId: from,
+    metadata: { phone: from, source: 'STOP' },
+  });
+}
+
+async function startOptIn(from: string, keyword: string): Promise<void> {
+  // Synthetic id (sms_-prefixed) distinguishes SMS-originated stubs from
+  // Clerk-issued user_-prefixed ids. When the same phone later signs up
+  // through Clerk, the clerk webhook handler must merge the two records;
+  // see TODO in webhooks/clerk.ts. Workers that never sign up online keep
+  // operating with this id forever, which is the design goal — no signup.
+  const id = `sms_${randomBytes(8).toString('hex')}`;
+  const lang = ES_OPT_IN_KEYWORDS.has(keyword) ? Lang.es : Lang.en;
+
+  // Race: if two inbound texts land for the same phone within the same
+  // tick (network retries), upsert keeps the first stub. Either path
+  // ends in a single confirm prompt below.
+  const user = await pools.webhooks.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+    const existing = await tx.user.findFirst({
+      where: { phone: from, role: UserRole.worker },
+    });
+    if (existing) return existing;
+    return tx.user.create({
+      data: {
+        id,
+        role: UserRole.worker,
+        phone: from,
+        preferredLang: lang,
+        smsOptInState: 'pending_confirm',
+      },
+    });
+  });
+
+  await emitSystemAudit({
+    action: 'system.sms.opt_in_pending',
+    resourceType: 'user',
+    resourceId: user.id,
+    metadata: { phone: from, keyword, lang: lang.toString() },
+  });
+
+  await enqueueSms({
+    tenantId: SYSTEM_TENANT_ID,
+    userId: user.id,
+    template: 'sms.optin.confirm',
+    vars: {},
+    jobKey: `optin-confirm-${user.id}`,
+  });
+}
+
+async function confirmOptIn(userId: string): Promise<void> {
+  const now = new Date();
+  const user = await pools.webhooks.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+    return tx.user.update({
+      where: { id: userId },
+      data: {
+        smsOptInState: 'consented',
+        consentMethod: 'sms_double_opt_in',
+        consentedAt: now,
+        onboarded: true,
+      },
+    });
+  });
+
+  await emitSystemAudit({
+    action: 'system.sms.opt_in_confirmed',
+    resourceType: 'user',
+    resourceId: user.id,
+    metadata: {
+      phone: user.phone ?? '',
+      userId: user.id,
+      lang: user.preferredLang.toString(),
+    },
+  });
+
+  await enqueueSms({
+    tenantId: SYSTEM_TENANT_ID,
+    userId: user.id,
+    template: 'sms.optin.welcome',
+    vars: {},
+    jobKey: `optin-welcome-${user.id}`,
+  });
+}
 
 async function handleJobApply(args: {
   keyword: { id: string; tenantId: string; keyword: string; entityId: string };

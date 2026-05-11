@@ -20,6 +20,11 @@
       "source": "./src/templates/index.ts",
       "import": "./dist/templates/index.js",
       "types": "./src/templates/index.ts"
+    },
+    "./inbound-number": {
+      "source": "./src/inbound-number.ts",
+      "import": "./dist/inbound-number.js",
+      "types": "./src/inbound-number.ts"
     }
   },
   "scripts": {

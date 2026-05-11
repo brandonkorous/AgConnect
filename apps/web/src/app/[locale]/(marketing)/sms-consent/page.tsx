@@ -3,6 +3,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import { LegalPageLayout } from '@/components/marketing/LegalPageLayout';
+import { SmsOptInCallout } from '@/components/landing/SmsOptInCallout';
 
 type Locale = 'en' | 'es';
 type RouteProps = { params: Promise<{ locale: Locale }> };
@@ -46,6 +47,10 @@ export default async function SmsConsentPage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+
+            <div className="container mx-auto px-5 pt-6 md:px-8 lg:px-20">
+                <SmsOptInCallout locale={locale} variant="page" />
+            </div>
 
             <LegalPageLayout
                 locale={locale}

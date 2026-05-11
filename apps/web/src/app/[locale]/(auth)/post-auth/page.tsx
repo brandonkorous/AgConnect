@@ -23,12 +23,14 @@ export default async function PostAuthPage({ params }: Props) {
       redirect(`/${locale}/employer/dashboard`);
     case 'admin':
     case 'training_org':
-      redirect(`/${locale}/admin/audit`);
+      // Admin lives on its own subdomain backed by a separate Clerk instance.
+      // A web-Clerk session shouldn't carry these roles in practice; if it
+      // does (legacy data), drop them onto the worker dashboard rather than
+      // a removed /admin route.
+      redirect(`/${locale}/worker/dashboard`);
     case 'worker':
       redirect(`/${locale}/worker/dashboard`);
     default:
-      // API didn't return a role — provisioning hasn't completed. Worker
-      // dashboard itself redirects unknown users to /onboarding.
       redirect(`/${locale}/worker/dashboard`);
   }
 }

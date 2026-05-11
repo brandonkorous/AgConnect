@@ -13,6 +13,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import { MarketingPageHero } from '@/components/marketing/MarketingPageHero';
+import { SmsOptInCallout } from '@/components/landing/SmsOptInCallout';
 
 type Locale = 'en' | 'es';
 type RouteProps = { params: Promise<{ locale: Locale }> };
@@ -64,6 +65,12 @@ export default async function WorkersPage({ params }: RouteProps) {
                     </div>
                 }
             />
+
+            <section className="bg-base-200 w-full border-secondary/15 border-t">
+                <div className="container mx-auto px-5 py-12 md:px-8 md:py-16 lg:px-20">
+                    <SmsOptInCallout locale={locale} variant="hero" />
+                </div>
+            </section>
 
             <section className="bg-base-200 w-full border-secondary/15 border-t">
                 <div className="container mx-auto flex flex-col gap-12 px-5 py-20 md:px-8 md:py-24 lg:px-20 lg:py-28">

@@ -111,6 +111,24 @@ export const smsTemplates = {
     es: '{employer}: {body} (Responde STOP para cancelar.)',
     vars: ['employer', 'body'] as const,
   }),
+  // Inbound opt-in flow (mobile-originated double opt-in). See
+  // services/api/src/webhooks/twilio.ts for the state machine, and the
+  // Twilio A2P 10DLC campaign description for compliance context.
+  'sms.optin.confirm': def({
+    en: 'AgConn: Reply YES to receive bilingual job alerts, training reminders, and hiring updates in CA Central Valley. Msg freq varies (typ. 1-15/mo). Msg & data rates may apply. Reply STOP to cancel, HELP for help. Terms: agconn.com/sms-consent',
+    es: 'AgConn: Responde SI para recibir avisos de trabajo, recordatorios de capacitación y actualizaciones de contratación en el Valle Central. Frec. variable (típ. 1-15/mes). Pueden aplicar tarifas. Responde STOP para cancelar, HELP para ayuda. Términos: agconn.com/sms-consent',
+    vars: [] as const,
+  }),
+  'sms.optin.welcome': def({
+    en: "Welcome to AgConn! You'll receive job matches in your area. Reply your county to start: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare. Or visit agconn.com.",
+    es: '¡Bienvenido a AgConn! Recibirás trabajos en tu zona. Responde tu condado para empezar: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare. O visita agconn.com.',
+    vars: [] as const,
+  }),
+  'sms.optin.invalid': def({
+    en: 'AgConn: We need a YES to start sending you jobs. Reply YES to confirm, or STOP to cancel.',
+    es: 'AgConn: Necesitamos un SI para empezar a enviarte trabajos. Responde SI para confirmar o STOP para cancelar.',
+    vars: [] as const,
+  }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;

@@ -2,6 +2,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { FooterNewsletter } from './FooterNewsletter';
 import { FooterLegal } from './FooterLegal';
+import { SmsOptInCallout } from './SmsOptInCallout';
 
 const counties = ['fresno', 'tulare', 'kern', 'kings', 'madera'] as const;
 
@@ -64,6 +65,7 @@ export function MarketingFooter() {
 
     return (
         <footer className="bg-neutral text-neutral-content w-full">
+            <SmsOptInCallout locale={locale as 'en' | 'es'} variant="footer" />
             <div className="mx-auto flex flex-col gap-16 px-5 pt-20 pb-10 md:px-8 lg:px-20">
                 <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))] lg:gap-16">
                     <div className="col-span-2 flex flex-col gap-6 md:col-span-3 lg:col-span-1">
