@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     outputFileTracingRoot: process.env.NEXT_OUTPUT_FILE_TRACING_ROOT,
     // Workspace packages export TypeScript source via the "source" condition.
     // SWC transpiles them so no pre-build step is required during next build.
-    transpilePackages: ['@agconn/api-client', '@agconn/schemas', '@agconn/ui'],
+    transpilePackages: ['@agconn/api-client', '@agconn/auth', '@agconn/schemas', '@agconn/sms', '@agconn/ui'],
     webpack(config) {
         // Prepend the custom "source" condition so webpack picks up the TypeScript
         // source entry from workspace package exports before the "import" condition
