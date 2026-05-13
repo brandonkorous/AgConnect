@@ -137,9 +137,27 @@ export function makeRlsClient(prisma: PrismaClient): PrismaClient {
   return new Proxy({} as PrismaClient, handler);
 }
 
-// Pre-built RLS-aware proxies, one per pool. Routes import the one that matches
-// their domain (e.g. `dbClients.worker`, `dbClients.employer`, …) and pass it
-// through the auth middleware factory.
-export const dbClients: Record<PoolName, PrismaClient> = Object.fromEntries(
-  (Object.keys(pools) as PoolName[]).map((name) => [name, makeRlsClient(pools[name])]),
-) as Record<PoolName, PrismaClient>;
+// RLS-aware proxies, one per pool. Routes import the one that matches their
+// domain (e.g. `dbClients.worker`, `dbClients.employer`, …) and pass it through
+// the auth middleware factory.
+//
+// Lazy via Proxy so module load does not eagerly construct every pool (which
+// would require DATABASE_URL at `next build` time).
+const rlsClientCache: Partial<Record<PoolName, PrismaClient>> = {};
+export const dbClients: Record<PoolName, PrismaClient> = new Proxy(
+  {} as Record<PoolName, PrismaClient>,
+  {
+    get(_target, prop) {
+      if (typeof prop !== 'string') return undefined;
+      const name = prop as PoolName;
+      let client = rlsClientCache[name];
+      if (!client) {
+        const base = pools[name];
+        if (!base) return undefined;
+        client = makeRlsClient(base);
+        rlsClientCache[name] = client;
+      }
+      return client;
+    },
+  },
+);

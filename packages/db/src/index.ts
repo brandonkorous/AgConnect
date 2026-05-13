@@ -9,7 +9,15 @@ import { pools } from './pools.js';
 //
 // Domain code should import a domain pool (e.g. `dbClients.worker`) instead
 // of `prisma`. Reach for `prisma` only when the work is genuinely cross-cutting.
-export const prisma: PrismaClient = pools.shared;
+//
+// Proxy defers the underlying `pools.shared` access (and the pool's
+// DATABASE_URL-dependent construction) until the first property read, so
+// `next build` page-data collection does not trip the env guard.
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+    get(_target, prop, receiver) {
+        return Reflect.get(pools.shared as object, prop, receiver);
+    },
+});
 
 export type { Prisma } from '@prisma/client';
 // Re-export the Prisma namespace value too so callers can use `Prisma.sql` /

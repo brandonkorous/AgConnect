@@ -45,7 +45,7 @@ const POOL_SIZES: Record<PoolName, number> = {
 };
 
 const globalForPools = globalThis as unknown as {
-  agconnPools?: Record<PoolName, PrismaClient>;
+  agconnPools?: Partial<Record<PoolName, PrismaClient>>;
 };
 
 function createClient(name: PoolName, max: number): PrismaClient {
@@ -64,15 +64,25 @@ function createClient(name: PoolName, max: number): PrismaClient {
   });
 }
 
-function buildPools(): Record<PoolName, PrismaClient> {
-  return Object.fromEntries(
-    (Object.keys(POOL_SIZES) as PoolName[]).map((name) => [name, createClient(name, POOL_SIZES[name])]),
-  ) as Record<PoolName, PrismaClient>;
+// Lazy per-pool instantiation. Building a client requires DATABASE_URL, which
+// is not present during `next build` page-data collection. Deferring to first
+// access lets module load remain side-effect-free.
+function getPool(name: PoolName): PrismaClient {
+  const store = (globalForPools.agconnPools ??= {});
+  let client = store[name];
+  if (!client) {
+    client = createClient(name, POOL_SIZES[name]);
+    store[name] = client;
+  }
+  return client;
 }
 
-export const pools: Record<PoolName, PrismaClient> =
-  globalForPools.agconnPools ?? buildPools();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPools.agconnPools = pools;
-}
+export const pools: Record<PoolName, PrismaClient> = new Proxy(
+  {} as Record<PoolName, PrismaClient>,
+  {
+    get(_target, prop) {
+      if (typeof prop !== 'string' || !(prop in POOL_SIZES)) return undefined;
+      return getPool(prop as PoolName);
+    },
+  },
+);
