@@ -141,7 +141,7 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
                     <div className="bg-base-100 mx-auto w-full max-w-md rounded-t-3xl pb-[env(safe-area-inset-bottom)] shadow-2xl sm:rounded-3xl">
                         <div className="border-base-300 flex items-start justify-between gap-3 border-b px-5 py-4">
                             <div className="min-w-0 flex-1">
-                                <p className="text-base-content/55 mb-0.5 font-mono text-[11px] uppercase tracking-wide">
+                                <p className="text-base-content/55 mb-0.5 font-mono text-xs uppercase tracking-wide">
                                     {t('confirm_eyebrow')}
                                 </p>
                                 <h2

@@ -76,7 +76,7 @@ export default async function CompliancePage({ params }: Props) {
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 text-[11px] font-semibold uppercase tracking-[0.18em]">
+                    <p className="text-base-content/60 text-xs font-semibold uppercase tracking-[0.18em]">
                         {t('title')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-semibold leading-tight tracking-tight tabular-nums slashed-zero md:text-5xl">
@@ -107,7 +107,7 @@ export default async function CompliancePage({ params }: Props) {
                     <div className="card-body items-center text-center">
                         <ScoreDonut percent={overall} size="lg" label={t('overall_label')} />
                         <div className="text-base-content/70 mt-3 text-xs">{subtitle}</div>
-                        <div className="text-base-content/55 mt-1 text-[11px]">{inspectionLine}</div>
+                        <div className="text-base-content/55 mt-1 text-xs">{inspectionLine}</div>
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@ export default async function CompliancePage({ params }: Props) {
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="text-base-content/60 text-[11px]">{it.details}</div>
+                                                <div className="text-base-content/60 text-xs">{it.details}</div>
                                             </div>
                                             {it.id && (
                                                 <EditComplianceItemButton

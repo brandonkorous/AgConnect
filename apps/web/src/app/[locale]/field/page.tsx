@@ -45,7 +45,7 @@ export default async function FieldTodayPage({ params }: Props) {
     if (!todayShift) {
         return (
             <div className="space-y-4">
-                <h2 className="text-base-content/55 px-1 font-mono text-[11px] uppercase tracking-wide">
+                <h2 className="text-base-content/55 px-1 font-mono text-xs uppercase tracking-wide">
                     {t('greeting_today')}
                 </h2>
                 <NoShiftToday locale={locale} upcoming={nextUpcoming} />
@@ -55,7 +55,7 @@ export default async function FieldTodayPage({ params }: Props) {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-base-content/55 px-1 font-mono text-[11px] uppercase tracking-wide">
+            <h2 className="text-base-content/55 px-1 font-mono text-xs uppercase tracking-wide">
                 {t('greeting_today')}
             </h2>
             <ShiftCard row={todayShift} locale={locale} />

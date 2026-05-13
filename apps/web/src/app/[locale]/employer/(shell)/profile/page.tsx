@@ -34,7 +34,7 @@ export default async function EmployerProfilePage({ params }: Props) {
     return (
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-7">
-                <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                     {t('eyebrow')}
                 </p>
                 <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -79,12 +79,12 @@ export default async function EmployerProfilePage({ params }: Props) {
 
                 <aside className="flex flex-col gap-4">
                     <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                        <h2 className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+                        <h2 className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-wider">
                             {t('sidebar.status_label')}
                         </h2>
                         <div
                             className={[
-                                'mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider',
+                                'mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider',
                                 statusTone.bg,
                                 statusTone.fg,
                             ].join(' ')}

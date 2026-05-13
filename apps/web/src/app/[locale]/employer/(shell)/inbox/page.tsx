@@ -101,7 +101,7 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -139,7 +139,7 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
                         <div className="dropdown-content bg-base-100 border-base-300 rounded-box z-10 mt-2 w-72 border p-4 shadow-md">
                             <form className="flex flex-col gap-3 text-xs" method="get">
                                 <fieldset className="fieldset">
-                                    <legend className="fieldset-legend text-[11px]">{t('filter.search')}</legend>
+                                    <legend className="fieldset-legend text-xs">{t('filter.search')}</legend>
                                     <input
                                         type="search"
                                         name="q"
@@ -149,7 +149,7 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
                                     />
                                 </fieldset>
                                 <fieldset className="fieldset">
-                                    <legend className="fieldset-legend text-[11px]">{t('filter.job')}</legend>
+                                    <legend className="fieldset-legend text-xs">{t('filter.job')}</legend>
                                     <select name="job" defaultValue={jobFilter} className="select select-sm select-bordered w-full">
                                         <option value="">{t('filter.all_jobs')}</option>
                                         {jobs.map((j) => (
@@ -160,7 +160,7 @@ export default async function CandidatesPage({ params, searchParams }: Props) {
                                     </select>
                                 </fieldset>
                                 <fieldset className="fieldset">
-                                    <legend className="fieldset-legend text-[11px]">{t('filter.county')}</legend>
+                                    <legend className="fieldset-legend text-xs">{t('filter.county')}</legend>
                                     <select name="county" defaultValue={countyFilter} className="select select-sm select-bordered w-full">
                                         <option value="">{t('filter.all_counties')}</option>
                                         {counties.map((c) => (
@@ -309,7 +309,7 @@ function Row({
         >
             <RowCheckbox />
             <div className="flex items-center gap-2.5 min-w-0">
-                <div className="bg-base-content text-base-100 grid h-8 w-8 shrink-0 place-items-center rounded-full font-mono text-[11px] font-bold">
+                <div className="bg-base-content text-base-100 grid h-8 w-8 shrink-0 place-items-center rounded-full font-mono text-xs font-bold">
                     {(a.worker.firstName[0] ?? '').toUpperCase()}
                     {a.worker.lastInitial.toUpperCase()}
                 </div>
@@ -317,7 +317,7 @@ function Row({
                     <div className="truncate font-semibold">
                         {a.worker.firstName} {a.worker.lastInitial}.
                     </div>
-                    <div className="text-base-content/60 truncate text-[11px]">
+                    <div className="text-base-content/60 truncate text-xs">
                         {a.worker.county ?? '—'}
                     </div>
                 </div>
@@ -326,7 +326,7 @@ function Row({
                 <div className="truncate font-medium">
                     {locale === 'es' ? a.job.titleEs : a.job.titleEn}
                 </div>
-                <div className="text-base-content/60 truncate text-[11px]">
+                <div className="text-base-content/60 truncate text-xs">
                     {a.worker.skills.slice(0, 2).join(' · ')}
                 </div>
             </div>
@@ -362,7 +362,7 @@ function Row({
                     {tStatus(a.status === 'withdrawn' ? 'rejected' : a.status)}
                 </span>
             </div>
-            <div className="text-base-content/60 text-[11px]">{relTime(a.appliedAt, locale)}</div>
+            <div className="text-base-content/60 text-xs">{relTime(a.appliedAt, locale)}</div>
             <CandidateRowActions
                 applicationId={a.id}
                 messageLabel={t('action.message')}

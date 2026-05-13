@@ -10,7 +10,7 @@ type Props = {
 const SIZE: Record<Size, { outer: number; inner: number; text: string; sub: string }> = {
     sm: { outer: 80, inner: 64, text: 'text-2xl', sub: 'text-[9px]' },
     md: { outer: 120, inner: 100, text: 'text-4xl', sub: 'text-[10px]' },
-    lg: { outer: 150, inner: 124, text: 'text-5xl', sub: 'text-[11px]' },
+    lg: { outer: 150, inner: 124, text: 'text-5xl', sub: 'text-xs' },
 };
 
 export function ScoreDonut({ percent, size = 'md', label, className }: Props) {

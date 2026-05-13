@@ -32,7 +32,7 @@ export async function PaycheckCard({ locale }: Props) {
                     }}
                 />
                 <div className="relative">
-                    <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] opacity-80">
+                    <div className="font-mono text-xs font-semibold uppercase tracking-[0.18em] opacity-80">
                         {t('empty_eyebrow')}
                     </div>
                     <p className="font-serif mt-2 text-xl font-medium leading-snug tracking-tight">
@@ -66,7 +66,7 @@ export async function PaycheckCard({ locale }: Props) {
                 }}
             />
             <div className="relative">
-                <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] opacity-80">
+                <div className="font-mono text-xs font-semibold uppercase tracking-[0.18em] opacity-80">
                     {t('eyebrow')}
                 </div>
                 <div className="mt-2.5 flex items-end justify-between gap-3">
@@ -75,7 +75,7 @@ export async function PaycheckCard({ locale }: Props) {
                         <span className="text-lg opacity-70">{decPart}</span>
                     </div>
                     <div className="text-right">
-                        <div className="text-[11px] capitalize opacity-75">{weekday}</div>
+                        <div className="text-xs capitalize opacity-75">{weekday}</div>
                         <div className="font-mono text-sm font-bold">{date}</div>
                     </div>
                 </div>

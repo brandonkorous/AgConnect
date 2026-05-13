@@ -111,7 +111,7 @@ export function FormErrorSummary({ requiredMessage, children }: Props) {
 export function FieldError({ message }: { message?: string }) {
     if (!message) return null;
     return (
-        <p role="alert" className="label text-error text-[11px]">
+        <p role="alert" className="label text-error text-xs">
             {message}
         </p>
     );

@@ -29,7 +29,7 @@ export function WeekScheduleTable({
             <table className="table table-zebra table-pin-cols table-sm w-full">
                 <thead>
                     <tr>
-                        <th className="bg-base-200 text-base-content/60 font-mono text-[11px] font-bold uppercase tracking-wider">
+                        <th className="bg-base-200 text-base-content/60 font-mono text-xs font-bold uppercase tracking-wider">
                             {t('header_label')}
                         </th>
                         {days.map((d, i) => (
@@ -60,11 +60,11 @@ export function WeekScheduleTable({
                                     className="hover:bg-base-200/40 group block w-full text-left"
                                 >
                                     <div className="text-sm font-semibold leading-tight">{cr.name}</div>
-                                    <div className="text-base-content/60 mt-1 text-[11px] font-normal">
+                                    <div className="text-base-content/60 mt-1 text-xs font-normal">
                                         {cr.foremanName ?? t('no_foreman')} · {cr.memberCount} {t('crew_size_short')}
                                     </div>
                                     {cr.jobTitle && (
-                                        <div className="text-base-content/50 mt-0.5 text-[11px] font-normal">{cr.jobTitle}</div>
+                                        <div className="text-base-content/50 mt-0.5 text-xs font-normal">{cr.jobTitle}</div>
                                     )}
                                 </CrewEditTrigger>
                             </th>
@@ -91,7 +91,7 @@ export function WeekScheduleTable({
                                                     `/${locale}/employer/crews/new-shift?crewId=${cr.id}&date=${dateStr}` as Route
                                                 }
                                                 aria-label={t('cell_new_aria', { date: dateStr })}
-                                                className="border-base-300 hover:border-base-content/40 hover:bg-base-200 text-base-content/40 hover:text-base-content/70 grid h-full min-h-[60px] place-items-center rounded-lg border border-dashed text-[11px] transition"
+                                                className="border-base-300 hover:border-base-content/40 hover:bg-base-200 text-base-content/40 hover:text-base-content/70 grid h-full min-h-[60px] place-items-center rounded-lg border border-dashed text-xs transition"
                                             >
                                                 {t('cell_off')}
                                             </Link>
@@ -127,7 +127,7 @@ function ShiftCell({ shift, t }: { shift: ShiftView; t: T }) {
             ].join(' ')}
         >
             <div className="flex items-baseline justify-between gap-1">
-                <div className={`text-[11px] font-bold tabular-nums ${tone.time}`}>
+                <div className={`text-xs font-bold tabular-nums ${tone.time}`}>
                     {shift.startTime}
                     {shift.endTime ? `–${shift.endTime}` : ''}
                 </div>
@@ -137,7 +137,7 @@ function ShiftCell({ shift, t }: { shift: ShiftView; t: T }) {
                     </span>
                 )}
             </div>
-            <div className="mt-0.5 truncate text-[11px]">{shift.locationLabel}</div>
+            <div className="mt-0.5 truncate text-xs">{shift.locationLabel}</div>
             <div className="mt-1.5 flex items-start gap-1 font-mono text-[10px] leading-tight tabular-nums">
                 <FontAwesomeIcon icon={faUsers} className="mt-0.5 h-2.5 w-2.5 shrink-0" />
                 <span className="min-w-0 break-words">

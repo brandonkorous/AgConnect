@@ -78,7 +78,7 @@ export function AccountChip({ locale, labels }: Props) {
                     className="bg-base-100 border-base-300 absolute right-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-2xl border shadow-lg"
                 >
                     <div className="border-base-300 border-b px-4 py-3">
-                        <div className="text-base-content/60 text-[11px] font-medium uppercase tracking-wider">
+                        <div className="text-base-content/60 text-xs font-medium uppercase tracking-wider">
                             {labels.signedInAs}
                         </div>
                         <div className="text-base-content mt-1 truncate text-sm font-semibold">

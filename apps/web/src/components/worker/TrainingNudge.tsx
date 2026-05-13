@@ -30,7 +30,7 @@ export async function TrainingNudge({ locale }: Props) {
             <section className="bg-base-100 border-base-300 rounded-2xl border p-4">
                 <div className="mb-3 flex items-center gap-2.5">
                     <FontAwesomeIcon icon={faGraduationCap} className="text-primary h-4 w-4" />
-                    <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+                    <span className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-base-content/60">
                         {t('eyebrow')}
                     </span>
                 </div>
@@ -57,7 +57,7 @@ export async function TrainingNudge({ locale }: Props) {
         <section className="bg-base-100 border-base-300 rounded-2xl border p-4">
             <div className="mb-3 flex items-center gap-2.5">
                 <FontAwesomeIcon icon={faGraduationCap} className="text-primary h-4 w-4" />
-                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+                <span className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-base-content/60">
                     {t('eyebrow')}
                 </span>
             </div>

@@ -52,7 +52,7 @@ export async function UpNextShift({ locale }: Props) {
                     }}
                 />
                 <div className="relative">
-                    <div className="text-accent font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+                    <div className="text-accent font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                         {t('empty_eyebrow')}
                     </div>
                     <h2 className="font-serif mt-2 max-w-xl text-2xl font-medium leading-snug tracking-tight md:text-3xl">
@@ -83,8 +83,8 @@ export async function UpNextShift({ locale }: Props) {
     const eyebrowText = isDeclined
         ? t('declined_eyebrow')
         : isConfirmed
-          ? t('confirmed_eyebrow')
-          : formatShiftEyebrow(next.shift.startTime, locale);
+            ? t('confirmed_eyebrow')
+            : formatShiftEyebrow(next.shift.startTime, locale);
 
     return (
         <section className="bg-neutral text-neutral-content relative mb-7 overflow-hidden rounded-3xl p-6">
@@ -98,7 +98,7 @@ export async function UpNextShift({ locale }: Props) {
             />
             <div className="relative flex flex-wrap items-center justify-between gap-8">
                 <div className="min-w-0 flex-1">
-                    <div className="text-accent font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+                    <div className="text-accent font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                         {eyebrowText}
                     </div>
                     <h2 className="font-serif mt-2 text-3xl font-medium leading-[1.05] tracking-tight md:text-4xl">

@@ -63,7 +63,7 @@ export function FieldBottomNav({ locale }: Props) {
                                 ].join(' ')}
                             >
                                 <FontAwesomeIcon icon={tab.icon} className="h-5 w-5" />
-                                <span className="text-[11px] leading-none">{t(tab.key)}</span>
+                                <span className="text-xs leading-none">{t(tab.key)}</span>
                             </Link>
                         </li>
                     );

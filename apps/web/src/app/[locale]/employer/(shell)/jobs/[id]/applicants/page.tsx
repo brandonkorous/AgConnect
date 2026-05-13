@@ -64,7 +64,7 @@ export default async function JobApplicantsPage({ params }: Props) {
                     <FontAwesomeIcon icon={faChevronLeft} className="mr-2 h-3 w-3" />
                     {tForm('back')}
                 </Link>
-                <div className="text-base-content/55 mt-3 font-mono text-[11px] font-bold uppercase tracking-wider">
+                <div className="text-base-content/55 mt-3 font-mono text-xs font-bold uppercase tracking-wider">
                     {eyebrow}
                 </div>
                 <h1 className="font-display mt-1.5 text-4xl font-light leading-tight tracking-tight md:text-5xl">

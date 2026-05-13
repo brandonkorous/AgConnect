@@ -47,7 +47,7 @@ export default async function ReportsPage({ params, searchParams }: Props) {
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow', { year })}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -94,7 +94,7 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                     const displayValue = k.key === 'hires' ? (k.value ?? '0') : isEmpty ? '—' : k.value;
                     return (
                         <div key={k.key} className="stat">
-                            <div className="stat-title text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+                            <div className="stat-title text-base-content/60 font-mono text-xs font-semibold uppercase tracking-wider">
                                 {label}
                             </div>
                             <div className="stat-value text-primary font-display text-4xl font-light tracking-tight tabular-nums slashed-zero">
@@ -211,7 +211,7 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                             <div className="text-base-content/60 w-5 font-mono text-xs font-bold">{p.rank}</div>
                             <div
                                 className={[
-                                    'grid h-8 w-8 place-items-center rounded-full font-mono text-[11px] font-bold',
+                                    'grid h-8 w-8 place-items-center rounded-full font-mono text-xs font-bold',
                                     p.rank === 1 ? 'bg-accent text-accent-content' : 'bg-base-content text-base-100',
                                 ].join(' ')}
                             >
@@ -219,11 +219,11 @@ export default async function ReportsPage({ params, searchParams }: Props) {
                             </div>
                             <div className="flex-1">
                                 <div className="text-sm font-semibold">{p.name}</div>
-                                <div className="text-base-content/60 text-[11px]">{p.role}</div>
+                                <div className="text-base-content/60 text-xs">{p.role}</div>
                             </div>
                             <div className="text-right">
                                 <div className="font-mono text-xs font-bold">{p.metric}</div>
-                                <div className="text-primary text-[11px] font-bold">{p.delta}</div>
+                                <div className="text-primary text-xs font-bold">{p.delta}</div>
                             </div>
                         </div>
                     ))}

@@ -24,12 +24,12 @@ export function CrewLeaderCard({
                 </div>
                 <div className="min-w-0 flex-1">
                     <div className="text-sm font-semibold">{cr.foremanName ?? t('hiring_foreman')}</div>
-                    <div className="text-base-content/60 text-[11px]">
+                    <div className="text-base-content/60 text-xs">
                         {cr.name.split('·')[0]?.trim() ?? cr.name}
                     </div>
                 </div>
             </div>
-            <div className="border-base-300 mt-3 grid grid-cols-2 gap-2 border-t border-dashed pt-3 text-[11px]">
+            <div className="border-base-300 mt-3 grid grid-cols-2 gap-2 border-t border-dashed pt-3 text-xs">
                 <div>
                     <div className="text-base-content/60">{t('size')}</div>
                     <div className="font-mono text-sm font-bold">{cr.memberCount}</div>

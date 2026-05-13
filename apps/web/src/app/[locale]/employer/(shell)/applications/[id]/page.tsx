@@ -44,7 +44,7 @@ export default async function ApplicantDetailPage({ params }: Props) {
                 </div>
 
                 <div className="mt-6">
-                    <h2 className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <h2 className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('skills')} ({t('skills_match', { count: app.worker.skillsMatchCount })})
                     </h2>
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export default async function ApplicantDetailPage({ params }: Props) {
 
                 {app.worker.certifications.length > 0 && (
                     <div className="mt-6">
-                        <h2 className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                        <h2 className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                             {t('certifications')}
                         </h2>
                         <div className="mt-2 flex flex-wrap gap-2">

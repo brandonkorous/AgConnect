@@ -58,10 +58,10 @@ export default async function MessagesPage({ params, searchParams }: Props) {
     const unread = counts.all > 0 ? threads.reduce((sum, t) => sum + t.unread, 0) : 0;
 
     return (
-        <div className=" px-5 pb-16 pt-8">
-            <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+        <div className="px-5 pb-16 pt-8 flex flex-col flex-1 min-h-0">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-4 flex-none">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -83,7 +83,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
                 </div>
             </div>
 
-            <div className="bg-base-100 border-base-300 grid h-[720px] grid-cols-[220px_340px_1fr] overflow-hidden rounded-2xl border">
+            <div className="bg-base-100 border-base-300 flex flex-1 min-h-0 overflow-hidden rounded-2xl border">
                 <FoldersColumn
                     locale={locale}
                     folder={folder}
@@ -130,8 +130,8 @@ function FoldersColumn({
         ];
 
     return (
-        <div className="bg-base-200 border-base-300 border-r p-3">
-            <ul className="menu menu-sm w-full p-0">
+        <div className="bg-base-200 border-base-300 border-r p-3 grow-0">
+            <ul className="menu w-full p-0">
                 {folders.map((f) => {
                     const active = f.key === folder;
                     const count = counts[f.key];
@@ -186,7 +186,7 @@ function ThreadList({
     t: Awaited<ReturnType<typeof getTranslations>>;
 }) {
     return (
-        <div className="border-base-300 overflow-y-auto border-r">
+        <div className="border-base-300 overflow-y-auto border-r grow-1">
             <div className="border-base-300 border-b p-3">
                 <div className="bg-base-200 text-base-content/60 flex items-center gap-2 rounded-full px-3 py-2 text-xs">
                     <FontAwesomeIcon icon={faMagnifyingGlass} className="h-3 w-3" />
@@ -212,7 +212,7 @@ function ThreadList({
                     >
                         <div
                             className={[
-                                'grid h-9 w-9 shrink-0 place-items-center rounded-full font-mono text-[11px] font-bold',
+                                'grid h-9 w-9 shrink-0 place-items-center rounded-full font-mono text-xs font-bold',
                                 th.group ? 'bg-accent text-accent-content' : 'bg-base-content text-base-100',
                             ].join(' ')}
                         >
@@ -232,7 +232,7 @@ function ThreadList({
                                     {th.whenLabel}
                                 </span>
                             </div>
-                            <div className="text-base-content/60 truncate text-[11px]">{th.preview}</div>
+                            <div className="text-base-content/60 truncate text-xs">{th.preview}</div>
                             <div className="mt-1.5 flex items-center gap-1.5">
                                 <span
                                     className={[
@@ -267,7 +267,7 @@ function Conversation({
 }) {
     if (!thread) {
         return (
-            <div className="grid place-items-center p-6">
+            <div className="grid place-items-center p-6 grow-8">
                 <div className="w-full max-w-md rounded-2xl border-2 border-dashed border-base-300 bg-base-100 p-8 text-center">
                     <FontAwesomeIcon
                         icon={faComments}
@@ -287,14 +287,14 @@ function Conversation({
     const initialChannel: 'app' | 'sms' | 'whatsapp' =
         thread.channel === 'broadcast' ? 'app' : thread.channel;
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col grow-8">
             <div className="border-base-300 flex items-center gap-3 border-b px-5 py-3.5">
-                <div className="bg-accent text-accent-content grid h-9 w-9 place-items-center rounded-full font-mono text-[11px] font-bold">
+                <div className="bg-accent text-accent-content grid h-9 w-9 place-items-center rounded-full font-mono text-xs font-bold">
                     {thread.initials}
                 </div>
                 <div className="flex-1">
                     <div className="text-sm font-semibold">{thread.name}</div>
-                    <div className="text-base-content/60 text-[11px]">
+                    <div className="text-base-content/60 text-xs">
                         {thread.group
                             ? t('thread_meta_group', { members: thread.participantCount })
                             : t('thread_meta_dm', { channel: t(`channel.${thread.channel}`) })}
@@ -367,10 +367,10 @@ function Conversation({
                                         : ` · ${t('sent_indicator')}`)}
                                 {m.broadcastDelivery
                                     ? ` · ${t('broadcast_delivery_summary', {
-                                          queued: m.broadcastDelivery.queued,
-                                          optedOut: m.broadcastDelivery.optedOut,
-                                          noPhone: m.broadcastDelivery.noPhone,
-                                      })}`
+                                        queued: m.broadcastDelivery.queued,
+                                        optedOut: m.broadcastDelivery.optedOut,
+                                        noPhone: m.broadcastDelivery.noPhone,
+                                    })}`
                                     : ''}
                             </div>
                         </div>

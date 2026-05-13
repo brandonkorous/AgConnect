@@ -96,7 +96,7 @@ export function JobCard({ job, locale, startsLabel, durationLabel, strings }: Pr
                             {strings.starts}
                         </div>
                         <div className="mt-0.5 text-sm font-semibold">{startsLabel}</div>
-                        <div className="text-base-content/60 text-[11px]">{durationLabel}</div>
+                        <div className="text-base-content/60 text-xs">{durationLabel}</div>
                     </div>
                     <div>
                         <div className="text-base-content/60 font-mono text-[10px] font-bold uppercase tracking-wider">

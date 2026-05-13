@@ -72,7 +72,7 @@ export default async function EmployerHelpPage({ params }: Props) {
     return (
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-7 max-w-3xl">
-                <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                     {t('eyebrow')}
                 </p>
                 <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -84,7 +84,7 @@ export default async function EmployerHelpPage({ params }: Props) {
             <section aria-labelledby="topics-heading" className="mb-8">
                 <h2
                     id="topics-heading"
-                    className="text-base-content/60 mb-4 font-mono text-[11px] font-semibold uppercase tracking-wider"
+                    className="text-base-content/60 mb-4 font-mono text-xs font-semibold uppercase tracking-wider"
                 >
                     {t('topics_heading')}
                 </h2>
@@ -114,7 +114,7 @@ export default async function EmployerHelpPage({ params }: Props) {
                         {t('contact_title')}
                     </h2>
                     <p className="text-base-content/70 mt-2 text-sm">{t('contact_body')}</p>
-                    <p className="text-base-content/55 mt-2 font-mono text-[11px]">{t('contact_hours')}</p>
+                    <p className="text-base-content/55 mt-2 font-mono text-xs">{t('contact_hours')}</p>
                 </div>
                 <div className="flex flex-col gap-2">
                     <a

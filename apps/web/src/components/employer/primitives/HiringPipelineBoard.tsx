@@ -47,7 +47,7 @@ export function HiringPipelineBoard({ lanes, moreLabel, onSelect }: Props) {
                             {lane.swatch && (
                                 <span className={['h-2 w-2 rounded-sm', lane.swatch].join(' ')} />
                             )}
-                            <span className="text-base-content/70 font-mono text-[11px] font-bold uppercase tracking-wider">
+                            <span className="text-base-content/70 font-mono text-xs font-bold uppercase tracking-wider">
                                 {lane.label}
                             </span>
                         </div>
@@ -57,7 +57,7 @@ export function HiringPipelineBoard({ lanes, moreLabel, onSelect }: Props) {
                     </div>
                     <div className="card-body gap-2">
                         {lane.items.length === 0 && (
-                            <div className="text-base-content/50 px-1 py-2 text-center text-[11px]">
+                            <div className="text-base-content/50 px-1 py-2 text-center text-xs">
                                 {lane.emptyCopy}
                             </div>
                         )}
@@ -69,7 +69,7 @@ export function HiringPipelineBoard({ lanes, moreLabel, onSelect }: Props) {
                             />
                         ))}
                         {lane.items.length > 3 && (
-                            <div className="text-base-content/60 px-1 py-1 text-center font-mono text-[11px]">
+                            <div className="text-base-content/60 px-1 py-1 text-center font-mono text-xs">
                                 + {lane.items.length - 3} {moreLabel ?? 'more'}
                             </div>
                         )}
@@ -106,7 +106,7 @@ function PipelineCard({
                         {applicant.firstName} {applicant.lastInitial}.
                     </div>
                     {applicant.jobTitle && (
-                        <div className="text-base-content/60 truncate text-[11px]">
+                        <div className="text-base-content/60 truncate text-xs">
                             {applicant.jobTitle}
                         </div>
                     )}

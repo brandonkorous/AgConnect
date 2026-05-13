@@ -44,7 +44,7 @@ export default async function PayrollPage({ params }: Props) {
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow', {
                             start: shortDate(period.startDate, locale),
                             end: shortDate(period.endDate, locale),
@@ -72,7 +72,7 @@ export default async function PayrollPage({ params }: Props) {
 
             <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
                 <DarkHeroCard glow="gold">
-                    <div className="text-accent font-mono text-[11px] uppercase tracking-wider">
+                    <div className="text-accent font-mono text-xs uppercase tracking-wider">
                         {t('hero_eyebrow')}
                     </div>
                     <div className="font-display mt-3 text-6xl font-light leading-none tracking-tight tabular-nums slashed-zero">
@@ -98,7 +98,7 @@ export default async function PayrollPage({ params }: Props) {
                 </DarkHeroCard>
                 <div className="grid grid-rows-2 gap-4">
                     <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-                        <div className="text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-wider">
+                        <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-wider">
                             {t('season_to_date')}
                         </div>
                         <div className="text-primary font-display mt-2 text-3xl font-light tracking-tight">
@@ -134,7 +134,7 @@ export default async function PayrollPage({ params }: Props) {
                     </div>
                     {h2a?.participatesInH2a ? (
                         <div className="bg-accent text-accent-content rounded-2xl p-5">
-                            <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
+                            <div className="font-mono text-xs font-bold uppercase tracking-wider">
                                 {t('h2a_eyebrow')}
                                 {!hasLines && (
                                     <span className="ml-2 font-normal opacity-80">{t('h2a_no_data')}</span>
@@ -143,17 +143,17 @@ export default async function PayrollPage({ params }: Props) {
                             <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">
                                 {h2a.aewrHourlyCents != null
                                     ? t('h2a_headline_dynamic', {
-                                          rate: fmtCents(h2a.aewrHourlyCents),
-                                          state: h2a.stateCode,
-                                      })
+                                        rate: fmtCents(h2a.aewrHourlyCents),
+                                        state: h2a.stateCode,
+                                    })
                                     : t('h2a_headline_no_rate')}
                             </h2>
                             <div className="mt-2 text-xs opacity-90">
                                 {hasLines
                                     ? t('h2a_sub_dynamic', {
-                                          workers: h2aLineCount,
-                                          topUp: fmtCents(h2aTopUpCents),
-                                      })
+                                        workers: h2aLineCount,
+                                        topUp: fmtCents(h2aTopUpCents),
+                                    })
                                     : t('h2a_sub_idle')}
                             </div>
                             {h2a.effectiveFrom ? (
@@ -164,7 +164,7 @@ export default async function PayrollPage({ params }: Props) {
                         </div>
                     ) : (
                         <div className="bg-base-100 border-base-300 text-base-content/70 rounded-2xl border p-5">
-                            <div className="font-mono text-[11px] font-bold uppercase tracking-wider">
+                            <div className="font-mono text-xs font-bold uppercase tracking-wider">
                                 {t('h2a_eyebrow_off')}
                             </div>
                             <h2 className="font-display mt-2 text-xl font-light leading-tight tracking-tight">

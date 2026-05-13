@@ -72,7 +72,7 @@ export function JobFormHeader({
                     <div className="mb-1.5 flex flex-wrap items-center gap-2">
                         <StatusBadge status={badge.tone} label={badge.label} />
                         {humanId && mode === 'edit' && (
-                            <span className="text-base-content/55 font-mono text-[11px] uppercase tracking-wider">
+                            <span className="text-base-content/55 font-mono text-xs uppercase tracking-wider">
                                 #{humanId}
                             </span>
                         )}
@@ -83,7 +83,7 @@ export function JobFormHeader({
                     </h1>
                     {mode === 'edit' && isLive && (
                         <div className="text-base-content/65 mt-2 flex flex-wrap items-center gap-2 text-sm">
-                            <span className="bg-base-200 text-base-content/70 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider">
+                            <span className="bg-base-200 text-base-content/70 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider">
                                 <span className="bg-success h-1.5 w-1.5 rounded-full" aria-hidden />
                                 {t('spots_open', { n: spotsOpen })}
                             </span>

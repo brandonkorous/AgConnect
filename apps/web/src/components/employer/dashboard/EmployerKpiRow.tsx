@@ -53,7 +53,7 @@ export async function EmployerKpiRow({
         <div className="stats stats-vertical lg:stats-horizontal bg-base-100 border-base-300 mb-6 w-full rounded-2xl border shadow-[var(--shadow-card)]">
             {tiles.map((tile) => (
                 <div key={tile.key} className="stat">
-                    <div className="stat-title text-base-content/60 font-mono text-[11px] font-semibold uppercase tracking-[0.18em]">
+                    <div className="stat-title text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                         {t(`${tile.key}_label`)}
                     </div>
                     <div

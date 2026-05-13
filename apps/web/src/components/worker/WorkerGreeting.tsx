@@ -86,7 +86,7 @@ export function WorkerGreeting({
     return (
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
-                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/60">
+                <span className="font-mono text-xs uppercase tracking-[0.18em] text-base-content/60">
                     {formatContext(locale, county)}
                 </span>
                 <h1 className="font-serif mt-2 text-4xl font-medium leading-[1.05] tracking-tight md:text-5xl">

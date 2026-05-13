@@ -71,7 +71,7 @@ export default async function CrewsPage({ params, searchParams }: Props) {
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow', { date: formatWeekRange(weekStart, locale) })}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -81,11 +81,11 @@ export default async function CrewsPage({ params, searchParams }: Props) {
                         {totals.assigned === 0
                             ? t('summary_unscheduled', { crews: crews.length })
                             : t('summary', {
-                                  crews: crews.length,
-                                  confirmed: totals.confirmed,
-                                  filling: totals.filling,
-                                  hours: totals.hours,
-                              })}
+                                crews: crews.length,
+                                confirmed: totals.confirmed,
+                                filling: totals.filling,
+                                hours: totals.hours,
+                            })}
                     </div>
                 </div>
                 <div className="flex gap-2">

@@ -48,7 +48,7 @@ export function ThreadListItem({ locale, thread }: Props) {
                     </p>
                 </div>
                 {thread.unreadCount > 0 && (
-                    <span className="bg-accent text-accent-content tabular-nums slashed-zero ml-1 mt-1 inline-flex h-5 min-w-[20px] shrink-0 items-center justify-center rounded-full px-1.5 text-[11px] font-bold">
+                    <span className="bg-accent text-accent-content tabular-nums slashed-zero ml-1 mt-1 inline-flex h-5 min-w-[20px] shrink-0 items-center justify-center rounded-full px-1.5 text-xs font-bold">
                         {thread.unreadCount}
                     </span>
                 )}

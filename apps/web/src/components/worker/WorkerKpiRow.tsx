@@ -46,46 +46,46 @@ export async function WorkerKpiRow({ locale }: Props) {
         sub: string;
         accent?: keyof typeof accentClass;
     }> = [
-        {
-            key: 'week_earned',
-            label: t('week_earned.label'),
-            value: summary.nextDeposit
-                ? fmtMoney(summary.nextDeposit.grossCents, locale)
-                : dash,
-            sub: summary.nextDeposit
-                ? t('week_earned.sub')
-                : locale === 'es'
-                  ? 'Aún sin pago'
-                  : 'No pay yet',
-            accent: 'primary',
-        },
-        {
-            key: 'hours_logged',
-            label: t('hours_logged.label'),
-            value: summary.ytdHours > 0 ? summary.ytdHours.toFixed(1) : dash,
-            sub: summary.ytdHours > 0 ? t('hours_logged.sub') : '',
-        },
-        {
-            key: 'active_apps',
-            label: t('active_apps.label'),
-            value: String(activeApps),
-            sub:
-                awaitingReply > 0
-                    ? locale === 'es'
-                        ? `${awaitingReply} esperando respuesta`
-                        : `${awaitingReply} awaiting reply`
-                    : activeApps > 0
-                      ? t('active_apps.sub')
-                      : '',
-        },
-        {
-            key: 'avg_rate',
-            label: t('avg_rate.label'),
-            value: summary.avgHourlyCents > 0 ? fmtRate(summary.avgHourlyCents, locale) : dash,
-            sub: summary.avgHourlyCents > 0 ? t('avg_rate.sub') : '',
-            accent: 'accent',
-        },
-    ];
+            {
+                key: 'week_earned',
+                label: t('week_earned.label'),
+                value: summary.nextDeposit
+                    ? fmtMoney(summary.nextDeposit.grossCents, locale)
+                    : dash,
+                sub: summary.nextDeposit
+                    ? t('week_earned.sub')
+                    : locale === 'es'
+                        ? 'Aún sin pago'
+                        : 'No pay yet',
+                accent: 'primary',
+            },
+            {
+                key: 'hours_logged',
+                label: t('hours_logged.label'),
+                value: summary.ytdHours > 0 ? summary.ytdHours.toFixed(1) : dash,
+                sub: summary.ytdHours > 0 ? t('hours_logged.sub') : '',
+            },
+            {
+                key: 'active_apps',
+                label: t('active_apps.label'),
+                value: String(activeApps),
+                sub:
+                    awaitingReply > 0
+                        ? locale === 'es'
+                            ? `${awaitingReply} esperando respuesta`
+                            : `${awaitingReply} awaiting reply`
+                        : activeApps > 0
+                            ? t('active_apps.sub')
+                            : '',
+            },
+            {
+                key: 'avg_rate',
+                label: t('avg_rate.label'),
+                value: summary.avgHourlyCents > 0 ? fmtRate(summary.avgHourlyCents, locale) : dash,
+                sub: summary.avgHourlyCents > 0 ? t('avg_rate.sub') : '',
+                accent: 'accent',
+            },
+        ];
 
     return (
         <div className="mb-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
@@ -94,7 +94,7 @@ export async function WorkerKpiRow({ locale }: Props) {
                     key={tile.key}
                     className="stat bg-base-100 border-base-300 rounded-2xl border"
                 >
-                    <div className="stat-title font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/60">
+                    <div className="stat-title font-mono text-xs font-semibold uppercase tracking-[0.18em] text-base-content/60">
                         {tile.label}
                     </div>
                     <div

@@ -43,7 +43,7 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
         return (
             <div className=" px-5 pb-16 pt-8">
                 <div className="mb-6">
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -74,7 +74,7 @@ export default async function WorkersSearchPage({ params, searchParams }: Props)
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -187,7 +187,7 @@ function WorkerCard({
                         </div>
                         <MatchScore pct={w.matchScore} t={t} />
                     </div>
-                    <div className="text-base-content/60 mt-0.5 text-[11px]">
+                    <div className="text-base-content/60 mt-0.5 text-xs">
                         {w.county ?? '—'} · {t('exp_years', { n: w.experienceCount })}
                     </div>
                 </div>
@@ -216,7 +216,7 @@ function WorkerCard({
             <div className="mt-4 flex justify-end gap-2">
                 <Link
                     href={`/${locale}/employer/workers/${w.id}`}
-                    className="border-base-300 rounded-full border bg-transparent px-3 py-1.5 text-[11px] font-semibold"
+                    className="border-base-300 rounded-full border bg-transparent px-3 py-1.5 text-xs font-semibold"
                 >
                     {t('view')}
                 </Link>

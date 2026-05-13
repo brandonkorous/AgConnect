@@ -28,7 +28,7 @@ export default async function FieldThreadPage({ params }: Props) {
                 {t('back')}
             </Link>
             <header className="px-1">
-                <p className="text-base-content/55 mb-0.5 font-mono text-[11px] uppercase tracking-wide">
+                <p className="text-base-content/55 mb-0.5 font-mono text-xs uppercase tracking-wide">
                     {t('eyebrow')}
                 </p>
                 <h1 className="text-base-content text-xl font-semibold leading-tight">

@@ -54,7 +54,7 @@ export default async function BillingPage({ params }: Props) {
         <div className=" px-5 pb-16 pt-8">
             <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p className="text-base-content/60 font-mono text-[11px] uppercase tracking-wider">
+                    <p className="text-base-content/60 font-mono text-xs uppercase tracking-wider">
                         {t('eyebrow')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-light leading-tight tracking-tight md:text-5xl">
@@ -73,7 +73,7 @@ export default async function BillingPage({ params }: Props) {
                 <DarkHeroCard glow="gold">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_auto] md:items-end">
                         <div>
-                            <p className="text-accent font-mono text-[11px] uppercase tracking-wider">
+                            <p className="text-accent font-mono text-xs uppercase tracking-wider">
                                 {t('current_plan')}
                             </p>
                             <h2 className="font-display mt-2 text-5xl font-light leading-none tracking-tight">
@@ -85,7 +85,7 @@ export default async function BillingPage({ params }: Props) {
                             </p>
                         </div>
                         {billing && (
-                            <div className="grid grid-cols-3 gap-4 text-[11px]">
+                            <div className="grid grid-cols-3 gap-4 text-xs">
                                 <div>
                                     <div className="text-base-100/60 font-mono uppercase tracking-wider">
                                         {t('feature.active_postings_limit')}
@@ -203,7 +203,7 @@ function PlanTierCard({
                         </span>
                         <span className="text-base-content/60 text-xs">{t('per_month')}</span>
                         {price.yearly !== null && (
-                            <span className="text-base-content/55 ml-auto font-mono text-[11px]">
+                            <span className="text-base-content/55 ml-auto font-mono text-xs">
                                 {t('or_yearly', { price: price.yearly })}
                             </span>
                         )}
