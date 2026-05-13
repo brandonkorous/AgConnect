@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { requireRole, UserRole } from '@agconn/auth';
+import { requireRole, UserRole } from '@/lib/auth/role';
 import { EmployerSidebar } from '@/components/employer/EmployerSidebar';
 import { EmployerTopBar } from '@/components/employer/EmployerTopBar';
 import { EmployerMobileShell } from '@/components/employer/EmployerMobileShell';

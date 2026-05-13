@@ -1,5 +1,25 @@
 import 'server-only';
+import type { UserRole } from '@agconn/auth';
 import { getServerApiClient } from './server-client';
+
+export type MeResponse = {
+  user: { id: string; role: UserRole };
+  tenant: { id: string; slug: string; name: string } | null;
+};
+
+export type FetchMeResult =
+  | { ok: true; data: MeResponse }
+  | { ok: false; code: 'unauthenticated' | 'no_tenant' | 'unknown' };
+
+export async function fetchMe(): Promise<FetchMeResult> {
+  const api = await getServerApiClient();
+  const res = await api.get<MeResponse>('/v1/me', { handleErrorInline: true });
+  if (res.ok) return { ok: true, data: res.data };
+  const code = res.error.code;
+  if (code === 'unauthenticated') return { ok: false, code: 'unauthenticated' };
+  if (code === 'no_tenant') return { ok: false, code: 'no_tenant' };
+  return { ok: false, code: 'unknown' };
+}
 
 export type ShiftRow = {
   id: string;

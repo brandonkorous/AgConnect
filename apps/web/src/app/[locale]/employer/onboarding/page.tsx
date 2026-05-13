@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { requireRole, UserRole } from '@agconn/auth';
+import { requireRole, UserRole } from '@/lib/auth/role';
 import { AccountChip } from '@/components/shell/AccountChip';
 import { OnboardingForm } from '@/components/employer/OnboardingForm';
 import { Wordmark } from '@/components/primitives/Wordmark';

@@ -1,4 +1,4 @@
-import { requireRole, UserRole } from '@agconn/auth';
+import { requireRole, UserRole } from '@/lib/auth/role';
 import { WorkerSidebar, type WorkerNavCounts } from '@/components/worker/WorkerSidebar';
 import { WorkerTopBar } from '@/components/worker/WorkerTopBar';
 import { WorkerMobileShell } from '@/components/worker/WorkerMobileShell';
