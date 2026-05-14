@@ -18,8 +18,10 @@ COPY apps/admin/package.json apps/admin/
 COPY apps/web/package.json apps/web/
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/audit/package.json packages/audit/
+COPY packages/auth/package.json packages/auth/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
+COPY packages/flc-verify/package.json packages/flc-verify/
 COPY packages/llm/package.json packages/llm/
 COPY packages/reporting/package.json packages/reporting/
 COPY packages/schemas/package.json packages/schemas/

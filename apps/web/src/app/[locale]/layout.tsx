@@ -41,7 +41,7 @@ function MaybeClerkProvider({
 faConfig.autoAddCss = false;
 
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'),
     title: 'AgConn',
     description: 'From the field, to your future.',
     manifest: '/manifest.webmanifest',

@@ -21,6 +21,7 @@ COPY apps/web/package.json apps/web/
 # the build stage compiles across workspaces.
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/audit/package.json packages/audit/
+COPY packages/auth/package.json packages/auth/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
 COPY packages/flc-verify/package.json packages/flc-verify/

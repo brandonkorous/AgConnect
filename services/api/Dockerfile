@@ -38,6 +38,7 @@ COPY services/scheduler/package.json       services/scheduler/
 COPY services/sms-worker/package.json      services/sms-worker/
 COPY packages/api-client/package.json      packages/api-client/
 COPY packages/audit/package.json           packages/audit/
+COPY packages/auth/package.json            packages/auth/
 COPY packages/db/package.json              packages/db/
 COPY packages/email/package.json           packages/email/
 COPY packages/flc-verify/package.json      packages/flc-verify/

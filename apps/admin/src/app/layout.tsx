@@ -32,7 +32,7 @@ function MaybeClerkProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_ADMIN_URL ?? 'http://localhost:3100'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_ADMIN_URL?.trim() || 'http://localhost:3100'),
   title: 'AgConn Admin',
   description: 'Internal admin console.',
   robots: { index: false, follow: false },
