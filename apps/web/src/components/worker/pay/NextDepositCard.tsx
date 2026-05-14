@@ -3,18 +3,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import type { PaySummary } from '@/lib/api/me';
 
-type Props = { nextDeposit: PaySummary['nextDeposit'] };
+type Props = { nextDeposit: PaySummary['nextDeposit']; locale: string };
 
-export function NextDepositCard({ nextDeposit }: Props) {
+export function NextDepositCard({ nextDeposit, locale }: Props) {
     const t = useTranslations('worker.pay.deposit');
+    const fmtLocale = locale === 'es' ? 'es-MX' : 'en-US';
     if (!nextDeposit) {
         return (
             <div className="bg-primary text-primary-content relative overflow-hidden rounded-2xl p-[22px]">
                 <div className="font-mono text-xs font-semibold uppercase tracking-[0.18em] opacity-75">
-                    {t('eyebrow')}
+                    {t('eyebrow', { date: '_none' })}
                 </div>
                 <div className="font-serif mt-3 text-[36px] leading-tight tracking-[-0.02em]">
-                    {t('eyebrow').toLowerCase().includes('próximo') || true ? '—' : '—'}
+                    —
                 </div>
                 <p className="mt-2 text-sm opacity-75">
                     {t('gross')}: $0
@@ -22,6 +23,11 @@ export function NextDepositCard({ nextDeposit }: Props) {
             </div>
         );
     }
+    const payDateLabel = new Intl.DateTimeFormat(fmtLocale, {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+    }).format(new Date(nextDeposit.payDate));
     const dollars = (nextDeposit.netCents / 100).toFixed(2);
     const [whole, fraction] = dollars.split('.');
     return (
@@ -36,7 +42,7 @@ export function NextDepositCard({ nextDeposit }: Props) {
             />
             <div className="relative">
                 <div className="font-mono text-xs font-semibold uppercase tracking-[0.18em] opacity-75">
-                    {t('eyebrow')}
+                    {t('eyebrow', { date: payDateLabel })}
                 </div>
                 <div className="font-serif mt-3 text-[56px] leading-none tracking-[-0.03em]">
                     ${whole}

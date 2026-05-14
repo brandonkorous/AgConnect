@@ -95,7 +95,7 @@ export default async function PayPage({ params }: Props) {
 
             <div className="mb-5 grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
                 <EarningsChart paystubs={paystubs} locale={locale} />
-                <NextDepositCard nextDeposit={nextDeposit} />
+                <NextDepositCard nextDeposit={nextDeposit} locale={locale} />
             </div>
 
             <PaystubsTable rows={paystubs} locale={locale} />

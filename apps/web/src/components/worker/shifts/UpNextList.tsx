@@ -27,6 +27,14 @@ const STATUS_KEY: Record<ShiftRow['status'], string> = {
     no_show: 'pending',
 };
 
+function statusTone(status: ShiftRow['status']): 'success' | 'warning' | 'accent' | 'ghost' {
+    return STATUS_TONE[status] ?? 'ghost';
+}
+
+function statusKey(status: ShiftRow['status']): string {
+    return STATUS_KEY[status] ?? 'pending';
+}
+
 type Props = { shifts: ShiftRow[]; locale: string };
 
 export function UpNextList({ shifts, locale }: Props) {
@@ -85,8 +93,8 @@ export function UpNextList({ shifts, locale }: Props) {
                                         {s.shift.employer} · {s.shift.locationLabel}
                                     </div>
                                 </div>
-                                <Pill tone={STATUS_TONE[s.status]}>
-                                    {t(`status.${STATUS_KEY[s.status]}`)}
+                                <Pill tone={statusTone(s.status)}>
+                                    {t(`status.${statusKey(s.status)}`)}
                                 </Pill>
                             </div>
                             <div className="text-base-content/70 mt-2 flex items-center gap-3 font-mono text-[11.5px]">
