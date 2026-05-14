@@ -166,6 +166,16 @@ jobs:
           SUPABASE_URL:                          ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY:             ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_MAPBOX_TOKEN:              ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+          # Admin app — separate Clerk instance + own Sentry project. Both the
+          # admin pod and the api pod read these at runtime; build-args only
+          # inline NEXT_PUBLIC_* into the client bundle, not process.env.
+          NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
+          ADMIN_CLERK_SECRET_KEY:                ${{ secrets.ADMIN_CLERK_SECRET_KEY }}
+          NEXT_PUBLIC_ADMIN_URL:                 ${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
+          NEXT_PUBLIC_SENTRY_DSN_ADMIN:          ${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
+          SENTRY_PROJECT_ADMIN:                  ${{ secrets.SENTRY_PROJECT_ADMIN }}
+          INTERNAL_REVALIDATE_SECRET:            ${{ secrets.INTERNAL_REVALIDATE_SECRET }}
+          WEB_INTERNAL_BASE_URL:                 ${{ secrets.WEB_INTERNAL_BASE_URL }}
         run: |
           set -euo pipefail
           kubectl -n agconn create secret generic agconn-env \
@@ -205,6 +215,13 @@ jobs:
             --from-literal=SUPABASE_URL="$SUPABASE_URL" \
             --from-literal=SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
             --from-literal=NEXT_PUBLIC_MAPBOX_TOKEN="$NEXT_PUBLIC_MAPBOX_TOKEN" \
+            --from-literal=NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY" \
+            --from-literal=ADMIN_CLERK_SECRET_KEY="$ADMIN_CLERK_SECRET_KEY" \
+            --from-literal=NEXT_PUBLIC_ADMIN_URL="$NEXT_PUBLIC_ADMIN_URL" \
+            --from-literal=NEXT_PUBLIC_SENTRY_DSN_ADMIN="$NEXT_PUBLIC_SENTRY_DSN_ADMIN" \
+            --from-literal=SENTRY_PROJECT_ADMIN="$SENTRY_PROJECT_ADMIN" \
+            --from-literal=INTERNAL_REVALIDATE_SECRET="$INTERNAL_REVALIDATE_SECRET" \
+            --from-literal=WEB_INTERNAL_BASE_URL="$WEB_INTERNAL_BASE_URL" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Pin image tags via kustomize

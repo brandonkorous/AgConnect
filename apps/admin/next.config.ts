@@ -27,12 +27,20 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT_ADMIN,
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  widenClientFileUpload: true,
-  tunnelRoute: '/monitoring',
-  silent: !process.env.CI,
-  disableLogger: true,
-});
+// Sentry is opt-in. Without a DSN there's nothing to report to, so skip the
+// wrapper entirely — that avoids the source-map upload step looking for an
+// auth token and emitting warnings (or, in some plugin versions, failing the
+// build). Set NEXT_PUBLIC_SENTRY_DSN_ADMIN to enable.
+const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN_ADMIN;
+
+export default sentryDsn
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT_ADMIN,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      widenClientFileUpload: true,
+      tunnelRoute: '/monitoring',
+      silent: !process.env.CI,
+      disableLogger: true,
+    })
+  : nextConfig;
