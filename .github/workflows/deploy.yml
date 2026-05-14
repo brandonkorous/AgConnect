@@ -171,6 +171,11 @@ jobs:
           # inline NEXT_PUBLIC_* into the client bundle, not process.env.
           NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
           ADMIN_CLERK_SECRET_KEY:                ${{ secrets.ADMIN_CLERK_SECRET_KEY }}
+          # Required by clerkMiddleware's dynamic-keys mode (we pass
+          # secretKey/publishableKey to bind admin middleware to the admin
+          # Clerk instance). Used by both admin pod and api pod. See
+          # https://clerk.com/docs/references/nextjs/clerk-middleware#dynamic-keys
+          CLERK_ENCRYPTION_KEY:                  ${{ secrets.CLERK_ENCRYPTION_KEY }}
           NEXT_PUBLIC_ADMIN_URL:                 ${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
           NEXT_PUBLIC_SENTRY_DSN_ADMIN:          ${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
           SENTRY_PROJECT_ADMIN:                  ${{ secrets.SENTRY_PROJECT_ADMIN }}
@@ -217,6 +222,7 @@ jobs:
             --from-literal=NEXT_PUBLIC_MAPBOX_TOKEN="$NEXT_PUBLIC_MAPBOX_TOKEN" \
             --from-literal=NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY" \
             --from-literal=ADMIN_CLERK_SECRET_KEY="$ADMIN_CLERK_SECRET_KEY" \
+            --from-literal=CLERK_ENCRYPTION_KEY="$CLERK_ENCRYPTION_KEY" \
             --from-literal=NEXT_PUBLIC_ADMIN_URL="$NEXT_PUBLIC_ADMIN_URL" \
             --from-literal=NEXT_PUBLIC_SENTRY_DSN_ADMIN="$NEXT_PUBLIC_SENTRY_DSN_ADMIN" \
             --from-literal=SENTRY_PROJECT_ADMIN="$SENTRY_PROJECT_ADMIN" \
