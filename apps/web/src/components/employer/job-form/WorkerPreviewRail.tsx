@@ -92,7 +92,7 @@ export function WorkerPreviewRail({
     return (
         <aside aria-label={t('rail_label')} className="hidden xl:block">
             <div className="flex items-center justify-between px-1.5 pb-2.5">
-                <span className="text-base-content/60 font-mono text-[10.5px] font-bold uppercase tracking-[0.1em]">
+                <span className="text-base-content/60 font-mono text-xs font-bold uppercase tracking-[0.1em]">
                     {t('worker_preview')}
                 </span>
                 <div className="bg-base-200 border-base-300 join rounded-full border p-0.5">
@@ -102,7 +102,7 @@ export function WorkerPreviewRail({
                             type="button"
                             onClick={() => setLang(l)}
                             className={[
-                                'join-item rounded-full px-2.5 py-0.5 font-mono text-[10.5px] font-bold transition-colors',
+                                'join-item rounded-full px-2.5 py-0.5 font-mono text-xs font-bold transition-colors',
                                 lang === l
                                     ? 'bg-base-100 text-base-content'
                                     : 'text-base-content/40',
@@ -177,7 +177,7 @@ function PhoneStatusBar({ lang }: { lang: 'en' | 'es' }) {
         minute: '2-digit',
     });
     return (
-        <div className="text-base-content/50 mb-3.5 flex items-center justify-between font-mono text-[10.5px]">
+        <div className="text-base-content/50 mb-3.5 flex items-center justify-between font-mono text-xs">
             <span>{time}</span>
             <span>● ● ●</span>
         </div>
@@ -245,7 +245,7 @@ function JobPreviewCard(props: {
                         {props.skills.map((s) => (
                             <span
                                 key={s}
-                                className="bg-base-200 text-base-content/70 rounded px-1.5 py-0.5 text-[9.5px] font-semibold"
+                                className="bg-base-200 text-base-content/70 rounded px-1.5 py-0.5 text-xs font-semibold"
                             >
                                 {s}
                             </span>
@@ -285,7 +285,7 @@ function SmsApplyCard({ keyword }: { keyword: string }) {
     const t = useTranslations('employer.jobs.form_v2.preview');
     return (
         <div className="bg-neutral text-neutral-content mt-3 rounded-xl p-3">
-            <div className="text-accent font-mono text-[9.5px] font-bold uppercase tracking-wider">
+            <div className="text-accent font-mono text-xs font-bold uppercase tracking-wider">
                 {t('apply_by_text')}
             </div>
             <div className="mt-1 font-mono text-[13px] font-semibold">{keyword}</div>

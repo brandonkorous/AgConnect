@@ -111,7 +111,7 @@ export function ActiveApplicationsTable({ rows, locale }: Props) {
             ) : (
                 <>
                     <div
-                        className="border-base-300 text-base-content/60 grid gap-4 border-b px-5 py-3 font-mono text-[10.5px] font-semibold uppercase tracking-[0.1em]"
+                        className="border-base-300 text-base-content/60 grid gap-4 border-b px-5 py-3 font-mono text-xs font-semibold uppercase tracking-[0.1em]"
                         style={{ gridTemplateColumns: COLS }}
                     >
                         {heads.map((h) =>

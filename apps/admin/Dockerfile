@@ -55,7 +55,7 @@ COPY --from=deps /repo /repo
 COPY . .
 
 RUN pnpm --filter @agconn/db db:generate \
- && pnpm --filter "./packages/**" build \
+ && pnpm --filter "@agconn/admin^..." build \
  && pnpm --filter @agconn/admin build
 
 # ─── runtime ─────────────────────────────────────────────────────────────────

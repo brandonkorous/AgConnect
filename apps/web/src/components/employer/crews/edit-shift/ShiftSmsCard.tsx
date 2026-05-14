@@ -82,7 +82,7 @@ export function ShiftSmsCard({ lang, draft, crewName, heatHigh, touched }: Props
     return (
         <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-sm">
             <div className="bg-primary text-primary-content flex items-center justify-between px-3 py-2">
-                <span className="font-mono text-[9.5px] font-bold uppercase tracking-wider">{L.badge}</span>
+                <span className="font-mono text-xs font-bold uppercase tracking-wider">{L.badge}</span>
                 <span className="font-mono text-[10px] tabular-nums">{dateLabel}</span>
             </div>
             <div className="p-3.5">

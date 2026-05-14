@@ -28,7 +28,7 @@ export function InProgressHero({ enrollment, locale }: Props) {
             />
             <div className="relative grid grid-cols-1 items-center gap-8 lg:grid-cols-[1fr_auto]">
                 <div>
-                    <div className="text-warning font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+                    <div className="text-warning font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                         {t('eyebrow', { funder: program.funder })}
                     </div>
                     <h2 className="font-serif mt-2 text-[32px] font-normal leading-[1.05] tracking-[-0.02em]">
@@ -85,7 +85,7 @@ export function InProgressHero({ enrollment, locale }: Props) {
                                 {progress}
                                 <span className="text-[18px] opacity-50">%</span>
                             </div>
-                            <div className="mt-1 font-mono text-[10.5px] tracking-[0.1em] opacity-60">
+                            <div className="mt-1 font-mono text-xs tracking-[0.1em] opacity-60">
                                 {t('badge_complete')}
                             </div>
                         </div>

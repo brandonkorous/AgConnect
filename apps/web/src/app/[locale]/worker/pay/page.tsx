@@ -113,7 +113,7 @@ async function DirectDepositCard({ locale }: { locale: string }) {
     const t = await getTranslations({ locale, namespace: 'worker.pay.direct_deposit' });
     return (
         <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
-            <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+            <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                 {t('eyebrow')}
             </div>
             <p className="text-base-content/70 mt-3 text-[13px]">{t('empty_body')}</p>
@@ -131,7 +131,7 @@ async function TaxDocsCard({ locale }: { locale: string }) {
     const t = await getTranslations({ locale, namespace: 'worker.pay.tax_docs' });
     return (
         <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
-            <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+            <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                 {t('eyebrow')}
             </div>
             <p className="text-base-content/70 mt-3 text-[13px]">{t('empty_body')}</p>
@@ -156,7 +156,7 @@ async function WageTransparencyCard({
     const t = await getTranslations({ locale, namespace: 'worker.pay.wage' });
     return (
         <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
-            <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+            <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                 {t('eyebrow')}
             </div>
             <p className="text-base-content/80 mt-3 text-[13px] leading-relaxed">

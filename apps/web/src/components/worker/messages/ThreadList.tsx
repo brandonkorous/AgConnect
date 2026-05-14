@@ -20,7 +20,7 @@ export function ThreadList({ threads, activeId, locale }: Props) {
         })
         : threads;
     return (
-        <div className="border-base-300 overflow-y-auto border-r">
+        <div className="border-base-300 overflow-y-auto border-r grow-1">
             <div className="border-base-300 border-b p-3">
                 <label className="bg-base-200 text-base-content/60 flex items-center gap-2 rounded-full px-3 py-2">
                     <FontAwesomeIcon icon={faMagnifyingGlass} className="h-3 w-3" />
@@ -35,7 +35,7 @@ export function ThreadList({ threads, activeId, locale }: Props) {
                 </label>
             </div>
             {filtered.length === 0 && (
-                <div className="text-base-content/60 px-4 py-6 text-center text-[12.5px]">
+                <div className="text-base-content/60 px-4 py-6 text-center text-sm">
                     {locale === 'es' ? 'Sin resultados' : 'No matches'}
                 </div>
             )}
@@ -93,7 +93,7 @@ export function ThreadList({ threads, activeId, locale }: Props) {
                                     </div>
                                     <div
                                         className={[
-                                            'shrink-0 font-mono text-[10.5px] font-bold',
+                                            'shrink-0 font-mono text-xs font-bold',
                                             th.unreadCount > 0 ? 'text-primary' : 'text-base-content/60',
                                         ].join(' ')}
                                     >
@@ -114,7 +114,7 @@ export function ThreadList({ threads, activeId, locale }: Props) {
                                     {th.lastMessage?.body ?? ''}
                                 </div>
                                 <div className="mt-1.5 flex items-center gap-1.5">
-                                    <span className="border-base-300 text-base-content/60 rounded border bg-white px-1.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-[0.05em]">
+                                    <span className="border-base-300 text-base-content/60 rounded border bg-white px-1.5 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.05em]">
                                         {channelLabel}
                                     </span>
                                     {th.unreadCount > 0 && (

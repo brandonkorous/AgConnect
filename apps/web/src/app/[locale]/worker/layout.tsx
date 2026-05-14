@@ -47,7 +47,7 @@ export default async function WorkerLayout({ children, params }: Props) {
             <div className="print:hidden">
                 <WorkerSidebar locale={locale} counts={counts} />
             </div>
-            <main className="min-w-0 flex-1">
+            <main className="min-w-0 flex-1 flex flex-col min-h-screen">
                 <div className="print:hidden">
                     <FieldModeSoftPrompt locale={locale} />
                     <WorkerMobileShell locale={locale} counts={counts} />

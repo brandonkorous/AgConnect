@@ -136,7 +136,7 @@ async function MonthSummary({
     ];
     return (
         <div className="border-base-300 bg-base-100 rounded-2xl border p-[18px]">
-            <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+            <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                 {t('eyebrow')}
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3">

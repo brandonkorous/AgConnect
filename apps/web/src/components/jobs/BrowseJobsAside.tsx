@@ -45,7 +45,7 @@ export async function BrowseJobsAside({ locale, savedSearches }: Props) {
                         }}
                     />
                     <div className="relative">
-                        <div className="text-accent font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
+                        <div className="text-accent font-mono text-xs font-semibold uppercase tracking-[0.12em]">
                             {t('sms.eyebrow')}
                         </div>
                         <div className="font-serif mt-1.5 text-[22px] leading-[1.2] tracking-[-0.02em]">
@@ -60,13 +60,13 @@ export async function BrowseJobsAside({ locale, savedSearches }: Props) {
                                 ),
                             })}
                         </div>
-                        <div className="mt-2 text-[12.5px] opacity-80">{t('sms.note')}</div>
+                        <div className="mt-2 text-sm opacity-80">{t('sms.note')}</div>
                     </div>
                 </div>
             )}
 
             <div id="map" className="border-base-300 rounded-2xl border bg-white p-[18px] scroll-mt-24">
-                <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
+                <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.12em]">
                     {t('map.eyebrow')}
                 </div>
                 <div
@@ -120,13 +120,13 @@ export async function BrowseJobsAside({ locale, savedSearches }: Props) {
                             {p.n}
                         </div>
                     ))}
-                    <div className="text-base-content/60 absolute bottom-2.5 left-2.5 font-mono text-[10.5px]">
+                    <div className="text-base-content/60 absolute bottom-2.5 left-2.5 font-mono text-xs">
                         {t('map.label')}
                     </div>
                 </div>
                 <Link
                     href={`/${locale}/worker/shifts`}
-                    className="border-base-300 mt-3 block w-full rounded-full border bg-transparent py-2.5 text-center text-[12.5px] font-semibold no-underline"
+                    className="border-base-300 mt-3 block w-full rounded-full border bg-transparent py-2.5 text-center text-sm font-semibold no-underline"
                 >
                     {t('map.cta_shifts')}
                 </Link>
@@ -134,7 +134,7 @@ export async function BrowseJobsAside({ locale, savedSearches }: Props) {
 
             <div className="border-base-300 rounded-2xl border bg-white p-[18px]">
                 <div className="flex items-center justify-between">
-                    <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em]">
+                    <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.12em]">
                         {t('saved.eyebrow')}
                     </div>
                     <Link
@@ -145,7 +145,7 @@ export async function BrowseJobsAside({ locale, savedSearches }: Props) {
                     </Link>
                 </div>
                 {visible.length === 0 ? (
-                    <p className="text-base-content/60 mt-3 text-[12.5px]">
+                    <p className="text-base-content/60 mt-3 text-sm">
                         {t('saved.empty')}
                     </p>
                 ) : (

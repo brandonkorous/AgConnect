@@ -129,7 +129,7 @@ export default async function DocumentsPage({ params }: Props) {
 
             <div className="border-base-300 bg-base-100 mb-5 grid grid-cols-1 items-center gap-8 rounded-2xl border p-[22px] lg:grid-cols-[1.4fr_1fr]">
                 <div>
-                    <div className="text-base-content/60 font-mono text-[10.5px] font-semibold uppercase tracking-[0.18em]">
+                    <div className="text-base-content/60 font-mono text-xs font-semibold uppercase tracking-[0.18em]">
                         {tComp('eyebrow')}
                     </div>
                     <div className="mt-2 flex items-baseline gap-3">
@@ -166,7 +166,7 @@ export default async function DocumentsPage({ params }: Props) {
                             </div>
                             <div
                                 className={[
-                                    'flex-1 text-[12.5px] font-semibold',
+                                    'flex-1 text-sm font-semibold',
                                     s.done ? 'text-primary' : 'text-base-content/80',
                                 ].join(' ')}
                             >

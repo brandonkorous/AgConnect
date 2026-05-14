@@ -52,7 +52,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
     const detail = activeThreadId ? await fetchMyMessageThread(activeThreadId) : null;
 
     return (
-        <div className=" px-5 pb-16 pt-8">
+        <div className="px-5 pb-16 pt-8 flex flex-col flex-1 min-h-0">
             <WorkerPageHeader
                 eyebrow={t('eyebrow_n', {
                     unread: totalUnread,
@@ -76,7 +76,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
                     </p>
                 </div>
             ) : (
-                <div className="border-base-300 bg-base-100 grid grid-cols-1 min-h-[640px] overflow-hidden rounded-2xl border lg:grid-cols-[180px_1fr_1.4fr]">
+                <div className="border-base-300 bg-base-100 flex flex-1 min-h-0 overflow-hidden rounded-2xl border">
                     <FoldersRail
                         locale={locale}
                         counts={folderCounts(threads)}
@@ -87,7 +87,7 @@ export default async function MessagesPage({ params, searchParams }: Props) {
                     {detail ? (
                         <ThreadView detail={detail} locale={locale} />
                     ) : (
-                        <div className="grid place-items-center p-8 text-center">
+                        <div className="grid place-items-center p-8 text-center grow-8">
                             <p className="text-base-content/60 text-[13px]">
                                 {t('empty.select_thread')}
                             </p>

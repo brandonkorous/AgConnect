@@ -111,7 +111,7 @@ export function SafetySection({ draft, onChange, locale }: Props) {
                                     : t('heat.normal_help')}
                     </div>
                     {status === 'ready' && condition && (
-                        <div className="text-base-content/55 mt-1.5 text-[10.5px] uppercase tracking-wider">
+                        <div className="text-base-content/55 mt-1.5 text-xs uppercase tracking-wider">
                             {t('heat.source', { condition })}
                         </div>
                     )}

@@ -115,7 +115,7 @@ export function BrowseJobsFilters({ workerCounty }: Props = {}) {
                         aria-pressed={on}
                         onClick={() => toggle(k)}
                         className={[
-                            'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-colors',
+                            'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
                             on
                                 ? 'bg-primary text-primary-content'
                                 : 'bg-base-200 text-base-content/70 hover:bg-base-300',

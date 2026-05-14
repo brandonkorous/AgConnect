@@ -34,7 +34,7 @@ export function PreviewRail({
     return (
         <aside aria-label={t('rail_label')} className="hidden xl:block">
             <div className="flex items-center justify-between px-1.5 pb-2.5">
-                <span className="text-base-content/60 font-mono text-[10.5px] font-bold uppercase tracking-[0.1em]">
+                <span className="text-base-content/60 font-mono text-xs font-bold uppercase tracking-[0.1em]">
                     {t('worker_preview')}
                 </span>
                 <div className="bg-base-200 border-base-300 join rounded-full border p-0.5">
@@ -44,7 +44,7 @@ export function PreviewRail({
                             type="button"
                             onClick={() => setLang(l)}
                             className={[
-                                'join-item rounded-full px-2.5 py-0.5 font-mono text-[10.5px] font-bold transition-colors',
+                                'join-item rounded-full px-2.5 py-0.5 font-mono text-xs font-bold transition-colors',
                                 lang === l
                                     ? 'bg-base-100 text-base-content'
                                     : 'text-base-content/40',
@@ -100,7 +100,7 @@ export function PreviewRail({
 
 function PhoneStatusBar() {
     return (
-        <div className="text-base-content/50 mb-1.5 flex items-center justify-between font-mono text-[10.5px]">
+        <div className="text-base-content/50 mb-1.5 flex items-center justify-between font-mono text-xs">
             <span>9:41</span>
             <span>AgConn · SMS</span>
         </div>

@@ -216,7 +216,7 @@ export default async function WageStatementPage({ params }: Props) {
 
                 <section className="mt-6 grid grid-cols-2 gap-4 text-xs leading-relaxed">
                     <div>
-                        <div className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-black/60">
+                        <div className="font-mono text-xs uppercase tracking-[0.16em] text-black/60">
                             {t('floor_label')}
                         </div>
                         <div className="font-semibold">
@@ -229,7 +229,7 @@ export default async function WageStatementPage({ params }: Props) {
                         )}
                     </div>
                     <div>
-                        <div className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-black/60">
+                        <div className="font-mono text-xs uppercase tracking-[0.16em] text-black/60">
                             {t('compliance_label')}
                         </div>
                         <div className="text-black/80">{t('compliance_note')}</div>

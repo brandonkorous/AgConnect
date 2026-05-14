@@ -72,6 +72,10 @@ const NULLABLE_TENANT_MODELS = new Set([
   // export to a single tenant, NULL when the export is cross-tenant (e.g.
   // statewide placement reporting). See docs/30-admin/02-placement-report.
   'ReportRun',
+  // Feature flags: rows with tenantId=null are the platform default; rows
+  // with tenantId set are per-tenant overrides. Uniqueness is enforced via
+  // partial indexes in the migration (mirrors TranslationKey).
+  'FeatureFlag',
 ]);
 
 const text = readFileSync(SCHEMA, 'utf8');
