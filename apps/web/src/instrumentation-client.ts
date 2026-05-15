@@ -12,6 +12,7 @@ if (dsn) {
         enableLogs: true,
         integrations: [Sentry.replayIntegration({ maskAllText: false, blockAllMedia: true })],
         environment: process.env.NEXT_PUBLIC_APP_ENV ?? process.env.NODE_ENV,
+        release: process.env.NEXT_PUBLIC_SENTRY_RELEASE || undefined,
     });
 }
 

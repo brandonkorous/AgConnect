@@ -42,6 +42,9 @@ jobs:
           - { name: flc-verifier,    dockerfile: services/flc-verifier/Dockerfile,    image: flc-verifier }
           - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile, image: audit-retention }
           - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile,  image: audit-verifier }
+          - { name: resume-parser,   dockerfile: services/resume-parser/Dockerfile,   image: resume-parser }
+          - { name: cert-generator,  dockerfile: services/cert-generator/Dockerfile,  image: cert-generator }
+          - { name: scheduler,       dockerfile: services/scheduler/Dockerfile,       image: scheduler }
     steps:
       - uses: actions/checkout@v4
 
@@ -60,7 +63,8 @@ jobs:
       - name: Configure docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
-      - uses: docker/build-push-action@v6
+      - id: build
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.target.dockerfile }}
@@ -83,8 +87,24 @@ jobs:
             NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_ADMIN_URL=${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
             NEXT_PUBLIC_SENTRY_DSN_ADMIN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
+            SENTRY_RELEASE=${{ github.sha }}
           secrets: |
             fontawesome_token=${{ secrets.FONTAWESOME_TOKEN }}
+
+      # Trivy CVE scan on the just-pushed image. HIGH/CRITICAL with a known
+      # fix version fails the matrix leg, which blocks the deploy job (it
+      # `needs: build`). `ignore-unfixed: true` keeps the gate actionable —
+      # CVEs without an upstream fix can't be remediated by a rebuild and
+      # would otherwise stall every deploy.
+      - name: Trivy scan ${{ matrix.target.image }}
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.AR_PATH }}/${{ matrix.target.image }}:${{ env.TAG }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          vuln-type: os,library
 
   deploy:
     needs: build
@@ -181,6 +201,10 @@ jobs:
           SENTRY_PROJECT_ADMIN:                  ${{ secrets.SENTRY_PROJECT_ADMIN }}
           INTERNAL_REVALIDATE_SECRET:            ${{ secrets.INTERNAL_REVALIDATE_SECRET }}
           WEB_INTERNAL_BASE_URL:                 ${{ secrets.WEB_INTERNAL_BASE_URL }}
+          # Tags every Sentry event with the deploy commit so regressions
+          # bisect to a release. Backend SDKs read this at runtime; web/admin
+          # also bake it into the client bundle via build-args.
+          SENTRY_RELEASE:                        ${{ github.sha }}
         run: |
           set -euo pipefail
           kubectl -n agconn create secret generic agconn-env \
@@ -228,6 +252,7 @@ jobs:
             --from-literal=SENTRY_PROJECT_ADMIN="$SENTRY_PROJECT_ADMIN" \
             --from-literal=INTERNAL_REVALIDATE_SECRET="$INTERNAL_REVALIDATE_SECRET" \
             --from-literal=WEB_INTERNAL_BASE_URL="$WEB_INTERNAL_BASE_URL" \
+            --from-literal=SENTRY_RELEASE="$SENTRY_RELEASE" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Pin image tags via kustomize
@@ -236,7 +261,7 @@ jobs:
           set -euo pipefail
           AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
           TAG=${{ env.TAG }}
-          for img in web admin api email-worker sms-worker flc-verifier audit-retention audit-verifier; do
+          for img in web admin api email-worker sms-worker flc-verifier audit-retention audit-verifier resume-parser cert-generator scheduler; do
             kustomize edit set image ${AR_BASE}/${img}=${AR_BASE}/${img}:${TAG}
           done
 
@@ -262,3 +287,6 @@ jobs:
           kubectl -n agconn rollout status deployment/email-worker --timeout=5m
           kubectl -n agconn rollout status deployment/sms-worker --timeout=5m
           kubectl -n agconn rollout status deployment/flc-verifier --timeout=5m
+          kubectl -n agconn rollout status deployment/resume-parser --timeout=5m
+          kubectl -n agconn rollout status deployment/cert-generator --timeout=5m
+          kubectl -n agconn rollout status deployment/scheduler --timeout=5m

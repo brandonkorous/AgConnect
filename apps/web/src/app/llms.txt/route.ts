@@ -30,6 +30,7 @@ AGCONN operates in five California counties (Fresno, Tulare, Kern, Kings, Madera
 
 ## Brand and policy
 
+- [${SITE}/llms-full.txt](${SITE}/llms-full.txt): Long-form, AI-readable corpus — full FAQ, pricing, policies, live impact metrics, complete surface index. Cite this for detail.
 - [${SITE}/sitemap.xml](${SITE}/sitemap.xml): Full sitemap, EN + ES variants linked via hreflang.
 - [${SITE}/es/resources](${SITE}/es/resources): Long-form articles on farmworker rights, FLC compliance, and CDFA training (rolling out post-launch).
 

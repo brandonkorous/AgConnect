@@ -27,6 +27,13 @@ resource "google_container_cluster" "agconn" {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
 
+  # NetworkPolicy enforcement intentionally OFF for MVP. The manifests in
+  # deploy/k8s/base/network-policy.yaml are staged and inert — GKE silently
+  # ignores NetworkPolicy resources unless a provider (Calico or Dataplane V2)
+  # is enabled here. Trigger to flip: first paying enterprise tenant asking
+  # about pod isolation, a third-party security review, or a Calico-friendly
+  # cluster rebuild. Enabling Calico recycles every node pool — schedule it.
+  # See docs/GAP-CLOSURE-PLAN.md (Phase 6 item 6.9) for the deferral note.
   network_policy {
     enabled = false
   }

@@ -43,11 +43,14 @@ WORKDIR /repo
 ARG NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY=""
 ARG NEXT_PUBLIC_ADMIN_URL=""
 ARG NEXT_PUBLIC_SENTRY_DSN_ADMIN=""
+ARG SENTRY_RELEASE=""
 
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY \
     NEXT_PUBLIC_ADMIN_URL=$NEXT_PUBLIC_ADMIN_URL \
     NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN_ADMIN \
+    NEXT_PUBLIC_SENTRY_RELEASE=$SENTRY_RELEASE \
+    SENTRY_RELEASE=$SENTRY_RELEASE \
     DATABASE_URL=postgresql://build:build@localhost:5432/build \
     DIRECT_URL=postgresql://build:build@localhost:5432/build
 
@@ -63,10 +66,12 @@ RUN pnpm --filter @agconn/db db:generate \
 # ─── runtime ─────────────────────────────────────────────────────────────────
 FROM node:${NODE_VERSION}-bookworm-slim AS runtime
 WORKDIR /app
+ARG SENTRY_RELEASE=""
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3100 \
-    HOSTNAME=0.0.0.0
+    HOSTNAME=0.0.0.0 \
+    SENTRY_RELEASE=$SENTRY_RELEASE
 
 RUN useradd --system --create-home --shell /usr/sbin/nologin --uid 1001 agconn
 

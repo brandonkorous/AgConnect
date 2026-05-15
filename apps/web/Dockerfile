@@ -50,6 +50,7 @@ ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=""
 ARG NEXT_PUBLIC_SENTRY_DSN=""
 ARG NEXT_PUBLIC_POSTHOG_KEY=""
 ARG NEXT_PUBLIC_MAPBOX_TOKEN=""
+ARG SENTRY_RELEASE=""
 
 # prisma.config.ts requires DATABASE_URL + DIRECT_URL for codegen; the build
 # never connects, so dummy localhost values are fine.
@@ -58,6 +59,8 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
     NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN \
     NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY \
     NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN \
+    NEXT_PUBLIC_SENTRY_RELEASE=$SENTRY_RELEASE \
+    SENTRY_RELEASE=$SENTRY_RELEASE \
     DATABASE_URL=postgresql://build:build@localhost:5432/build \
     DIRECT_URL=postgresql://build:build@localhost:5432/build
 
@@ -73,10 +76,12 @@ RUN pnpm --filter @agconn/db db:generate \
 # ─── runtime: minimal node + standalone server ───────────────────────────────
 FROM node:${NODE_VERSION}-bookworm-slim AS runtime
 WORKDIR /app
+ARG SENTRY_RELEASE=""
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
-    HOSTNAME=0.0.0.0
+    HOSTNAME=0.0.0.0 \
+    SENTRY_RELEASE=$SENTRY_RELEASE
 
 RUN useradd --system --create-home --shell /usr/sbin/nologin --uid 1001 agconn
 

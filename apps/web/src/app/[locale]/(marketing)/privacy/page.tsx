@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Breadcrumb } from '@/components/seo/Breadcrumb';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import { LegalPageLayout } from '@/components/marketing/LegalPageLayout';
@@ -49,6 +50,7 @@ export default async function PrivacyPage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <Breadcrumb locale={locale} path="/privacy" />
 
             <LegalPageLayout
                 locale={locale}

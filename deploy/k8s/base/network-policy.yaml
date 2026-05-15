@@ -1,0 +1,88 @@
+# NetworkPolicy bundle — STAGED BUT CURRENTLY INERT.
+#
+# These resources are applied to the cluster but GKE silently ignores them
+# because `network_policy.enabled = false` in infra/terraform/cluster.tf.
+# Enabling Calico (or rebuilding the cluster with Dataplane V2) is deferred
+# until we have a business trigger — first paying enterprise tenant asking
+# about pod isolation, a security review, or a cluster rebuild for other
+# reasons. The manifests live here so the intended ingress topology is
+# documented and ready to enforce when the cluster setting flips.
+# See docs/GAP-CLOSURE-PLAN.md (Phase 6 item 6.9) for the deferral note.
+#
+# Default-deny ingress + scoped allow rules below.
+#
+# Egress is intentionally unrestricted. Pods reach Supabase, Stripe, Twilio,
+# Resend, Sentry, Clerk, Anthropic, Cloudflare, GCP control plane, etc. —
+# allow-listing each destination by IP is more brittle than the gain.
+
+# ─── Default-deny ingress for the agconn namespace ─────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: agconn
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+# ─── Web: accept HTTP from ingress-nginx only ──────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-from-ingress
+  namespace: agconn
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+---
+# ─── Admin: accept HTTP from ingress-nginx only ────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: admin-from-ingress
+  namespace: agconn
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: admin
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3100
+---
+# ─── API: accept HTTP from ingress-nginx AND from any pod in the agconn
+#         namespace (web RSCs call the api server-to-server) ───────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-from-ingress-and-namespace
+  namespace: agconn
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: api
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3001

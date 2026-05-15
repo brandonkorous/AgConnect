@@ -1,0 +1,79 @@
+name: Lighthouse
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "packages/ui/**"
+      - "packages/i18n/**"
+      - ".lighthouserc.json"
+      - ".github/workflows/lighthouse.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lhci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+      # Build needs valid-shaped env. None of these are real — Lighthouse runs
+      # against marketing surfaces that don't authenticate or contact 3rd
+      # parties. NEXT_PUBLIC_* values are inlined into the bundle, so they
+      # have to be present at build time.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_x
+      NEXT_PUBLIC_SENTRY_DSN: ""
+      NEXT_PUBLIC_POSTHOG_KEY: ""
+      NEXT_PUBLIC_MAPBOX_TOKEN: ""
+      NEXT_PUBLIC_ADMIN_URL: http://localhost:3100
+      NEXT_TELEMETRY_DISABLED: "1"
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: agconn_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.9.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm db:generate
+
+      - name: Migrate + seed CI database
+        run: |
+          pnpm --filter @agconn/db db:migrate:deploy
+          pnpm --filter @agconn/db i18n:seed
+
+      - name: Build packages
+        run: pnpm --filter "./packages/**" build
+
+      - name: Build apps/web
+        run: pnpm --filter @agconn/web build
+
+      - name: Run Lighthouse CI
+        run: |
+          pnpm dlx @lhci/cli@0.14.0 autorun

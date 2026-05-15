@@ -15,5 +15,6 @@ if (dsn) {
         includeLocalVariables: isDev,
         enableLogs: true,
         environment: process.env.APP_ENV ?? process.env.NODE_ENV,
+        release: process.env.SENTRY_RELEASE || undefined,
     });
 }

@@ -33,3 +33,12 @@ images:
   - name: us-west1-docker.pkg.dev/agconn/containers/audit-verifier
     newName: us-west1-docker.pkg.dev/agconn/containers/audit-verifier
     newTag: latest
+  - name: us-west1-docker.pkg.dev/agconn/containers/resume-parser
+    newName: us-west1-docker.pkg.dev/agconn/containers/resume-parser
+    newTag: latest
+  - name: us-west1-docker.pkg.dev/agconn/containers/cert-generator
+    newName: us-west1-docker.pkg.dev/agconn/containers/cert-generator
+    newTag: latest
+  - name: us-west1-docker.pkg.dev/agconn/containers/scheduler
+    newName: us-west1-docker.pkg.dev/agconn/containers/scheduler
+    newTag: latest

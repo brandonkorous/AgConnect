@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faBookmark } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { NestedBreadcrumb } from '@/components/seo/Breadcrumb';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import {
@@ -62,6 +63,12 @@ export default async function ResourceArticlePage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <NestedBreadcrumb
+                locale={locale}
+                parentPath="/resources"
+                leafName={pickLocale(article.title, locale)}
+                leafPath={`/resources/${slug}`}
+            />
             <JsonLd
                 data={{
                     '@context': 'https://schema.org',

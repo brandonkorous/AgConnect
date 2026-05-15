@@ -9,5 +9,6 @@ if (dsn) {
         tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
         enableLogs: true,
         environment: process.env.APP_ENV ?? process.env.NODE_ENV,
+        release: process.env.SENTRY_RELEASE || undefined,
     });
 }

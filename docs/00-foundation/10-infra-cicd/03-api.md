@@ -1,204 +1,111 @@
 # 10 — Infra & CI/CD: GitHub Actions Pipelines
 
+The authoritative workflows live in [`.github/workflows/`](../../../.github/workflows/). This doc summarizes intent — if it disagrees with the YAML, the YAML wins.
+
 ## Workflow inventory
 
-| workflow              | trigger          | purpose                                                  |
-| --------------------- | ---------------- | -------------------------------------------------------- |
-| `ci.yml`              | PR open / push   | install, lint, typecheck, test, lighthouse               |
-| `preview.yml`         | PR open / sync   | build images, deploy to `pr-<id>` namespace              |
-| `preview-cleanup.yml` | PR closed        | delete `pr-<id>` namespace                               |
-| `deploy.yml`          | push to `main`   | build → push → deploy to staging → manual approve → prod |
-| `nightly-eval.yml`    | cron `0 7 * * *` | resume-parser eval set, alert on regressions             |
+| workflow                  | trigger                  | purpose                                                            |
+| ------------------------- | ------------------------ | ------------------------------------------------------------------ |
+| `ci.yml`                  | PR + push to `main`      | typecheck, conventions (tenant_id, RLS), i18n parity, build smoke  |
+| `deploy.yml`              | push to `main` + manual  | build matrix → Trivy → migrate Job → kustomize apply → rollout     |
+| `lighthouse.yml`          | PR touching `apps/web/`  | Perf ≥80, A11y ≥95, SEO ≥95 on top public pages                    |
+| `resume-parser-eval.yml`  | parser-touching changes  | parser schema-valid / field-agreement / latency / cost thresholds  |
+| `preview.yml` *(planned)* | PR open/sync             | preview namespace at `pr-<id>.preview.agconn.com` *(Phase 6 gap)*  |
 
-## ci.yml (skeleton)
+## ci.yml
 
-```yaml
-name: CI
-on: [pull_request, push]
+Real-Postgres job that:
 
-jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3 ; with: { version: 9 }
-      - uses: actions/setup-node@v4 ; with: { node-version: 22, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
+1. Installs deps via pnpm.
+2. Generates Prisma client.
+3. Typechecks the whole repo.
+4. Runs `pnpm check:conventions` — enforces every table has `tenant_id`, every model has RLS, etc.
+5. Migrates the CI Postgres and seeds translations.
+6. Runs `pnpm --filter @agconn/web i18n:check` against the seeded DB.
+7. Builds `packages/` then `apps/web` as a smoke check.
 
-  lint:
-    needs: install
-    runs-on: ubuntu-latest
-    steps: [ ..., run: pnpm lint ]
+Sentry source map upload is skipped on PR builds (`SENTRY_AUTH_TOKEN=""`).
 
-  typecheck:
-    needs: install
-    runs-on: ubuntu-latest
-    steps: [ ..., run: pnpm typecheck ]
+## deploy.yml
 
-  test:
-    needs: install
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env: { POSTGRES_PASSWORD: test, POSTGRES_DB: agconn_test }
-        options: >- ...
-    steps:
-      - ...
-      - run: pnpm --filter db prisma migrate deploy
-        env: { DATABASE_URL: postgresql://postgres:test@localhost:5432/agconn_test }
-      - run: pnpm test
+Two jobs.
 
-  lighthouse:
-    needs: [install]
-    runs-on: ubuntu-latest
-    steps:
-      - ...
-      - run: pnpm --filter web build
-      - run: pnpm --filter web start &
-      - run: npx wait-on http://localhost:3000
-      - run: pnpm lighthouse:ci
-```
+### `build` (matrix)
 
-## deploy.yml (production path)
+Builds + pushes one image per service. Matrix entries: `web`, `admin`, `api`, `email-worker`, `sms-worker`, `flc-verifier`, `audit-retention`, `audit-verifier`, `resume-parser`, `cert-generator`, `scheduler`.
 
-```yaml
-name: Deploy
-on:
-  push:
-    branches: [main]
+Each leg:
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions: { contents: read, packages: write }
-    strategy:
-      matrix:
-        app: [web, api, admin, workers]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: apps/${{ matrix.app }}/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/agconn/${{ matrix.app }}:${{ github.sha }}
-            ghcr.io/agconn/${{ matrix.app }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+1. Federates to GCP via Workload Identity Federation (`google-github-actions/auth`).
+2. Configures docker for Artifact Registry.
+3. Builds and pushes with `cache-from`/`cache-to` GHA scope per image.
+4. Runs **Trivy** against the just-pushed image — HIGH/CRITICAL with `ignore-unfixed: true` exits 1 and blocks the deploy.
+5. `NEXT_PUBLIC_*` build-args are inlined into web/admin client bundles. `SENTRY_RELEASE=${{ github.sha }}` is passed as a build-arg and an env var so all SDKs tag events with the deploy commit.
 
-  deploy-staging:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: azure/login@v2 ; with: { creds: ${{ secrets.AZURE_CREDENTIALS }} }
-      - uses: azure/aks-set-context@v3 ; with: { cluster-name: agconn-aks, resource-group: agconn-rg }
-      - run: |
-          helm upgrade --install agconn ./infra/helm/agconn \
-            --namespace agconn-staging \
-            -f ./infra/helm/agconn/values-staging.yaml \
-            --set image.tag=${{ github.sha }} \
-            --wait --timeout 5m
-      - run: kubectl rollout status -n agconn-staging deployment/web deployment/api deployment/admin deployment/workers --timeout=5m
+### `deploy` (single)
 
-  deploy-prod:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    environment: production       # GitHub environment with manual approval gate
-    steps:
-      - uses: azure/login@v2 ; with: { creds: ${{ secrets.AZURE_CREDENTIALS }} }
-      - uses: azure/aks-set-context@v3 ; with: { cluster-name: agconn-aks, resource-group: agconn-rg }
-      - run: |
-          helm upgrade --install agconn ./infra/helm/agconn \
-            --namespace agconn-prod \
-            -f ./infra/helm/agconn/values-prod.yaml \
-            --set image.tag=${{ github.sha }} \
-            --wait --timeout 10m
-      - run: kubectl rollout status -n agconn-prod deployment/web deployment/api deployment/admin deployment/workers --timeout=10m
-      - name: Smoke test
-        run: |
-          curl -f https://agconn.com/api/health
-          curl -f https://api.agconn.com/v1/health
-```
+`needs: build` so any failed Trivy scan blocks the entire deploy.
 
-## preview.yml
+1. Federates to GCP, fetches GKE credentials for `agconn-prod` in `us-west1-a`.
+2. Applies namespace + ServiceAccount + ConfigMap (bootstrap resources the migrate Job needs).
+3. Renders the runtime Secret `agconn-env` from GitHub Actions secrets (`kubectl create secret --dry-run | apply`).
+4. Pins image tags in `deploy/k8s/overlays/prod` via `kustomize edit set image` for all 11 services.
+5. Runs the db-migrate Job (`db-migrate-<SHA>`) and waits up to 10 minutes for completion. Logs are dumped on failure.
+6. `kubectl apply -k deploy/k8s/overlays/prod`.
+7. Waits on `rollout status` for every Deployment (5–10 min each).
 
-```yaml
-name: Preview
-on: pull_request
-jobs:
-    build-and-deploy:
-        if: github.event.pull_request.draft == false
-        runs-on: ubuntu-latest
-        steps:
-            - ... (same image build as deploy)
-            - run: |
-                  NS=pr-${{ github.event.pull_request.number }}
-                  kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
-                  helm upgrade --install agconn-pr ./infra/helm/agconn \
-                    --namespace $NS \
-                    -f ./infra/helm/agconn/values-preview.yaml \
-                    --set image.tag=${{ github.sha }} \
-                    --set ingress.host=pr-${{ github.event.pull_request.number }}.preview.agconn.com \
-                    --wait --timeout 10m
-            - name: Comment URL
-              uses: peter-evans/create-or-update-comment@v4
-              with:
-                  issue-number: ${{ github.event.pull_request.number }}
-                  body: 'Preview: https://pr-${{ github.event.pull_request.number }}.preview.agconn.com'
-```
+The job runs under `environment: ${{ inputs.environment || 'prod' }}`. The `prod` GitHub Environment can enforce required-reviewer protection rules at the platform level; the workflow YAML does not embed an approval step.
 
-## preview-cleanup.yml
+## lighthouse.yml
 
-On PR close, deletes `pr-<id>` namespace.
+PR-scoped workflow on `apps/web/**`, `packages/ui/**`, `packages/i18n/**`, the LHCI config, or the workflow file itself.
+
+1. Spins up a CI Postgres + migrates + seeds translations so the build can read `translation_keys`.
+2. Builds packages and `apps/web`.
+3. Runs `@lhci/cli autorun` against:
+   - `/en`, `/es`, `/en/jobs`, `/en/training`, `/en/faq`
+
+Asserts Perf ≥0.80, A11y ≥0.95, SEO ≥0.95 as errors; Best Practices ≥0.90 as warn. Failing assertions fail the job. Reports upload to LHCI temporary public storage.
+
+## resume-parser-eval.yml
+
+Runs the eval harness on parser- or schema-touching changes. Enforces the five thresholds documented in [00-foundation/07-resume-parser](../07-resume-parser/). Two-pass run measures cold + warm prompt cache hit rates.
+
+## preview.yml *(planned — Phase 6 gap 6.7)*
+
+Per-PR preview environments at `pr-<id>.preview.agconn.com`. Open questions:
+
+- Reuse the prod cluster with a namespace overlay (`pr-<id>`) vs. spin a tiny separate cluster.
+- Reuse the prod Supabase DB with a per-PR `tenant_id` namespace vs. issue a per-PR Supabase branch.
+- DNS — wildcard `*.preview.agconn.com` CNAME to the same static ingress IP, ingress rules routed by host.
+- Teardown — `on: pull_request` types `[closed]` matches both merge and close.
 
 ## Dockerfile pattern
 
-Multi-stage build for each app. Example for `apps/api`:
+Three-stage `node:22-bookworm-slim` shape. See `services/api/Dockerfile` as the canonical example; every service and app follows the same layout:
 
-```dockerfile
-# apps/api/Dockerfile
-FROM node:22-alpine AS deps
-RUN corepack enable
-WORKDIR /app
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY packages packages
-COPY apps/api apps/api
-RUN pnpm install --frozen-lockfile
+1. **deps** — install pnpm, copy `package.json` files only, run `pnpm install --frozen-lockfile` with a buildkit cache mount for the pnpm store and a buildkit secret for `FONTAWESOME_TOKEN`.
+2. **build** — copy the full repo, generate the Prisma client, build `./packages/**`, then build the target.
+3. **runtime** — slim base, non-root `agconn` user (uid 1001), `CMD ["node", "<service>/dist/index.js"]`.
 
-FROM deps AS build
-RUN pnpm --filter @agconn/db prisma generate
-RUN pnpm --filter @agconn/api build
-
-FROM node:22-alpine AS runtime
-WORKDIR /app
-COPY --from=build /app/apps/api/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/packages/db/prisma ./packages/db/prisma
-EXPOSE 3000
-USER node
-CMD ["node", "dist/index.js"]
-```
-
-The web Dockerfile uses `next start`. Workers similar.
+Web and admin pass `NEXT_PUBLIC_*` as build-args so Next inlines them into the client bundle. `SENTRY_RELEASE` is both a build-arg (client bundle) and a runtime env (server SDK).
 
 ## Secrets in CI
 
-GitHub repository secrets:
+GitHub repository secrets (see `actionsecrets.md` for the full list). Highlights:
 
-- `AZURE_CREDENTIALS` — service principal for AKS access
-- `GITHUB_TOKEN` — auto-provided, used for GHCR push
-- `LHCI_GITHUB_APP_TOKEN` — Lighthouse CI app token (if using LHCI's GitHub integration)
+- `GCP_WORKLOAD_IDENTITY_PROVIDER` + `GCP_DEPLOY_SERVICE_ACCOUNT` — federated GCP auth, no static keys.
+- `FONTAWESOME_TOKEN` — passed as a buildkit secret, never inlined.
+- `DATABASE_URL`, `DIRECT_URL` — Supabase Postgres pooler + direct URLs.
+- Clerk web + Clerk admin keys (two separate Clerk instances).
+- Sentry DSNs (web + admin), `SENTRY_AUTH_TOKEN` for source map upload, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_PROJECT_ADMIN`.
+- Stripe live keys + price IDs (5 tiers).
+- Twilio SID + token + messaging service SID + inbound number.
+- Resend API key + webhook secret.
+- Supabase service-role key (Storage uploads).
+- `AUDIT_HMAC_KEY` + version, `PARTICIPANT_PEPPER`, `CLERK_ENCRYPTION_KEY`, `INTERNAL_REVALIDATE_SECRET`.
 
-Production-runtime secrets live ONLY in Azure Key Vault, never in GitHub secrets.
+Production-runtime secrets are written into the `agconn-env` K8s Secret on every deploy. There is no in-cluster KMS / CSI secret store at MVP.
 
 ## Branch protection
 
@@ -208,7 +115,5 @@ Production-runtime secrets live ONLY in Azure Key Vault, never in GitHub secrets
 
 ## Environments and approval
 
-GitHub Environments configured:
-
-- `staging` — auto-deployed from `main`, no approval.
-- `production` — required reviewers list (admin team), required status checks (CI green).
+- `prod` — required reviewers list at the GitHub Environment level. No separate staging cluster.
+- Preview environments are namespace-per-PR, not their own GitHub Environment.

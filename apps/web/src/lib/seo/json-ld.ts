@@ -30,6 +30,23 @@ export function organizationJsonLd() {
     };
 }
 
+export type BreadcrumbTrail = ReadonlyArray<{ name: string; path: string }>;
+
+export function breadcrumbJsonLd(args: { locale: Locale; trail: BreadcrumbTrail }) {
+    const base = getSiteUrl();
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        inLanguage: inLanguage(args.locale),
+        itemListElement: args.trail.map((node, idx) => ({
+            '@type': 'ListItem',
+            position: idx + 1,
+            name: node.name,
+            item: `${base}/${args.locale}${node.path === '/' ? '' : node.path}`,
+        })),
+    };
+}
+
 export function websiteJsonLd(locale: Locale) {
     const base = getSiteUrl();
     return {

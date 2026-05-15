@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Breadcrumb } from '@/components/seo/Breadcrumb';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import { MarketingPageHero } from '@/components/marketing/MarketingPageHero';
@@ -48,6 +49,7 @@ export default async function WorkersPage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <Breadcrumb locale={locale} path="/workers" />
 
             <MarketingPageHero
                 eyebrow={t('eyebrow')}

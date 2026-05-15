@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { NestedBreadcrumb } from '@/components/seo/Breadcrumb';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import {
@@ -60,6 +61,12 @@ export default async function PressReleasePage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <NestedBreadcrumb
+                locale={locale}
+                parentPath="/press"
+                leafName={pickLocale(release.headline, locale)}
+                leafPath={`/press/${slug}`}
+            />
             <JsonLd
                 data={{
                     '@context': 'https://schema.org',

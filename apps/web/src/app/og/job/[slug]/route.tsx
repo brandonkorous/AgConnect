@@ -1,171 +1,224 @@
 import { ImageResponse } from 'next/og';
 import { fetchPublicJob } from '@/lib/api/public-jobs';
+import { OgFrame } from '../../_shared/OgFrame';
+import { loadFonts } from '../../_shared/fonts';
+import { palette } from '../../_shared/palette';
 
+export const runtime = 'nodejs';
 export const revalidate = 86400;
 
-const palette = {
-    bone: '#EFE6D2',
-    moss: '#3F5A3A',
-    ink: '#1F2417',
-    honey: '#D8A24A',
-    soil: '#7A6D4F',
-    line: 'rgba(122, 109, 79, 0.25)',
-} as const;
-
-const labels = {
-    en: { eyebrow: 'Seasonal job · Central Valley', wage: 'WAGE', loc: 'LOCATION', starts: 'STARTS' },
-    es: { eyebrow: 'Trabajo de temporada · Valle Central', wage: 'PAGO', loc: 'UBICACIÓN', starts: 'EMPIEZA' },
+const COPY = {
+    en: {
+        eyebrow: 'Seasonal job',
+        wageLabel: 'Wage',
+        locLabel: 'Location',
+        startsLabel: 'Starts',
+        verified: 'Verified employer',
+        fallbackTitle: 'Seasonal work in the Central Valley',
+        fallbackLoc: 'Central Valley, California',
+    },
+    es: {
+        eyebrow: 'Trabajo de temporada',
+        wageLabel: 'Pago',
+        locLabel: 'Ubicación',
+        startsLabel: 'Empieza',
+        verified: 'Empleador verificado',
+        fallbackTitle: 'Trabajo de temporada en el Valle Central',
+        fallbackLoc: 'Valle Central, California',
+    },
 } as const;
 
 type Props = { params: Promise<{ slug: string }> };
+
+function formatWageUnit(unit: string, locale: 'en' | 'es') {
+    const u = unit.toLowerCase();
+    if (locale === 'es') {
+        if (u === 'hour') return '/hora';
+        if (u === 'day') return '/día';
+        if (u === 'piece') return '/pieza';
+        return `/${u}`;
+    }
+    return `/${u}`;
+}
+
+function formatDate(iso: string, locale: 'en' | 'es') {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    }).format(d);
+}
 
 export async function GET(req: Request, { params }: Props) {
     const { slug } = await params;
     const { searchParams } = new URL(req.url);
     const locale = searchParams.get('locale') === 'es' ? 'es' : 'en';
+    const t = COPY[locale];
     const job = await fetchPublicJob(slug);
-    const brand = process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AGCONN';
-    const t = labels[locale];
+    const live = job && job !== 'gone' ? job : null;
 
-    const title = job && job !== 'gone' ? (locale === 'es' ? job.titleEs : job.titleEn) : brand;
-    const location =
-        job && job !== 'gone'
-            ? job.city
-                ? `${job.city}, ${job.county} County`
-                : `${job.county} County, CA`
-            : 'Central Valley, CA';
-    const wage =
-        job && job !== 'gone'
-            ? `$${job.wageMin}–$${job.wageMax} / ${job.wageUnit}`
-            : '';
-    const starts = job && job !== 'gone' ? job.startDate : '';
+    const title = live ? (locale === 'es' ? live.titleEs : live.titleEn) : t.fallbackTitle;
+    const location = live
+        ? live.city
+            ? `${live.city}, ${live.county} County`
+            : `${live.county} County, CA`
+        : t.fallbackLoc;
+    const wage = live ? `$${live.wageMin}–$${live.wageMax}` : '';
+    const wageUnit = live ? formatWageUnit(live.wageUnit, locale) : '';
+    const starts = live?.startDate ? formatDate(live.startDate, locale) : '';
+
+    const fonts = await loadFonts([
+        'interTightBold',
+        'interTightSemi',
+        'interSemi',
+        'interMed',
+        'dmMonoBold',
+    ]);
 
     return new ImageResponse(
         (
-            <div
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    padding: '64px 72px',
-                    backgroundColor: palette.bone,
-                    fontFamily: 'sans-serif',
-                }}
+            <OgFrame
+                locale={locale}
+                eyebrow={t.eyebrow}
+                footerLeft={
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div
+                            style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: 9999,
+                                backgroundColor: palette.primary,
+                            }}
+                        />
+                        <span
+                            style={{
+                                fontFamily: 'Inter',
+                                fontSize: 20,
+                                fontWeight: 600,
+                                color: palette.primary,
+                                letterSpacing: 1,
+                            }}
+                        >
+                            {t.verified}
+                        </span>
+                    </div>
+                }
             >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div
-                        style={{
-                            width: 12,
-                            height: 12,
-                            borderRadius: 999,
-                            backgroundColor: palette.honey,
-                        }}
-                    />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                     <span
                         style={{
-                            fontSize: 20,
-                            color: palette.soil,
-                            letterSpacing: 4,
-                            textTransform: 'uppercase',
+                            fontFamily: 'Inter Tight',
+                            fontSize: title.length > 42 ? 72 : 88,
                             fontWeight: 700,
-                        }}
-                    >
-                        {brand} · {t.eyebrow}
-                    </span>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                    <span
-                        style={{
-                            fontSize: 84,
                             color: palette.ink,
-                            fontWeight: 600,
-                            letterSpacing: -2,
-                            lineHeight: 1.05,
-                            fontFamily: 'serif',
-                            maxWidth: 1040,
+                            letterSpacing: -3,
+                            lineHeight: 1.02,
+                            maxWidth: 1050,
                         }}
                     >
                         {title}
                     </span>
-                    {wage && (
-                        <span
-                            style={{
-                                fontSize: 56,
-                                color: palette.moss,
-                                fontWeight: 700,
-                                letterSpacing: -1,
-                                lineHeight: 1,
-                                fontFamily: 'serif',
-                            }}
-                        >
-                            {wage}
-                        </span>
-                    )}
-                </div>
 
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderTop: `1px solid ${palette.line}`,
-                        paddingTop: 24,
-                    }}
-                >
-                    <div style={{ display: 'flex', gap: 48 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {wage ? (
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
                             <span
                                 style={{
-                                    fontSize: 14,
-                                    color: palette.soil,
-                                    letterSpacing: 2,
-                                    textTransform: 'uppercase',
-                                    fontWeight: 700,
+                                    fontFamily: 'DM Mono',
+                                    fontSize: 64,
+                                    fontWeight: 500,
+                                    color: palette.primary,
+                                    letterSpacing: -2,
+                                    lineHeight: 1,
                                 }}
                             >
-                                {t.loc}
+                                {wage}
                             </span>
-                            <span style={{ fontSize: 22, color: palette.ink, fontWeight: 600 }}>
+                            <span
+                                style={{
+                                    fontFamily: 'Inter',
+                                    fontSize: 28,
+                                    fontWeight: 500,
+                                    color: palette.soil,
+                                }}
+                            >
+                                {wageUnit}
+                            </span>
+                        </div>
+                    ) : null}
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 56,
+                            paddingTop: 8,
+                        }}
+                    >
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            <span
+                                style={{
+                                    fontFamily: 'DM Mono',
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                    color: palette.soil,
+                                    letterSpacing: 3,
+                                    textTransform: 'uppercase',
+                                }}
+                            >
+                                {t.locLabel}
+                            </span>
+                            <span
+                                style={{
+                                    fontFamily: 'Inter',
+                                    fontSize: 26,
+                                    fontWeight: 600,
+                                    color: palette.ink,
+                                }}
+                            >
                                 {location}
                             </span>
                         </div>
-                        {starts && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {starts ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <span
                                     style={{
+                                        fontFamily: 'DM Mono',
                                         fontSize: 14,
+                                        fontWeight: 500,
                                         color: palette.soil,
-                                        letterSpacing: 2,
+                                        letterSpacing: 3,
                                         textTransform: 'uppercase',
-                                        fontWeight: 700,
                                     }}
                                 >
-                                    {t.starts}
+                                    {t.startsLabel}
                                 </span>
-                                <span style={{ fontSize: 22, color: palette.ink, fontWeight: 600 }}>
+                                <span
+                                    style={{
+                                        fontFamily: 'Inter',
+                                        fontSize: 26,
+                                        fontWeight: 600,
+                                        color: palette.ink,
+                                    }}
+                                >
                                     {starts}
                                 </span>
                             </div>
-                        )}
+                        ) : null}
                     </div>
-                    <span
-                        style={{
-                            fontSize: 20,
-                            color: palette.moss,
-                            fontWeight: 700,
-                            letterSpacing: 2,
-                        }}
-                    >
-                        {(process.env.NEXT_PUBLIC_SITE_URL ?? 'agconn.com')
-                            .replace(/^https?:\/\//, '')
-                            .replace(/\/$/, '')}
-                    </span>
                 </div>
-            </div>
+            </OgFrame>
         ),
-        { width: 1200, height: 630 },
+        {
+            width: 1200,
+            height: 630,
+            fonts: fonts.map((f) => ({
+                name: f.name,
+                data: f.data,
+                weight: f.weight,
+                style: f.style,
+            })),
+        },
     );
 }

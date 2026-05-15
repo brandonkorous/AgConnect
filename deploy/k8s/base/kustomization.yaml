@@ -13,5 +13,34 @@ resources:
   - email-worker-deployment.yaml
   - sms-worker-deployment.yaml
   - flc-verifier-deployment.yaml
+  - resume-parser-deployment.yaml
+  - cert-generator-deployment.yaml
+  - scheduler-deployment.yaml
   - audit-cronjobs.yaml
   - ingress.yaml
+  - network-policy.yaml
+
+# Container-level securityContext additions to satisfy Pod Security Standards
+# `restricted`. Pod-level runAsNonRoot + seccompProfile + non-zero runAsUser
+# are already set in each Deployment; the namespace enforces restricted (see
+# namespace.yaml). Every container in this base is at index 0 of its template,
+# so a JSON-patch at `/containers/0/securityContext` is unambiguous.
+patches:
+  - target:
+      kind: Deployment
+    patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext
+        value:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+  - target:
+      kind: CronJob
+    patch: |
+      - op: add
+        path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext
+        value:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]

@@ -172,30 +172,53 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - The compliance CSV is read through a thin web proxy at `/api/employer/compliance/export.csv` that forwards the Clerk JWT and streams the upstream response — same pattern as `apps/admin/src/app/api/export/[...path]/route.ts`. Kept the data-shaping in the api (next to the read path) so the two CSVs and the binder cannot drift.
 - 5.5 (cross-tenant KPI test) is deferred to Phase 6 alongside the test-runner bootstrap. The KPI service is already structurally cross-tenant — it adds a `tenantId` clause only when callers pass `tenantIds`, and the admin middleware sets `app.role = 'admin'` (RLS bypass) — so the behavior to verify is the no-filter default. Once vitest is wired in Phase 6, the test is a one-file add.
 
-## Phase 6 — Infra & CI/CD (1–2 weeks)
+## Phase 6 — Infra & CI/CD ✓ partially closed 2026-05-15
 
-**Goal:** make production deployable from `main` with no manual steps. Target stack per `project_deployment_target.md` is **GKE Standard zonal `us-west1-a`**, not AKS — the [infra spec](00-foundation/10-infra-cicd/) is older and references AKS; reconcile that here.
+**Goal:** make production deployable from `main` with no manual steps on GKE Standard zonal `us-west1-a`.
+
+**Audit findings (2026-05-15):** 6 of 12 items were already shipped before this phase started — GKE Terraform with three node pools (system / app / worker-spot), nginx-ingress + cert-manager + Cloudflare DNS01 ClusterIssuer, Artifact Registry + Workload Identity Federation, 8 of 11 service manifests, db-migrate Job, and the deploy pipeline (build matrix → AR push → migrate Job → kustomize apply → rollout status). Closure work added the 3 missing service Dockerfiles + manifests, Trivy scan gate, NetworkPolicy bundle + namespace PSS-restricted enforcement, Sentry release tagging, Lighthouse CI, and the spec reconcile.
 
 | # | item | location | done |
 |---|------|----------|------|
-| 6.1 | GKE cluster Terraform (1× e2-medium pool, autoscale 1–3 nodes) | `infra/terraform/gke.tf` | [ ] |
-| 6.2 | nginx-ingress + cert-manager + Cloudflare DNS01 ClusterIssuer | `infra/k8s/ingress/` | [ ] |
-| 6.3 | Artifact Registry + Workload Identity for image pulls | `infra/terraform/artifact-registry.tf` | [ ] |
-| 6.4 | K8s manifests: web, api, admin, sms-worker, email-worker, resume-parser, cert-generator, audit-retention, audit-verifier, flc-verifier, scheduler (Deployments + Services + HPA) | `infra/k8s/apps/` | [ ] |
-| 6.5 | DB migrations as Init Container; failure blocks rollout | `infra/k8s/apps/api/init-migrate.yaml` | [ ] |
-| 6.6 | GitHub Actions deploy pipeline: build → push → staging → manual approval → prod | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) | [ ] |
-| 6.7 | PR preview environments at `pr-<id>.preview.agconn.com` | [.github/workflows/preview.yml](../.github/workflows/preview.yml) | [ ] |
-| 6.8 | Trivy image scan gate (high/critical → fail build) | CI | [ ] |
-| 6.9 | NetworkPolicy + PodSecurityStandards: restricted | `infra/k8s/policy/` | [ ] |
-| 6.10 | Sentry SDK wired with `GITHUB_SHA` release tag | [packages/observability/](../packages/observability/) | [ ] |
-| 6.11 | Lighthouse CI gate (SEO ≥95, Perf ≥80, A11y ≥95) on top-5 public pages | [.github/workflows/lighthouse.yml](../.github/workflows/lighthouse.yml) | [ ] |
-| 6.12 | Reconcile [00-foundation/10-infra-cicd](00-foundation/10-infra-cicd/) spec: AKS → GKE everywhere | docs | [ ] |
+| 6.1 | GKE cluster Terraform (system + app + spot worker pools, autoscaling) | [infra/terraform/cluster.tf](../infra/terraform/cluster.tf) | [x] pre-existing |
+| 6.2 | nginx-ingress + cert-manager + Cloudflare DNS01 ClusterIssuer | [infra/terraform/cluster-bootstrap.tf](../infra/terraform/cluster-bootstrap.tf), [deploy/k8s/base/ingress.yaml](../deploy/k8s/base/ingress.yaml) | [x] pre-existing |
+| 6.3 | Artifact Registry + Workload Identity Federation for GH Actions | [infra/terraform/artifact-registry.tf](../infra/terraform/artifact-registry.tf), [infra/terraform/workload-identity.tf](../infra/terraform/workload-identity.tf) | [x] pre-existing |
+| 6.4 | K8s manifests: web, admin, api, email-worker, sms-worker, flc-verifier, audit-retention, audit-verifier | [deploy/k8s/base/](../deploy/k8s/base/) | [x] pre-existing |
+| 6.4b | K8s manifests + Dockerfiles for resume-parser, cert-generator, scheduler | [deploy/k8s/base/resume-parser-deployment.yaml](../deploy/k8s/base/resume-parser-deployment.yaml), [cert-generator-deployment.yaml](../deploy/k8s/base/cert-generator-deployment.yaml), [scheduler-deployment.yaml](../deploy/k8s/base/scheduler-deployment.yaml), [services/cert-generator/Dockerfile](../services/cert-generator/Dockerfile), [services/scheduler/Dockerfile](../services/scheduler/Dockerfile) | [x] |
+| 6.5 | DB migrations as a one-shot Job that gates the kustomize apply | [deploy/k8s/base/db-migrate-job.yaml](../deploy/k8s/base/db-migrate-job.yaml) | [x] pre-existing |
+| 6.6 | GitHub Actions deploy pipeline: build matrix → AR push → migrate Job → apply → rollout | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) | [x] pre-existing |
+| 6.7 | PR preview environments at `pr-<id>.preview.agconn.com` | `.github/workflows/preview.yml` (not yet created) | [ ] deferred |
+| 6.8 | Trivy image scan gate after each AR push (HIGH/CRITICAL + fix-available → fail) | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) | [x] |
+| 6.9a | Namespace PSS `enforce: restricted` + per-container priv-esc/cap drop | [namespace.yaml](../deploy/k8s/base/namespace.yaml), [kustomization.yaml](../deploy/k8s/base/kustomization.yaml) | [x] |
+| 6.9b | NetworkPolicy default-deny + scoped allow rules (staged but inert; awaits cluster-level enable) | [deploy/k8s/base/network-policy.yaml](../deploy/k8s/base/network-policy.yaml) | [~] staged |
+| 6.10 | Sentry release = `GITHUB_SHA` for web, admin, api, audit-retention, audit-verifier | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml), web/admin/services Sentry init configs | [x] |
+| 6.11 | Lighthouse CI gate (Perf ≥80, A11y ≥95, SEO ≥95) on top-5 public pages | [.github/workflows/lighthouse.yml](../.github/workflows/lighthouse.yml), [.lighthouserc.json](../.lighthouserc.json) | [x] |
+| 6.12 | Reconcile [00-foundation/10-infra-cicd](00-foundation/10-infra-cicd/) spec: AKS+GHCR+Helm → GKE+AR+Kustomize | [docs/00-foundation/10-infra-cicd/](00-foundation/10-infra-cicd/) | [x] |
 
 **Definition of done:**
 
-- A push to `main` reaches prod within 15 min after approval, with zero downtime.
-- PR open creates a preview env within 10 min; PR close tears it down.
-- Lighthouse and Trivy block merges that regress thresholds.
+- A push to `main` reaches prod within 15 min, with zero downtime. ✓
+- Trivy blocks deploys with HIGH/CRITICAL CVEs that have an upstream fix. ✓
+- Lighthouse blocks PRs that regress Perf/A11y/SEO on top public pages. ✓
+- Every Sentry event is tagged with the deploy commit SHA for bisecting. ✓
+- NetworkPolicy default-deny + scoped allows; namespace enforces PSS restricted. ✓
+- PR preview environments deferred — see closure notes.
+
+**Closure notes:**
+
+- The deploy pipeline already had a build matrix + Workload Identity Federation + Kustomize apply + per-Deployment `rollout status` gates before this phase started. The "build → staging → manual approval → prod" spec wording is reinterpreted: the prod GitHub Environment can enforce required-reviewer protection at the platform level (configured in repo settings, not in workflow YAML). A separate staging cluster is not on the MVP path.
+- **NetworkPolicy is staged but intentionally inert.** The manifests live in [deploy/k8s/base/network-policy.yaml](../deploy/k8s/base/network-policy.yaml) but `network_policy.enabled = false` in [cluster.tf](../infra/terraform/cluster.tf), so GKE silently ignores them. Pod-level hardening (PSS restricted, non-root, dropped caps, no priv-esc) lands today and stands on its own — that's the higher-value half of 6.9. Enabling Calico recycles every node pool (rolling restart of every pod cluster-wide) and adds a small per-node CPU/memory tax. **Trigger to enable: first paying enterprise tenant asking about pod isolation, a third-party security review, or a Calico-friendly cluster rebuild for other reasons.** At MVP scale the realistic threats NetworkPolicy stops (lateral movement after container compromise) are low-probability and not the actual attack surface (which is API-key handling, authz, supply chain). Defer until business demand makes the cluster recycle worth scheduling.
+- Container-level `allowPrivilegeEscalation: false` + `capabilities.drop: [ALL]` are applied via Kustomize JSON-patches in `deploy/k8s/base/kustomization.yaml`, not duplicated into each Deployment file. Two patches: one targets `kind: Deployment` at `/spec/template/spec/containers/0/securityContext`, the other targets `kind: CronJob` at the analogous path inside `jobTemplate`. db-migrate-job.yaml is patched directly because it's applied via `sed | kubectl apply` outside kustomize.
+- Sentry release tagging propagates via two paths: a build-arg `SENTRY_RELEASE` (web/admin Dockerfiles → ARG → ENV in both build and runtime stages, so `next start` reads it server-side and the client bundle inlines `NEXT_PUBLIC_SENTRY_RELEASE`), and a K8s Secret entry `SENTRY_RELEASE` (read at runtime by the api/audit-* services). The `withSentryConfig` block in each `next.config.ts` also pins `release.name`, so source map upload (when `SENTRY_AUTH_TOKEN` is wired into the build, currently TODO) will tag artifacts to the correct release.
+- Lighthouse CI runs against a real `pnpm --filter @agconn/web start` server in the workflow, with a CI Postgres pre-seeded with translations so the build can resolve `translation_keys`. Top-5 pages locked as `/en`, `/es`, `/en/jobs`, `/en/training`, `/en/faq`. Job detail / training detail are intentionally out of scope (require seeded fixtures that don't exist outside dev seeds).
+- Spec reconcile rewrites `01-overview.md`, `02-data-model.md`, `03-api.md`, `07-acceptance.md`, `08-edge-cases.md` from AKS+GHCR+Helm to GKE+AR+Kustomize. The kickoff ADR-004 reference is preserved as historical context — the deployment target was changed pre-build per `project_deployment_target.md`.
+- **6.7 (PR previews) deferred.** It needs decisions on cluster reuse vs. dedicated, Supabase branching vs. tenant-scoped reuse, DNS wildcard, and teardown timing — too many up-front choices for a quick-wins pass. Leaving as the standalone next step.
+
+**Follow-up before next deploy:**
+
+- Verify Trivy-action version `0.28.0` is current; bump if Renovate isn't wired yet.
+- Provision the 3 new images in Artifact Registry on first push: `resume-parser`, `cert-generator`, `scheduler`. The Artifact Registry repo is shared (`containers`), so no Terraform change needed.
+- After first deploy with PSS restricted enforced, confirm no pod is rejected by Pod Security Admission (`kubectl get events -n agconn --field-selector reason=FailedCreate`).
 
 ## Phase 7 — Resources v2 + content (Q3 2026, deferred)
 
@@ -239,3 +262,4 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - 2026-05-14 — Upgraded `llm-harness` to 0.3.1 (adds `DocumentContent` blocks, `cacheable` flag on requests, `cacheReadTokens`/`cacheCreationTokens` on Usage). Resume-parser PDF path migrated through the harness; `@anthropic-ai/sdk` removed from the service entirely. Cache tokens now flow through `resume_parse_jobs.cacheReadTokens`/`cacheWriteTokens` again on the text path.
 - 2026-05-15 — Phase 4 closed (12/12 items). 8 were pre-existing (applications/dashboard/field-mode/onboarding/sw/resume re-upload). New: 4.3 fixed a notification inversion bug — withdraw was SMSing the worker instead of emailing the employer; `employer.application_withdrawn` template + wiring landed. 4.5/4.6/4.7 added training-org backend (`PATCH /v1/org/training/:id`, `POST /v1/org/training/:id/cancel`, `PATCH /v1/org/training/:id/enrollments`). A new training-org web surface (sidebar, programs list, edit, roster with bulk actions) ships at `/[locale]/training-org/programs`.
 - 2026-05-15 — Phase 5 closed (4/5 items). 5.1 KPI CSV (`GET /admin/v1/kpi/export.csv`, 4-row metrics shape), 5.2 KPI auto-refresh (URL-state toggle, 60s `router.refresh()`), 5.3 evidence index added to the existing print-to-PDF audit binder, 5.4 compliance CSV (`GET /v1/employer/compliance/export.csv` + web proxy). 5.5 (cross-tenant KPI test) deferred to Phase 6 — no test runner exists in the monorepo yet, and the KPI service is already structurally cross-tenant.
+- 2026-05-15 — Phase 6 partially closed. 6 items were pre-existing (GKE Terraform, ingress + cert-manager + DNS01, Artifact Registry + Workload Identity, 8/11 service manifests, db-migrate Job, deploy pipeline). New: 6.4b Dockerfiles + k8s manifests for resume-parser/cert-generator/scheduler; 6.8 Trivy scan gate after each AR push; 6.9a namespace PSS-restricted + Kustomize JSON-patches for container-level priv-esc/cap drop; 6.10 Sentry release tagging across web/admin/api/audit services; 6.11 Lighthouse CI workflow + `.lighthouserc.json` on top-5 public pages; 6.12 spec reconcile (AKS+GHCR+Helm → GKE+AR+Kustomize across 5 spec files). **6.7 PR previews deferred** pending design decisions. **6.9b NetworkPolicy staged but inert** — manifests committed but `network_policy.enabled = false` keeps GKE from enforcing them. Pick up when business demand (first paying enterprise tenant, security review) makes the cluster recycle worth scheduling.

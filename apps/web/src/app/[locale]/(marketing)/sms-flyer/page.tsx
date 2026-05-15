@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Breadcrumb } from '@/components/seo/Breadcrumb';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import { inboundOptInKeyword, inboundPhoneDisplay } from '@agconn/sms/inbound-number';
 
@@ -37,6 +38,7 @@ export default async function SmsFlyerPage({ params }: RouteProps) {
   return (
     <>
       <JsonLd data={organizationJsonLd()} />
+      <Breadcrumb locale={locale} path="/sms-flyer" />
       <div className="bg-white text-black min-h-screen">
         <div className="screen-only mx-auto flex max-w-[7in] items-center justify-between px-6 pb-4 pt-6">
           <a

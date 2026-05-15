@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { NestedBreadcrumb } from '@/components/seo/Breadcrumb';
 import { marketingMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import {
@@ -60,6 +61,12 @@ export default async function CareerRolePage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <NestedBreadcrumb
+                locale={locale}
+                parentPath="/careers"
+                leafName={pickLocale(role.title, locale)}
+                leafPath={`/careers/${slug}`}
+            />
             <JsonLd
                 data={{
                     '@context': 'https://schema.org',

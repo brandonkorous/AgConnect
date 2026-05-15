@@ -10,6 +10,7 @@ if (dsn) {
     enableLogs: true,
     environment: process.env.APP_ENV ?? process.env.NODE_ENV,
     serverName: '@agconn/audit-verifier',
+    release: process.env.SENTRY_RELEASE || undefined,
   });
 }
 

@@ -33,6 +33,10 @@ spec:
       containers:
         - name: migrate
           image: REPLACE_AR_BASE/api:REPLACE_TAG
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           command: ["bash", "-c"]
           args:
             - |

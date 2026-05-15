@@ -1,191 +1,166 @@
 # 10 — Infra & CI/CD: Architecture & Manifests
 
-This file describes the cluster topology and Kubernetes manifest structure. There is no DB schema specific to infra.
+This file describes the cluster topology and Kubernetes manifest structure. There is no DB schema specific to infra. **Authoritative manifests live in [`deploy/k8s/base/`](../../../deploy/k8s/base/)** — this doc summarizes intent; if the two disagree, the manifests win.
 
-## AKS namespaces
+## GKE namespaces
 
-| namespace        | purpose                                     |
-| ---------------- | ------------------------------------------- |
-| `agconn-prod`    | production                                  |
-| `agconn-staging` | staging — mirror of prod config             |
-| `pr-<id>`        | per-PR preview, auto-deleted on PR close    |
-| `cert-manager`   | cert-manager + Let's Encrypt                |
-| `ingress-nginx`  | Nginx Ingress controller                    |
-| `monitoring`     | Prometheus / Grafana (or use Azure Monitor) |
+| namespace        | purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| `agconn`         | production workloads                                 |
+| `pr-<id>`        | per-PR preview, auto-deleted on PR close *(planned)* |
+| `cert-manager`   | cert-manager + Let's Encrypt                         |
+| `ingress-nginx`  | nginx-ingress controller                             |
+| `kube-system`    | GKE-managed (kube-dns, Calico, metrics-server)       |
 
-## Deployments
+The `agconn` namespace is labelled `pod-security.kubernetes.io/enforce: restricted`. Every container in the namespace runs as non-root, drops all Linux capabilities, has `allowPrivilegeEscalation: false`, and uses the `RuntimeDefault` seccomp profile.
+
+## Node pools
+
+| pool     | machine type | mode      | autoscale | taint               | who runs here                                    |
+| -------- | ------------ | --------- | --------- | ------------------- | ------------------------------------------------ |
+| `system` | e2-small     | on-demand | fixed 1   | none                | ingress-nginx, cert-manager, kube-system         |
+| `app`    | e2-medium    | on-demand | 1–3       | `pool=app:NoSchedule` | web, admin, api, db-migrate Job                  |
+| `worker` | e2-small     | **spot**  | 0–N       | spot taint          | pg-boss consumers, audit CronJobs                |
+
+Spot eviction is safe because every worker is a pg-boss consumer — interrupted jobs requeue. Min=0 means idle worker capacity costs nothing.
+
+## Deployments (canonical shape)
 
 ### web
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: web, namespace: agconn-prod }
+metadata: { name: web, namespace: agconn }
 spec:
-  replicas: 2          # HPA scales 2..10
+  replicas: 1                  # HPA scales 1..2 on cpu=70%
   template:
     spec:
-      imagePullSecrets: [{ name: ghcr-pull }]
+      serviceAccountName: agconn
+      nodeSelector: { pool: app }
+      tolerations: [{ key: pool, value: app, effect: NoSchedule }]
+      securityContext: { runAsNonRoot: true, runAsUser: 1001, seccompProfile: { type: RuntimeDefault } }
       containers:
         - name: web
-          image: ghcr.io/agconn/web:<SHA>
-          ports: [{ containerPort: 3000 }]
-          env:
-            - name: NEXT_PUBLIC_API_URL ; value: https://api.agconn.com
-            - name: CLERK_PUBLISHABLE_KEY ; valueFrom: { secretKeyRef: { name: clerk-keys, key: pub } }
-          resources:
-            requests: { cpu: 200m, memory: 256Mi }
-            limits:   { cpu: 1000m, memory: 768Mi }
-          readinessProbe: { httpGet: { path: /api/health, port: 3000 }, initialDelaySeconds: 5 }
-          livenessProbe:  { httpGet: { path: /api/health, port: 3000 }, initialDelaySeconds: 30 }
+          image: us-west1-docker.pkg.dev/<proj>/containers/web:<SHA>
+          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+          ports: [{ containerPort: 3000, name: http }]
+          envFrom:
+            - configMapRef: { name: agconn-config }
+            - secretRef:    { name: agconn-env }
+          readinessProbe: { httpGet: { path: /api/health, port: http } }
 ```
 
 ### api
 
-Similar shape; runs `node apps/api/dist/index.js`. Env includes `DATABASE_URL`, `CLERK_SECRET_KEY`, `RESEND_API_KEY`, `TWILIO_AUTH_TOKEN`, all from Key Vault via CSI.
+Hono `node services/api/dist/index.js`, port 3001. Reads tenant from Clerk org in middleware, pins via `set_config('app.tenant_id', ...)` for RLS.
 
 ### admin
 
-Internal only; ingress uses Cloudflare Access or Azure AD authentication (Key Vault-managed) before reaching the pod.
+Internal-only Next.js, port 3100. Cloudflare WAF + Clerk admin instance guard ingress; pod still enforces auth server-side.
 
-### workers
+### workers (per-service)
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata: { name: workers, namespace: agconn-prod }
-spec:
-    replicas: 1 # HPA can scale 1..5 based on pg-boss queue depth (custom metric)
-    template:
-        spec:
-            containers:
-                - name: workers
-                  image: ghcr.io/agconn/workers:<SHA>
-                  command: ['node', 'apps/workers/dist/index.js']
-                  env: { ... DB and queue creds ... }
-```
+`email-worker`, `sms-worker`, `resume-parser`, `cert-generator`, `scheduler`, `flc-verifier`. Each is its own image and Deployment on the `worker` (spot) pool. Scheduler is a singleton (`replicas: 1`, `strategy: Recreate`) — multiple replicas would double-enqueue time-based jobs.
+
+### CronJobs
+
+`audit-retention` (02:00 UTC) and `audit-verifier` (03:00 UTC). `concurrencyPolicy: Forbid` prevents overlap on slow nights.
 
 ## Services
 
-```yaml
-- web: ClusterIP, port 80 → 3000
-- api: ClusterIP, port 80 → 3000
-- admin: ClusterIP, port 80 → 3000
+```
+- web:   ClusterIP, port 80 → 3000
+- admin: ClusterIP, port 80 → 3100
+- api:   ClusterIP, port 80 → 3001
 ```
 
-Workers have no Service — they only connect outbound (DB + Twilio + Resend + Anthropic).
+Worker pods have no Service. Outbound only (Supabase, Twilio, Resend, Anthropic, Stripe, Sentry).
 
-## Ingress
+## Ingress + TLS
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-    name: agconn
-    namespace: agconn-prod
-    annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-spec:
-    ingressClassName: nginx
-    tls:
-        - hosts: [agconn.com, www.agconn.com, api.agconn.com, admin.agconn.com]
-          secretName: agconn-tls
-    rules:
-        - host: agconn.com
-          http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: web, port: { number: 80 } } } }] }
-        - host: www.agconn.com
-          http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: web, port: { number: 80 } } } }] }
-        - host: api.agconn.com
-          http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: api, port: { number: 80 } } } }] }
-        - host: admin.agconn.com
-          http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: admin, port: { number: 80 } } } }] }
-```
+Three Ingress objects, all `ingressClassName: nginx`, all gated by `cert-manager.io/cluster-issuer: letsencrypt-prod`:
 
-`www.agconn.com` 301-redirects to `agconn.com` via an Nginx annotation.
+- `agconn.com`, `www.agconn.com` → web
+- `api.agconn.com` → api
+- `admin.agconn.com` → admin
+
+The `letsencrypt-prod` ClusterIssuer uses Cloudflare DNS01 (HTTP01 doesn't traverse Cloudflare's orange-cloud proxy). The Cloudflare API token Secret lives in the `cert-manager` namespace and is provisioned by Terraform.
+
+Single static IP allocated by Terraform (`google_compute_address.ingress`) and patched onto the ingress-nginx LoadBalancer Service at bootstrap.
+
+## NetworkPolicy *(staged but inert at MVP)*
+
+Manifests are committed at `deploy/k8s/base/network-policy.yaml` and applied to the cluster, but GKE silently ignores them because `network_policy.enabled = false` in `infra/terraform/cluster.tf`. Enforcement is deferred until business demand justifies the cluster recycle that enabling Calico requires — see Phase 6 item 6.9b in [GAP-CLOSURE-PLAN.md](../../GAP-CLOSURE-PLAN.md).
+
+The intended topology, when enabled, is default-deny ingress for the `agconn` namespace plus:
+
+- `web` accepts TCP/3000 from pods in the `ingress-nginx` namespace.
+- `admin` accepts TCP/3100 from pods in the `ingress-nginx` namespace.
+- `api` accepts TCP/3001 from `ingress-nginx` **and** from any pod in `agconn` (web RSCs call api server-to-server).
+
+Egress is unrestricted — every pod can reach Supabase, Stripe, Twilio, Resend, Sentry, Clerk, Anthropic, Cloudflare, and GCP control plane. Allow-listing those destinations by IP is more brittle than the gain.
 
 ## HorizontalPodAutoscaler
 
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata: { name: web-hpa, namespace: agconn-prod }
-spec:
-    scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: web }
-    minReplicas: 2
-    maxReplicas: 10
-    metrics:
-        - type: Resource
-          resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } }
-```
+`web` and `api` autoscale 1–2 replicas on `cpu = 70%`. Workers are scaled manually for now — pg-boss queue depth is the right signal but exposing it as a custom metric (HPA `External` source via prometheus-adapter) is deferred until queue depth becomes a real bottleneck.
 
-API and workers similar. Workers scale on a custom metric: `pg_boss_queue_depth` exposed via a Prometheus exporter sidecar.
+## Secrets
 
-## Secrets via Azure Key Vault + CSI
+GitHub Actions secrets → applied as a single `agconn-env` K8s Secret on every deploy. Each Deployment `envFrom`s that Secret + a non-sensitive `agconn-config` ConfigMap. There is no in-cluster KMS or CSI secret store at MVP. Sentry release tag (`SENTRY_RELEASE = GITHUB_SHA`) is included in the Secret.
 
-```yaml
-apiVersion: secrets-store.csi.x-k8s.io/v1
-kind: SecretProviderClass
-metadata: { name: agconn-secrets, namespace: agconn-prod }
-spec:
-  provider: azure
-  parameters:
-    keyvaultName: agconn-prod-kv
-    objects: |
-      array:
-        - |
-          objectName: DATABASE-URL
-          objectType: secret
-        - |
-          objectName: CLERK-SECRET-KEY
-          objectType: secret
-        - ...
-  secretObjects:
-    - secretName: app-secrets
-      type: Opaque
-      data:
-        - objectName: DATABASE-URL ; key: DATABASE_URL
-        - objectName: CLERK-SECRET-KEY ; key: CLERK_SECRET_KEY
-```
-
-The Deployment then `envFrom`s `app-secrets`. Pods get fresh secret values at start; no plaintext on disk.
+A Workload Identity binding for the K8s ServiceAccount `agconn/agconn` is provisioned by Terraform; pods that need GCP API access (Cloud Logging, Artifact Registry pulls) auth via WI, not service-account keys.
 
 ## Database init
 
-Migrations run in an init container before the api Deployment becomes Ready:
+Prisma migrations run as a one-shot `Job` (not an Init Container) **before** the kustomize apply step in the deploy pipeline:
 
 ```yaml
-initContainers:
-    - name: prisma-migrate
-      image: ghcr.io/agconn/api:<SHA>
-      command: ['sh', '-c', 'pnpm --filter db prisma migrate deploy && node scripts/log-migration.mjs $GITHUB_SHA']
-      envFrom: [{ secretRef: { name: app-secrets } }]
+apiVersion: batch/v1
+kind: Job
+metadata: { name: db-migrate-<SHA>, namespace: agconn }
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: us-west1-docker.pkg.dev/<proj>/containers/api:<SHA>
+          command: ["bash", "-c"]
+          args: ["cd /app/packages/db && npx prisma migrate deploy && npx tsx scripts/seed-translations.ts && npx tsx scripts/seed-lookups.ts"]
+          envFrom: [{ secretRef: { name: agconn-env } }]
 ```
 
-If the migration fails, the pod doesn't start. Rolling deploy preserves the previous version.
+The pipeline waits on `kubectl wait --for=condition=complete job/db-migrate-<SHA>` before flipping any Deployment. A failed migration fails the deploy and leaves the previous image rollout intact.
 
-## Monitoring
+Init Container was rejected because every web/admin/api pod would re-run migrations on every restart — a Job runs once per release.
 
-- **Azure Monitor for containers** enabled on the AKS cluster — handles cluster-level metrics + log aggregation.
-- **Sentry SDK** initialized in `apps/api`, `apps/web`, `apps/admin`, `apps/workers`. Each release is tagged with the `GITHUB_SHA`.
-- **Custom dashboards** in Azure Monitor: API request rate, error rate, P50/P99 latency; Worker queue depth, processing latency; web Core Web Vitals (via real-user monitoring SDK).
+## Observability
+
+- **GCP Cloud Logging** — stdout from every pod is collected automatically. Structured JSON logs from each service flow through this.
+- **Sentry** — initialized in `apps/web`, `apps/admin`, `services/api`, `services/audit-retention`, `services/audit-verifier`. Release is tagged with `GITHUB_SHA` so regressions bisect to a commit.
+- **Cloud Monitoring dashboards** — request rate, error rate, P50/P99 latency, HPA replica counts. Custom dashboards are TODO; default GKE cluster overview is sufficient day-1.
+- **Lighthouse CI** — runs on PRs that touch `apps/web/`, gates Perf ≥80 / A11y ≥95 / SEO ≥95 on top public pages.
+
+In-cluster Prometheus/Grafana was rejected at MVP — Cloud Logging + Sentry cover the diagnostic surface, and a Prometheus stack adds two pods worth of memory pressure on a small cluster.
 
 ## Backups
 
-- **Azure Postgres PITR** — 7-day retention, geo-redundant.
-- **Supabase Storage** — object versioning enabled; nightly snapshot of the bucket inventory exported to a separate S3-compatible cold-storage bucket for disaster recovery.
-- **Key Vault** — soft-delete + purge protection enabled.
-
-Postgres + Key Vault backups are managed by Azure; storage backups orchestrated by Supabase + a small nightly job.
+- **Supabase Postgres PITR** — 7-day retention (Pro tier).
+- **Supabase Storage** — object versioning enabled. Cert PDFs are immutable after first write.
+- **GitHub repository** — single source of truth for all manifests, Terraform, and code. Loss of the cluster is a `terraform apply` + `gh workflow run deploy.yml` away.
 
 ## Cost estimate (rough, MVP)
 
-| component                             | monthly   |
-| ------------------------------------- | --------- |
-| AKS (3 × Standard_DS2_v2 nodes)       | $230      |
-| Azure Postgres Flexible (2 vCPU, 8GB) | $130      |
-| Supabase Storage (50 GB)              | $2        |
-| Azure Key Vault                       | $5        |
-| Bandwidth                             | $20       |
-| **Total**                             | **~$390** |
+| component                                     | monthly   |
+| --------------------------------------------- | --------- |
+| GKE control plane (zonal, ~$0.10/hr)          | $73       |
+| 1× e2-small system + 1× e2-medium app on-demand | ~$45    |
+| Worker pool (spot, scales 0–N; ~50% utilization) | ~$10  |
+| Static IP                                     | $3        |
+| Cloud Logging (50GB ingest)                   | $25       |
+| Supabase Pro (Postgres + Storage)             | $25       |
+| Bandwidth                                     | $20       |
+| **Total**                                     | **~$200** |
 
 External services (Twilio, Resend, Stripe, Anthropic, Clerk, Sentry) bill separately based on usage.

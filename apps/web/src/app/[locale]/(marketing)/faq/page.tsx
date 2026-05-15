@@ -5,6 +5,7 @@ import { faArrowRight, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { FaqAccordion, type FaqEntry } from '@/components/landing/FaqAccordion';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Breadcrumb } from '@/components/seo/Breadcrumb';
 import { faqMetadata } from '@/lib/seo/metadata';
 import { faqPageJsonLd, organizationJsonLd } from '@/lib/seo/json-ld';
 
@@ -74,6 +75,7 @@ export default async function FaqPage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <Breadcrumb locale={locale} path="/faq" />
             <JsonLd
                 data={faqPageJsonLd({
                     locale,

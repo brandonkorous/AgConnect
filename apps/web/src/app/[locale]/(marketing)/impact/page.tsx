@@ -14,6 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { EyebrowLabel } from '@/components/primitives/EyebrowLabel';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Breadcrumb } from '@/components/seo/Breadcrumb';
 import { impactMetadata } from '@/lib/seo/metadata';
 import { organizationJsonLd } from '@/lib/seo/json-ld';
 import { getImpact, type Impact } from '@/lib/api/landing';
@@ -93,6 +94,7 @@ export default async function ImpactPage({ params }: RouteProps) {
     return (
         <>
             <JsonLd data={organizationJsonLd()} />
+            <Breadcrumb locale={locale} path="/impact" />
 
             <section className="bg-base-100 w-full">
                 <div className="container mx-auto px-5 pt-20 pb-16 md:px-8 md:pt-24 md:pb-20 lg:px-20 lg:pt-32 lg:pb-24">

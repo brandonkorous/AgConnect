@@ -4,3 +4,13 @@ metadata:
   name: agconn
   labels:
     app.kubernetes.io/part-of: agconn
+    # Pod Security Standards. Enforce `restricted` after every pod is locked
+    # down: non-root + dropped caps + seccomp RuntimeDefault + no priv-esc.
+    # `warn` + `audit` at the same level surface drift at apply-time.
+    # See https://kubernetes.io/docs/concepts/security/pod-security-admission/.
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
