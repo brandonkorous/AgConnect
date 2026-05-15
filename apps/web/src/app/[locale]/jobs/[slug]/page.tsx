@@ -23,6 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale, slug } = await params;
     const job = await fetchPublicJob(slug);
     if (!job) return { title: 'Job' };
+    if (job === 'gone') {
+        return {
+            title: locale === 'es' ? 'Vacante cerrada · AGCONN' : 'Listing closed · AGCONN',
+            robots: { index: false, follow: false },
+        };
+    }
     const title = locale === 'es' ? job.titleEs : job.titleEn;
     const description =
         (locale === 'es' ? job.descriptionEs : job.descriptionEn).slice(0, 160) ||
@@ -48,6 +54,26 @@ export default async function PublicJobDetailPage({ params }: Props) {
     const t = await getTranslations({ locale, namespace: 'public_jobs.detail' });
     const job = await fetchPublicJob(slug);
     if (!job) notFound();
+    if (job === 'gone') {
+        return (
+            <PublicShell locale={locale} title={t('closed_heading')}>
+                <div className="mx-auto max-w-prose py-12 text-center">
+                    <h1 className="font-serif text-[32px] tracking-[-0.025em] sm:text-[40px]">
+                        {t('closed_heading')}
+                    </h1>
+                    <p className="text-base-content/70 mt-4 text-[14.5px] leading-relaxed">
+                        {t('closed_body')}
+                    </p>
+                    <Link
+                        href={`/${locale}/jobs` as Route}
+                        className="btn btn-primary mt-6 no-underline"
+                    >
+                        {t('closed_cta')}
+                    </Link>
+                </div>
+            </PublicShell>
+        );
+    }
     const title = locale === 'es' ? job.titleEs : job.titleEn;
     const description = locale === 'es' ? job.descriptionEs : job.descriptionEn;
     const crop = inferCrop(job.titleEn, job.skills);

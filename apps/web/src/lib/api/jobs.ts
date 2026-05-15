@@ -106,12 +106,17 @@ export async function fetchJobs(query: JobsQuery = {}): Promise<JobsPage> {
   return res.data;
 }
 
-export async function fetchJob(slug: string): Promise<JobDetail | null> {
+export type FetchJobResult = JobDetail | 'gone' | null;
+
+export async function fetchJob(slug: string): Promise<FetchJobResult> {
   const api = await getServerApiClient();
   const res = await api.get<JobDetail>(`/v1/jobs/${encodeURIComponent(slug)}`, {
     handleErrorInline: true,
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    if (res.error.code === 'job_gone') return 'gone';
+    return null;
+  }
   return res.data;
 }
 

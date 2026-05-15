@@ -103,7 +103,7 @@ Worker hires from 3 employers in one minute. They get 3 SMS in rapid succession.
 
 User signs up, hits Apply on a job before completing onboarding.
 
-**Behavior:** API returns `403 not_onboarded`; UI redirects to onboarding flow with `?return_to=/jobs/<slug>/apply`.
+**Behavior (reversed 2026-05-14):** application is accepted with whatever profile data the worker has already shared. The apply handler auto-creates a stub `worker_profile` if one doesn't exist so the FK + `countyAtApply`/`skillsAtApply` snapshots have somewhere to land. The employer's applicant card surfaces missing fields and nudges from there — apply itself never gates on onboarding completeness. Rationale: the audience often arrives via SMS OTP with only a verified phone, and the dignified default is to let them express interest immediately.
 
 ## Open questions
 

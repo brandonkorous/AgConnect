@@ -26,14 +26,48 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale, slug } = await params;
     const job = await fetchJob(slug);
     if (!job) return { title: 'Job' };
+    if (job === 'gone') {
+        return {
+            title: locale === 'es' ? 'Vacante cerrada · AGCONN' : 'Listing closed · AGCONN',
+            robots: { index: false, follow: false },
+        };
+    }
     return { title: locale === 'es' ? job.titleEs : job.titleEn };
 }
 
 export default async function JobDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     const t = await getTranslations({ locale, namespace: 'worker.job_detail' });
+    const tPublic = await getTranslations({ locale, namespace: 'public_jobs.detail' });
     const [job, profile] = await Promise.all([fetchJob(slug), fetchProfile()]);
     if (!job) notFound();
+    if (job === 'gone') {
+        return (
+            <div className="px-6 pb-16 pt-8 lg:px-8">
+                <Link
+                    href={`/${locale}/worker/jobs`}
+                    className="text-base-content/70 hover:text-base-content mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium"
+                >
+                    <FontAwesomeIcon icon={faArrowLeft} className="h-3 w-3" />
+                    {t('back')}
+                </Link>
+                <div className="mx-auto max-w-prose py-12 text-center">
+                    <h1 className="font-serif text-[32px] tracking-[-0.025em] sm:text-[40px]">
+                        {tPublic('closed_heading')}
+                    </h1>
+                    <p className="text-base-content/70 mt-4 text-[14.5px] leading-relaxed">
+                        {tPublic('closed_body')}
+                    </p>
+                    <Link
+                        href={`/${locale}/worker/jobs`}
+                        className="btn btn-primary mt-6 no-underline"
+                    >
+                        {tPublic('closed_cta')}
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const title = locale === 'es' ? job.titleEs : job.titleEn;
     const description = locale === 'es' ? job.descriptionEs : job.descriptionEn;

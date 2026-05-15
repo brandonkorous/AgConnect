@@ -32,6 +32,11 @@ export const StandardErrors = {
     defaultToast: false,
     defaultMessage: "We couldn't find that.",
   },
+  job_gone: {
+    http: 410,
+    defaultToast: false,
+    defaultMessage: 'This job listing has closed.',
+  },
   validation_failed: {
     http: 422,
     defaultToast: false,

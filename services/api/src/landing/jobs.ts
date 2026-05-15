@@ -60,7 +60,10 @@ publicJobsRoutes.get('/:slug', async (c) => {
         include: { employer: { include: { employerProfile: true } } },
     });
     if (!job) return err(c, 404, 'not_found');
-    if (job.status !== JobStatus.active) return err(c, 404, 'not_found');
+    // A slug that once published but is now closed/filled or whose draft was
+    // pulled returns 410 — tells crawlers to drop the URL and lets the frontend
+    // render a "this listing has closed" page instead of a generic 404.
+    if (job.status !== JobStatus.active) return err(c, 410, 'job_gone');
 
     return ok(c, {
         ...shapePublicJob(job),

@@ -7,6 +7,7 @@ import {
     BulkTransitionBody,
     NoteBody,
     SendMessageBody,
+    canUseFeature,
 } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
 import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
@@ -288,36 +289,42 @@ employerApplicationsRoutes.post(
             const employerProfile = await c.var.db.employerProfile.findUnique({
                 where: { userId },
             });
-            const employerName = employerProfile?.legalName ?? 'AGCONN employer';
-            const jobTitle = result.job.titleEn;
-            if (body.toStatus === 'reviewed') {
-                await enqueueSms({
-                    tenantId,
-                    userId: result.workerId,
-                    template: 'application.reviewed',
-                    vars: { jobTitle, employer: employerName },
-                    jobKey: `app-${id}-reviewed`,
-                });
-            } else if (body.toStatus === 'hired') {
-                await enqueueSms({
-                    tenantId,
-                    userId: result.workerId,
-                    template: 'application.hired',
-                    vars: {
-                        jobTitle,
-                        employer: employerName,
-                        startDate: body.startDate,
-                    },
-                    jobKey: `app-${id}-hired`,
-                });
-            } else if (body.toStatus === 'rejected') {
-                await enqueueSms({
-                    tenantId,
-                    userId: result.workerId,
-                    template: 'application.rejected',
-                    vars: { jobTitle, employer: employerName },
-                    jobKey: `app-${id}-rejected`,
-                });
+            // Free-tier employers don't get applicant SMS — the kanban transition
+            // writes its event row but skips the Twilio enqueue. Workers still get
+            // platform-triggered SMS (job alerts, training reminders, auth) since
+            // those aren't tied to any specific employer's plan.
+            if (employerProfile && canUseFeature(employerProfile.plan, 'applicantSms')) {
+                const employerName = employerProfile.legalName;
+                const jobTitle = result.job.titleEn;
+                if (body.toStatus === 'reviewed') {
+                    await enqueueSms({
+                        tenantId,
+                        userId: result.workerId,
+                        template: 'application.reviewed',
+                        vars: { jobTitle, employer: employerName },
+                        jobKey: `app-${id}-reviewed`,
+                    });
+                } else if (body.toStatus === 'hired') {
+                    await enqueueSms({
+                        tenantId,
+                        userId: result.workerId,
+                        template: 'application.hired',
+                        vars: {
+                            jobTitle,
+                            employer: employerName,
+                            startDate: body.startDate,
+                        },
+                        jobKey: `app-${id}-hired`,
+                    });
+                } else if (body.toStatus === 'rejected') {
+                    await enqueueSms({
+                        tenantId,
+                        userId: result.workerId,
+                        template: 'application.rejected',
+                        vars: { jobTitle, employer: employerName },
+                        jobKey: `app-${id}-rejected`,
+                    });
+                }
             }
         } catch (e) {
             console.error('[employer.applications.transition] SMS enqueue failed', {
@@ -408,7 +415,11 @@ employerApplicationsRoutes.post(
                 const employerProfile = await c.var.db.employerProfile.findUnique({
                     where: { userId },
                 });
-                const employerName = employerProfile?.legalName ?? 'AgConn employer';
+                // See single-transition handler — free tier skips Twilio.
+                if (!employerProfile || !canUseFeature(employerProfile.plan, 'applicantSms')) {
+                    return ok(c, { succeeded, failed });
+                }
+                const employerName = employerProfile.legalName;
                 const template =
                     body.toStatus === 'reviewed'
                         ? ('application.reviewed' as const)

@@ -58,13 +58,18 @@ export async function fetchPublicJobs(
   return res.data;
 }
 
-export async function fetchPublicJob(slug: string): Promise<PublicJobDetail | null> {
+export type FetchPublicJobResult = PublicJobDetail | 'gone' | null;
+
+export async function fetchPublicJob(slug: string): Promise<FetchPublicJobResult> {
   const api = await publicClient();
   const res = await api.get<PublicJobDetail>(
     `/v1/landing/jobs/${encodeURIComponent(slug)}`,
     { handleErrorInline: true },
   );
-  if (!res.ok) return null;
+  if (!res.ok) {
+    if (res.error.code === 'job_gone') return 'gone';
+    return null;
+  }
   return res.data;
 }
 

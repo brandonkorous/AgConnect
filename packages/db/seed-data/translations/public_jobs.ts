@@ -21,6 +21,18 @@ export const publicJobs: TranslationBundle = {
         en: "All jobs",
         es: "Todos los trabajos",
     },
+    "detail.closed_heading": {
+        en: "This listing has closed",
+        es: "Esta vacante ha cerrado",
+    },
+    "detail.closed_body": {
+        en: "The employer has filled or withdrawn this job. Browse current openings — new postings open daily during the season.",
+        es: "El empleador ya cubrió o retiró esta vacante. Explora otras vacantes activas — se publican nuevas cada día durante la temporada.",
+    },
+    "detail.closed_cta": {
+        en: "See open jobs",
+        es: "Ver vacantes abiertas",
+    },
     "detail.housing": {
         en: "Housing provided",
         es: "Vivienda incluida",

@@ -219,10 +219,11 @@ jobsRoutes.get('/recommended', async (c) => {
 jobsRoutes.get('/:slug', async (c) => {
     const slug = c.req.param('slug');
     const job = await c.var.db.jobPosting.findFirst({
-        where: { seoSlug: slug, status: JobStatus.active, deletedAt: null },
+        where: { seoSlug: slug, deletedAt: null },
         include: { employer: { include: { employerProfile: true } } },
     });
     if (!job) return err(c, 404, 'not_found');
+    if (job.status !== JobStatus.active) return err(c, 410, 'job_gone');
 
     const application = await c.var.db.application.findFirst({
         where: { jobId: job.id, workerId: c.var.userId, deletedAt: null },
@@ -307,6 +308,17 @@ savedSearchRoutes.patch('/:id', validate('json', PatchSavedSearchBody), async (c
         where: { id, workerId: c.var.userId, deletedAt: null },
     });
     if (!existing) return err(c, 404, 'not_found');
+
+    // Enabling SMS alerts on an existing saved search requires a phone on file —
+    // mirrors the POST guard so workers can't sneak past validation via PATCH.
+    const willHaveSms =
+        (body.alertChannel ?? existing.alertChannel) === 'sms' ||
+        (body.alertChannel ?? existing.alertChannel) === 'both';
+    const willBeActive = body.alertActive ?? existing.alertActive;
+    if (willHaveSms && willBeActive && body.alertChannel !== 'none') {
+        const user = await c.var.db.user.findUnique({ where: { id: c.var.userId } });
+        if (!user?.phone) return err(c, 422, 'validation_failed', 'phone_required');
+    }
 
     const patchChannel: 'sms' | 'email' | 'both' | undefined =
         body.alertChannel === 'none' ? 'sms' : body.alertChannel;

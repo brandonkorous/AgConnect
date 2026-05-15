@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import type { Route } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { WorkerPageHeader } from '@/components/worker/WorkerPageHeader';
 import { fetchJob } from '@/lib/api/jobs';
@@ -11,6 +12,9 @@ export default async function ApplyPage({ params }: Props) {
   const { locale, slug } = await params;
   const job = await fetchJob(slug);
   if (!job) notFound();
+  // Listing was pulled or filled between browse and apply — bounce back to the
+  // job detail page, which renders the "this listing has closed" state.
+  if (job === 'gone') redirect(`/${locale}/worker/jobs/${slug}` as Route);
   const t = await getTranslations({ locale, namespace: 'worker.application.apply' });
   const title = locale === 'es' ? job.titleEs : job.titleEn;
 

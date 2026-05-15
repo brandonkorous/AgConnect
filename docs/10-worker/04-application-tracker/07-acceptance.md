@@ -4,7 +4,7 @@
 
 - [ ] Worker can apply to an active job in their tenant with one tap.
 - [ ] Duplicate apply (same `worker_id` + `job_id`) returns `409 already_applied`.
-- [ ] Apply fails (`403 not_onboarded`) for workers without `onboardedAt`.
+- [x] ~~Apply fails (`403 not_onboarded`) for workers without `onboardedAt`.~~ **Reversed 2026-05-14:** workers may apply with whatever profile data they've already shared — see [`services/api/src/applications/routes.ts` apply handler](../../../services/api/src/applications/routes.ts). The audience is farmworkers who often arrive via SMS OTP with only a verified phone; the dignified default is to let them express interest immediately. Missing-field nudges live on the employer's applicant card, not on apply.
 - [ ] Apply fails (`422 job_not_active`) for jobs in `draft`, `closed`, `filled`, or deleted.
 - [ ] Worker sees their applications in `/applications` filtered by tab (active / hired / closed).
 - [ ] Application detail shows full event timeline ordered by `createdAt`.
