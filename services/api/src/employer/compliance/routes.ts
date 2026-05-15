@@ -19,6 +19,7 @@ import {
   signComplianceEvidenceUrl,
   isAllowedEvidenceType,
 } from '../../lib/supabase-storage.js';
+import { csvResponse, rowsToCsv, type CsvColumn } from '../../admin/_lib/csv.js';
 
 const MAX_EVIDENCE_BYTES = 25 * 1024 * 1024;
 
@@ -153,6 +154,70 @@ employerComplianceRoutes.get('/summary', async (c) => {
     dolLastInspectionAt: profile.dolLastInspectionAt?.toISOString() ?? null,
     dolLastInspectionResult: profile.dolLastInspectionResult,
   });
+});
+
+type ComplianceCsvRow = {
+  category: string;
+  itemKey: string;
+  label: string;
+  status: string;
+  dueAt: string;
+  resolvedAt: string;
+  details: string;
+  evidence: string;
+};
+
+const complianceCsvColumns: CsvColumn<ComplianceCsvRow>[] = [
+  { header: 'category', value: (r) => r.category },
+  { header: 'item_key', value: (r) => r.itemKey },
+  { header: 'label', value: (r) => r.label },
+  { header: 'status', value: (r) => r.status },
+  { header: 'due_at', value: (r) => r.dueAt },
+  { header: 'resolved_at', value: (r) => r.resolvedAt },
+  { header: 'details', value: (r) => r.details },
+  { header: 'evidence', value: (r) => r.evidence },
+];
+
+employerComplianceRoutes.get('/export.csv', async (c) => {
+  const userId = c.var.userId;
+  const tenantId = c.var.tenantId!;
+  const profile = await c.var.db.employerProfile.findUnique({
+    where: { userId },
+    select: { participatesInH2a: true },
+  });
+
+  const items = await c.var.db.complianceItem.findMany({
+    where: {
+      tenantId,
+      employerId: userId,
+      ...(profile?.participatesInH2a ? {} : { category: { not: 'h2a' } }),
+    },
+    orderBy: [{ category: 'asc' }, { itemKey: 'asc' }],
+  });
+
+  const rows: ComplianceCsvRow[] = items.map((i) => ({
+    category: i.category,
+    itemKey: i.itemKey,
+    label: i.label,
+    status: i.status,
+    dueAt: i.dueAt?.toISOString().slice(0, 10) ?? '',
+    resolvedAt: i.resolvedAt?.toISOString().slice(0, 10) ?? '',
+    details: i.details ?? '',
+    evidence: i.evidenceFileName
+      ? `file:${i.evidenceFileName}`
+      : i.evidenceUrl
+        ? `url:${i.evidenceUrl}`
+        : '',
+  }));
+
+  const csv = rowsToCsv(rows, complianceCsvColumns);
+
+  await c.var.audit.log({
+    action: 'employer.compliance.export',
+    metadata: { rowCount: rows.length },
+  });
+
+  return csvResponse(c, `compliance-${new Date().toISOString().slice(0, 10)}.csv`, csv);
 });
 
 employerComplianceRoutes.post('/items', validate('json', CreateComplianceItemBody), async (c) => {

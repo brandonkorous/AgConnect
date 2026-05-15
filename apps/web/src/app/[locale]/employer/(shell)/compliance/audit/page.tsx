@@ -173,8 +173,23 @@ export default async function ComplianceAuditPage({ params }: Props) {
                     </Section>
                 ))}
 
+                {/* ─────────────────── Evidence index */}
+                <Section number={cats.length + 2} heading={t('evidence_heading')}>
+                    <EvidenceIndex
+                        cats={cats}
+                        emptyLabel={t('evidence_empty')}
+                        labels={{
+                            item: t('col_item'),
+                            kind: t('col_kind'),
+                            evidence: t('col_evidence'),
+                            kindFile: t('evidence_kind_file'),
+                            kindUrl: t('evidence_kind_url'),
+                        }}
+                    />
+                </Section>
+
                 {/* ─────────────────── Signature block */}
-                <Section number={cats.length + 2} heading={t('signature_heading')}>
+                <Section number={cats.length + 3} heading={t('signature_heading')}>
                     <p className="mt-2">{t('signature_body', { employer: profile.legalName })}</p>
                     <div className="mt-10 grid grid-cols-2 gap-12">
                         <SignLine label={t('sign_employer')} />
@@ -191,6 +206,83 @@ export default async function ComplianceAuditPage({ params }: Props) {
             </article>
         </div>
     );
+}
+
+type EvidenceCatItem = {
+    key: string;
+    label: string;
+    evidenceUrl?: string | null;
+    evidence?: {
+        fileName: string | null;
+        contentType: string | null;
+        size: number | null;
+        downloadPath: string;
+    } | null;
+};
+type EvidenceCat = { key: string; label: string; items: EvidenceCatItem[] };
+
+function EvidenceIndex({
+    cats,
+    emptyLabel,
+    labels,
+}: {
+    cats: EvidenceCat[];
+    emptyLabel: string;
+    labels: {
+        item: string;
+        kind: string;
+        evidence: string;
+        kindFile: string;
+        kindUrl: string;
+    };
+}) {
+    type Row = { itemLabel: string; kind: 'file' | 'url'; descriptor: string };
+    const rows: Row[] = [];
+    for (const c of cats) {
+        for (const it of c.items) {
+            if (it.evidence?.fileName) {
+                const size = it.evidence.size != null ? ` (${humanSize(it.evidence.size)})` : '';
+                rows.push({
+                    itemLabel: it.label,
+                    kind: 'file',
+                    descriptor: `${it.evidence.fileName}${size}`,
+                });
+            } else if (it.evidenceUrl) {
+                rows.push({ itemLabel: it.label, kind: 'url', descriptor: it.evidenceUrl });
+            }
+        }
+    }
+
+    if (rows.length === 0) {
+        return <p className="mt-2">{emptyLabel}</p>;
+    }
+
+    return (
+        <table className="mt-3">
+            <thead>
+                <tr>
+                    <th style={{ width: '34%' }}>{labels.item}</th>
+                    <th style={{ width: '18%' }}>{labels.kind}</th>
+                    <th>{labels.evidence}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows.map((r, i) => (
+                    <tr key={i}>
+                        <td className="font-semibold">{r.itemLabel}</td>
+                        <td>{r.kind === 'file' ? labels.kindFile : labels.kindUrl}</td>
+                        <td className="break-all">{r.descriptor}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
+function humanSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function Section({

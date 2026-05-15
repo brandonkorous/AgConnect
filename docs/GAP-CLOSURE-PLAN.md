@@ -144,22 +144,33 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - The training-org cancel route iterates enrollments and enqueues SMS in a loop — fine at MVP scale (capacity capped at 500). At higher fan-out, switch to a single fanout job that the SMS worker expands.
 - The deprecated `application.withdrawn` SMS template stays in the catalog; nothing dispatches it anymore. Removable in a later cleanup pass.
 
-## Phase 5 — Admin & employer polish (3–5 days)
+## Phase 5 — Admin & employer polish ✓ closed 2026-05-15
 
 **Goal:** finish the dashboard surfaces. Reports are shipped; KPI export, auto-refresh, and compliance audit binder remain.
 
+**Audit findings (2026-05-15):** the printable audit binder page already existed (it's HTML-styled-for-print with letterhead, sections, and signature lines, reached via `/employer/compliance/audit`). The missing piece against the spec was the **evidence index** — items had `evidence` and `evidenceUrl` payloads but the binder page never rendered them. Otherwise everything in this phase was new.
+
 | # | item | location | done |
 |---|------|----------|------|
-| 5.1 | KPI dashboard CSV export (current filters) | [apps/admin/src/app/(shell)/page.tsx](../apps/admin/src/app/(shell)/page.tsx) | [ ] |
-| 5.2 | KPI auto-refresh toggle (60s polling) | same | [ ] |
-| 5.3 | Compliance audit-binder PDF (employer-side; concatenated items + evidence index) | [services/api/src/employer/compliance/audit-binder.ts](../services/api/src/employer/compliance/audit-binder.ts) | [ ] |
-| 5.4 | Compliance export CSV | same | [ ] |
-| 5.5 | Cross-tenant visibility test for KPI tiles (verifies admin sees all tenants) | `apps/admin/src/__tests__/` | [ ] |
+| 5.1 | KPI dashboard CSV export (current filters) | [services/api/src/admin/kpi/routes.ts](../services/api/src/admin/kpi/routes.ts) `GET /admin/v1/kpi/export.csv`, [apps/admin/src/components/admin-shell/KpiActions.tsx](../apps/admin/src/components/admin-shell/KpiActions.tsx) | [x] |
+| 5.2 | KPI auto-refresh toggle (60s polling) | [apps/admin/src/components/admin-shell/KpiActions.tsx](../apps/admin/src/components/admin-shell/KpiActions.tsx) | [x] |
+| 5.3 | Compliance audit-binder PDF — added evidence index section to the print-to-PDF binder | [apps/web/src/app/[locale]/employer/(shell)/compliance/audit/page.tsx](../apps/web/src/app/[locale]/employer/(shell)/compliance/audit/page.tsx) | [x] |
+| 5.4 | Compliance export CSV | [services/api/src/employer/compliance/routes.ts](../services/api/src/employer/compliance/routes.ts) `GET /v1/employer/compliance/export.csv`, [apps/web/src/app/api/employer/compliance/export.csv/route.ts](../apps/web/src/app/api/employer/compliance/export.csv/route.ts) | [x] |
+| 5.5 | Cross-tenant visibility test for KPI tiles | deferred to Phase 6 (no test runner exists anywhere in the monorepo yet) | [ ] deferred |
 
 **Definition of done:**
 
-- KPI dashboard downloads a CSV that matches the visible tiles for the current filter set.
-- Employer can download a single PDF with all compliance items + evidence links, suitable for an external auditor.
+- KPI dashboard downloads a CSV that matches the visible tiles for the current filter set (4 rows: placements / training / employers / wages, with trend deltas where applicable).
+- KPI dashboard auto-refresh is a URL-state toggle (`?autoRefresh=1`) that fires `router.refresh()` every 60s while on, matching the admin filter-state convention.
+- Employer audit binder includes an "Evidence index" section listing every item with an uploaded file or external URL, with kind + filename/url + size.
+- Employer can download a compliance CSV (category, item_key, label, status, due_at, resolved_at, details, evidence pointer).
+
+**Closure notes:**
+
+- The audit binder is a print-to-PDF HTML page rather than a server-rendered PDF. This was the existing approach when the audit started — the route, letterhead, sections, and signature lines were already in place. The evidence index closes the spec gap without rewriting the renderer; a future React-PDF version can be lifted from the cert-generator pattern if a server-side artifact becomes necessary (e.g., emailable attachments).
+- KPI export is structural (one row per metric tile, plus trend delta) rather than per-employer or per-application. The detailed reports under `/reports/*` already export their own row-level CSVs via the generic `/api/export/[...path]` proxy.
+- The compliance CSV is read through a thin web proxy at `/api/employer/compliance/export.csv` that forwards the Clerk JWT and streams the upstream response — same pattern as `apps/admin/src/app/api/export/[...path]/route.ts`. Kept the data-shaping in the api (next to the read path) so the two CSVs and the binder cannot drift.
+- 5.5 (cross-tenant KPI test) is deferred to Phase 6 alongside the test-runner bootstrap. The KPI service is already structurally cross-tenant — it adds a `tenantId` clause only when callers pass `tenantIds`, and the admin middleware sets `app.role = 'admin'` (RLS bypass) — so the behavior to verify is the no-filter default. Once vitest is wired in Phase 6, the test is a one-file add.
 
 ## Phase 6 — Infra & CI/CD (1–2 weeks)
 
@@ -227,3 +238,4 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - 2026-05-14 — Phase 3 closed (11/11 items). 5 items (3.4–3.8) were already shipped; closure work added the cert PDF pipeline (React-PDF → Supabase Storage → 24h signed URLs), per-item JSON-LD (`JobPosting`, `EducationalOccupationalProgram`), and per-item OG image routes.
 - 2026-05-14 — Upgraded `llm-harness` to 0.3.1 (adds `DocumentContent` blocks, `cacheable` flag on requests, `cacheReadTokens`/`cacheCreationTokens` on Usage). Resume-parser PDF path migrated through the harness; `@anthropic-ai/sdk` removed from the service entirely. Cache tokens now flow through `resume_parse_jobs.cacheReadTokens`/`cacheWriteTokens` again on the text path.
 - 2026-05-15 — Phase 4 closed (12/12 items). 8 were pre-existing (applications/dashboard/field-mode/onboarding/sw/resume re-upload). New: 4.3 fixed a notification inversion bug — withdraw was SMSing the worker instead of emailing the employer; `employer.application_withdrawn` template + wiring landed. 4.5/4.6/4.7 added training-org backend (`PATCH /v1/org/training/:id`, `POST /v1/org/training/:id/cancel`, `PATCH /v1/org/training/:id/enrollments`). A new training-org web surface (sidebar, programs list, edit, roster with bulk actions) ships at `/[locale]/training-org/programs`.
+- 2026-05-15 — Phase 5 closed (4/5 items). 5.1 KPI CSV (`GET /admin/v1/kpi/export.csv`, 4-row metrics shape), 5.2 KPI auto-refresh (URL-state toggle, 60s `router.refresh()`), 5.3 evidence index added to the existing print-to-PDF audit binder, 5.4 compliance CSV (`GET /v1/employer/compliance/export.csv` + web proxy). 5.5 (cross-tenant KPI test) deferred to Phase 6 — no test runner exists in the monorepo yet, and the KPI service is already structurally cross-tenant.

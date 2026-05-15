@@ -797,6 +797,10 @@ export const employer: TranslationBundle = {
         en: "Audit binder PDF",
         es: "PDF de auditoría",
     },
+    "compliance.export_csv": {
+        en: "Export CSV",
+        es: "Exportar CSV",
+    },
     "compliance.audit.actions_due": {
         en: "Open actions",
         es: "Acciones abiertas",
@@ -888,6 +892,30 @@ export const employer: TranslationBundle = {
     "compliance.audit.col_status": {
         en: "Status",
         es: "Estado",
+    },
+    "compliance.audit.evidence_heading": {
+        en: "Evidence index",
+        es: "Índice de evidencias",
+    },
+    "compliance.audit.evidence_empty": {
+        en: "No evidence uploaded for the items in this binder.",
+        es: "Sin evidencias cargadas para los puntos de esta carpeta.",
+    },
+    "compliance.audit.col_evidence": {
+        en: "Evidence",
+        es: "Evidencia",
+    },
+    "compliance.audit.col_kind": {
+        en: "Kind",
+        es: "Tipo",
+    },
+    "compliance.audit.evidence_kind_file": {
+        en: "Uploaded file",
+        es: "Archivo cargado",
+    },
+    "compliance.audit.evidence_kind_url": {
+        en: "External link",
+        es: "Enlace externo",
     },
     "compliance.audit.employer": {
         en: "Employer",

@@ -453,6 +453,11 @@ export const auditRegistry = {
     retentionDays: 2555,
     metadata: ['itemId'],
   },
+  'employer.compliance.export': {
+    resourceType: 'export',
+    retentionDays: 2555,
+    metadata: ['rowCount'],
+  },
   'employer.message.conversation.created': {
     resourceType: 'conversation',
     retentionDays: 1460,

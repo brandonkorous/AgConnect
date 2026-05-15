@@ -91,6 +91,13 @@ export default async function CompliancePage({ params }: Props) {
                 <div className="flex gap-2">
                     <NewComplianceItemButton />
                     <a
+                        href="/api/employer/compliance/export.csv"
+                        className="btn btn-ghost rounded-full"
+                    >
+                        <FontAwesomeIcon icon={faDownload} className="h-3.5 w-3.5" />
+                        {t('export_csv')}
+                    </a>
+                    <a
                         href={`/${locale}/employer/compliance/audit`}
                         target="_blank"
                         rel="noopener noreferrer"

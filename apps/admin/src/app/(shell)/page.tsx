@@ -2,6 +2,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { fetchKpiSummary, type KpiSummary } from '@/lib/kpi-api';
 import { resolveRange, type County } from '@/lib/date-ranges';
 import { KpiFilters } from '@/components/admin-shell/KpiFilters';
+import { KpiActions } from '@/components/admin-shell/KpiActions';
 import { KpiTile } from '@/components/admin-shell/KpiTile';
 import { WageHistogram } from '@/components/admin-shell/WageHistogram';
 
@@ -76,7 +77,10 @@ export default async function DashboardPage({
                 </p>
             </div>
 
-            <KpiFilters />
+            <div className="flex flex-wrap items-end justify-between gap-3">
+                <KpiFilters />
+                <KpiActions start={start} end={end} />
+            </div>
 
             {!result.ok ? (
                 <div role="alert" className="alert alert-error">
