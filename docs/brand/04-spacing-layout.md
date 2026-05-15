@@ -67,7 +67,7 @@ What `container mx-auto` resolves to (Tailwind 4 default behavior, paired with o
 
 ## One responsive codebase — not a separate mobile site
 
-AgConn is **one fully responsive codebase**, not two. There is no `m.agconn.com`, no `mobile/` directory, no separate mobile-only deploy. Every public surface uses the responsive type scale ([brand/03-typography.md](03-typography.md)), this spacing scale, and Tailwind's breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`) to render correctly across mobile (≥360px), tablet (≥640px), desktop (≥1024px), and wide (≥1440px).
+AGCONN is **one fully responsive codebase**, not two. There is no `m.agconn.com`, no `mobile/` directory, no separate mobile-only deploy. Every public surface uses the responsive type scale ([brand/03-typography.md](03-typography.md)), this spacing scale, and Tailwind's breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`) to render correctly across mobile (≥360px), tablet (≥640px), desktop (≥1024px), and wide (≥1440px).
 
 **Reading width vs. page width — they're different.** The "max-width 760px content" callouts that appear in some feature `04-ui.md` files (e.g., FAQ, article body) are **line-length caps for prose**, NOT page-width caps. Pages always use the canonical `container` shell above; narrow reading columns nest inside that bleed via `max-w-prose`, `max-w-2xl`, etc. on a child element — never on the page wrapper itself.
 
@@ -91,7 +91,7 @@ AgConn is **one fully responsive codebase**, not two. There is no `m.agconn.com`
 
 Sticky chrome (consent banner, install prompt, offline banner) uses the same shell — the outer fixed-position wrapper handles the dock, the inner `container mx-auto px-5 md:px-8 lg:px-20` handles content alignment so the chrome aligns vertically with the page content above it.
 
-**Worker Field Mode is the one exception, and it's not a marketing concern.** A separate one-handed in-field worker UX is on the roadmap (deferred per [project_field_mode.md](../../C:/Users/brand/.claude/projects/g--code--wizeworks-AgConnect/memory/project_field_mode.md) — surfaces as authenticated `/[locale]/worker/field` once observed, not a parallel marketing site). Public marketing pages stay as one responsive codebase.
+**Worker Field Mode is the one exception, and it's not a marketing concern.** A separate one-handed in-field worker UX is on the roadmap (deferred per [project_field_mode.md](../../C:/Users/brand/.claude/projects/g--code--wizeworks-AGCONN/memory/project_field_mode.md) — surfaces as authenticated `/[locale]/worker/field` once observed, not a parallel marketing site). Public marketing pages stay as one responsive codebase.
 
 ## Grid
 

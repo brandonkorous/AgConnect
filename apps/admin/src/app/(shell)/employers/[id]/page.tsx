@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchEmployer } from '@/lib/directory-api';
 
-export const metadata = { title: 'Employer — AgConn Admin' };
+export const metadata = { title: 'Employer — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function EmployerDetailPage({

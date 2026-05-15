@@ -59,7 +59,7 @@ Illustration is rare in the Tierra system. When it appears:
 
 ### Library
 
-- **[FontAwesome](https://fontawesome.com/)** is the AgConn icon system. Use **per-icon imports** from `@fortawesome/free-solid-svg-icons` (`free-regular-svg-icons` and `free-brands-svg-icons` as needed). **Do not use the kit script** (the global `<script>` loader) — it ships every icon and bloats the bundle.
+- **[FontAwesome](https://fontawesome.com/)** is the AGCONN icon system. Use **per-icon imports** from `@fortawesome/free-solid-svg-icons` (`free-regular-svg-icons` and `free-brands-svg-icons` as needed). **Do not use the kit script** (the global `<script>` loader) — it ships every icon and bloats the bundle.
 - Component: `@fortawesome/react-fontawesome` `FontAwesomeIcon` for React surfaces; SSR-safe via the standard import pattern.
 - Default style: solid (`fas`) for product UI; regular (`far`) for the rare lighter accent; brands (`fab`) only for genuine third-party brand marks (Apple, Google sign-in).
 - Default size: 16px in dense UI, 20px on buttons and labels, 24px in cards and section headers, 32–48px in feature blocks.
@@ -73,7 +73,7 @@ Illustration is rare in the Tierra system. When it appears:
 
 ### Forbidden
 
-- Material Icons, Lucide, Phosphor, Heroicons — pick one library and stay there. AgConn picked FontAwesome.
+- Material Icons, Lucide, Phosphor, Heroicons — pick one library and stay there. AGCONN picked FontAwesome.
 - The FontAwesome **kit script** loader (global `<script>`). Always per-icon imports for tree-shaking.
 - Multi-colored icon sets, isometric icons, gradient icons, "Duotone" FontAwesome variants (the duotone style sits poorly against Tierra's solid-color discipline).
 - AI-sparkle icons. When the product has AI features (resume parser, search), describe them in plain words, not with a wand or a sparkle.
@@ -111,7 +111,7 @@ When highlighting a key number on a chart (a peak, a target, a current period), 
 
 Maps appear in worker job-discovery and employer crew-management views.
 
-> **Inferred:** AgConn mapping is not yet specified. The brand-aligned recommendation is **Mapbox with a custom Tierra style**: `base-100` ground, `base-300` water/parks, `base-content` labels at low contrast, `primary` for selected pins, `accent` for the active pin. Avoid the default Google Maps blue/red — it does not belong in the Tierra system. Confirm tile provider (Mapbox vs MapLibre + Maptiler vs OSM raster) when mapping work begins.
+> **Inferred:** AGCONN mapping is not yet specified. The brand-aligned recommendation is **Mapbox with a custom Tierra style**: `base-100` ground, `base-300` water/parks, `base-content` labels at low contrast, `primary` for selected pins, `accent` for the active pin. Avoid the default Google Maps blue/red — it does not belong in the Tierra system. Confirm tile provider (Mapbox vs MapLibre + Maptiler vs OSM raster) when mapping work begins.
 
 Pin styles:
 
@@ -125,7 +125,7 @@ Hero compositions, blog headers, social images.
 
 - **Composition**: civic-publication layout — wide image left, text-heavy right; or full-bleed image with `base-100` overlay rectangle pinned bottom-left holding the headline.
 - **Type over image**: Inter at display weights (600–700) for the hero phrase. Stay `base-100` or `base-content` for the body of the headline. A single italic accent word inside the headline is permitted (the canonical pattern); italic spanning the entire phrase is not.
-- **Social-share images**: 1200×630, `bg-neutral` background with a single Inter display-weight phrase center-left, AgConn wordmark bottom-left, single botanical line illustration top-right. (When the wordmark and illustration land — see logo doc — replace the placeholder text mark currently used.)
+- **Social-share images**: 1200×630, `bg-neutral` background with a single Inter display-weight phrase center-left, AGCONN wordmark bottom-left, single botanical line illustration top-right. (When the wordmark and illustration land — see logo doc — replace the placeholder text mark currently used.)
 
 ## Examples to study, not to copy
 

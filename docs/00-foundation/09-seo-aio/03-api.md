@@ -15,7 +15,7 @@ export function jobMetadata(posting: JobPostingWithEmployer, locale: Locale): Me
     const canonical = `${baseUrl}/${locale}/${locale === 'es' ? 'trabajos' : 'jobs'}/${posting.seoSlug}`;
 
     return {
-        title: `${title} — ${posting.county} County | AgConn`,
+        title: `${title} — ${posting.county} County | AGCONN`,
         description,
         alternates: {
             canonical,
@@ -29,7 +29,7 @@ export function jobMetadata(posting: JobPostingWithEmployer, locale: Locale): Me
             title,
             description,
             url: canonical,
-            siteName: 'AgConn',
+            siteName: 'AGCONN',
             images: [{ url: `${baseUrl}/og/job/${posting.id}`, width: 1200, height: 630 }],
             locale: locale === 'es' ? 'es_MX' : 'en_US',
             type: 'website',
@@ -106,7 +106,7 @@ export default function robots(): MetadataRoute.Robots {
 }
 ```
 
-> **Inferred:** Allowing AI crawlers is a deliberate AIO investment. Some sites block these by default; AgConn chooses discoverability over training-data control because the platform's mission is reach.
+> **Inferred:** Allowing AI crawlers is a deliberate AIO investment. Some sites block these by default; AGCONN chooses discoverability over training-data control because the platform's mission is reach.
 
 ## llms.txt
 
@@ -147,7 +147,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
                 <div style={{ fontSize: 28 }}>
                     ${Number(posting.wageMin).toFixed(2)} – ${Number(posting.wageMax).toFixed(2)}/hr
                 </div>
-                <div style={{ fontSize: 22, color: '#666' }}>AgConn</div>
+                <div style={{ fontSize: 22, color: '#666' }}>AGCONN</div>
             </div>
         </div>,
         { width: 1200, height: 630 },

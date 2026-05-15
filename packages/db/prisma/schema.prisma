@@ -1,4 +1,4 @@
-// AgConn database schema.
+// AGCONN database schema.
 //
 // Production foundation: tenants + multi-tenant tables with RLS, waitlist
 // signup pipeline, email audit + suppression. RLS policies live alongside

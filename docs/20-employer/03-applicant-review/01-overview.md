@@ -6,10 +6,10 @@ Employers review applications, move them through a kanban pipeline (Applied → 
 
 ## Employer journey
 
-1. Employer dashboard shows new applications across all postings.
-2. Per-posting kanban view: Applied / Reviewed / Hired columns.
+1. Employer dashboard shows new applications across all postings (kanban summary, read-only).
+2. Per-posting kanban view at `/employer/jobs/:id/applicants`: Applied / Reviewed / Hired columns.
 3. Tap an applicant → see profile (name, county, skills, certifications, experience).
-4. Move card by drag, or via menu (mobile).
+4. Move card by drag (desktop) or via tap → action sheet (mobile).
 5. To hire: enter wage + start date, confirm. Triggers worker SMS + email.
 6. To reject: optional reason (private to admin), confirm. Triggers worker SMS.
 
@@ -17,13 +17,16 @@ Employers review applications, move them through a kanban pipeline (Applied → 
 
 In scope:
 
-- Cross-posting applicant inbox
-- Per-posting kanban (Applied / Reviewed / Hired columns; Rejected is hidden by default)
+- Cross-posting applicant inbox (list mode)
+- Dashboard kanban summary (read-only, links into the per-posting kanban)
+- Per-posting kanban (Applied / Reviewed / Hired columns; Rejected is hidden by default; drag-to-transition with hire/reject modals firing on drop)
 - Applicant profile drawer
 - Status transitions with required fields (wage on hire)
-- Bulk actions: bulk-reject, bulk-mark-reviewed
+- Bulk actions: bulk-reject, bulk-mark-reviewed (inbox surface)
 - Application activity timeline (for the employer)
 - Notes (private to employer)
+
+Future surfaces tracked separately in [09-future-considerations.md](09-future-considerations.md): a cross-job applicant pipeline page and a cross-site workforce/roster board.
 
 Out of scope:
 

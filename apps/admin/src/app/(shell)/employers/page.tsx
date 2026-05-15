@@ -4,7 +4,7 @@ import { faCircleCheck, faCircleXmark, faClock } from '@fortawesome/free-solid-s
 import { fetchEmployers } from '@/lib/directory-api';
 import { EmployerFilters } from './EmployerFilters';
 
-export const metadata = { title: 'Employers — AgConn Admin' };
+export const metadata = { title: 'Employers — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

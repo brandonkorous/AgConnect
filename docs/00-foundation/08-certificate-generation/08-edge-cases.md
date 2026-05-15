@@ -39,7 +39,7 @@ If `programTitleEs` is missing (CHECK constraint should prevent this; but defens
 
 **Mitigation:**
 
-- React-PDF retries image load; on failure, we catch and substitute the default AgConn logo.
+- React-PDF retries image load; on failure, we catch and substitute the default AGCONN logo.
 - Logo URLs validated at admin save time (HEAD request returns 200 + image content-type).
 - Fallback default committed to repo.
 
@@ -61,7 +61,7 @@ A worker downloads a cert, edits it in Photoshop, presents the fake to an employ
 - The cert PDF includes the verification URL prominently in the footer.
 - For MVP, the verification URL points to a "Coming soon" page or is omitted.
 
-> **Inferred:** Public verification is a Phase 2 feature. For MVP, the cert is "trust on first use" — most employer interactions happen within AgConn, where the cert is verified by definition.
+> **Inferred:** Public verification is a Phase 2 feature. For MVP, the cert is "trust on first use" — most employer interactions happen within AGCONN, where the cert is verified by definition.
 
 ## React-PDF version drift
 

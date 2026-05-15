@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The app shell is the cross-cutting **client layer** that every feature page in AgConn renders inside. It owns:
+The app shell is the cross-cutting **client layer** that every feature page in AGCONN renders inside. It owns:
 
 1. The UX primitives every feature consumes (toast, modal/dialog, form, skeleton, empty state, error boundary, API client).
 2. The PWA wrapper that ships those primitives to a phone in the field — manifest, service worker, install prompt, offline fallback.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A worker-owned collection of all certifications they've earned through AgConn. Certificates from completed training programs appear automatically; manually-added certs from the resume editor also appear. Workers can view, download (PDF), and share each cert.
+A worker-owned collection of all certifications they've earned through AGCONN. Certificates from completed training programs appear automatically; manually-added certs from the resume editor also appear. Workers can view, download (PDF), and share each cert.
 
 ## Worker journey
 

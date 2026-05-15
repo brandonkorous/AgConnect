@@ -32,7 +32,7 @@ function Stop-OnFailure {
 }
 
 Write-Host "==> Creating project $ProjectId (skip if exists)"
-gcloud projects create $ProjectId --name "AgConn" 2>&1 | Out-Null
+gcloud projects create $ProjectId --name "AGCONN" 2>&1 | Out-Null
 
 Write-Host "==> Linking billing account"
 gcloud billing projects link $ProjectId --billing-account $BillingAccount

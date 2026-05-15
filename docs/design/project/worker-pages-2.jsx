@@ -316,7 +316,7 @@ const DocumentsPage = () => {
           <Eyebrow>Profile completeness</Eyebrow>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginTop: 8 }}>
             <div style={{ fontFamily: 'var(--f-display)', fontSize: 48, lineHeight: 1, letterSpacing: '-0.025em', color: 'var(--c-primary)' }}>92<span style={{ fontSize: 24, opacity: 0.5 }}>%</span></div>
-            <div style={{ fontSize: 13.5, color: 'var(--c-ink-2)', maxWidth: 360 }}>You're <strong>top 14%</strong> of workers on AgConnect. A complete profile gets <strong style={{ color: 'var(--c-primary)' }}>3.4× more</strong> employer responses.</div>
+            <div style={{ fontSize: 13.5, color: 'var(--c-ink-2)', maxWidth: 360 }}>You're <strong>top 14%</strong> of workers on AGCONN. A complete profile gets <strong style={{ color: 'var(--c-primary)' }}>3.4× more</strong> employer responses.</div>
           </div>
           <div style={{ marginTop: 18, height: 8, borderRadius: 999, background: 'var(--c-bg-warm)', overflow: 'hidden' }}>
             <div style={{ height: '100%', width: '92%', background: 'var(--c-primary)' }}/>
@@ -398,15 +398,15 @@ const MessagesPage = () => {
     { k: 'all', l: 'All messages', n: 18 },
     { k: 'employers', l: 'Employers', n: 12 },
     { k: 'foremen', l: 'Foremen', n: 4 },
-    { k: 'agconnect', l: 'AgConnect', n: 2 },
+    { k: 'agconnect', l: 'AGCONN', n: 2 },
   ];
   const threads = [
     { from: 'Sunridge Vineyards', who: 'Marisol Vargas, Foreman', last: 'See you tomorrow at 6 AM. Bring water — it will be hot. Pickup at the Hwy 99 / Cleveland lot.', when: '2h', channel: 'WhatsApp', unread: true, active: true, init: 'SV' },
     { from: 'Westside Orchards', who: 'Hiring · Jorge Núñez', last: 'Interview confirmed for Thu 9 AM at 2110 Kansas Ave, Modesto. Park in the side lot.', when: '5h', channel: 'In-app', unread: true, init: 'WO' },
-    { from: 'AgConnect', who: 'Training notification', last: 'Your Forklift cert seat opens next Mon. Reply YES to claim.', when: '5h', channel: 'SMS', unread: true, init: 'AC' },
+    { from: 'AGCONN', who: 'Training notification', last: 'Your Forklift cert seat opens next Mon. Reply YES to claim.', when: '5h', channel: 'SMS', unread: true, init: 'AC' },
     { from: 'Río Verde Farms', who: 'Hiring desk', last: 'Thanks for applying. Your application is under review — we\'ll respond within 48 hours.', when: '1d', channel: 'In-app', unread: false, init: 'RV' },
     { from: 'Coastal Berry LLC', who: 'Auto-reply', last: 'We received your application for Strawberry Pack House. Position fills fast — keep your phone on.', when: '2d', channel: 'SMS', unread: false, init: 'CB' },
-    { from: 'AgConnect', who: 'Wage update', last: 'Median pay for grape harvest in Madera County is up 6% this season.', when: '3d', channel: 'In-app', unread: false, init: 'AC' },
+    { from: 'AGCONN', who: 'Wage update', last: 'Median pay for grape harvest in Madera County is up 6% this season.', when: '3d', channel: 'In-app', unread: false, init: 'AC' },
     { from: 'Tulare Valley Citrus', who: 'Hiring · A. Aguilar', last: 'Application received. We\'ll be in touch when pruning season opens September 2.', when: '5d', channel: 'SMS', unread: false, init: 'TC' },
   ];
   const messages = [
@@ -422,7 +422,7 @@ const MessagesPage = () => {
       <PageHeader
         eyebrow="3 unread · 18 active conversations"
         title={<>Your <em style={{ fontStyle: 'italic', color: 'var(--c-primary)', fontWeight: 300 }}>messages</em>.</>}
-        sub="One inbox for SMS, WhatsApp, and in-app messages from employers, foremen, and AgConnect."
+        sub="One inbox for SMS, WhatsApp, and in-app messages from employers, foremen, and AGCONN."
         right={
           <div style={{ display: 'flex', gap: 8 }}>
             <button style={{ background: 'white', border: '1px solid var(--c-line)', borderRadius: 999, padding: '9px 14px', fontSize: 13, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
@@ -480,7 +480,7 @@ const MessagesPage = () => {
               borderLeft: t.active ? '3px solid var(--c-primary)' : '3px solid transparent',
             }}>
               <div style={{ display: 'flex', gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: t.from === 'AgConnect' ? 'var(--c-ink)' : 'var(--c-primary)', color: 'white', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: 11.5, fontWeight: 700, fontFamily: 'var(--f-mono)' }}>{t.init}</div>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: t.from === 'AGCONN' ? 'var(--c-ink)' : 'var(--c-primary)', color: 'white', display: 'grid', placeItems: 'center', flexShrink: 0, fontSize: 11.5, fontWeight: 700, fontFamily: 'var(--f-mono)' }}>{t.init}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
                     <div style={{ fontSize: 13, fontWeight: t.unread ? 700 : 500, color: t.unread ? 'var(--c-ink)' : 'var(--c-ink-2)' }}>{t.from}</div>

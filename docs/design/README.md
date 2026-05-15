@@ -22,4 +22,4 @@ The design medium is **HTML/CSS/JS** — these are prototypes, not production co
 
 - `agconnect/README.md` — this file
 - `agconnect/chats/` — conversation transcripts (read these!)
-- `agconnect/project/` — the `AgConnect` project files (HTML prototypes, assets, components)
+- `agconnect/project/` — the `AGCONN` project files (HTML prototypes, assets, components)

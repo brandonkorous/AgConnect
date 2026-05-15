@@ -143,7 +143,7 @@ export function CertificateDocument(props: CertificateProps) {
                 </View>
 
                 <Text style={styles.footer}>
-                    Issued by {tenant.name} via AgConn • agconn.com/verify/{certificateId} • Funded by {program.funder}
+                    Issued by {tenant.name} via AGCONN • agconn.com/verify/{certificateId} • Funded by {program.funder}
                 </Text>
             </Page>
         </Document>

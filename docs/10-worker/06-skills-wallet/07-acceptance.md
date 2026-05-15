@@ -2,9 +2,9 @@
 
 ## Functional
 
-- [ ] Wallet shows all completed enrollments with `cert_url` set as "AgConn verified" cards.
+- [ ] Wallet shows all completed enrollments with `cert_url` set as "AGCONN verified" cards.
 - [ ] Wallet shows manual certs from `worker_profiles.certifications` as "Self-reported" cards.
-- [ ] Tapping an AgConn cert shows preview + Download + Share.
+- [ ] Tapping an AGCONN cert shows preview + Download + Share.
 - [ ] Tapping a self-reported cert shows metadata only (no Download).
 - [ ] Cert download opens / saves the PDF (24h-signed URL).
 - [ ] Share menu populates EN or ES text per current locale.

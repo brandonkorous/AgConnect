@@ -12,8 +12,8 @@ export const workforceBoardPartnerships: CareerRole = {
         es: 'Gerente de Asociaciones con Juntas Laborales',
     },
     summary: {
-        en: 'Own AgConn\'s relationships with California Workforce Investment Boards, WIOA Title I delivery partners, and CalOSBA. Translate WIOA reporting requirements into product asks and back into successful adoption.',
-        es: 'Tome propiedad de las relaciones de AgConn con las Juntas de Inversión Laboral de California, los socios de entrega del Título I de WIOA y CalOSBA. Traduzca los requisitos de reporte de WIOA en solicitudes de producto y de vuelta en adopción exitosa.',
+        en: 'Own AGCONN\'s relationships with California Workforce Investment Boards, WIOA Title I delivery partners, and CalOSBA. Translate WIOA reporting requirements into product asks and back into successful adoption.',
+        es: 'Tome propiedad de las relaciones de AGCONN con las Juntas de Inversión Laboral de California, los socios de entrega del Título I de WIOA y CalOSBA. Traduzca los requisitos de reporte de WIOA en solicitudes de producto y de vuelta en adopción exitosa.',
     },
     responsibilities: [
         {
@@ -21,8 +21,8 @@ export const workforceBoardPartnerships: CareerRole = {
             es: 'Lidere las relaciones con cinco a ocho Juntas de Inversión Laboral de California, desde el piloto inicial hasta la adopción formal y renovación.',
         },
         {
-            en: 'Maintain deep working knowledge of WIOA Title I and Performance Reporting requirements; serve as the bridge between board case managers and AgConn product team.',
-            es: 'Mantenga un conocimiento de trabajo profundo de los requisitos del Título I de WIOA y Reporte de Desempeño; sirva como el puente entre los administradores de casos de las juntas y el equipo de producto de AgConn.',
+            en: 'Maintain deep working knowledge of WIOA Title I and Performance Reporting requirements; serve as the bridge between board case managers and AGCONN product team.',
+            es: 'Mantenga un conocimiento de trabajo profundo de los requisitos del Título I de WIOA y Reporte de Desempeño; sirva como el puente entre los administradores de casos de las juntas y el equipo de producto de AGCONN.',
         },
         {
             en: 'Develop and own the partnerships pipeline. Quarterly forecasts to leadership, weekly stand-ups with operations, monthly reviews with each active board.',

@@ -102,7 +102,7 @@ function PhoneStatusBar() {
     return (
         <div className="text-base-content/50 mb-1.5 flex items-center justify-between font-mono text-xs">
             <span>9:41</span>
-            <span>AgConn · SMS</span>
+            <span>AGCONN · SMS</span>
         </div>
     );
 }

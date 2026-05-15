@@ -50,8 +50,8 @@ export const postingJobsThatFill: ResourceArticle = {
                 es: 'Publicación bilingüe vence a solo inglés',
             },
             body: {
-                en: 'Spanish-only listings outperform English-only listings in California Central Valley applications by 5x. Bilingual listings outperform Spanish-only by another 25%, mostly from second-generation workers who scan in English first. AgConn auto-generates the Spanish version of any English posting, so this is no longer a content lift.',
-                es: 'Las publicaciones solo en español superan a las publicaciones solo en inglés en las solicitudes del Valle Central de California por 5x. Las publicaciones bilingües superan a las solo en español por otro 25%, principalmente de trabajadores de segunda generación que escanean primero en inglés. AgConn genera automáticamente la versión en español de cualquier publicación en inglés, por lo que esto ya no es una carga de contenido.',
+                en: 'Spanish-only listings outperform English-only listings in California Central Valley applications by 5x. Bilingual listings outperform Spanish-only by another 25%, mostly from second-generation workers who scan in English first. AGCONN auto-generates the Spanish version of any English posting, so this is no longer a content lift.',
+                es: 'Las publicaciones solo en español superan a las publicaciones solo en inglés en las solicitudes del Valle Central de California por 5x. Las publicaciones bilingües superan a las solo en español por otro 25%, principalmente de trabajadores de segunda generación que escanean primero en inglés. AGCONN genera automáticamente la versión en español de cualquier publicación en inglés, por lo que esto ya no es una carga de contenido.',
             },
         },
     ],

@@ -33,7 +33,7 @@ function matchTab(a: { status: string }, tab: TabKey): boolean {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.candidates' });
-    return { title: `AgConn — ${t('title')}` };
+    return { title: `AGCONN — ${t('title')}` };
 }
 
 const VALID_TABS: ReadonlyArray<TabKey> = ['all', 'new', 'reviewed', 'hired', 'archived'];

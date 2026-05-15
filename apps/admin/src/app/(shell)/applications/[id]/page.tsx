@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchApplication } from '@/lib/work-api';
 
-export const metadata = { title: 'Application — AgConn Admin' };
+export const metadata = { title: 'Application — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function ApplicationDetailPage({

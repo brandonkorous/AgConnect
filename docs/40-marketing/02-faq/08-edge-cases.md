@@ -96,5 +96,5 @@ If post-launch we add 20+ entries, the single-list pattern stops scaling.
 
 1. **Tone for "Still have questions?" CTA** — current copy is professional and brand-aligned. If a more conversational variant tests better, swap.
 2. **Search box** — explicitly out of scope at v1. Revisit at 30+ entries.
-3. **`/faq` trackback from `mailto:` body** — adding `?subject=AgConn%20FAQ%20Question` to the mailto helps support triage. Decision: ship with subject line; review impact at 30 days.
-4. **Per-tenant FAQ overrides** — when workforce boards run their own AgConn instance, do they get to add tenant-specific FAQs? Out of scope MVP. Track for tenant-onboarding feature folder.
+3. **`/faq` trackback from `mailto:` body** — adding `?subject=AGCONN%20FAQ%20Question` to the mailto helps support triage. Decision: ship with subject line; review impact at 30 days.
+4. **Per-tenant FAQ overrides** — when workforce boards run their own AGCONN instance, do they get to add tenant-specific FAQs? Out of scope MVP. Track for tenant-onboarding feature folder.

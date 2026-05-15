@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { fetchWorkers } from '@/lib/directory-api';
 import { SavedViews } from '@/components/SavedViews';
 
-export const metadata = { title: 'Workers — AgConn Admin' };
+export const metadata = { title: 'Workers — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

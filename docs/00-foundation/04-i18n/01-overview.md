@@ -2,7 +2,7 @@
 
 ## Purpose
 
-AgConn is bilingual EN/ES from day one — not as a translation layer over English, but as a first-class architectural constraint. Every UI string, SMS, email, certificate, and validation error exists in both languages before a feature ships. This is recorded in the kickoff §7.
+AGCONN is bilingual EN/ES from day one — not as a translation layer over English, but as a first-class architectural constraint. Every UI string, SMS, email, certificate, and validation error exists in both languages before a feature ships. This is recorded in the kickoff §7.
 
 ## Stack
 

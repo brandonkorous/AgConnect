@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Show admin (and grantee orgs in Phase 2) what employers are doing on the platform — postings published, applications received, hire rates, average wage, by employer and by county. Useful for grant impact reports ("X verified employers hired Y workers via the platform") and for AgConn-internal employer health metrics.
+Show admin (and grantee orgs in Phase 2) what employers are doing on the platform — postings published, applications received, hire rates, average wage, by employer and by county. Useful for grant impact reports ("X verified employers hired Y workers via the platform") and for AGCONN-internal employer health metrics.
 
 ## What it captures
 

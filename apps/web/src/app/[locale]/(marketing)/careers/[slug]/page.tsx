@@ -71,7 +71,7 @@ export default async function CareerRolePage({ params }: RouteProps) {
                     inLanguage: locale === 'es' ? 'es-MX' : 'en-US',
                     hiringOrganization: {
                         '@type': 'Organization',
-                        name: 'AgConn',
+                        name: 'AGCONN',
                         sameAs: 'https://agconn.com',
                     },
                     jobLocation: { '@type': 'Place', address: role.location },

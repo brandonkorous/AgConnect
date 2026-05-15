@@ -21,7 +21,7 @@
 - [ ] All Spanish accent characters render correctly (`á`, `é`, `í`, `ñ`, `ó`, `ú`, `¡`, `¿`).
 - [ ] Worker names in non-Latin scripts (rare but possible) render correctly OR fall back gracefully (Inter has Latin coverage; for non-Latin, render using the closest available glyph; document this limitation).
 - [ ] Long worker names (40+ chars) and long program names don't break the layout.
-- [ ] Tenant with no logo URL falls back to the AgConn default logo.
+- [ ] Tenant with no logo URL falls back to the AGCONN default logo.
 - [ ] Org with no signature image renders typed name + title.
 
 ## Test scenarios
@@ -50,5 +50,5 @@
 - Snapshot test fixture committed (`packages/pdf/test/fixtures/cert-sample.pdf`).
 - Visual regression check in CI: render a sample cert and pixel-diff against fixture.
 - Supabase Storage bucket `certificates` configured with private access; signed URLs enforced.
-- Default tenant logo + AgConn default logo committed to `packages/pdf/src/assets/`.
+- Default tenant logo + AGCONN default logo committed to `packages/pdf/src/assets/`.
 - Admin runbook: how to manually regenerate a certificate, how to fix a typo (update DB → trigger regenerate).

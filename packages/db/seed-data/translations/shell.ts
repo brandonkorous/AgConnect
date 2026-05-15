@@ -54,8 +54,8 @@ export const shell: TranslationBundle = {
         es: "Aceptar todo",
     },
     "consent.body": {
-        en: "We use essential cookies so AgConn works. With your consent, we also use analytics cookies to learn how the app is used and improve it. You can change this any time.",
-        es: "Usamos cookies esenciales para que AgConn funcione. Con tu consentimiento, también usamos cookies de análisis para entender cómo se usa la app y mejorarla. Puedes cambiar esto en cualquier momento.",
+        en: "We use essential cookies so AGCONN works. With your consent, we also use analytics cookies to learn how the app is used and improve it. You can change this any time.",
+        es: "Usamos cookies esenciales para que AGCONN funcione. Con tu consentimiento, también usamos cookies de análisis para entender cómo se usa la app y mejorarla. Puedes cambiar esto en cualquier momento.",
     },
     "consent.category.analytics.description": {
         en: "Helps us understand which features matter and where workers get stuck.",
@@ -202,8 +202,8 @@ export const shell: TranslationBundle = {
         es: "Un servicio está temporalmente no disponible",
     },
     "error.tenant_disabled.description": {
-        en: "Reach out to AgConn support if this is unexpected.",
-        es: "Comunícate con soporte de AgConn si esto es inesperado.",
+        en: "Reach out to AGCONN support if this is unexpected.",
+        es: "Comunícate con soporte de AGCONN si esto es inesperado.",
     },
     "error.tenant_disabled.title": {
         en: "This workspace is paused",
@@ -258,16 +258,16 @@ export const shell: TranslationBundle = {
         es: "Toca el icono de compartir",
     },
     "install.ios.title": {
-        en: "Add AgConn to your home screen",
-        es: "Agrega AgConn a tu pantalla de inicio",
+        en: "Add AGCONN to your home screen",
+        es: "Agrega AGCONN a tu pantalla de inicio",
     },
     "install.later": {
         en: "Maybe later",
         es: "Quizás después",
     },
     "install.title": {
-        en: "Install AgConn on your phone",
-        es: "Instala AgConn en tu teléfono",
+        en: "Install AGCONN on your phone",
+        es: "Instala AGCONN en tu teléfono",
     },
     "modal.cancel": {
         en: "Cancel",

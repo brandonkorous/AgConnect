@@ -10,28 +10,28 @@ Template name: `landing.waitlist_confirmed`. Idempotency key: `waitlist-{waitlis
 
 |           | EN                                                 | ES                                          |
 | --------- | -------------------------------------------------- | ------------------------------------------- |
-| Subject   | We saved your spot on the AgConn waitlist          | Te apartamos un lugar en la lista de AgConn |
+| Subject   | We saved your spot on the AGCONN waitlist          | Te apartamos un lugar en la lista de AGCONN |
 | Preheader | We'll text or email you when we open in your area. | Te avisaremos cuando lleguemos a tu zona.   |
 
 Body components:
 
 - Greeting (no name — we don't have one)
-- Confirmation paragraph: "We added you to the AgConn waitlist. We'll reach out when we open in [{county}]."
-- One short paragraph on what AgConn is (one-sentence summary, link to landing page)
+- Confirmation paragraph: "We added you to the AGCONN waitlist. We'll reach out when we open in [{county}]."
+- One short paragraph on what AGCONN is (one-sentence summary, link to landing page)
 - Footer: standard NAP, unsubscribe link, brand
-- One CTA: `Visit AgConn →` linking back to `/[locale]`
+- One CTA: `Visit AGCONN →` linking back to `/[locale]`
 
 i18n keys (under `email.landing.waitlist_confirmed.*`):
 
 | key          | en                                                                                                                                          | es                                                                                                                                                                         |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `subject`    | We saved your spot on the AgConn waitlist                                                                                                   | Te apartamos un lugar en la lista de AgConn                                                                                                                                |
+| `subject`    | We saved your spot on the AGCONN waitlist                                                                                                   | Te apartamos un lugar en la lista de AGCONN                                                                                                                                |
 | `preheader`  | We'll text or email you when we open in your area.                                                                                          | Te avisaremos cuando lleguemos a tu zona.                                                                                                                                  |
 | `greeting`   | Welcome —                                                                                                                                   | Bienvenido —                                                                                                                                                               |
-| `body.line1` | We added you to the AgConn waitlist. We'll reach out when we open in {county}.                                                              | Te agregamos a la lista de AgConn. Te avisaremos cuando lleguemos a {county}.                                                                                              |
-| `body.line2` | AgConn is a bilingual workforce platform connecting Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs. | AgConn es una plataforma laboral bilingüe que conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA. |
-| `cta`        | Visit AgConn                                                                                                                                | Visitar AgConn                                                                                                                                                             |
-| `body.line3` | If you didn't sign up for AgConn, you can ignore this message.                                                                              | Si no te registraste en AgConn, puedes ignorar este mensaje.                                                                                                               |
+| `body.line1` | We added you to the AGCONN waitlist. We'll reach out when we open in {county}.                                                              | Te agregamos a la lista de AGCONN. Te avisaremos cuando lleguemos a {county}.                                                                                              |
+| `body.line2` | AGCONN is a bilingual workforce platform connecting Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs. | AGCONN es una plataforma laboral bilingüe que conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA. |
+| `cta`        | Visit AGCONN                                                                                                                                | Visitar AGCONN                                                                                                                                                             |
+| `body.line3` | If you didn't sign up for AGCONN, you can ignore this message.                                                                              | Si no te registraste en AGCONN, puedes ignorar este mensaje.                                                                                                               |
 
 ## SMS
 

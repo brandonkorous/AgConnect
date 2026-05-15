@@ -41,7 +41,7 @@ Resend supports attachments up to 40 MB total. Certificate PDFs (~ 100 KB) and g
 
 ## Unsubscribe vs. transactional
 
-Some emails are "transactional" (account creation, password reset) and exempt from unsubscribe under CAN-SPAM. AgConn's transactional sends include: hire confirmations, billing receipts, certificate delivery.
+Some emails are "transactional" (account creation, password reset) and exempt from unsubscribe under CAN-SPAM. AGCONN's transactional sends include: hire confirmations, billing receipts, certificate delivery.
 
 > **Inferred:** Even though some emails are arguably transactional, we honor unsubscribe on ALL emails. Reason: simplest mental model for users, and the cost of accidentally sending to an unsubscribed user is high. Marketing-style emails (job alerts, training recommendations) are absolutely opt-out-able.
 
@@ -53,7 +53,7 @@ Some email clients render UTF-8 subject lines incorrectly. RFC 2047 encoding is 
 
 ## Spam-trigger words
 
-Banking/marketing spam triggers: "free", "guarantee", "act now", "limited time". AgConn avoids these in transactional copy.
+Banking/marketing spam triggers: "free", "guarantee", "act now", "limited time". AGCONN avoids these in transactional copy.
 
 **Mitigation:** review templates against a spam-checker (e.g., Mail-Tester) before launch. Adjust copy as needed.
 

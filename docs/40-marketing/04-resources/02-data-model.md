@@ -31,7 +31,7 @@ slugLocale: flc-verification-explained          # this locale's slug
 slugAlt:
   es: verificacion-flc-explicada                # other-locale slug for hreflang
 title: What FLC verification actually checks
-description: A walkthrough of how AgConn verifies that a farm-labor contractor is licensed, current, and matched to the legal entity behind the posting.
+description: A walkthrough of how AGCONN verifies that a farm-labor contractor is licensed, current, and matched to the legal entity behind the posting.
 category: employer-guides                        # workers-rights | employer-guides | training-explainers | platform
 publishedAt: 2026-06-15
 updatedAt: 2026-07-02
@@ -47,7 +47,7 @@ heroImageAlt: A clipboard with a California FLC license preview
 - `workers-rights` — wage law, breaks, transportation, retaliation protections
 - `employer-guides` — verification, posting best practices, hiring workflow
 - `training-explainers` — what each program actually covers, who qualifies
-- `platform` — how AgConn works, FAQs that grew into deep-dives
+- `platform` — how AGCONN works, FAQs that grew into deep-dives
 
 > **Inferred:** Categories are an enum, not free-text. Adding a category is a code change — keeps the URL space disciplined.
 

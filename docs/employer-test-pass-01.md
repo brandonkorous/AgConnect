@@ -183,7 +183,7 @@ End-to-end functional + design audit of every `/[locale]/employer/**` page and c
 
 ## /employer/compliance/audit
 
-- **[low] No issues with the rendered binder itself** — it follows the formal AgConnect letterhead style and matches the project's print-document convention.
+- **[low] No issues with the rendered binder itself** — it follows the formal AGCONN letterhead style and matches the project's print-document convention.
 - **[medium] Score (59%) and status legend ("Compliant · Action required · Not in compliance") shown in the binder while the API that computes the score is currently 500-ing.** Means the binder rendered with stale or default data. Block render or show "Score unavailable" if the items API failed.
 
 ---

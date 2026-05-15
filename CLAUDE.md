@@ -1,4 +1,4 @@
-# AgConn
+# AGCONN
 
 Bilingual (EN/ES) farmworker platform for the California Central Valley. Multi-tenant from day one. Brand domain: `agconn.com`. Brand theme: **Tierra**.
 

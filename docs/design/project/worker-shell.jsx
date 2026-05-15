@@ -2,14 +2,14 @@
 
 const WSidebar = ({ active = 'home' }) => {
   const items = [
-    { k: 'home', i: 'kanban', l: 'Dashboard', href: 'AgConnect Worker Dashboard.html' },
-    { k: 'jobs', i: 'leaf', l: 'Browse jobs', count: 142, href: 'AgConnect Browse Jobs.html' },
-    { k: 'apps', i: 'check', l: 'My applications', count: 5, href: 'AgConnect Applications.html' },
-    { k: 'shifts', i: 'calendar', l: 'My shifts', href: 'AgConnect Shifts.html' },
-    { k: 'pay', i: 'cash', l: 'Pay & timesheets', href: 'AgConnect Pay.html' },
-    { k: 'train', i: 'graduate', l: 'Training', href: 'AgConnect Training.html' },
-    { k: 'docs', i: 'badge', l: 'Documents', href: 'AgConnect Documents.html' },
-    { k: 'msg', i: 'chat', l: 'Messages', count: 3, dot: true, href: 'AgConnect Messages.html' },
+    { k: 'home', i: 'kanban', l: 'Dashboard', href: 'AGCONN Worker Dashboard.html' },
+    { k: 'jobs', i: 'leaf', l: 'Browse jobs', count: 142, href: 'AGCONN Browse Jobs.html' },
+    { k: 'apps', i: 'check', l: 'My applications', count: 5, href: 'AGCONN Applications.html' },
+    { k: 'shifts', i: 'calendar', l: 'My shifts', href: 'AGCONN Shifts.html' },
+    { k: 'pay', i: 'cash', l: 'Pay & timesheets', href: 'AGCONN Pay.html' },
+    { k: 'train', i: 'graduate', l: 'Training', href: 'AGCONN Training.html' },
+    { k: 'docs', i: 'badge', l: 'Documents', href: 'AGCONN Documents.html' },
+    { k: 'msg', i: 'chat', l: 'Messages', count: 3, dot: true, href: 'AGCONN Messages.html' },
   ];
   return (
     <aside style={{
@@ -19,7 +19,7 @@ const WSidebar = ({ active = 'home' }) => {
       position: 'sticky', top: 0, alignSelf: 'flex-start',
     }}>
       <div style={{ padding: '4px 8px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="AgConnect Landing.html" style={{ textDecoration: 'none' }}><Logo size={20}/></a>
+        <a href="AGCONN Landing.html" style={{ textDecoration: 'none' }}><Logo size={20}/></a>
         <div style={{ display: 'inline-flex', padding: 2, borderRadius: 999, background: 'rgba(28,28,26,0.06)', fontFamily: 'var(--f-mono)', fontSize: 9.5 }}>
           <span style={{ padding: '4px 8px', borderRadius: 999, background: 'var(--c-ink)', color: 'var(--c-bg)', fontWeight: 700 }}>EN</span>
           <span style={{ padding: '4px 8px', color: 'var(--c-ink-2)', fontWeight: 700 }}>ES</span>

@@ -41,7 +41,7 @@ Clerk's hosted SMS-OTP and magic-link pages are configured per Clerk app, not pe
 
 ## Plurals and gendered language
 
-Spanish has gendered plurals (`bienvenido` vs `bienvenida`) and number agreement. AgConn avoids gendering by default ("Te damos la bienvenida" instead of "Bienvenido/a").
+Spanish has gendered plurals (`bienvenido` vs `bienvenida`) and number agreement. AGCONN avoids gendering by default ("Te damos la bienvenida" instead of "Bienvenido/a").
 
 > **Inferred:** Avoiding gendered forms keeps strings simple and inclusive. If users push back, add gender field at signup (out of scope for MVP).
 
@@ -67,7 +67,7 @@ Always USD. Format with locale: `Intl.NumberFormat(locale, { style: 'currency', 
 
 ## Accessibility for screen reader pronunciation
 
-Spanish proper nouns and English brand names mix in the UI. Use `<span lang="en">` to mark English fragments inside Spanish content (e.g., "AgConn" or "F3" in a Spanish sentence) so the screen reader pronounces correctly.
+Spanish proper nouns and English brand names mix in the UI. Use `<span lang="en">` to mark English fragments inside Spanish content (e.g., "AGCONN" or "F3" in a Spanish sentence) so the screen reader pronounces correctly.
 
 ## Encoding
 

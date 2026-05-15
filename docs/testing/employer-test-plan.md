@@ -150,7 +150,7 @@ Authed home. Eight components: greeting, KPI row, featured posting hero, hiring 
 ### Bilingual
 - [x] All 8 dashboard sections fully translated to ES — no English leakage
 - [x] Date format localized: "sábado, 2 de mayo" (Spanish weekday/month, no comma after weekday)
-- [x] Page title "AgConn — Panel" in ES, "AgConn — Dashboard" in EN
+- [x] Page title "AGCONN — Panel" in ES, "AGCONN — Dashboard" in EN
 - [x] Sidebar nav labels translated (verified in shell chrome)
 - [x] Verification banner copy translated ("Verificación pendiente / Estamos revisando…")
 ### Design
@@ -187,7 +187,7 @@ Job list.
 - [⚠️] Job card title not clickable — see JOBS-004
 - [ ] Status badges + state labels — only `Draft` visible (no published/closed/archived states to verify)
 ### Bilingual
-- [x] Fully translated. H1 "Publicaciones de empleo", filter chips ("Todas/Abiertas/Urgentes/Completas/Borradores/Cerradas"), sort, all CTAs translated. Page title "AgConn — Publicaciones".
+- [x] Fully translated. H1 "Publicaciones de empleo", filter chips ("Todas/Abiertas/Urgentes/Completas/Borradores/Cerradas"), sort, all CTAs translated. Page title "AGCONN — Publicaciones".
 ### Design
 - [⚠️] Heading hierarchy skips H2 (H1 → H3) — see JOBS-005
 - [ ] Tierra light/dark + responsive (deferred)
@@ -261,7 +261,7 @@ Job detail / edit form (single-purpose page — no separate read-only detail vie
 
 ### Defects
 
-- **JOBS-DETAIL-001** [P2] Page title is just `"AgConn"` on this route (vs. `AgConn — Job postings` and `AgConn — New posting` on sibling routes). Missing `generateMetadata` in `apps/web/src/app/[locale]/employer/jobs/[id]/page.tsx`. Should be at minimum `"AgConn — Edit posting"`, ideally include the job title.
+- **JOBS-DETAIL-001** [P2] Page title is just `"AGCONN"` on this route (vs. `AGCONN — Job postings` and `AGCONN — New posting` on sibling routes). Missing `generateMetadata` in `apps/web/src/app/[locale]/employer/jobs/[id]/page.tsx`. Should be at minimum `"AGCONN — Edit posting"`, ideally include the job title.
 - **JOBS-DETAIL-002** [P1] ES locale shows H1 "**Edit posting**" in English. Sibling H2s, buttons, and "Back to jobs" link translate correctly to ES; only the H1 falls through. Likely a missing translation key.
 - **JOBS-DETAIL-003** [P1] Invalid job ID (`/en/employer/jobs/this-id-does-not-exist-12345`) does **not** render a 404 page. Returns a near-empty body with only Next.js bootstrap script data, no "not found" UI, no redirect, no error message. Should call `notFound()` from `next/navigation` for missing jobs.
 
@@ -283,7 +283,7 @@ Pipeline view for a specific job's applicants.
 ### Bilingual
 - [x] H1 swaps to bilingual job title (ES translation pre-stored)
 - [x] H2s translate (Applied/Reviewed/Hired → Aplicados/Revisados/Contratados)
-- [x] Page title localizes ("AgConn — Aplicados")
+- [x] Page title localizes ("AGCONN — Aplicados")
 - [⚠️] Back link "← Jobs" — see APPL-002
 
 ### Defects
@@ -347,7 +347,7 @@ Worker directory.
 - [x] Page is **paywalled** for Free plan — renders "Worker search is a Pro feature" with single "Upgrade to Pro" CTA
 - [ ] Directory search/filter/invite untestable — would require Pro plan upgrade
 ### Bilingual
-- [x] Translates correctly: "La búsqueda de trabajadores es una función Pro" / "Mejorar a Pro" / page title "AgConn — Buscar trabajadores"
+- [x] Translates correctly: "La búsqueda de trabajadores es una función Pro" / "Mejorar a Pro" / page title "AGCONN — Buscar trabajadores"
 ### Design
 - [ ] Single-CTA paywall is functional but minimal — could include "what you get with Pro" feature list
 
@@ -431,7 +431,7 @@ Crew list + weekly schedule grid.
 - [ ] "Approve & run payroll" not exercised (high-risk action)
 - [ ] "view all →" link target untested (href blocked in JS output)
 ### Bilingual
-- [x] Fully translated. Page title localizes to "AgConn — Nómina".
+- [x] Fully translated. Page title localizes to "AGCONN — Nómina".
 
 ### Defects
 
@@ -548,7 +548,7 @@ Note: business name appears as "Korous Family Farms LLC" here (legal name) vs "K
 - [ ] CheckoutButton → Stripe not exercised
 - [ ] No invoice list rendered (account has no payment history)
 ### Bilingual
-- [x] H1 + page title localize ("Facturación y plan", "AgConn — Facturación")
+- [x] H1 + page title localize ("Facturación y plan", "AGCONN — Facturación")
 ### Design
 - [⚠️] Heading hierarchy H1 → H3 skipping H2 — same JOBS-005 class
 
@@ -579,7 +579,7 @@ Post-checkout landing.
 
 ### Defects
 
-- **B-SUCCESS-001** [P3] Page title is `"AgConn"` only — missing `generateMetadata`. Sibling routes have localized suffixes (`AgConn — Billing`, `AgConn — Cuadrillas`). Should be e.g. `AgConn — Subscription confirmed` / `AgConn — Suscripción confirmada`.
+- **B-SUCCESS-001** [P3] Page title is `"AGCONN"` only — missing `generateMetadata`. Sibling routes have localized suffixes (`AGCONN — Billing`, `AGCONN — Cuadrillas`). Should be e.g. `AGCONN — Subscription confirmed` / `AGCONN — Suscripción confirmada`.
 - **B-SUCCESS-002** [P3] Direct visit to `/billing/success` (without a real checkout event) shows "Welcome to Pro. Receipt sent to your email." even though account is still Free. Either guard with a server-side check (`if !hasRecentCheckout, redirect to /billing`) or make the copy generic so it doesn't claim something untrue.
 
 ---
@@ -655,7 +655,7 @@ These are the same root cause showing up across many routes — fixing the under
 - JOBS-002 — Jobs sort + crop filter + Browse templates non-functional
 - JOBS-NEW-001 — Title/Description bypass HTML5 validation (no `name` attr)
 - JOBS-NEW-003 — Form inputs lack label association
-- JOBS-DETAIL-001 — `/jobs/[id]` page title is just "AgConn"
+- JOBS-DETAIL-001 — `/jobs/[id]` page title is just "AGCONN"
 - APPL-002 — `/jobs/[id]/applicants` "← Jobs" hardcoded English on ES
 - INBOX-001 — Filters link goes to `/jobs` instead of filter UI
 - INBOX-002 — Three different pipeline taxonomies across dashboard / inbox / per-job applicants

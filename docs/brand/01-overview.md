@@ -5,7 +5,7 @@
 **Tierra** — Spanish for _earth_ or _land_. Chosen because:
 
 - It is instantly recognized by the platform's primary Spanish-speaking audience without translation.
-- It connects the brand directly to the work AgConn serves: cultivation of the land.
+- It connects the brand directly to the work AGCONN serves: cultivation of the land.
 - It carries weight without aggression. Earth is patient, productive, generative. Those are the qualities of the platform.
 - It avoids the connotations of words like _connect_, _hire_, _grow_, _match_, _link_ — all of which read as gig-economy or recruiter-software.
 
@@ -28,7 +28,7 @@ What Tierra is **not**: Hero, Outlaw, Magician, Jester. There is no "disruption"
 
 ## Positioning
 
-> AgConn is the calm, bilingual workforce platform that treats farmworkers and the employers who hire them as professionals. Tierra is what that promise looks and sounds like.
+> AGCONN is the calm, bilingual workforce platform that treats farmworkers and the employers who hire them as professionals. Tierra is what that promise looks and sounds like.
 
 Implications:
 
@@ -72,4 +72,4 @@ Recurring details that, taken together, are recognizably Tierra:
 
 ## Source material
 
-This brand was developed alongside, and tested against, the AgConn product spec. The product North Star and audience definition come from [`../AgConn-Architecture-Kickoff.docx`](../AgConn-Architecture-Kickoff.docx). When this folder makes a brand claim, it should be consistent with the product the spec describes; if a brand decision conflicts with the product (e.g., "Tierra forbids X" but the product needs X), the product wins and this folder updates.
+This brand was developed alongside, and tested against, the AGCONN product spec. The product North Star and audience definition come from [`../AGCONN-Architecture-Kickoff.docx`](../AGCONN-Architecture-Kickoff.docx). When this folder makes a brand claim, it should be consistent with the product the spec describes; if a brand decision conflicts with the product (e.g., "Tierra forbids X" but the product needs X), the product wins and this folder updates.

@@ -1,4 +1,4 @@
-/* AgConnect Tweaks panel — color/layout/font/density toggles */
+/* AGCONN Tweaks panel — color/layout/font/density toggles */
 
 const AgTweaks = () => {
   const [tweaks, setTweak] = useTweaks(window.TWEAK_DEFAULTS);

@@ -1,5 +1,5 @@
 -- =============================================================================
--- AgConn — Field Mode worker arrival timestamp
+-- AGCONN — Field Mode worker arrival timestamp
 -- =============================================================================
 --
 -- Adds a nullable arrived_at timestamp to shift_assignments so a worker can

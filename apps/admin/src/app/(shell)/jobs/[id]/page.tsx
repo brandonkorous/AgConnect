@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchJob } from '@/lib/work-api';
 
-export const metadata = { title: 'Job — AgConn Admin' };
+export const metadata = { title: 'Job — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function JobDetailPage({

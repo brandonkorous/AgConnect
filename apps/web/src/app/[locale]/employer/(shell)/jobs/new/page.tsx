@@ -19,7 +19,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.jobs.list' });
-    return { title: `AgConn — ${t('new_posting')}` };
+    return { title: `AGCONN — ${t('new_posting')}` };
 }
 
 export default async function NewJobPage({ params, searchParams }: Props) {

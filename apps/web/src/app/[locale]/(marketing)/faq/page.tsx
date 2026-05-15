@@ -103,7 +103,7 @@ export default async function FaqPage({ params }: RouteProps) {
                                     {pageT('still_questions.body')}
                                 </p>
                                 <a
-                                    href="mailto:support@agconn.com?subject=AgConn%20FAQ%20question"
+                                    href="mailto:support@agconn.com?subject=AGCONN%20FAQ%20question"
                                     className="text-primary mt-3 inline-flex items-center gap-2 font-sans text-sm font-semibold hover:underline"
                                 >
                                     <FontAwesomeIcon icon={faEnvelope} className="text-xs" />
@@ -141,7 +141,7 @@ export default async function FaqPage({ params }: RouteProps) {
                         </p>
                         <div className="mt-2 flex flex-wrap gap-3">
                             <a
-                                href="mailto:support@agconn.com?subject=AgConn%20FAQ%20question"
+                                href="mailto:support@agconn.com?subject=AGCONN%20FAQ%20question"
                                 className="btn btn-primary"
                             >
                                 <FontAwesomeIcon icon={faEnvelope} className="text-sm" />

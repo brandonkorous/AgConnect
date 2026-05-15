@@ -10,32 +10,32 @@ export const marketing: TranslationBundle = {
         es: "Usamos tu número para enviarte códigos de inicio de sesión, alertas de trabajo que tú elijas, y un resumen semanal en tu idioma. No vendemos, compartimos ni alquilamos tu número a nadie. Puedes borrar tu cuenta y todos los registros asociados desde tu perfil en cualquier momento.",
     },
     "faq_extras.data_privacy.question": {
-        en: "What does AgConn do with my phone number?",
-        es: "¿Qué hace AgConn con mi número de teléfono?",
+        en: "What does AGCONN do with my phone number?",
+        es: "¿Qué hace AGCONN con mi número de teléfono?",
     },
     "faq_extras.employer_payouts.answer": {
         en: "Seed plan employers are never charged — they get 2 active postings, applicant kanban, and in-app inbox messaging. SMS to applicants from kanban actions (received, interview, hired, rejected) is a Field+ feature. Field employers pay $199/mo or $1,990/yr (founder pricing $99/$990 for the first 50 paid accounts) for unlimited postings, worker search, applicant SMS, and crew scheduling. Farm employers pay $499/mo or $4,990/yr (founder pricing $299/$2,990) for multi-user accounts, branded grant exports, and PIRL compliance. Workers always receive platform-triggered SMS — new job alerts on saved searches, training reminders, account auth — regardless of which employer's posting matched. There is no per-hire fee and no commission on wages. Workers never pay anything.",
         es: "Los empleadores del plan Semilla nunca pagan — reciben 2 publicaciones activas, tablero kanban de solicitantes y mensajería en bandeja interna. El SMS a solicitantes desde acciones del kanban (recibido, entrevista, contratado, rechazado) es una función Campo+. Los empleadores de Campo pagan $199/mes o $1,990/año (precio fundador $99/$990 para las primeras 50 cuentas pagas) por publicaciones ilimitadas, búsqueda de trabajadores, SMS a solicitantes y gestión de cuadrillas. Los empleadores de Rancho pagan $499/mes o $4,990/año (precio fundador $299/$2,990) por cuentas multiusuario, exportaciones de subvención con marca y cumplimiento PIRL. Los trabajadores siempre reciben SMS de la plataforma — alertas de empleos nuevos según sus búsquedas guardadas, recordatorios de capacitación, autenticación de cuenta — sin importar qué publicación de empleador coincidió. No hay tarifa por contratación ni comisión sobre salarios. Los trabajadores nunca pagan nada.",
     },
     "faq_extras.employer_payouts.question": {
-        en: "When does an employer get charged on AgConn?",
-        es: "¿Cuándo se cobra a un empleador en AgConn?",
+        en: "When does an employer get charged on AGCONN?",
+        es: "¿Cuándo se cobra a un empleador en AGCONN?",
     },
     "faq_extras.platform_uptime.answer": {
-        en: "AgConn targets 99.9% uptime measured monthly. SMS sign-in, job browse, and applications are the highest-priority paths. A public status page is coming soon; until then, incidents that affect a public surface for more than five minutes are posted to security@agconn.com subscribers and on the trust page.",
-        es: "AgConn tiene como meta 99.9% de disponibilidad medida mensualmente. El inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones son las prioridades más altas. La página pública de estado estará disponible próximamente; mientras tanto, los incidentes que afectan una superficie pública por más de cinco minutos se publican a las personas suscritas a security@agconn.com y en la página de confianza.",
+        en: "AGCONN targets 99.9% uptime measured monthly. SMS sign-in, job browse, and applications are the highest-priority paths. A public status page is coming soon; until then, incidents that affect a public surface for more than five minutes are posted to security@agconn.com subscribers and on the trust page.",
+        es: "AGCONN tiene como meta 99.9% de disponibilidad medida mensualmente. El inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones son las prioridades más altas. La página pública de estado estará disponible próximamente; mientras tanto, los incidentes que afectan una superficie pública por más de cinco minutos se publican a las personas suscritas a security@agconn.com y en la página de confianza.",
     },
     "faq_extras.platform_uptime.question": {
         en: "What is the platform uptime guarantee?",
         es: "¿Cuál es la garantía de disponibilidad de la plataforma?",
     },
     "faq_extras.tenant_onboarding.answer": {
-        en: "Yes — AgConn is multi-tenant from day one. Workforce boards, county agencies, or grant administrators can run an AgConn tenant with their own employer set, training programs, and reporting dashboards. Branding stays under your organization. Contact partnerships@agconn.com to start a tenant onboarding.",
-        es: "Sí — AgConn es multi-inquilino desde el primer día. Juntas laborales, agencias del condado o administradores de subvenciones pueden tener una instancia de AgConn con su propio conjunto de empleadores, programas de capacitación y reportes. La marca se mantiene bajo tu organización. Contacta partnerships@agconn.com para empezar.",
+        en: "Yes — AGCONN is multi-tenant from day one. Workforce boards, county agencies, or grant administrators can run an AGCONN tenant with their own employer set, training programs, and reporting dashboards. Branding stays under your organization. Contact partnerships@agconn.com to start a tenant onboarding.",
+        es: "Sí — AGCONN es multi-inquilino desde el primer día. Juntas laborales, agencias del condado o administradores de subvenciones pueden tener una instancia de AGCONN con su propio conjunto de empleadores, programas de capacitación y reportes. La marca se mantiene bajo tu organización. Contacta partnerships@agconn.com para empezar.",
     },
     "faq_extras.tenant_onboarding.question": {
-        en: "Can a workforce board run their own AgConn instance?",
-        es: "¿Puede una junta laboral tener su propia instancia de AgConn?",
+        en: "Can a workforce board run their own AGCONN instance?",
+        es: "¿Puede una junta laboral tener su propia instancia de AGCONN?",
     },
     "faq_extras.training_cert_validity.answer": {
         en: "CDFA-funded trainings are recognized California-wide. Some certifications (pesticide handler, forklift operator) follow federal OSHA standards and transfer across states; others are California-specific. Each training program lists its scope on the program page. Your skills wallet preserves the certificate PDF in both languages so you can share proof with any employer.",
@@ -46,8 +46,8 @@ export const marketing: TranslationBundle = {
         es: "¿Mi certificado de CDFA es válido fuera de California?",
     },
     "faq_extras.wage_disputes.answer": {
-        en: "Every job posting on AgConn shows a wage range that the employer signed off on. If the actual pay is below the posted minimum, report it from the job page or by replying to your hire confirmation SMS. We log the report, contact the employer, and pause new postings from that employer if the dispute is verified. Repeat issues remove the employer from the platform.",
-        es: "Cada publicación de trabajo en AgConn muestra un rango salarial que el empleador firmó. Si el pago real es menor al mínimo publicado, repórtalo desde la página del trabajo o respondiendo al SMS de contratación. Registramos el reporte, contactamos al empleador y pausamos nuevas publicaciones de ese empleador si se confirma. Casos repetidos retiran al empleador de la plataforma.",
+        en: "Every job posting on AGCONN shows a wage range that the employer signed off on. If the actual pay is below the posted minimum, report it from the job page or by replying to your hire confirmation SMS. We log the report, contact the employer, and pause new postings from that employer if the dispute is verified. Repeat issues remove the employer from the platform.",
+        es: "Cada publicación de trabajo en AGCONN muestra un rango salarial que el empleador firmó. Si el pago real es menor al mínimo publicado, repórtalo desde la página del trabajo o respondiendo al SMS de contratación. Registramos el reporte, contactamos al empleador y pausamos nuevas publicaciones de ese empleador si se confirma. Casos repetidos retiran al empleador de la plataforma.",
     },
     "faq_extras.wage_disputes.question": {
         en: "What if my employer pays less than the posted wage?",
@@ -66,16 +66,16 @@ export const marketing: TranslationBundle = {
         es: "Preguntas, en lenguaje claro.",
     },
     "faq_page.intro": {
-        en: "Common questions about how AgConn works for workers, employers, and training organizations.",
-        es: "Preguntas comunes sobre cómo funciona AgConn para trabajadores, empleadores y capacitadores.",
+        en: "Common questions about how AGCONN works for workers, employers, and training organizations.",
+        es: "Preguntas comunes sobre cómo funciona AGCONN para trabajadores, empleadores y capacitadores.",
     },
     "faq_page.meta.description": {
-        en: "Common questions about finding seasonal farm work, FLC verification, CDFA training, and how AgConn keeps every record bilingual.",
-        es: "Preguntas comunes sobre cómo encontrar trabajo agrícola de temporada, verificación de FLC, capacitación de CDFA y cómo AgConn mantiene cada registro bilingüe.",
+        en: "Common questions about finding seasonal farm work, FLC verification, CDFA training, and how AGCONN keeps every record bilingual.",
+        es: "Preguntas comunes sobre cómo encontrar trabajo agrícola de temporada, verificación de FLC, capacitación de CDFA y cómo AGCONN mantiene cada registro bilingüe.",
     },
     "faq_page.meta.title": {
-        en: "FAQ — AgConn",
-        es: "Preguntas frecuentes — AgConn",
+        en: "FAQ — AGCONN",
+        es: "Preguntas frecuentes — AGCONN",
     },
     "faq_page.next_links.home": {
         en: "Back to the homepage",
@@ -142,12 +142,12 @@ export const marketing: TranslationBundle = {
         es: "Actualizado cada noche · primeros números después del lanzamiento",
     },
     "impact_page.meta.description": {
-        en: "Live impact dashboard for AgConn — Central Valley placements, median wage at hire, training completions, and verified employers, refreshed nightly.",
-        es: "Panel de impacto en vivo de AgConn — colocaciones del Valle Central, salario mediano al contratar, capacitaciones completadas y empleadores verificados, actualizados cada noche.",
+        en: "Live impact dashboard for AGCONN — Central Valley placements, median wage at hire, training completions, and verified employers, refreshed nightly.",
+        es: "Panel de impacto en vivo de AGCONN — colocaciones del Valle Central, salario mediano al contratar, capacitaciones completadas y empleadores verificados, actualizados cada noche.",
     },
     "impact_page.meta.title": {
-        en: "Impact dashboard — AgConn",
-        es: "Panel de impacto — AgConn",
+        en: "Impact dashboard — AGCONN",
+        es: "Panel de impacto — AGCONN",
     },
     "impact_page.methodology.count.body": {
         en: "Hires recorded against verified job postings, completions recorded against CDFA / F3 / CalOSBA programs, employers with passed FLC license checks. No estimates.",
@@ -188,8 +188,8 @@ export const marketing: TranslationBundle = {
         es: "Publicaremos incluso cuando no haya nada que reportar.",
     },
     "impact_page.transparency.intro": {
-        en: "AgConn's first transparency report covers the period from launch through December 31, 2026 and will be published in January 2027. Here is what we will report on, and what we can already say today.",
-        es: "El primer reporte de transparencia de AgConn cubre el período desde el lanzamiento hasta el 31 de diciembre de 2026 y se publicará en enero de 2027. Esto es sobre lo que reportaremos, y lo que ya podemos decir hoy.",
+        en: "AGCONN's first transparency report covers the period from launch through December 31, 2026 and will be published in January 2027. Here is what we will report on, and what we can already say today.",
+        es: "El primer reporte de transparencia de AGCONN cubre el período desde el lanzamiento hasta el 31 de diciembre de 2026 y se publicará en enero de 2027. Esto es sobre lo que reportaremos, y lo que ya podemos decir hoy.",
     },
     "impact_page.transparency.requests.title": {
         en: "Government data requests",
@@ -232,8 +232,8 @@ export const marketing: TranslationBundle = {
         es: "IA y decisiones automatizadas",
     },
     "impact_page.transparency.ai.body": {
-        en: "Where AI is used on the platform: machine translation between English and Spanish for user-submitted content (resumes, job postings, messages), and ranking signals on job and worker search. AgConn does not make automated hiring or eligibility decisions about workers. Workers are never ranked, scored, or rejected by an algorithm — every hiring decision is made by a human employer.",
-        es: "Dónde se usa IA en la plataforma: traducción automática entre inglés y español para contenido enviado por usuarios (currículums, publicaciones de trabajo, mensajes), y señales de ranking en búsqueda de trabajos y trabajadores. AgConn no toma decisiones automatizadas de contratación o elegibilidad sobre trabajadores. Los trabajadores nunca son clasificados, puntuados ni rechazados por un algoritmo — cada decisión de contratación la toma un empleador humano.",
+        en: "Where AI is used on the platform: machine translation between English and Spanish for user-submitted content (resumes, job postings, messages), and ranking signals on job and worker search. AGCONN does not make automated hiring or eligibility decisions about workers. Workers are never ranked, scored, or rejected by an algorithm — every hiring decision is made by a human employer.",
+        es: "Dónde se usa IA en la plataforma: traducción automática entre inglés y español para contenido enviado por usuarios (currículums, publicaciones de trabajo, mensajes), y señales de ranking en búsqueda de trabajos y trabajadores. AGCONN no toma decisiones automatizadas de contratación o elegibilidad sobre trabajadores. Los trabajadores nunca son clasificados, puntuados ni rechazados por un algoritmo — cada decisión de contratación la toma un empleador humano.",
     },
     "impact_page.transparency.ai.value": { en: "Translation + ranking only", es: "Solo traducción + ranking" },
     "impact_page.transparency.contact": {
@@ -297,8 +297,8 @@ export const marketing: TranslationBundle = {
         es: "Artículos bilingües a profundidad sobre derechos de trabajadores agrícolas, cumplimiento FLC y programas de capacitación del Valle Central.",
     },
     "resources.meta.title": {
-        en: "Resources — AgConn",
-        es: "Recursos — AgConn",
+        en: "Resources — AGCONN",
+        es: "Recursos — AGCONN",
     },
     "resources.preview.categories.employer_guides.body": {
         en: "Written for growers and Farm Labor Contractors who want clean, compliant operations without the regulatory anxiety.",
@@ -412,10 +412,10 @@ export const marketing: TranslationBundle = {
         es: "Un registro que viaja contigo, de cosecha en cosecha.",
     },
     "skills_wallet.intro": {
-        en: "Every CDFA, F3, and CalOSBA training you complete on AgConn produces a bilingual, e-signed certificate stored in your skills wallet. Show it to any employer in California — proof that travels with you.",
-        es: "Cada capacitación CDFA, F3 y CalOSBA que completas en AgConn produce un certificado bilingüe firmado electrónicamente, guardado en tu cartera de habilidades. Muéstralo a cualquier empleador en California — prueba que viaja contigo.",
+        en: "Every CDFA, F3, and CalOSBA training you complete on AGCONN produces a bilingual, e-signed certificate stored in your skills wallet. Show it to any employer in California — proof that travels with you.",
+        es: "Cada capacitación CDFA, F3 y CalOSBA que completas en AGCONN produce un certificado bilingüe firmado electrónicamente, guardado en tu cartera de habilidades. Muéstralo a cualquier empleador en California — prueba que viaja contigo.",
     },
-    "skills_wallet.meta.title": { en: "Skills wallet — AgConn", es: "Cartera de habilidades — AgConn" },
+    "skills_wallet.meta.title": { en: "Skills wallet — AGCONN", es: "Cartera de habilidades — AGCONN" },
     "skills_wallet.meta.description": {
         en: "Earn bilingual certificates from CDFA, F3, and CalOSBA training programs. Stored in a portable skills wallet you keep forever.",
         es: "Obtén certificados bilingües de programas de capacitación CDFA, F3 y CalOSBA. Guardados en una cartera de habilidades portátil que conservas para siempre.",
@@ -429,8 +429,8 @@ export const marketing: TranslationBundle = {
     },
     "skills_wallet.what.history.title": { en: "Hire history", es: "Historial de contratación" },
     "skills_wallet.what.history.body": {
-        en: "Every hire-confirmation logged through AgConn becomes a record line: employer, county, dates, wage at hire. Useful for taxes, housing applications, and the next employer's reference check.",
-        es: "Cada confirmación de contratación registrada en AgConn se convierte en una línea de registro: empleador, condado, fechas, salario al contratar. Útil para impuestos, solicitudes de vivienda y referencias del próximo empleador.",
+        en: "Every hire-confirmation logged through AGCONN becomes a record line: employer, county, dates, wage at hire. Useful for taxes, housing applications, and the next employer's reference check.",
+        es: "Cada confirmación de contratación registrada en AGCONN se convierte en una línea de registro: empleador, condado, fechas, salario al contratar. Útil para impuestos, solicitudes de vivienda y referencias del próximo empleador.",
     },
     "skills_wallet.what.share.title": { en: "Shareable links", es: "Enlaces para compartir" },
     "skills_wallet.what.share.body": {
@@ -440,8 +440,8 @@ export const marketing: TranslationBundle = {
     "skills_wallet.privacy.eyebrow": { en: "Privacy", es: "Privacidad" },
     "skills_wallet.privacy.headline": { en: "You own this. Always.", es: "Esto te pertenece. Siempre." },
     "skills_wallet.privacy.body": {
-        en: "AgConn never shares your wallet without your explicit consent. You can export the entire record as PDFs at any time, and you can delete your account in one tap — wallet contents are removed from our systems within 30 days.",
-        es: "AgConn nunca comparte tu cartera sin tu consentimiento explícito. Puedes exportar todo el registro como PDFs en cualquier momento, y puedes borrar tu cuenta con un toque — el contenido de la cartera se elimina de nuestros sistemas en menos de 30 días.",
+        en: "AGCONN never shares your wallet without your explicit consent. You can export the entire record as PDFs at any time, and you can delete your account in one tap — wallet contents are removed from our systems within 30 days.",
+        es: "AGCONN nunca comparte tu cartera sin tu consentimiento explícito. Puedes exportar todo el registro como PDFs en cualquier momento, y puedes borrar tu cuenta con un toque — el contenido de la cartera se elimina de nuestros sistemas en menos de 30 días.",
     },
     "skills_wallet.privacy.cta": { en: "Start your wallet", es: "Comenzar tu cartera" },
 
@@ -457,7 +457,7 @@ export const marketing: TranslationBundle = {
         en: "California gives farmworkers some of the strongest legal protections in the country — wages, breaks, overtime, transportation, retaliation. Here's a plain-language summary, with links to the official sources and free legal help.",
         es: "California ofrece a los trabajadores agrícolas algunas de las protecciones legales más fuertes del país — salarios, descansos, tiempo extra, transporte, represalias. Aquí un resumen en lenguaje claro, con enlaces a las fuentes oficiales y ayuda legal gratuita.",
     },
-    "worker_rights.meta.title": { en: "Worker rights — AgConn", es: "Derechos del trabajador — AgConn" },
+    "worker_rights.meta.title": { en: "Worker rights — AGCONN", es: "Derechos del trabajador — AGCONN" },
     "worker_rights.meta.description": {
         en: "Plain-language guide to California farmworker rights: minimum wage, overtime, rest breaks, transportation, retaliation protections, and where to get free legal help.",
         es: "Guía en lenguaje claro sobre los derechos de los trabajadores agrícolas en California: salario mínimo, tiempo extra, descansos, transporte, protecciones contra represalias, y dónde obtener ayuda legal gratuita.",
@@ -534,13 +534,13 @@ export const marketing: TranslationBundle = {
         es: "Construyendo con redes de promotoras, no a su alrededor.",
     },
     "promotora.intro": {
-        en: "AgConn is forming partnerships with promotora networks already trusted across the Central Valley. The full resource library — bilingual flyers, conversation scripts, wallet cards, monthly training webinars — is coming soon. If you're a community health worker or outreach educator, email partnerships@agconn.com to be in the first cohort.",
-        es: "AgConn está formando alianzas con redes de promotoras ya confiables en todo el Valle Central. La biblioteca completa de recursos — folletos bilingües, guías de conversación, tarjetas de bolsillo, webinars mensuales de capacitación — estará disponible próximamente. Si eres trabajadora comunitaria de salud o educadora de extensión, escribe a partnerships@agconn.com para estar en la primera cohorte.",
+        en: "AGCONN is forming partnerships with promotora networks already trusted across the Central Valley. The full resource library — bilingual flyers, conversation scripts, wallet cards, monthly training webinars — is coming soon. If you're a community health worker or outreach educator, email partnerships@agconn.com to be in the first cohort.",
+        es: "AGCONN está formando alianzas con redes de promotoras ya confiables en todo el Valle Central. La biblioteca completa de recursos — folletos bilingües, guías de conversación, tarjetas de bolsillo, webinars mensuales de capacitación — estará disponible próximamente. Si eres trabajadora comunitaria de salud o educadora de extensión, escribe a partnerships@agconn.com para estar en la primera cohorte.",
     },
-    "promotora.meta.title": { en: "Promotora resources — AgConn", es: "Recursos para promotoras — AgConn" },
+    "promotora.meta.title": { en: "Promotora resources — AGCONN", es: "Recursos para promotoras — AGCONN" },
     "promotora.meta.description": {
-        en: "Bilingual outreach materials, training webinars, and partnership info for promotora networks introducing AgConn to Central Valley farmworker communities.",
-        es: "Materiales bilingües de extensión, webinars de capacitación e información de alianzas para redes de promotoras que presentan AgConn a comunidades de trabajadores agrícolas del Valle Central.",
+        en: "Bilingual outreach materials, training webinars, and partnership info for promotora networks introducing AGCONN to Central Valley farmworker communities.",
+        es: "Materiales bilingües de extensión, webinars de capacitación e información de alianzas para redes de promotoras que presentan AGCONN a comunidades de trabajadores agrícolas del Valle Central.",
     },
     "promotora.materials.eyebrow": { en: "Outreach materials · coming soon", es: "Materiales de extensión · próximamente" },
     "promotora.materials.headline": {
@@ -555,8 +555,8 @@ export const marketing: TranslationBundle = {
     "promotora.materials.flyer.cta": { en: "Request the flyer →", es: "Solicitar el folleto →" },
     "promotora.materials.script.title": { en: "Conversation script", es: "Guía de conversación" },
     "promotora.materials.script.body": {
-        en: "5-minute talking points for door-to-door or worksite intros. Written with promotora networks, covers the most common worker questions about signup, privacy, and what AgConn does. Coming soon.",
-        es: "Puntos de conversación de 5 minutos para presentaciones puerta a puerta o en sitios de trabajo. Escrita con redes de promotoras, cubre las preguntas más comunes sobre registro, privacidad y qué hace AgConn. Próximamente.",
+        en: "5-minute talking points for door-to-door or worksite intros. Written with promotora networks, covers the most common worker questions about signup, privacy, and what AGCONN does. Coming soon.",
+        es: "Puntos de conversación de 5 minutos para presentaciones puerta a puerta o en sitios de trabajo. Escrita con redes de promotoras, cubre las preguntas más comunes sobre registro, privacidad y qué hace AGCONN. Próximamente.",
     },
     "promotora.materials.script.cta": { en: "Request the script →", es: "Solicitar la guía →" },
     "promotora.materials.cards.title": { en: "Wallet cards", es: "Tarjetas de bolsillo" },
@@ -580,31 +580,31 @@ export const marketing: TranslationBundle = {
     },
     "promotora.partner.eyebrow": { en: "Partnership · coming soon", es: "Alianza · próximamente" },
     "promotora.partner.headline": {
-        en: "Your own AgConn instance, on the roadmap.",
-        es: "Tu propia instancia de AgConn, en el plan.",
+        en: "Your own AGCONN instance, on the roadmap.",
+        es: "Tu propia instancia de AGCONN, en el plan.",
     },
     "promotora.partner.body": {
-        en: "Workforce boards, county agencies, and large promotora networks will be able to run AgConn as their own tenant — your branding, your reporting, your county set. Free for community-serving organizations through end of 2026 once the program opens. Email partnerships@agconn.com to be considered for the first cohort.",
-        es: "Juntas laborales, agencias del condado y grandes redes de promotoras podrán manejar AgConn como su propia instancia — tu marca, tus reportes, tu conjunto de condados. Gratis para organizaciones comunitarias hasta fin de 2026 una vez que el programa abra. Escribe a partnerships@agconn.com para ser considerado en la primera cohorte.",
+        en: "Workforce boards, county agencies, and large promotora networks will be able to run AGCONN as their own tenant — your branding, your reporting, your county set. Free for community-serving organizations through end of 2026 once the program opens. Email partnerships@agconn.com to be considered for the first cohort.",
+        es: "Juntas laborales, agencias del condado y grandes redes de promotoras podrán manejar AGCONN como su propia instancia — tu marca, tus reportes, tu conjunto de condados. Gratis para organizaciones comunitarias hasta fin de 2026 una vez que el programa abra. Escribe a partnerships@agconn.com para ser considerado en la primera cohorte.",
     },
     "promotora.partner.cta": { en: "Email partnerships@agconn.com", es: "Escribir a partnerships@agconn.com" },
 
     // ========================================================================
     // /about + #mission anchor (Company → About + Mission)
     // ========================================================================
-    "about.eyebrow": { en: "About AgConn", es: "Sobre AgConn" },
+    "about.eyebrow": { en: "About AGCONN", es: "Sobre AGCONN" },
     "about.headline": {
         en: "A workforce platform that treats farmworkers as the point.",
         es: "Una plataforma laboral que trata a los trabajadores agrícolas como el centro.",
     },
     "about.intro": {
-        en: "AgConn is a California Public Benefit Corporation building bilingual workforce infrastructure for the Central Valley. We connect farmworkers to verified seasonal jobs and CDFA-funded training — and keep their record portable, in their language, on their terms.",
-        es: "AgConn es una California Public Benefit Corporation que construye infraestructura laboral bilingüe para el Valle Central. Conectamos a trabajadores agrícolas con trabajos de temporada verificados y capacitación financiada por CDFA — y mantenemos su registro portátil, en su idioma, bajo sus condiciones.",
+        en: "AGCONN is a California Public Benefit Corporation building bilingual workforce infrastructure for the Central Valley. We connect farmworkers to verified seasonal jobs and CDFA-funded training — and keep their record portable, in their language, on their terms.",
+        es: "AGCONN es una California Public Benefit Corporation que construye infraestructura laboral bilingüe para el Valle Central. Conectamos a trabajadores agrícolas con trabajos de temporada verificados y capacitación financiada por CDFA — y mantenemos su registro portátil, en su idioma, bajo sus condiciones.",
     },
-    "about.meta.title": { en: "About — AgConn", es: "Sobre AgConn" },
+    "about.meta.title": { en: "About — AGCONN", es: "Sobre AGCONN" },
     "about.meta.description": {
-        en: "AgConn is a California Public Benefit Corporation building bilingual workforce infrastructure connecting Central Valley farmworkers, growers, and training organizations.",
-        es: "AgConn es una California Public Benefit Corporation que construye infraestructura laboral bilingüe que conecta a trabajadores agrícolas del Valle Central, productores y organizaciones de capacitación.",
+        en: "AGCONN is a California Public Benefit Corporation building bilingual workforce infrastructure connecting Central Valley farmworkers, growers, and training organizations.",
+        es: "AGCONN es una California Public Benefit Corporation que construye infraestructura laboral bilingüe que conecta a trabajadores agrícolas del Valle Central, productores y organizaciones de capacitación.",
     },
     "about.mission.eyebrow": { en: "Mission", es: "Misión" },
     "about.mission.headline": {
@@ -612,8 +612,8 @@ export const marketing: TranslationBundle = {
         es: "Dignidad, en dos idiomas, por defecto.",
     },
     "about.mission.body": {
-        en: "Farmworkers feed California. They deserve workforce tools that respect their language, their privacy, and their portability. Every feature on AgConn ships bilingual from byte zero. Every record they earn travels with them. Every employer is verified by name. That's the bar — non-negotiable.",
-        es: "Los trabajadores agrícolas alimentan a California. Merecen herramientas laborales que respeten su idioma, su privacidad y su portabilidad. Cada función de AgConn se publica bilingüe desde el primer byte. Cada registro que ganan viaja con ellos. Cada empleador está verificado por nombre. Esa es la barra — innegociable.",
+        en: "Farmworkers feed California. They deserve workforce tools that respect their language, their privacy, and their portability. Every feature on AGCONN ships bilingual from byte zero. Every record they earn travels with them. Every employer is verified by name. That's the bar — non-negotiable.",
+        es: "Los trabajadores agrícolas alimentan a California. Merecen herramientas laborales que respeten su idioma, su privacidad y su portabilidad. Cada función de AGCONN se publica bilingüe desde el primer byte. Cada registro que ganan viaja con ellos. Cada empleador está verificado por nombre. Esa es la barra — innegociable.",
     },
     "about.values.eyebrow": { en: "What we believe", es: "Lo que creemos" },
     "about.values.headline": { en: "Three commitments.", es: "Tres compromisos." },
@@ -624,8 +624,8 @@ export const marketing: TranslationBundle = {
     },
     "about.values.verified.title": { en: "Verified employers, by name", es: "Empleadores verificados, por nombre" },
     "about.values.verified.body": {
-        en: "Every grower or FLC posting on AgConn passes a license check or attestation. Workers see verified entities — never anonymous postings.",
-        es: "Cada productor o FLC que publica en AgConn pasa una verificación de licencia o atestación. Los trabajadores ven entidades verificadas — nunca publicaciones anónimas.",
+        en: "Every grower or FLC posting on AGCONN passes a license check or attestation. Workers see verified entities — never anonymous postings.",
+        es: "Cada productor o FLC que publica en AGCONN pasa una verificación de licencia o atestación. Los trabajadores ven entidades verificadas — nunca publicaciones anónimas.",
     },
     "about.values.portable.title": { en: "Portable records", es: "Registros portátiles" },
     "about.values.portable.body": {
@@ -633,10 +633,10 @@ export const marketing: TranslationBundle = {
         es: "Los trabajadores son dueños de sus datos. Certificados, historial de contratación, habilidades — exportables como PDFs en cualquier momento, borrables a petición.",
     },
     "about.org.eyebrow": { en: "The legal entity", es: "La entidad legal" },
-    "about.org.headline": { en: "AgConn, PBC.", es: "AgConn, PBC." },
+    "about.org.headline": { en: "AGCONN, PBC.", es: "AGCONN, PBC." },
     "about.org.body": {
-        en: "AgConn, PBC is a California Public Benefit Corporation incorporated in 2026, headquartered in Fresno, CA. Our public benefit purpose: improve workforce outcomes for California farmworkers through bilingual platform infrastructure and grant-aligned reporting. Annual benefit reports filed with the California Secretary of State.",
-        es: "AgConn, PBC es una California Public Benefit Corporation incorporada en 2026, con sede en Fresno, CA. Nuestro propósito de beneficio público: mejorar los resultados laborales de los trabajadores agrícolas de California a través de infraestructura de plataforma bilingüe y reportes alineados con subvenciones. Reportes anuales de beneficio presentados ante la Secretaría de Estado de California.",
+        en: "AGCONN, PBC is a California Public Benefit Corporation incorporated in 2026, headquartered in Fresno, CA. Our public benefit purpose: improve workforce outcomes for California farmworkers through bilingual platform infrastructure and grant-aligned reporting. Annual benefit reports filed with the California Secretary of State.",
+        es: "AGCONN, PBC es una California Public Benefit Corporation incorporada en 2026, con sede en Fresno, CA. Nuestro propósito de beneficio público: mejorar los resultados laborales de los trabajadores agrícolas de California a través de infraestructura de plataforma bilingüe y reportes alineados con subvenciones. Reportes anuales de beneficio presentados ante la Secretaría de Estado de California.",
     },
     "about.org.cta": { en: "Read the impact dashboard →", es: "Ver el panel de impacto →" },
 
@@ -652,10 +652,10 @@ export const marketing: TranslationBundle = {
         en: "Email gets answered within two business days, in EN or ES. We don't have a phone bank yet — but every message goes to a human, not a queue.",
         es: "Los correos se responden en menos de dos días hábiles, en EN o ES. Aún no tenemos un centro de llamadas — pero cada mensaje llega a una persona, no a una cola.",
     },
-    "contact.meta.title": { en: "Contact — AgConn", es: "Contacto — AgConn" },
+    "contact.meta.title": { en: "Contact — AGCONN", es: "Contacto — AGCONN" },
     "contact.meta.description": {
-        en: "Email AgConn for support, partnerships, sales, press, or editorial. Bilingual response within two business days.",
-        es: "Escribe a AgConn para soporte, alianzas, ventas, prensa o editorial. Respuesta bilingüe en menos de dos días hábiles.",
+        en: "Email AGCONN for support, partnerships, sales, press, or editorial. Bilingual response within two business days.",
+        es: "Escribe a AGCONN para soporte, alianzas, ventas, prensa o editorial. Respuesta bilingüe en menos de dos días hábiles.",
     },
     "contact.routes.eyebrow": { en: "Where to write", es: "A quién escribir" },
     "contact.routes.headline": { en: "Pick the lane.", es: "Elige el carril." },
@@ -690,7 +690,7 @@ export const marketing: TranslationBundle = {
         es: "Sugerencias de temas para artículos de /resources, correcciones a publicaciones existentes.",
     },
     "contact.nap.eyebrow": { en: "Mailing address", es: "Dirección postal" },
-    "contact.nap.headline": { en: "AgConn, PBC", es: "AgConn, PBC" },
+    "contact.nap.headline": { en: "AGCONN, PBC", es: "AGCONN, PBC" },
     "contact.nap.body": { en: "Fresno, CA · United States", es: "Fresno, CA · Estados Unidos" },
     "contact.nap.note": {
         en: "We don't accept walk-ins or unscheduled deliveries. Email first.",
@@ -706,13 +706,13 @@ export const marketing: TranslationBundle = {
         es: "Aún no estamos contratando. Pronto lo estaremos.",
     },
     "careers.intro": {
-        en: "AgConn is in pre-launch. The first hires after launch will be a bilingual customer support lead and a partnerships manager based in the Central Valley. Subscribe to be notified when roles open.",
-        es: "AgConn está en pre-lanzamiento. Las primeras contrataciones después del lanzamiento serán una líder de soporte al cliente bilingüe y una gerente de alianzas basada en el Valle Central. Suscríbete para recibir aviso cuando se abran puestos.",
+        en: "AGCONN is in pre-launch. The first hires after launch will be a bilingual customer support lead and a partnerships manager based in the Central Valley. Subscribe to be notified when roles open.",
+        es: "AGCONN está en pre-lanzamiento. Las primeras contrataciones después del lanzamiento serán una líder de soporte al cliente bilingüe y una gerente de alianzas basada en el Valle Central. Suscríbete para recibir aviso cuando se abran puestos.",
     },
-    "careers.meta.title": { en: "Careers — AgConn", es: "Carreras — AgConn" },
+    "careers.meta.title": { en: "Careers — AGCONN", es: "Carreras — AGCONN" },
     "careers.meta.description": {
-        en: "Join AgConn after launch. First hires include bilingual customer support and a Central Valley partnerships manager. Subscribe for openings.",
-        es: "Únete a AgConn después del lanzamiento. Las primeras contrataciones incluyen soporte al cliente bilingüe y una gerente de alianzas del Valle Central. Suscríbete para ofertas.",
+        en: "Join AGCONN after launch. First hires include bilingual customer support and a Central Valley partnerships manager. Subscribe for openings.",
+        es: "Únete a AGCONN después del lanzamiento. Las primeras contrataciones incluyen soporte al cliente bilingüe y una gerente de alianzas del Valle Central. Suscríbete para ofertas.",
     },
     "careers.values.eyebrow": { en: "How we hire", es: "Cómo contratamos" },
     "careers.values.headline": { en: "Three principles.", es: "Tres principios." },
@@ -744,8 +744,8 @@ export const marketing: TranslationBundle = {
     "careers.openings.eyebrow": { en: "Open roles", es: "Puestos abiertos" },
     "careers.openings.headline": { en: "Hiring now", es: "Contratando ahora" },
     "careers.openings.intro": {
-        en: "Direct-hire roles, on the AgConn payroll. Salary ranges shown reflect the band before equity and benefits.",
-        es: "Puestos de contratación directa, en la nómina de AgConn. Los rangos salariales mostrados reflejan la banda antes de equidad y beneficios.",
+        en: "Direct-hire roles, on the AGCONN payroll. Salary ranges shown reflect the band before equity and benefits.",
+        es: "Puestos de contratación directa, en la nómina de AGCONN. Los rangos salariales mostrados reflejan la banda antes de equidad y beneficios.",
     },
     "careers.openings.empty": {
         en: "No open roles right now. Subscribe below and we'll notify you when something opens up.",
@@ -780,8 +780,8 @@ export const marketing: TranslationBundle = {
     },
     "careers.detail.apply_cta": { en: "Email careers@agconn.com", es: "Escribir a careers@agconn.com" },
     "careers.detail.equal_opportunity": {
-        en: "AgConn is an equal opportunity employer. We do not discriminate on the basis of race, color, religion, gender identity, sexual orientation, age, disability, immigration status, or any other protected category. We strongly encourage applications from members of the communities we serve.",
-        es: "AgConn es un empleador de igualdad de oportunidades. No discriminamos por motivos de raza, color, religión, identidad de género, orientación sexual, edad, discapacidad, estatus migratorio ni ninguna otra categoría protegida. Alentamos firmemente las postulaciones de miembros de las comunidades a las que servimos.",
+        en: "AGCONN is an equal opportunity employer. We do not discriminate on the basis of race, color, religion, gender identity, sexual orientation, age, disability, immigration status, or any other protected category. We strongly encourage applications from members of the communities we serve.",
+        es: "AGCONN es un empleador de igualdad de oportunidades. No discriminamos por motivos de raza, color, religión, identidad de género, orientación sexual, edad, discapacidad, estatus migratorio ni ninguna otra categoría protegida. Alentamos firmemente las postulaciones de miembros de las comunidades a las que servimos.",
     },
 
     // ========================================================================
@@ -796,10 +796,10 @@ export const marketing: TranslationBundle = {
         en: "Farmworkers have good reasons to be skeptical of platforms asking for their phone number. Here's what we do — and don't do — with their data.",
         es: "Los trabajadores agrícolas tienen buenas razones para desconfiar de plataformas que piden su número de teléfono. Esto es lo que hacemos — y lo que no hacemos — con sus datos.",
     },
-    "trust.meta.title": { en: "Trust & security — AgConn", es: "Confianza y seguridad — AgConn" },
+    "trust.meta.title": { en: "Trust & security — AGCONN", es: "Confianza y seguridad — AGCONN" },
     "trust.meta.description": {
-        en: "AgConn's data, security, and privacy posture: tenant-isolated Postgres, no third-party data sales, immigration status never collected, deletion on request.",
-        es: "Postura de datos, seguridad y privacidad de AgConn: Postgres aislado por inquilino, sin venta de datos a terceros, estatus migratorio nunca recopilado, eliminación a petición.",
+        en: "AGCONN's data, security, and privacy posture: tenant-isolated Postgres, no third-party data sales, immigration status never collected, deletion on request.",
+        es: "Postura de datos, seguridad y privacidad de AGCONN: Postgres aislado por inquilino, sin venta de datos a terceros, estatus migratorio nunca recopilado, eliminación a petición.",
     },
     "trust.principles.eyebrow": { en: "What we don't do", es: "Lo que no hacemos" },
     "trust.principles.headline": { en: "Five hard rules.", es: "Cinco reglas firmes." },
@@ -854,8 +854,8 @@ export const marketing: TranslationBundle = {
         es: "La página pública de estado estará disponible próximamente.",
     },
     "trust.status.body": {
-        en: "AgConn targets 99.9% uptime measured monthly across SMS sign-in, job browse, and applications. Until the public status page ships, we post incidents that affect a public surface for more than five minutes here on the trust page and to anyone subscribed at security@agconn.com.",
-        es: "AgConn tiene como meta 99.9% de disponibilidad medida mensualmente en el inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones. Hasta que la página pública de estado esté disponible, publicamos los incidentes que afectan una superficie pública por más de cinco minutos aquí en la página de confianza y a quienes se suscriban en security@agconn.com.",
+        en: "AGCONN targets 99.9% uptime measured monthly across SMS sign-in, job browse, and applications. Until the public status page ships, we post incidents that affect a public surface for more than five minutes here on the trust page and to anyone subscribed at security@agconn.com.",
+        es: "AGCONN tiene como meta 99.9% de disponibilidad medida mensualmente en el inicio de sesión por SMS, la búsqueda de trabajos y las aplicaciones. Hasta que la página pública de estado esté disponible, publicamos los incidentes que afectan una superficie pública por más de cinco minutos aquí en la página de confianza y a quienes se suscriban en security@agconn.com.",
     },
     "trust.status.subscribe": {
         en: "To receive incident notices, email",
@@ -879,16 +879,16 @@ export const marketing: TranslationBundle = {
         es: "Datos claros, listos para citar.",
     },
     "press.intro": {
-        en: "Everything a journalist needs to write about AgConn accurately. Press inquiries are answered within one business day for deadline work.",
-        es: "Todo lo que un periodista necesita para escribir sobre AgConn con precisión. Las consultas de prensa se responden en menos de un día hábil para trabajo con plazo.",
+        en: "Everything a journalist needs to write about AGCONN accurately. Press inquiries are answered within one business day for deadline work.",
+        es: "Todo lo que un periodista necesita para escribir sobre AGCONN con precisión. Las consultas de prensa se responden en menos de un día hábil para trabajo con plazo.",
     },
-    "press.meta.title": { en: "Press kit — AgConn", es: "Kit de prensa — AgConn" },
+    "press.meta.title": { en: "Press kit — AGCONN", es: "Kit de prensa — AGCONN" },
     "press.meta.description": {
-        en: "Press kit for AgConn: brand assets, fact sheet, founder bio, press contact. Bilingual workforce platform serving Central Valley farmworkers.",
-        es: "Kit de prensa de AgConn: activos de marca, hoja de datos, biografía de la fundadora, contacto de prensa. Plataforma laboral bilingüe sirviendo a trabajadores agrícolas del Valle Central.",
+        en: "Press kit for AGCONN: brand assets, fact sheet, founder bio, press contact. Bilingual workforce platform serving Central Valley farmworkers.",
+        es: "Kit de prensa de AGCONN: activos de marca, hoja de datos, biografía de la fundadora, contacto de prensa. Plataforma laboral bilingüe sirviendo a trabajadores agrícolas del Valle Central.",
     },
     "press.facts.eyebrow": { en: "Fact sheet", es: "Hoja de datos" },
-    "press.facts.headline": { en: "What AgConn is.", es: "Qué es AgConn." },
+    "press.facts.headline": { en: "What AGCONN is.", es: "Qué es AGCONN." },
     "press.facts.what.label": { en: "What", es: "Qué" },
     "press.facts.what.body": {
         en: "Bilingual (EN/ES) workforce platform connecting Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs.",
@@ -901,8 +901,8 @@ export const marketing: TranslationBundle = {
     },
     "press.facts.who.label": { en: "Who", es: "Quién" },
     "press.facts.who.body": {
-        en: "Audiences: farmworkers, growers and Farm Labor Contractors, training organizations (CDFA / F3 / CalOSBA / EDD grantees), grant funders. AgConn, PBC is a California Public Benefit Corporation.",
-        es: "Audiencias: trabajadores agrícolas, productores y Contratistas de Mano de Obra Agrícola, organizaciones de capacitación (subvencionados por CDFA / F3 / CalOSBA / EDD), financiadores de subvenciones. AgConn, PBC es una California Public Benefit Corporation.",
+        en: "Audiences: farmworkers, growers and Farm Labor Contractors, training organizations (CDFA / F3 / CalOSBA / EDD grantees), grant funders. AGCONN, PBC is a California Public Benefit Corporation.",
+        es: "Audiencias: trabajadores agrícolas, productores y Contratistas de Mano de Obra Agrícola, organizaciones de capacitación (subvencionados por CDFA / F3 / CalOSBA / EDD), financiadores de subvenciones. AGCONN, PBC es una California Public Benefit Corporation.",
     },
     "press.facts.when.label": { en: "When", es: "Cuándo" },
     "press.facts.when.body": {
@@ -911,8 +911,8 @@ export const marketing: TranslationBundle = {
     },
     "press.facts.why.label": { en: "Why", es: "Por qué" },
     "press.facts.why.body": {
-        en: "Existing workforce tools fail farmworkers on language, verification, and portability. AgConn ships bilingual from byte zero, verifies every employer by name, and gives workers a portable record they own.",
-        es: "Las herramientas laborales existentes fallan a los trabajadores agrícolas en idioma, verificación y portabilidad. AgConn se publica bilingüe desde el primer byte, verifica a cada empleador por nombre, y da a los trabajadores un registro portátil que les pertenece.",
+        en: "Existing workforce tools fail farmworkers on language, verification, and portability. AGCONN ships bilingual from byte zero, verifies every employer by name, and gives workers a portable record they own.",
+        es: "Las herramientas laborales existentes fallan a los trabajadores agrícolas en idioma, verificación y portabilidad. AGCONN se publica bilingüe desde el primer byte, verifica a cada empleador por nombre, y da a los trabajadores un registro portátil que les pertenece.",
     },
     "press.assets.eyebrow": { en: "Brand assets", es: "Activos de marca" },
     "press.assets.headline": { en: "Logo, palette, type.", es: "Logo, paleta, tipografía." },
@@ -945,10 +945,10 @@ export const marketing: TranslationBundle = {
         en: "press@agconn.com · Bilingual reply within one business day.",
         es: "press@agconn.com · Respuesta bilingüe en menos de un día hábil.",
     },
-    "press.detail.about_label": { en: "About AgConn", es: "Sobre AgConn" },
+    "press.detail.about_label": { en: "About AGCONN", es: "Sobre AGCONN" },
     "press.detail.about_body": {
-        en: "AgConn is a bilingual workforce platform serving California Central Valley farmworkers and the growers who hire them. Headquartered in Fresno, AgConn launched production in May 2026.",
-        es: "AgConn es una plataforma laboral bilingüe que sirve a los trabajadores agrícolas del Valle Central de California y a los agricultores que los contratan. Con sede en Fresno, AgConn lanzó producción en mayo de 2026.",
+        en: "AGCONN is a bilingual workforce platform serving California Central Valley farmworkers and the growers who hire them. Headquartered in Fresno, AGCONN launched production in May 2026.",
+        es: "AGCONN es una plataforma laboral bilingüe que sirve a los trabajadores agrícolas del Valle Central de California y a los agricultores que los contratan. Con sede en Fresno, AGCONN lanzó producción en mayo de 2026.",
     },
 
     // ========================================================================
@@ -960,10 +960,10 @@ export const marketing: TranslationBundle = {
         es: "Contrata una cuadrilla verificada. Sin papeleo.",
     },
     "employers_page.intro": {
-        en: "AgConn is built for growers and Farm Labor Contractors who want clean, compliant operations without the regulatory anxiety. Bilingual postings, FLC license verified at signup, applicants reviewable in your phone.",
-        es: "AgConn está construido para productores y Contratistas de Mano de Obra Agrícola que quieren operaciones limpias y conformes sin la ansiedad regulatoria. Publicaciones bilingües, licencia FLC verificada al registrarse, aplicantes revisables desde tu teléfono.",
+        en: "AGCONN is built for growers and Farm Labor Contractors who want clean, compliant operations without the regulatory anxiety. Bilingual postings, FLC license verified at signup, applicants reviewable in your phone.",
+        es: "AGCONN está construido para productores y Contratistas de Mano de Obra Agrícola que quieren operaciones limpias y conformes sin la ansiedad regulatoria. Publicaciones bilingües, licencia FLC verificada al registrarse, aplicantes revisables desde tu teléfono.",
     },
-    "employers_page.meta.title": { en: "For employers — AgConn", es: "Para empleadores — AgConn" },
+    "employers_page.meta.title": { en: "For employers — AGCONN", es: "Para empleadores — AGCONN" },
     "employers_page.meta.description": {
         en: "Post bilingual jobs to a vetted Central Valley worker pool. FLC verification, applicant review, transparent pricing. Free plan available.",
         es: "Publica trabajos bilingües a un grupo de trabajadores verificados del Valle Central. Verificación FLC, revisión de aplicantes, precios transparentes. Plan gratis disponible.",
@@ -974,8 +974,8 @@ export const marketing: TranslationBundle = {
         es: "Publicaciones bilingües en tres minutos.",
     },
     "employers_page.posting.body": {
-        en: "Type your job in either language. AgConn translates the public version automatically and shows it to the right county pool. Wage range, start date, housing, transportation — all structured fields, all worker-readable.",
-        es: "Escribe tu trabajo en cualquier idioma. AgConn traduce la versión pública automáticamente y la muestra al grupo del condado correcto. Rango salarial, fecha de inicio, vivienda, transporte — todos campos estructurados, todos legibles para el trabajador.",
+        en: "Type your job in either language. AGCONN translates the public version automatically and shows it to the right county pool. Wage range, start date, housing, transportation — all structured fields, all worker-readable.",
+        es: "Escribe tu trabajo en cualquier idioma. AGCONN traduce la versión pública automáticamente y la muestra al grupo del condado correcto. Rango salarial, fecha de inicio, vivienda, transporte — todos campos estructurados, todos legibles para el trabajador.",
     },
     "employers_page.posting.cta": { en: "Post your first job — free", es: "Publica tu primer trabajo — gratis" },
     "employers_page.flc.eyebrow": { en: "FLC verification", es: "Verificación FLC" },
@@ -984,8 +984,8 @@ export const marketing: TranslationBundle = {
         es: "Verificado una vez, reconocido en todas partes.",
     },
     "employers_page.flc.body": {
-        en: "AgConn checks your FLC license against the California DIR/DLSE registry on signup, then re-verifies nightly. Verified-FLC employers get a badge on every posting. Workers trust badged postings — verified is the default expectation, not a premium.",
-        es: "AgConn verifica tu licencia FLC contra el registro DIR/DLSE de California al registrarte, luego re-verifica cada noche. Los empleadores con FLC verificado obtienen una insignia en cada publicación. Los trabajadores confían en las publicaciones con insignia — verificado es la expectativa por defecto, no un premium.",
+        en: "AGCONN checks your FLC license against the California DIR/DLSE registry on signup, then re-verifies nightly. Verified-FLC employers get a badge on every posting. Workers trust badged postings — verified is the default expectation, not a premium.",
+        es: "AGCONN verifica tu licencia FLC contra el registro DIR/DLSE de California al registrarte, luego re-verifica cada noche. Los empleadores con FLC verificado obtienen una insignia en cada publicación. Los trabajadores confían en las publicaciones con insignia — verificado es la expectativa por defecto, no un premium.",
     },
     "employers_page.flc.fields.license": { en: "License No.", es: "Licencia No." },
     "employers_page.flc.fields.issued": { en: "Issued", es: "Emitida" },
@@ -998,8 +998,8 @@ export const marketing: TranslationBundle = {
         es: "Plan Pro: busca en un grupo verificado.",
     },
     "employers_page.search.body": {
-        en: "Pro and Enterprise employers can search by skills, certifications, county, and availability across the AgConn worker pool — workers who have opted in to be searchable. Send a direct invitation; the worker chooses to share their wallet.",
-        es: "Los empleadores Pro y Enterprise pueden buscar por habilidades, certificaciones, condado y disponibilidad en el grupo de trabajadores de AgConn — trabajadores que se han registrado para ser buscables. Envía una invitación directa; el trabajador elige compartir su cartera.",
+        en: "Pro and Enterprise employers can search by skills, certifications, county, and availability across the AGCONN worker pool — workers who have opted in to be searchable. Send a direct invitation; the worker chooses to share their wallet.",
+        es: "Los empleadores Pro y Enterprise pueden buscar por habilidades, certificaciones, condado y disponibilidad en el grupo de trabajadores de AGCONN — trabajadores que se han registrado para ser buscables. Envía una invitación directa; el trabajador elige compartir su cartera.",
     },
     "employers_page.pricing.eyebrow": { en: "Pricing", es: "Precios" },
     "employers_page.pricing.headline": {
@@ -1021,13 +1021,13 @@ export const marketing: TranslationBundle = {
         es: "Construido para las instituciones que ya hacen este trabajo.",
     },
     "partners_page.intro": {
-        en: "Training organizations, workforce boards, county agencies, and grant officers each have a place on AgConn. Run your own tenant, pull WIOA-aligned exports, or just embed our verified jobs feed.",
-        es: "Las organizaciones de capacitación, juntas laborales, agencias del condado y oficiales de subvenciones tienen cada uno un lugar en AgConn. Maneja tu propia instancia, descarga exportaciones alineadas con WIOA, o simplemente incrusta nuestro feed de trabajos verificados.",
+        en: "Training organizations, workforce boards, county agencies, and grant officers each have a place on AGCONN. Run your own tenant, pull WIOA-aligned exports, or just embed our verified jobs feed.",
+        es: "Las organizaciones de capacitación, juntas laborales, agencias del condado y oficiales de subvenciones tienen cada uno un lugar en AGCONN. Maneja tu propia instancia, descarga exportaciones alineadas con WIOA, o simplemente incrusta nuestro feed de trabajos verificados.",
     },
-    "partners_page.meta.title": { en: "Partners — AgConn", es: "Socios — AgConn" },
+    "partners_page.meta.title": { en: "Partners — AGCONN", es: "Socios — AGCONN" },
     "partners_page.meta.description": {
-        en: "AgConn for training orgs, workforce boards, and grant funders: tenant onboarding, WIOA-aligned exports, embedded verified jobs feed, branded reporting.",
-        es: "AgConn para organizaciones de capacitación, juntas laborales y financiadores de subvenciones: onboarding de inquilino, exportaciones alineadas con WIOA, feed de trabajos verificados incrustado, reportes con marca.",
+        en: "AGCONN for training orgs, workforce boards, and grant funders: tenant onboarding, WIOA-aligned exports, embedded verified jobs feed, branded reporting.",
+        es: "AGCONN para organizaciones de capacitación, juntas laborales y financiadores de subvenciones: onboarding de inquilino, exportaciones alineadas con WIOA, feed de trabajos verificados incrustado, reportes con marca.",
     },
     "partners_page.training_orgs.eyebrow": { en: "Training organizations", es: "Organizaciones de capacitación" },
     "partners_page.training_orgs.headline": {
@@ -1041,12 +1041,12 @@ export const marketing: TranslationBundle = {
     "partners_page.training_orgs.cta": { en: "Apply for an org account", es: "Solicitar cuenta de organización" },
     "partners_page.workforce_boards.eyebrow": { en: "Workforce boards", es: "Juntas laborales" },
     "partners_page.workforce_boards.headline": {
-        en: "Run AgConn as your own tenant.",
-        es: "Maneja AgConn como tu propia instancia.",
+        en: "Run AGCONN as your own tenant.",
+        es: "Maneja AGCONN como tu propia instancia.",
     },
     "partners_page.workforce_boards.body": {
-        en: "Workforce boards and county agencies can deploy AgConn as a tenant with their own employer set, training programs, and dashboards. Branding stays under your organization. Free for community-serving organizations through end of 2026.",
-        es: "Las juntas laborales y agencias del condado pueden desplegar AgConn como una instancia con su propio conjunto de empleadores, programas de capacitación y paneles. La marca se mantiene bajo tu organización. Gratis para organizaciones comunitarias hasta fin de 2026.",
+        en: "Workforce boards and county agencies can deploy AGCONN as a tenant with their own employer set, training programs, and dashboards. Branding stays under your organization. Free for community-serving organizations through end of 2026.",
+        es: "Las juntas laborales y agencias del condado pueden desplegar AGCONN como una instancia con su propio conjunto de empleadores, programas de capacitación y paneles. La marca se mantiene bajo tu organización. Gratis para organizaciones comunitarias hasta fin de 2026.",
     },
     "partners_page.workforce_boards.cta": { en: "Email partnerships@agconn.com", es: "Escribir a partnerships@agconn.com" },
     "partners_page.wioa.eyebrow": { en: "WIOA / CalJOBS exports", es: "Exportaciones WIOA / CalJOBS" },
@@ -1065,8 +1065,8 @@ export const marketing: TranslationBundle = {
     // ========================================================================
     "legal.last_updated": { en: "Last updated", es: "Última actualización" },
     "legal.placeholder_notice": {
-        en: "AgConn is operated by AgConn, a California Public Benefit Corporation. This document reflects our current operating practices and is updated as those practices evolve; it has not been independently reviewed by outside counsel. For specific legal questions about your situation, consult a qualified attorney.",
-        es: "AgConn es operado por AgConn, una California Public Benefit Corporation. Este documento refleja nuestras prácticas operativas actuales y se actualiza a medida que esas prácticas evolucionan; no ha sido revisado de forma independiente por asesoría legal externa. Para preguntas legales específicas sobre tu situación, consulta a un abogado calificado.",
+        en: "AGCONN is operated by AGCONN, a California Public Benefit Corporation. This document reflects our current operating practices and is updated as those practices evolve; it has not been independently reviewed by outside counsel. For specific legal questions about your situation, consult a qualified attorney.",
+        es: "AGCONN es operado por AGCONN, una California Public Benefit Corporation. Este documento refleja nuestras prácticas operativas actuales y se actualiza a medida que esas prácticas evolucionan; no ha sido revisado de forma independiente por asesoría legal externa. Para preguntas legales específicas sobre tu situación, consulta a un abogado calificado.",
     },
     "legal.contact": {
         en: "Questions? Email legal@agconn.com — bilingual reply within two business days.",
@@ -1081,13 +1081,13 @@ export const marketing: TranslationBundle = {
         es: "Tus datos, nuestras promesas.",
     },
     "privacy.intro": {
-        en: "How AgConn collects, uses, stores, and protects your information. Plain-language summary up top; section-by-section detail below.",
-        es: "Cómo AgConn recopila, usa, almacena y protege tu información. Resumen en lenguaje claro al inicio; detalle sección por sección abajo.",
+        en: "How AGCONN collects, uses, stores, and protects your information. Plain-language summary up top; section-by-section detail below.",
+        es: "Cómo AGCONN recopila, usa, almacena y protege tu información. Resumen en lenguaje claro al inicio; detalle sección por sección abajo.",
     },
-    "privacy.meta.title": { en: "Privacy policy — AgConn", es: "Política de privacidad — AgConn" },
+    "privacy.meta.title": { en: "Privacy policy — AGCONN", es: "Política de privacidad — AGCONN" },
     "privacy.meta.description": {
-        en: "AgConn privacy policy: what we collect, how we use it, who we share with, and how to delete your data.",
-        es: "Política de privacidad de AgConn: qué recopilamos, cómo lo usamos, con quién compartimos, y cómo borrar tus datos.",
+        en: "AGCONN privacy policy: what we collect, how we use it, who we share with, and how to delete your data.",
+        es: "Política de privacidad de AGCONN: qué recopilamos, cómo lo usamos, con quién compartimos, y cómo borrar tus datos.",
     },
     "privacy.toc.collect": { en: "What we collect", es: "Qué recopilamos" },
     "privacy.toc.use": { en: "How we use it", es: "Cómo lo usamos" },
@@ -1125,8 +1125,8 @@ export const marketing: TranslationBundle = {
         es: "Tus datos se almacenan en Supabase (base de datos Postgres y almacenamiento de objetos) en Estados Unidos, y se procesan en Google Cloud Platform en la región us-west1 (Oregón). Los datos de producción se cifran en tránsito (TLS 1.2 o superior) y en reposo (AES-256). El acceso a la base de datos está aislado a nivel de fila por inquilino; el acceso del personal se registra, se basa en roles y se limita a lo operativamente necesario. Seguimos las pautas OWASP para seguridad de aplicaciones, ejecutamos escaneo automatizado de vulnerabilidades en dependencias y requerimos autenticación multifactor para todo acceso administrativo. Ningún sistema es perfectamente seguro, y ninguna transmisión por internet es garantizada como segura. Si descubrimos un incidente de seguridad que afecte tu información personal, notificaremos a los residentes de California afectados según el Código Civil de California §1798.82 y notificaremos a otros usuarios sin demora indebida, por correo, SMS o aviso en el producto según corresponda.",
     },
     "privacy.children.body": {
-        en: "AgConn is for adults. You must be 18 or older to create an account. We do not knowingly collect personal information from children under 13, and the platform is not directed at children. If you are a parent or guardian and believe your child has provided us with personal information, contact privacy@agconn.com and we will delete it.",
-        es: "AgConn es para adultos. Debes tener 18 años o más para crear una cuenta. No recopilamos a sabiendas información personal de menores de 13 años, y la plataforma no está dirigida a menores. Si eres padre, madre o tutor y crees que tu hijo nos ha proporcionado información personal, escribe a privacy@agconn.com y la eliminaremos.",
+        en: "AGCONN is for adults. You must be 18 or older to create an account. We do not knowingly collect personal information from children under 13, and the platform is not directed at children. If you are a parent or guardian and believe your child has provided us with personal information, contact privacy@agconn.com and we will delete it.",
+        es: "AGCONN es para adultos. Debes tener 18 años o más para crear una cuenta. No recopilamos a sabiendas información personal de menores de 13 años, y la plataforma no está dirigida a menores. Si eres padre, madre o tutor y crees que tu hijo nos ha proporcionado información personal, escribe a privacy@agconn.com y la eliminaremos.",
     },
     "privacy.ccpa.body": {
         en: "If you are a California resident, the California Consumer Privacy Act (CCPA) and California Privacy Rights Act (CPRA) give you specific rights. Categories of personal information we have collected in the past 12 months: identifiers (name, phone, email, IP address, account ID); professional or employment information (work history, skills, certifications, FLC license); commercial information (employer billing only); internet or network activity (page views, device and browser data); coarse geolocation (county-level only, derived from self-reported location or IP); and inferences (job-match relevance scores). Categories disclosed for a business purpose in the past 12 months: identifiers and professional information disclosed to the subprocessors listed in the previous sections, and to employers and training organizations only when you initiate a connection. We do not sell personal information for money. We do not share personal information for cross-context behavioral advertising. You have the right to know, to delete, to correct, to limit the use of sensitive personal information, to opt out of any sale or sharing for advertising (we do neither, but the right is yours), and not to be discriminated against for exercising any of these rights. To exercise any right, email privacy@agconn.com or use your account settings; we will respond within 45 days. You may use an authorized agent — we will require written proof of authorization.",
@@ -1137,23 +1137,23 @@ export const marketing: TranslationBundle = {
         es: "Sin importar dónde vivas, puedes: (1) ver todos los datos que tenemos sobre ti desde tu cuenta; (2) exportarlos como PDFs; (3) corregir lo que esté incorrecto; (4) borrar tu cuenta en cualquier momento; (5) excluirte de cualquier comunicación no requerida. Envía una solicitud desde la configuración de tu cuenta o escribe a privacy@agconn.com — respuesta en menos de 30 días. No tomaremos represalias, no suspenderemos tu cuenta ni te cobraremos por ejercer ninguno de estos derechos.",
     },
     "privacy.changes.body": {
-        en: "When we update this policy, we change the 'last updated' date at the top. For material changes — new categories of data we collect, new categories of recipients we share with, or reduced privacy protections — we notify active account holders by email and SMS at least 30 days before the change takes effect, and post a notice in the product. Continuing to use AgConn after the effective date means you accept the updated policy; if you don't accept it, delete your account before that date and we will treat you as deleted under the retention section above.",
-        es: "Cuando actualizamos esta política, cambiamos la fecha de 'última actualización' en la parte superior. Para cambios sustanciales — nuevas categorías de datos que recopilamos, nuevas categorías de destinatarios con quienes compartimos o protecciones de privacidad reducidas — notificamos a titulares de cuenta activos por correo y SMS al menos 30 días antes de que el cambio entre en vigor, y publicamos un aviso en el producto. Continuar usando AgConn después de la fecha de vigencia significa que aceptas la política actualizada; si no la aceptas, borra tu cuenta antes de esa fecha y te trataremos como eliminado bajo la sección de retención de arriba.",
+        en: "When we update this policy, we change the 'last updated' date at the top. For material changes — new categories of data we collect, new categories of recipients we share with, or reduced privacy protections — we notify active account holders by email and SMS at least 30 days before the change takes effect, and post a notice in the product. Continuing to use AGCONN after the effective date means you accept the updated policy; if you don't accept it, delete your account before that date and we will treat you as deleted under the retention section above.",
+        es: "Cuando actualizamos esta política, cambiamos la fecha de 'última actualización' en la parte superior. Para cambios sustanciales — nuevas categorías de datos que recopilamos, nuevas categorías de destinatarios con quienes compartimos o protecciones de privacidad reducidas — notificamos a titulares de cuenta activos por correo y SMS al menos 30 días antes de que el cambio entre en vigor, y publicamos un aviso en el producto. Continuar usando AGCONN después de la fecha de vigencia significa que aceptas la política actualizada; si no la aceptas, borra tu cuenta antes de esa fecha y te trataremos como eliminado bajo la sección de retención de arriba.",
     },
 
     "terms.eyebrow": { en: "Terms of service", es: "Términos de servicio" },
     "terms.headline": {
-        en: "What you agree to when you use AgConn.",
-        es: "Lo que aceptas al usar AgConn.",
+        en: "What you agree to when you use AGCONN.",
+        es: "Lo que aceptas al usar AGCONN.",
     },
     "terms.intro": {
         en: "Plain-language summary: be honest about your job postings or work history; don't break the law; don't try to scrape or attack the platform; we can suspend accounts that do.",
         es: "Resumen en lenguaje claro: sé honesto con tus publicaciones de trabajo o historial; no rompas la ley; no intentes raspar o atacar la plataforma; podemos suspender cuentas que lo hagan.",
     },
-    "terms.meta.title": { en: "Terms of service — AgConn", es: "Términos de servicio — AgConn" },
+    "terms.meta.title": { en: "Terms of service — AGCONN", es: "Términos de servicio — AGCONN" },
     "terms.meta.description": {
-        en: "AgConn terms of service: account use, prohibited conduct, payment terms, liability, dispute resolution.",
-        es: "Términos de servicio de AgConn: uso de cuenta, conducta prohibida, términos de pago, responsabilidad, resolución de disputas.",
+        en: "AGCONN terms of service: account use, prohibited conduct, payment terms, liability, dispute resolution.",
+        es: "Términos de servicio de AGCONN: uso de cuenta, conducta prohibida, términos de pago, responsabilidad, resolución de disputas.",
     },
     "terms.toc.eligibility": { en: "Eligibility", es: "Elegibilidad" },
     "terms.toc.account": { en: "Your account", es: "Tu cuenta" },
@@ -1167,48 +1167,48 @@ export const marketing: TranslationBundle = {
     "terms.toc.changes": { en: "Changes to these terms", es: "Cambios a estos términos" },
     "terms.toc.general": { en: "General provisions", es: "Disposiciones generales" },
     "terms.eligibility.body": {
-        en: "You must be 18 or older to use AgConn as a worker, employer, or training organization. Workers must have authorization to work in the United States; AgConn does not verify status (it's not our role) but employers are responsible for E-Verify or I-9 compliance on hire. Employers must hold any license required by their role — for Farm Labor Contractors, an active license issued by the California Division of Labor Standards Enforcement (DLSE). Training organizations must hold any license or accreditation required to operate their programs. By creating an account, you represent that everything above is true and that any business you sign up represents is real and legally able to enter into agreements.",
-        es: "Debes tener 18 años o más para usar AgConn como trabajador, empleador u organización de capacitación. Los trabajadores deben tener autorización para trabajar en Estados Unidos; AgConn no verifica el estatus (no es nuestro rol) pero los empleadores son responsables del cumplimiento de E-Verify o I-9 al contratar. Los empleadores deben tener cualquier licencia requerida para su rol — para Contratistas de Trabajo Agrícola, una licencia activa emitida por la División de Cumplimiento de Estándares Laborales de California (DLSE). Las organizaciones de capacitación deben tener cualquier licencia o acreditación requerida para operar sus programas. Al crear una cuenta, declaras que todo lo anterior es cierto y que cualquier empresa que registres es real y legalmente capaz de celebrar acuerdos.",
+        en: "You must be 18 or older to use AGCONN as a worker, employer, or training organization. Workers must have authorization to work in the United States; AGCONN does not verify status (it's not our role) but employers are responsible for E-Verify or I-9 compliance on hire. Employers must hold any license required by their role — for Farm Labor Contractors, an active license issued by the California Division of Labor Standards Enforcement (DLSE). Training organizations must hold any license or accreditation required to operate their programs. By creating an account, you represent that everything above is true and that any business you sign up represents is real and legally able to enter into agreements.",
+        es: "Debes tener 18 años o más para usar AGCONN como trabajador, empleador u organización de capacitación. Los trabajadores deben tener autorización para trabajar en Estados Unidos; AGCONN no verifica el estatus (no es nuestro rol) pero los empleadores son responsables del cumplimiento de E-Verify o I-9 al contratar. Los empleadores deben tener cualquier licencia requerida para su rol — para Contratistas de Trabajo Agrícola, una licencia activa emitida por la División de Cumplimiento de Estándares Laborales de California (DLSE). Las organizaciones de capacitación deben tener cualquier licencia o acreditación requerida para operar sus programas. Al crear una cuenta, declaras que todo lo anterior es cierto y que cualquier empresa que registres es real y legalmente capaz de celebrar acuerdos.",
     },
     "terms.account.body": {
         en: "You're responsible for the accuracy of the information you provide and for keeping your login credentials secure. Notify us promptly at security@agconn.com if you suspect unauthorized access. By creating an account, you agree to receive transactional SMS, email, and push notifications related to account activity (sign-in codes, application status updates, certificate issuance, billing receipts) — these are required for the service to function and you cannot opt out without closing your account. Marketing communications require separate opt-in and can be turned off at any time. The full SMS terms are at agconn.com/sms-consent and the privacy policy at agconn.com/privacy is incorporated into these terms by reference.",
         es: "Eres responsable de la precisión de la información que proporcionas y de mantener seguras tus credenciales. Notifícanos pronto a security@agconn.com si sospechas un acceso no autorizado. Al crear una cuenta, aceptas recibir SMS, correos y notificaciones push transaccionales relacionadas con la actividad de la cuenta (códigos de inicio de sesión, actualizaciones del estado de aplicación, emisión de certificados, recibos de facturación) — estos son requeridos para el funcionamiento del servicio y no puedes excluirte sin cerrar tu cuenta. Las comunicaciones de marketing requieren opt-in separado y pueden desactivarse en cualquier momento. Los términos completos de SMS están en agconn.com/sms-consent y la política de privacidad en agconn.com/privacy se incorpora a estos términos por referencia.",
     },
     "terms.conduct.body": {
-        en: "You agree not to: post false information; impersonate another person or business; harass, threaten, or discriminate against other users; scrape, crawl, or harvest platform data except as expressly permitted by our published API terms; reverse-engineer, decompile, or disassemble the service; attempt to bypass security controls, authentication, or rate limits; introduce malware, viruses, or any disabling code; or use AgConn for any purpose prohibited by law, including unlawful discrimination in hiring on the basis of national origin, language, or immigration status. Violations result in suspension; severe or repeated violations result in permanent ban and may be reported to law enforcement.",
-        es: "Aceptas no: publicar información falsa; suplantar a otra persona o empresa; acosar, amenazar ni discriminar a otros usuarios; raspar, rastrear ni recolectar datos de la plataforma salvo cuando lo permitan expresamente nuestros términos de API publicados; aplicar ingeniería inversa, descompilar ni desensamblar el servicio; intentar saltarse controles de seguridad, autenticación o límites de velocidad; introducir malware, virus ni código deshabilitante; ni usar AgConn para cualquier propósito prohibido por la ley, incluyendo discriminación ilegal en la contratación por origen nacional, idioma o estatus migratorio. Las violaciones resultan en suspensión; las violaciones severas o repetidas resultan en prohibición permanente y pueden ser reportadas a las autoridades.",
+        en: "You agree not to: post false information; impersonate another person or business; harass, threaten, or discriminate against other users; scrape, crawl, or harvest platform data except as expressly permitted by our published API terms; reverse-engineer, decompile, or disassemble the service; attempt to bypass security controls, authentication, or rate limits; introduce malware, viruses, or any disabling code; or use AGCONN for any purpose prohibited by law, including unlawful discrimination in hiring on the basis of national origin, language, or immigration status. Violations result in suspension; severe or repeated violations result in permanent ban and may be reported to law enforcement.",
+        es: "Aceptas no: publicar información falsa; suplantar a otra persona o empresa; acosar, amenazar ni discriminar a otros usuarios; raspar, rastrear ni recolectar datos de la plataforma salvo cuando lo permitan expresamente nuestros términos de API publicados; aplicar ingeniería inversa, descompilar ni desensamblar el servicio; intentar saltarse controles de seguridad, autenticación o límites de velocidad; introducir malware, virus ni código deshabilitante; ni usar AGCONN para cualquier propósito prohibido por la ley, incluyendo discriminación ilegal en la contratación por origen nacional, idioma o estatus migratorio. Las violaciones resultan en suspensión; las violaciones severas o repetidas resultan en prohibición permanente y pueden ser reportadas a las autoridades.",
     },
     "terms.content.body": {
-        en: "You retain all rights to the content you submit — your resume, your job postings, your training catalog, your messages. You grant AgConn a worldwide, non-exclusive, royalty-free license to host, store, reproduce, translate (including AI-assisted translation between English and Spanish), and display your content solely as needed to operate the platform and provide the service to you and to the users you've chosen to share with (employers you applied to, training programs you enrolled in). This license ends when you delete the content or close your account, except for backups retained for the period described in the privacy policy and aggregated, de-identified analytics. We do not sell or sublicense your content to anyone. You are solely responsible for what you submit and represent that you have the right to submit it and that it does not violate any law or third-party right.",
-        es: "Conservas todos los derechos sobre el contenido que envías — tu currículum, tus publicaciones de trabajo, tu catálogo de capacitación, tus mensajes. Otorgas a AgConn una licencia mundial, no exclusiva y libre de regalías para alojar, almacenar, reproducir, traducir (incluida traducción asistida por IA entre inglés y español) y mostrar tu contenido únicamente según sea necesario para operar la plataforma y prestarte el servicio a ti y a los usuarios con quienes elegiste compartir (empleadores a los que aplicaste, programas de capacitación en los que te inscribiste). Esta licencia termina cuando eliminas el contenido o cierras tu cuenta, excepto por respaldos retenidos por el período descrito en la política de privacidad y analítica agregada y desidentificada. No vendemos ni sublicenciamos tu contenido a nadie. Eres únicamente responsable de lo que envías y declaras tener el derecho de enviarlo y que no viola ninguna ley ni derecho de terceros.",
+        en: "You retain all rights to the content you submit — your resume, your job postings, your training catalog, your messages. You grant AGCONN a worldwide, non-exclusive, royalty-free license to host, store, reproduce, translate (including AI-assisted translation between English and Spanish), and display your content solely as needed to operate the platform and provide the service to you and to the users you've chosen to share with (employers you applied to, training programs you enrolled in). This license ends when you delete the content or close your account, except for backups retained for the period described in the privacy policy and aggregated, de-identified analytics. We do not sell or sublicense your content to anyone. You are solely responsible for what you submit and represent that you have the right to submit it and that it does not violate any law or third-party right.",
+        es: "Conservas todos los derechos sobre el contenido que envías — tu currículum, tus publicaciones de trabajo, tu catálogo de capacitación, tus mensajes. Otorgas a AGCONN una licencia mundial, no exclusiva y libre de regalías para alojar, almacenar, reproducir, traducir (incluida traducción asistida por IA entre inglés y español) y mostrar tu contenido únicamente según sea necesario para operar la plataforma y prestarte el servicio a ti y a los usuarios con quienes elegiste compartir (empleadores a los que aplicaste, programas de capacitación en los que te inscribiste). Esta licencia termina cuando eliminas el contenido o cierras tu cuenta, excepto por respaldos retenidos por el período descrito en la política de privacidad y analítica agregada y desidentificada. No vendemos ni sublicenciamos tu contenido a nadie. Eres únicamente responsable de lo que envías y declaras tener el derecho de enviarlo y que no viola ninguna ley ni derecho de terceros.",
     },
     "terms.payment.body": {
-        en: "Free plan: no charges, ever. Pro and Enterprise plans: monthly or yearly, billed in advance via Stripe. Prices are in U.S. dollars and exclusive of any applicable taxes, which we add at checkout where required. Cancellation takes effect at the end of the current billing period; we do not pro-rate refunds. Failed payments are retried for up to 14 days; persistent non-payment results in downgrade to the Free plan. We may change pricing with at least 30 days' written notice to active subscribers; if you don't accept the new price, cancel before the effective date. Disputes about specific charges should be raised at billing@agconn.com within 60 days of the charge — chargebacks filed without first contacting us may result in account suspension. Workers never pay anything to use AgConn — if any third party asks you to pay to use AgConn, that is fraud; report it to security@agconn.com.",
-        es: "Plan gratis: sin cargos, nunca. Planes Pro y Enterprise: mensual o anual, facturado por adelantado vía Stripe. Los precios están en dólares estadounidenses y no incluyen impuestos aplicables, que agregamos al pago cuando sea requerido. La cancelación entra en vigor al final del período de facturación actual; no prorrateamos reembolsos. Los pagos fallidos se reintentan hasta 14 días; el incumplimiento persistente resulta en bajada al plan gratis. Podemos cambiar precios con al menos 30 días de aviso por escrito a suscriptores activos; si no aceptas el nuevo precio, cancela antes de la fecha de vigencia. Las disputas sobre cargos específicos deben plantearse en billing@agconn.com en menos de 60 días desde el cargo — los contracargos presentados sin contactarnos primero pueden resultar en suspensión de la cuenta. Los trabajadores nunca pagan nada por usar AgConn — si un tercero te pide pagar para usar AgConn, eso es fraude; repórtalo a security@agconn.com.",
+        en: "Free plan: no charges, ever. Pro and Enterprise plans: monthly or yearly, billed in advance via Stripe. Prices are in U.S. dollars and exclusive of any applicable taxes, which we add at checkout where required. Cancellation takes effect at the end of the current billing period; we do not pro-rate refunds. Failed payments are retried for up to 14 days; persistent non-payment results in downgrade to the Free plan. We may change pricing with at least 30 days' written notice to active subscribers; if you don't accept the new price, cancel before the effective date. Disputes about specific charges should be raised at billing@agconn.com within 60 days of the charge — chargebacks filed without first contacting us may result in account suspension. Workers never pay anything to use AGCONN — if any third party asks you to pay to use AGCONN, that is fraud; report it to security@agconn.com.",
+        es: "Plan gratis: sin cargos, nunca. Planes Pro y Enterprise: mensual o anual, facturado por adelantado vía Stripe. Los precios están en dólares estadounidenses y no incluyen impuestos aplicables, que agregamos al pago cuando sea requerido. La cancelación entra en vigor al final del período de facturación actual; no prorrateamos reembolsos. Los pagos fallidos se reintentan hasta 14 días; el incumplimiento persistente resulta en bajada al plan gratis. Podemos cambiar precios con al menos 30 días de aviso por escrito a suscriptores activos; si no aceptas el nuevo precio, cancela antes de la fecha de vigencia. Las disputas sobre cargos específicos deben plantearse en billing@agconn.com en menos de 60 días desde el cargo — los contracargos presentados sin contactarnos primero pueden resultar en suspensión de la cuenta. Los trabajadores nunca pagan nada por usar AGCONN — si un tercero te pide pagar para usar AGCONN, eso es fraude; repórtalo a security@agconn.com.",
     },
     "terms.ip.body": {
-        en: "AgConn, the AgConn name and logo, the Tierra brand system, and the platform software are owned by AgConn and protected by United States and international intellectual property laws. We grant you a limited, non-exclusive, non-transferable, revocable license to use the platform for its intended purpose during the time you have an account in good standing. Any feedback or suggestions you send us are non-confidential, and you grant AgConn a perpetual, royalty-free license to use them. We respect copyright. If you believe content posted on AgConn infringes your copyright, send a notice meeting the requirements of 17 U.S.C. §512(c)(3) to our designated agent at dmca@agconn.com (subject line: Copyright Notice). We will respond promptly, remove or disable access to infringing content where appropriate, and forward the notice to the user who posted it; that user may submit a counter-notice. Repeat infringers will have their accounts terminated.",
-        es: "AgConn, el nombre y logotipo de AgConn, el sistema de marca Tierra y el software de la plataforma son propiedad de AgConn y están protegidos por leyes de propiedad intelectual de Estados Unidos e internacionales. Te otorgamos una licencia limitada, no exclusiva, no transferible y revocable para usar la plataforma para su propósito previsto durante el tiempo que tengas una cuenta en buen estado. Cualquier comentario o sugerencia que nos envíes es no confidencial, y otorgas a AgConn una licencia perpetua y libre de regalías para usarlo. Respetamos los derechos de autor. Si crees que contenido publicado en AgConn infringe tus derechos de autor, envía un aviso que cumpla los requisitos de 17 U.S.C. §512(c)(3) a nuestro agente designado en dmca@agconn.com (asunto: Aviso de derechos de autor). Responderemos prontamente, retiraremos o deshabilitaremos el acceso al contenido infractor cuando sea apropiado, y reenviaremos el aviso al usuario que lo publicó; ese usuario puede presentar un contra-aviso. Las cuentas de infractores reincidentes serán cerradas.",
+        en: "AGCONN, the AGCONN name and logo, the Tierra brand system, and the platform software are owned by AGCONN and protected by United States and international intellectual property laws. We grant you a limited, non-exclusive, non-transferable, revocable license to use the platform for its intended purpose during the time you have an account in good standing. Any feedback or suggestions you send us are non-confidential, and you grant AGCONN a perpetual, royalty-free license to use them. We respect copyright. If you believe content posted on AGCONN infringes your copyright, send a notice meeting the requirements of 17 U.S.C. §512(c)(3) to our designated agent at dmca@agconn.com (subject line: Copyright Notice). We will respond promptly, remove or disable access to infringing content where appropriate, and forward the notice to the user who posted it; that user may submit a counter-notice. Repeat infringers will have their accounts terminated.",
+        es: "AGCONN, el nombre y logotipo de AGCONN, el sistema de marca Tierra y el software de la plataforma son propiedad de AGCONN y están protegidos por leyes de propiedad intelectual de Estados Unidos e internacionales. Te otorgamos una licencia limitada, no exclusiva, no transferible y revocable para usar la plataforma para su propósito previsto durante el tiempo que tengas una cuenta en buen estado. Cualquier comentario o sugerencia que nos envíes es no confidencial, y otorgas a AGCONN una licencia perpetua y libre de regalías para usarlo. Respetamos los derechos de autor. Si crees que contenido publicado en AGCONN infringe tus derechos de autor, envía un aviso que cumpla los requisitos de 17 U.S.C. §512(c)(3) a nuestro agente designado en dmca@agconn.com (asunto: Aviso de derechos de autor). Responderemos prontamente, retiraremos o deshabilitaremos el acceso al contenido infractor cuando sea apropiado, y reenviaremos el aviso al usuario que lo publicó; ese usuario puede presentar un contra-aviso. Las cuentas de infractores reincidentes serán cerradas.",
     },
     "terms.termination.body": {
-        en: "You can close your account at any time from your account settings or by emailing privacy@agconn.com. We may suspend or terminate your access if you materially breach these terms, if your continued use creates legal or safety risk for AgConn or other users, or if your account has been inactive for 24 months (after a 30-day warning email). Where practical, we give written notice and a chance to cure before suspending; for fraud, security threats, or court orders, we may suspend immediately. On termination, your obligations and our rights that by their nature should survive — payment for services already provided, intellectual property rights, the content license you granted in the section above (only as needed to honor in-flight transactions and required record retention), indemnification, liability limits, and dispute resolution — continue to apply. Data deletion timelines on termination are described in the privacy policy.",
-        es: "Puedes cerrar tu cuenta en cualquier momento desde la configuración o escribiendo a privacy@agconn.com. Podemos suspender o cancelar tu acceso si incumples sustancialmente estos términos, si tu uso continuado crea riesgo legal o de seguridad para AgConn u otros usuarios, o si tu cuenta ha estado inactiva por 24 meses (tras un aviso de 30 días por correo). Cuando sea práctico, damos aviso por escrito y oportunidad de remediar antes de suspender; en caso de fraude, amenazas de seguridad u órdenes judiciales, podemos suspender de inmediato. Al cancelar, las obligaciones y derechos que por su naturaleza deban sobrevivir — pago por servicios ya prestados, derechos de propiedad intelectual, la licencia de contenido que otorgaste en la sección anterior (solo en lo necesario para honrar transacciones en curso y retención de registros requerida), indemnización, límites de responsabilidad y resolución de disputas — siguen aplicando. Los plazos de eliminación de datos al cancelar se describen en la política de privacidad.",
+        en: "You can close your account at any time from your account settings or by emailing privacy@agconn.com. We may suspend or terminate your access if you materially breach these terms, if your continued use creates legal or safety risk for AGCONN or other users, or if your account has been inactive for 24 months (after a 30-day warning email). Where practical, we give written notice and a chance to cure before suspending; for fraud, security threats, or court orders, we may suspend immediately. On termination, your obligations and our rights that by their nature should survive — payment for services already provided, intellectual property rights, the content license you granted in the section above (only as needed to honor in-flight transactions and required record retention), indemnification, liability limits, and dispute resolution — continue to apply. Data deletion timelines on termination are described in the privacy policy.",
+        es: "Puedes cerrar tu cuenta en cualquier momento desde la configuración o escribiendo a privacy@agconn.com. Podemos suspender o cancelar tu acceso si incumples sustancialmente estos términos, si tu uso continuado crea riesgo legal o de seguridad para AGCONN u otros usuarios, o si tu cuenta ha estado inactiva por 24 meses (tras un aviso de 30 días por correo). Cuando sea práctico, damos aviso por escrito y oportunidad de remediar antes de suspender; en caso de fraude, amenazas de seguridad u órdenes judiciales, podemos suspender de inmediato. Al cancelar, las obligaciones y derechos que por su naturaleza deban sobrevivir — pago por servicios ya prestados, derechos de propiedad intelectual, la licencia de contenido que otorgaste en la sección anterior (solo en lo necesario para honrar transacciones en curso y retención de registros requerida), indemnización, límites de responsabilidad y resolución de disputas — siguen aplicando. Los plazos de eliminación de datos al cancelar se describen en la política de privacidad.",
     },
     "terms.liability.body": {
-        en: "AgConn is provided on an 'as-is' and 'as-available' basis, without warranty of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement, except those that cannot be disclaimed under applicable law. We do not guarantee specific job placements, training completions, employment outcomes, or any minimum availability of the service. Verification of FLC licenses uses publicly available state data and may have lag. We are not party to your employment relationship — that is between you and your employer. To the maximum extent permitted by law, AgConn's total liability for any claim related to the service is capped at the greater of one hundred U.S. dollars (US $100) or the fees you paid us in the 12 months before the event giving rise to the claim. We are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, lost data, or loss of goodwill. Some jurisdictions do not allow these limits; in those places our liability is limited to the smallest amount the law permits. You agree to indemnify and hold AgConn harmless against third-party claims, damages, and reasonable attorneys' fees arising from your content, your conduct on the platform, or your breach of these terms — except to the extent the claim is caused by AgConn's own negligence or willful misconduct.",
-        es: "AgConn se provee 'tal-como-es' y 'según disponibilidad', sin garantía de ningún tipo, expresa o implícita, incluida comerciabilidad, idoneidad para un propósito particular y no infracción, salvo aquellas que no puedan renunciarse bajo la ley aplicable. No garantizamos colocaciones específicas de trabajo, finalizaciones de capacitación, resultados de empleo ni ninguna disponibilidad mínima del servicio. La verificación de licencias FLC usa datos estatales públicos y puede tener retraso. No somos parte de tu relación de empleo — eso es entre tú y tu empleador. En la medida máxima permitida por la ley, la responsabilidad total de AgConn por cualquier reclamo relacionado con el servicio se limita al mayor de cien dólares estadounidenses (US $100) o las tarifas que nos pagaste en los 12 meses anteriores al evento que dio lugar al reclamo. No somos responsables por daños indirectos, incidentales, especiales, consecuentes ni punitivos, ni por lucro cesante, pérdida de datos ni pérdida de buena voluntad. Algunas jurisdicciones no permiten estos límites; en esos lugares nuestra responsabilidad se limita al menor monto permitido por la ley. Aceptas indemnizar y eximir de responsabilidad a AgConn frente a reclamos de terceros, daños y honorarios razonables de abogados derivados de tu contenido, tu conducta en la plataforma o tu incumplimiento de estos términos — salvo en la medida en que el reclamo sea causado por la propia negligencia o mala conducta intencional de AgConn.",
+        en: "AGCONN is provided on an 'as-is' and 'as-available' basis, without warranty of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement, except those that cannot be disclaimed under applicable law. We do not guarantee specific job placements, training completions, employment outcomes, or any minimum availability of the service. Verification of FLC licenses uses publicly available state data and may have lag. We are not party to your employment relationship — that is between you and your employer. To the maximum extent permitted by law, AGCONN's total liability for any claim related to the service is capped at the greater of one hundred U.S. dollars (US $100) or the fees you paid us in the 12 months before the event giving rise to the claim. We are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, lost data, or loss of goodwill. Some jurisdictions do not allow these limits; in those places our liability is limited to the smallest amount the law permits. You agree to indemnify and hold AGCONN harmless against third-party claims, damages, and reasonable attorneys' fees arising from your content, your conduct on the platform, or your breach of these terms — except to the extent the claim is caused by AGCONN's own negligence or willful misconduct.",
+        es: "AGCONN se provee 'tal-como-es' y 'según disponibilidad', sin garantía de ningún tipo, expresa o implícita, incluida comerciabilidad, idoneidad para un propósito particular y no infracción, salvo aquellas que no puedan renunciarse bajo la ley aplicable. No garantizamos colocaciones específicas de trabajo, finalizaciones de capacitación, resultados de empleo ni ninguna disponibilidad mínima del servicio. La verificación de licencias FLC usa datos estatales públicos y puede tener retraso. No somos parte de tu relación de empleo — eso es entre tú y tu empleador. En la medida máxima permitida por la ley, la responsabilidad total de AGCONN por cualquier reclamo relacionado con el servicio se limita al mayor de cien dólares estadounidenses (US $100) o las tarifas que nos pagaste en los 12 meses anteriores al evento que dio lugar al reclamo. No somos responsables por daños indirectos, incidentales, especiales, consecuentes ni punitivos, ni por lucro cesante, pérdida de datos ni pérdida de buena voluntad. Algunas jurisdicciones no permiten estos límites; en esos lugares nuestra responsabilidad se limita al menor monto permitido por la ley. Aceptas indemnizar y eximir de responsabilidad a AGCONN frente a reclamos de terceros, daños y honorarios razonables de abogados derivados de tu contenido, tu conducta en la plataforma o tu incumplimiento de estos términos — salvo en la medida en que el reclamo sea causado por la propia negligencia o mala conducta intencional de AGCONN.",
     },
     "terms.disputes.body": {
-        en: "These terms are governed by the laws of the State of California, without regard to conflict-of-laws principles. We encourage you to contact us first at legal@agconn.com — most disputes are resolved by email. If we cannot resolve a dispute informally within 30 days, the parties agree to attempt good-faith mediation in Fresno County, California before filing suit. Either party may bring qualifying claims in California small claims court. For all other claims, the state and federal courts located in Fresno County, California have exclusive jurisdiction, and you and AgConn submit to that jurisdiction. We do not require arbitration. We do not waive your right to a jury trial. We do not require you to bring claims only individually — you retain whatever rights you have under applicable law to participate in class or representative actions. Nothing in these terms prevents you from filing a complaint with a government agency, including the California Civil Rights Department, the California Labor Commissioner's Office, the U.S. Equal Employment Opportunity Commission, or the U.S. Department of Labor.",
-        es: "Estos términos se rigen por las leyes del Estado de California, sin tener en cuenta principios de conflicto de leyes. Te animamos a contactarnos primero en legal@agconn.com — la mayoría de las disputas se resuelven por correo. Si no podemos resolver una disputa informalmente en 30 días, las partes acuerdan intentar mediación de buena fe en el condado de Fresno, California antes de presentar demanda. Cualquier parte puede presentar reclamos elegibles en la corte de reclamos menores de California. Para todos los demás reclamos, los tribunales estatales y federales ubicados en el condado de Fresno, California tienen jurisdicción exclusiva, y tú y AgConn se someten a esa jurisdicción. No requerimos arbitraje. No renunciamos a tu derecho a un juicio con jurado. No te exigimos presentar reclamos solo individualmente — conservas los derechos que tengas bajo la ley aplicable para participar en acciones colectivas o representativas. Nada en estos términos te impide presentar una queja ante una agencia gubernamental, incluido el Departamento de Derechos Civiles de California, la Oficina del Comisionado Laboral de California, la Comisión de Igualdad de Oportunidades de Empleo (EEOC) de EE. UU. o el Departamento de Trabajo de EE. UU.",
+        en: "These terms are governed by the laws of the State of California, without regard to conflict-of-laws principles. We encourage you to contact us first at legal@agconn.com — most disputes are resolved by email. If we cannot resolve a dispute informally within 30 days, the parties agree to attempt good-faith mediation in Fresno County, California before filing suit. Either party may bring qualifying claims in California small claims court. For all other claims, the state and federal courts located in Fresno County, California have exclusive jurisdiction, and you and AGCONN submit to that jurisdiction. We do not require arbitration. We do not waive your right to a jury trial. We do not require you to bring claims only individually — you retain whatever rights you have under applicable law to participate in class or representative actions. Nothing in these terms prevents you from filing a complaint with a government agency, including the California Civil Rights Department, the California Labor Commissioner's Office, the U.S. Equal Employment Opportunity Commission, or the U.S. Department of Labor.",
+        es: "Estos términos se rigen por las leyes del Estado de California, sin tener en cuenta principios de conflicto de leyes. Te animamos a contactarnos primero en legal@agconn.com — la mayoría de las disputas se resuelven por correo. Si no podemos resolver una disputa informalmente en 30 días, las partes acuerdan intentar mediación de buena fe en el condado de Fresno, California antes de presentar demanda. Cualquier parte puede presentar reclamos elegibles en la corte de reclamos menores de California. Para todos los demás reclamos, los tribunales estatales y federales ubicados en el condado de Fresno, California tienen jurisdicción exclusiva, y tú y AGCONN se someten a esa jurisdicción. No requerimos arbitraje. No renunciamos a tu derecho a un juicio con jurado. No te exigimos presentar reclamos solo individualmente — conservas los derechos que tengas bajo la ley aplicable para participar en acciones colectivas o representativas. Nada en estos términos te impide presentar una queja ante una agencia gubernamental, incluido el Departamento de Derechos Civiles de California, la Oficina del Comisionado Laboral de California, la Comisión de Igualdad de Oportunidades de Empleo (EEOC) de EE. UU. o el Departamento de Trabajo de EE. UU.",
     },
     "terms.changes.body": {
-        en: "When we update these terms, we change the 'last updated' date at the top. For material changes — new fees, new restrictions on use, or significant changes to liability or dispute resolution — we notify active account holders by email and SMS at least 30 days before the change takes effect, and post a notice in-product. Continuing to use AgConn after the effective date means you accept the updated terms; if you don't accept them, close your account before that date and we will treat the closure as effective on the date you submitted it.",
-        es: "Cuando actualizamos estos términos, cambiamos la fecha de 'última actualización' en la parte superior. Para cambios sustanciales — nuevas tarifas, nuevas restricciones de uso o cambios significativos a responsabilidad o resolución de disputas — notificamos a titulares de cuenta activos por correo y SMS al menos 30 días antes de que el cambio entre en vigor, y publicamos un aviso en el producto. Continuar usando AgConn después de la fecha de vigencia significa que aceptas los términos actualizados; si no los aceptas, cierra tu cuenta antes de esa fecha y trataremos el cierre como efectivo en la fecha en que lo enviaste.",
+        en: "When we update these terms, we change the 'last updated' date at the top. For material changes — new fees, new restrictions on use, or significant changes to liability or dispute resolution — we notify active account holders by email and SMS at least 30 days before the change takes effect, and post a notice in-product. Continuing to use AGCONN after the effective date means you accept the updated terms; if you don't accept them, close your account before that date and we will treat the closure as effective on the date you submitted it.",
+        es: "Cuando actualizamos estos términos, cambiamos la fecha de 'última actualización' en la parte superior. Para cambios sustanciales — nuevas tarifas, nuevas restricciones de uso o cambios significativos a responsabilidad o resolución de disputas — notificamos a titulares de cuenta activos por correo y SMS al menos 30 días antes de que el cambio entre en vigor, y publicamos un aviso en el producto. Continuar usando AGCONN después de la fecha de vigencia significa que aceptas los términos actualizados; si no los aceptas, cierra tu cuenta antes de esa fecha y trataremos el cierre como efectivo en la fecha en que lo enviaste.",
     },
     "terms.general.body": {
-        en: "These terms, together with the privacy policy and any plan-specific addenda, are the entire agreement between you and AgConn regarding the service and supersede any prior discussions. If any provision is held unenforceable, the rest remains in effect, and the unenforceable provision will be enforced to the maximum extent permitted by law. Our failure to enforce a provision is not a waiver of that provision or any other. You may not assign these terms without our written consent; we may assign them in connection with a merger, acquisition, sale of assets, or to a successor entity, provided that successor agrees to be bound. We are not liable for delays or failures caused by events beyond our reasonable control — natural disasters, fires, strikes, war, terrorism, pandemics, government action, internet or utility outages, or denial-of-service attacks — provided we use reasonable efforts to resume service. The contracting entity is AgConn, a California Public Benefit Corporation. Notices to AgConn must be sent to legal@agconn.com; notices to you may be sent by email, SMS, or in-product banner using the contact information on your account, and are deemed received when sent. The English version of these terms is the controlling version in any conflict of interpretation; the Spanish version is provided for your convenience.",
-        es: "Estos términos, junto con la política de privacidad y cualquier anexo específico del plan, constituyen el acuerdo completo entre tú y AgConn respecto al servicio y reemplazan cualquier discusión anterior. Si alguna disposición resulta inejecutable, el resto sigue vigente, y la disposición inejecutable se aplicará en la medida máxima permitida por la ley. Que no apliquemos una disposición no significa que renunciemos a ella ni a ninguna otra. No puedes ceder estos términos sin nuestro consentimiento por escrito; nosotros podemos cederlos en relación con una fusión, adquisición, venta de activos o a una entidad sucesora, siempre que dicha sucesora acepte quedar obligada. No somos responsables de retrasos o fallas causadas por eventos fuera de nuestro control razonable — desastres naturales, incendios, huelgas, guerra, terrorismo, pandemias, acción gubernamental, cortes de internet o servicios públicos, o ataques de denegación de servicio — siempre que hagamos esfuerzos razonables para reanudar el servicio. La entidad contratante es AgConn, una California Public Benefit Corporation. Las notificaciones a AgConn deben enviarse a legal@agconn.com; las notificaciones a ti pueden enviarse por correo, SMS o banner en el producto usando la información de contacto en tu cuenta, y se consideran recibidas al enviarse. La versión en inglés de estos términos es la versión controladora en caso de conflicto de interpretación; la versión en español se provee por conveniencia.",
+        en: "These terms, together with the privacy policy and any plan-specific addenda, are the entire agreement between you and AGCONN regarding the service and supersede any prior discussions. If any provision is held unenforceable, the rest remains in effect, and the unenforceable provision will be enforced to the maximum extent permitted by law. Our failure to enforce a provision is not a waiver of that provision or any other. You may not assign these terms without our written consent; we may assign them in connection with a merger, acquisition, sale of assets, or to a successor entity, provided that successor agrees to be bound. We are not liable for delays or failures caused by events beyond our reasonable control — natural disasters, fires, strikes, war, terrorism, pandemics, government action, internet or utility outages, or denial-of-service attacks — provided we use reasonable efforts to resume service. The contracting entity is AGCONN, a California Public Benefit Corporation. Notices to AGCONN must be sent to legal@agconn.com; notices to you may be sent by email, SMS, or in-product banner using the contact information on your account, and are deemed received when sent. The English version of these terms is the controlling version in any conflict of interpretation; the Spanish version is provided for your convenience.",
+        es: "Estos términos, junto con la política de privacidad y cualquier anexo específico del plan, constituyen el acuerdo completo entre tú y AGCONN respecto al servicio y reemplazan cualquier discusión anterior. Si alguna disposición resulta inejecutable, el resto sigue vigente, y la disposición inejecutable se aplicará en la medida máxima permitida por la ley. Que no apliquemos una disposición no significa que renunciemos a ella ni a ninguna otra. No puedes ceder estos términos sin nuestro consentimiento por escrito; nosotros podemos cederlos en relación con una fusión, adquisición, venta de activos o a una entidad sucesora, siempre que dicha sucesora acepte quedar obligada. No somos responsables de retrasos o fallas causadas por eventos fuera de nuestro control razonable — desastres naturales, incendios, huelgas, guerra, terrorismo, pandemias, acción gubernamental, cortes de internet o servicios públicos, o ataques de denegación de servicio — siempre que hagamos esfuerzos razonables para reanudar el servicio. La entidad contratante es AGCONN, una California Public Benefit Corporation. Las notificaciones a AGCONN deben enviarse a legal@agconn.com; las notificaciones a ti pueden enviarse por correo, SMS o banner en el producto usando la información de contacto en tu cuenta, y se consideran recibidas al enviarse. La versión en inglés de estos términos es la versión controladora en caso de conflicto de interpretación; la versión en español se provee por conveniencia.",
     },
 
     // ========================================================================
@@ -1220,13 +1220,13 @@ export const marketing: TranslationBundle = {
         es: "Quién más toca tus datos.",
     },
     "subprocessors.intro": {
-        en: "AgConn relies on a small set of infrastructure providers to operate the platform. Each one has signed a written data processing agreement, sees only the data needed for its role, and is named here so you can audit the chain end to end. This page is the single source of truth — when it changes, the privacy policy is updated to match.",
-        es: "AgConn depende de un conjunto pequeño de proveedores de infraestructura para operar la plataforma. Cada uno ha firmado un acuerdo de procesamiento de datos por escrito, ve únicamente los datos necesarios para su función y aparece aquí para que puedas auditar la cadena de extremo a extremo. Esta página es la fuente única de verdad — cuando cambia, la política de privacidad se actualiza para coincidir.",
+        en: "AGCONN relies on a small set of infrastructure providers to operate the platform. Each one has signed a written data processing agreement, sees only the data needed for its role, and is named here so you can audit the chain end to end. This page is the single source of truth — when it changes, the privacy policy is updated to match.",
+        es: "AGCONN depende de un conjunto pequeño de proveedores de infraestructura para operar la plataforma. Cada uno ha firmado un acuerdo de procesamiento de datos por escrito, ve únicamente los datos necesarios para su función y aparece aquí para que puedas auditar la cadena de extremo a extremo. Esta página es la fuente única de verdad — cuando cambia, la política de privacidad se actualiza para coincidir.",
     },
-    "subprocessors.meta.title": { en: "Subprocessors — AgConn", es: "Subprocesadores — AgConn" },
+    "subprocessors.meta.title": { en: "Subprocessors — AGCONN", es: "Subprocesadores — AGCONN" },
     "subprocessors.meta.description": {
-        en: "Every infrastructure provider AgConn shares data with: name, purpose, data category, location, and link to its data processing agreement.",
-        es: "Cada proveedor de infraestructura con quien AgConn comparte datos: nombre, propósito, categoría de datos, ubicación y enlace a su acuerdo de procesamiento de datos.",
+        en: "Every infrastructure provider AGCONN shares data with: name, purpose, data category, location, and link to its data processing agreement.",
+        es: "Cada proveedor de infraestructura con quien AGCONN comparte datos: nombre, propósito, categoría de datos, ubicación y enlace a su acuerdo de procesamiento de datos.",
     },
     "subprocessors.last_reviewed_label": { en: "Last reviewed", es: "Última revisión" },
     "subprocessors.table.col.name": { en: "Provider", es: "Proveedor" },
@@ -1245,8 +1245,8 @@ export const marketing: TranslationBundle = {
         es: "Todos los datos de la aplicación, incluyendo currículums, certificados y registros de identidad",
     },
     "subprocessors.row.gcp.purpose": {
-        en: "Application hosting — runs the AgConn web app, API, and background workers on Google Kubernetes Engine, with container images stored in Artifact Registry.",
-        es: "Alojamiento de la aplicación — ejecuta la app web, API y trabajadores en segundo plano de AgConn en Google Kubernetes Engine, con imágenes de contenedor almacenadas en Artifact Registry.",
+        en: "Application hosting — runs the AGCONN web app, API, and background workers on Google Kubernetes Engine, with container images stored in Artifact Registry.",
+        es: "Alojamiento de la aplicación — ejecuta la app web, API y trabajadores en segundo plano de AGCONN en Google Kubernetes Engine, con imágenes de contenedor almacenadas en Artifact Registry.",
     },
     "subprocessors.row.gcp.data": {
         en: "App runtime traffic and logs (transient); IP and request metadata",
@@ -1327,8 +1327,8 @@ export const marketing: TranslationBundle = {
     },
     "subprocessors.commitments.dpa.title": { en: "Written DPA before any data flows", es: "DPA por escrito antes de cualquier flujo de datos" },
     "subprocessors.commitments.dpa.body": {
-        en: "Every provider on this list has executed a data processing agreement that obligates them to process AgConn data only on our instructions, apply industry-standard security, support data-subject requests, and notify us of any incident.",
-        es: "Cada proveedor en esta lista ha firmado un acuerdo de procesamiento de datos que los obliga a procesar datos de AgConn solo bajo nuestras instrucciones, aplicar seguridad estándar de la industria, apoyar solicitudes de los titulares de los datos y notificarnos de cualquier incidente.",
+        en: "Every provider on this list has executed a data processing agreement that obligates them to process AGCONN data only on our instructions, apply industry-standard security, support data-subject requests, and notify us of any incident.",
+        es: "Cada proveedor en esta lista ha firmado un acuerdo de procesamiento de datos que los obliga a procesar datos de AGCONN solo bajo nuestras instrucciones, aplicar seguridad estándar de la industria, apoyar solicitudes de los titulares de los datos y notificarnos de cualquier incidente.",
     },
     "subprocessors.commitments.scope.title": { en: "Minimum necessary access", es: "Acceso mínimo necesario" },
     "subprocessors.commitments.scope.body": {
@@ -1360,13 +1360,13 @@ export const marketing: TranslationBundle = {
         es: "Construido para ser usable por todos.",
     },
     "accessibility.intro": {
-        en: "AgConn targets WCAG 2.2 Level AA across every public surface. We test with screen readers, keyboard-only navigation, and reduced-motion settings. Bilingual screen-reader voice (NVDA + VoiceOver) verified for both EN and ES content.",
-        es: "AgConn cumple WCAG 2.2 Nivel AA en cada superficie pública. Probamos con lectores de pantalla, navegación solo con teclado y configuraciones de movimiento reducido. Voz bilingüe de lector de pantalla (NVDA + VoiceOver) verificada para contenido en EN y ES.",
+        en: "AGCONN targets WCAG 2.2 Level AA across every public surface. We test with screen readers, keyboard-only navigation, and reduced-motion settings. Bilingual screen-reader voice (NVDA + VoiceOver) verified for both EN and ES content.",
+        es: "AGCONN cumple WCAG 2.2 Nivel AA en cada superficie pública. Probamos con lectores de pantalla, navegación solo con teclado y configuraciones de movimiento reducido. Voz bilingüe de lector de pantalla (NVDA + VoiceOver) verificada para contenido en EN y ES.",
     },
-    "accessibility.meta.title": { en: "Accessibility — AgConn", es: "Accesibilidad — AgConn" },
+    "accessibility.meta.title": { en: "Accessibility — AGCONN", es: "Accesibilidad — AGCONN" },
     "accessibility.meta.description": {
-        en: "AgConn accessibility statement: WCAG 2.2 AA target, screen reader testing, keyboard navigation, bilingual support, contact for accessibility issues.",
-        es: "Declaración de accesibilidad de AgConn: meta WCAG 2.2 AA, pruebas con lector de pantalla, navegación por teclado, soporte bilingüe, contacto para problemas de accesibilidad.",
+        en: "AGCONN accessibility statement: WCAG 2.2 AA target, screen reader testing, keyboard navigation, bilingual support, contact for accessibility issues.",
+        es: "Declaración de accesibilidad de AGCONN: meta WCAG 2.2 AA, pruebas con lector de pantalla, navegación por teclado, soporte bilingüe, contacto para problemas de accesibilidad.",
     },
     "accessibility.toc.standards": { en: "Standards we follow", es: "Estándares que seguimos" },
     "accessibility.toc.features": { en: "Built-in features", es: "Funciones integradas" },
@@ -1389,17 +1389,17 @@ export const marketing: TranslationBundle = {
     // ========================================================================
     "sms_consent.eyebrow": { en: "SMS consent", es: "Consentimiento de SMS" },
     "sms_consent.headline": {
-        en: "How AgConn sends you text messages.",
-        es: "Cómo AgConn te envía mensajes de texto.",
+        en: "How AGCONN sends you text messages.",
+        es: "Cómo AGCONN te envía mensajes de texto.",
     },
     "sms_consent.intro": {
-        en: "Plain-language summary: AgConn uses SMS to confirm your sign-in, alert you to job applications and hires, remind you about training, and welcome you to the platform. We do not send marketing texts on this channel. You can stop messages at any time by replying STOP. Up to 30 messages per month. Message and data rates may apply.",
-        es: "Resumen en lenguaje claro: AgConn usa SMS para confirmar tu inicio de sesión, avisarte sobre solicitudes y contrataciones, recordarte capacitaciones, y darte la bienvenida a la plataforma. No enviamos mensajes de marketing por este canal. Puedes detener los mensajes en cualquier momento respondiendo STOP. Hasta 30 mensajes por mes. Las tarifas de mensajes y datos pueden aplicar.",
+        en: "Plain-language summary: AGCONN uses SMS to confirm your sign-in, alert you to job applications and hires, remind you about training, and welcome you to the platform. We do not send marketing texts on this channel. You can stop messages at any time by replying STOP. Up to 30 messages per month. Message and data rates may apply.",
+        es: "Resumen en lenguaje claro: AGCONN usa SMS para confirmar tu inicio de sesión, avisarte sobre solicitudes y contrataciones, recordarte capacitaciones, y darte la bienvenida a la plataforma. No enviamos mensajes de marketing por este canal. Puedes detener los mensajes en cualquier momento respondiendo STOP. Hasta 30 mensajes por mes. Las tarifas de mensajes y datos pueden aplicar.",
     },
-    "sms_consent.meta.title": { en: "SMS consent — AgConn", es: "Consentimiento de SMS — AgConn" },
+    "sms_consent.meta.title": { en: "SMS consent — AGCONN", es: "Consentimiento de SMS — AGCONN" },
     "sms_consent.meta.description": {
-        en: "How AgConn collects SMS consent, what messages we send, how often, and how to opt out. Required disclosure for AgConn's transactional SMS campaign.",
-        es: "Cómo AgConn recopila el consentimiento de SMS, qué mensajes enviamos, con qué frecuencia, y cómo cancelar. Divulgación requerida para la campaña de SMS transaccional de AgConn.",
+        en: "How AGCONN collects SMS consent, what messages we send, how often, and how to opt out. Required disclosure for AGCONN's transactional SMS campaign.",
+        es: "Cómo AGCONN recopila el consentimiento de SMS, qué mensajes enviamos, con qué frecuencia, y cómo cancelar. Divulgación requerida para la campaña de SMS transaccional de AGCONN.",
     },
     "sms_consent.toc.web_flow": { en: "Web sign-up opt-in", es: "Opt-in en registro web" },
     "sms_consent.toc.text_flow": { en: "Text-keyword opt-in", es: "Opt-in por palabra clave" },
@@ -1411,38 +1411,38 @@ export const marketing: TranslationBundle = {
     "sms_consent.toc.contact": { en: "Contact", es: "Contacto" },
 
     "sms_consent.web_flow.body": {
-        en: "When you create an account at agconn.com/worker/sign-up or agconn.com/employer/sign-up, you enter your mobile number and verify ownership by entering a six-digit code AgConn sends you. By completing sign-up you accept the AgConn Terms of Service, which explicitly states that you agree to receive transactional SMS messages related to your account — sign-in codes, application status, hire confirmations, training reminders, and welcome notes (terms.agconn.com, section: Your account). The Terms link to this disclosure page for full message content, frequency, and rate information. You can revoke SMS consent at any time by replying STOP to any AgConn message, by toggling SMS off in your account settings, or by visiting agconn.com/unsubscribe. Revoking SMS does not delete your account.",
-        es: "Cuando creas una cuenta en agconn.com/worker/sign-up o agconn.com/employer/sign-up, ingresas tu número móvil y verificas la propiedad ingresando un código de seis dígitos que AgConn te envía. Al completar el registro aceptas los Términos de Servicio de AgConn, que establecen explícitamente que aceptas recibir mensajes SMS transaccionales relacionados con tu cuenta — códigos de inicio de sesión, estado de solicitudes, confirmaciones de contratación, recordatorios de capacitación y notas de bienvenida (terms.agconn.com, sección: Tu cuenta). Los Términos enlazan a esta página de divulgación para el contenido completo de mensajes, frecuencia y tarifas. Puedes revocar el consentimiento de SMS en cualquier momento respondiendo STOP a cualquier mensaje de AgConn, desactivando SMS en la configuración de tu cuenta, o visitando agconn.com/unsubscribe. Revocar SMS no elimina tu cuenta.",
+        en: "When you create an account at agconn.com/worker/sign-up or agconn.com/employer/sign-up, you enter your mobile number and verify ownership by entering a six-digit code AGCONN sends you. By completing sign-up you accept the AGCONN Terms of Service, which explicitly states that you agree to receive transactional SMS messages related to your account — sign-in codes, application status, hire confirmations, training reminders, and welcome notes (terms.agconn.com, section: Your account). The Terms link to this disclosure page for full message content, frequency, and rate information. You can revoke SMS consent at any time by replying STOP to any AGCONN message, by toggling SMS off in your account settings, or by visiting agconn.com/unsubscribe. Revoking SMS does not delete your account.",
+        es: "Cuando creas una cuenta en agconn.com/worker/sign-up o agconn.com/employer/sign-up, ingresas tu número móvil y verificas la propiedad ingresando un código de seis dígitos que AGCONN te envía. Al completar el registro aceptas los Términos de Servicio de AGCONN, que establecen explícitamente que aceptas recibir mensajes SMS transaccionales relacionados con tu cuenta — códigos de inicio de sesión, estado de solicitudes, confirmaciones de contratación, recordatorios de capacitación y notas de bienvenida (terms.agconn.com, sección: Tu cuenta). Los Términos enlazan a esta página de divulgación para el contenido completo de mensajes, frecuencia y tarifas. Puedes revocar el consentimiento de SMS en cualquier momento respondiendo STOP a cualquier mensaje de AGCONN, desactivando SMS en la configuración de tu cuenta, o visitando agconn.com/unsubscribe. Revocar SMS no elimina tu cuenta.",
     },
     "sms_consent.text_flow.body": {
-        en: "Public job listings at agconn.com/jobs/[slug] display a job-specific application keyword (for example, WHC-PH7). When you text this keyword to AgConn's long code from your mobile phone, AgConn replies with a confirmation message: \"AgConn: You are applying for [Job Title] with [Employer]. Reply YES to confirm and receive application updates. Up to 30 msg/mo. Msg & data rates may apply. Reply STOP to cancel, HELP for help.\" No further messages are sent unless you reply YES, SI, or SÍ. Only after that confirmation does AgConn begin sending transactional updates — application status, employer responses, training reminders. This double opt-in is required for every new phone number that initiates contact through a text keyword. The keyword text itself is not treated as consent on its own.",
-        es: "Las publicaciones públicas de empleo en agconn.com/jobs/[slug] muestran una palabra clave de aplicación específica del trabajo (por ejemplo, WHC-PH7). Cuando envías esta palabra clave al código largo de AgConn desde tu teléfono móvil, AgConn responde con un mensaje de confirmación: \"AgConn: Estás aplicando a [Título del trabajo] con [Empleador]. Responde SI para confirmar y recibir actualizaciones. Hasta 30 msj/mes. Msj y datos pueden aplicar. Responde STOP para cancelar, HELP para ayuda.\" No se envían más mensajes a menos que respondas YES, SI o SÍ. Solo después de esa confirmación AgConn comienza a enviar actualizaciones transaccionales — estado de solicitud, respuestas del empleador, recordatorios de capacitación. Este doble opt-in es requerido para cada nuevo número de teléfono que inicia contacto a través de una palabra clave. El texto de la palabra clave por sí solo no se trata como consentimiento.",
+        en: "Public job listings at agconn.com/jobs/[slug] display a job-specific application keyword (for example, WHC-PH7). When you text this keyword to AGCONN's long code from your mobile phone, AGCONN replies with a confirmation message: \"AGCONN: You are applying for [Job Title] with [Employer]. Reply YES to confirm and receive application updates. Up to 30 msg/mo. Msg & data rates may apply. Reply STOP to cancel, HELP for help.\" No further messages are sent unless you reply YES, SI, or SÍ. Only after that confirmation does AGCONN begin sending transactional updates — application status, employer responses, training reminders. This double opt-in is required for every new phone number that initiates contact through a text keyword. The keyword text itself is not treated as consent on its own.",
+        es: "Las publicaciones públicas de empleo en agconn.com/jobs/[slug] muestran una palabra clave de aplicación específica del trabajo (por ejemplo, WHC-PH7). Cuando envías esta palabra clave al código largo de AGCONN desde tu teléfono móvil, AGCONN responde con un mensaje de confirmación: \"AGCONN: Estás aplicando a [Título del trabajo] con [Empleador]. Responde SI para confirmar y recibir actualizaciones. Hasta 30 msj/mes. Msj y datos pueden aplicar. Responde STOP para cancelar, HELP para ayuda.\" No se envían más mensajes a menos que respondas YES, SI o SÍ. Solo después de esa confirmación AGCONN comienza a enviar actualizaciones transaccionales — estado de solicitud, respuestas del empleador, recordatorios de capacitación. Este doble opt-in es requerido para cada nuevo número de teléfono que inicia contacto a través de una palabra clave. El texto de la palabra clave por sí solo no se trata como consentimiento.",
     },
     "sms_consent.message_types.body": {
-        en: "Sign-in verification codes (one-time passcodes for account login), job application receipts and status changes, hire confirmations and decline notes from employers, scheduled training session reminders, certificate issuance notifications when you complete a training, account welcome messages, opt-in confirmation messages for the text-keyword path, and replies to STOP and HELP keywords. AgConn does not send marketing, promotional, or fundraising content on this channel; those communications would require separate, explicit opt-in and are not currently offered.",
-        es: "Códigos de verificación de inicio de sesión (contraseñas de un solo uso para iniciar sesión), recibos y cambios de estado de solicitudes de empleo, confirmaciones de contratación y notas de rechazo de empleadores, recordatorios programados de sesiones de capacitación, notificaciones de emisión de certificados cuando completas una capacitación, mensajes de bienvenida a la cuenta, mensajes de confirmación de opt-in para la ruta de palabra clave, y respuestas a las palabras STOP y HELP. AgConn no envía contenido de marketing, promocional ni de recaudación de fondos por este canal; esas comunicaciones requerirían un opt-in separado y explícito y no se ofrecen actualmente.",
+        en: "Sign-in verification codes (one-time passcodes for account login), job application receipts and status changes, hire confirmations and decline notes from employers, scheduled training session reminders, certificate issuance notifications when you complete a training, account welcome messages, opt-in confirmation messages for the text-keyword path, and replies to STOP and HELP keywords. AGCONN does not send marketing, promotional, or fundraising content on this channel; those communications would require separate, explicit opt-in and are not currently offered.",
+        es: "Códigos de verificación de inicio de sesión (contraseñas de un solo uso para iniciar sesión), recibos y cambios de estado de solicitudes de empleo, confirmaciones de contratación y notas de rechazo de empleadores, recordatorios programados de sesiones de capacitación, notificaciones de emisión de certificados cuando completas una capacitación, mensajes de bienvenida a la cuenta, mensajes de confirmación de opt-in para la ruta de palabra clave, y respuestas a las palabras STOP y HELP. AGCONN no envía contenido de marketing, promocional ni de recaudación de fondos por este canal; esas comunicaciones requerirían un opt-in separado y explícito y no se ofrecen actualmente.",
     },
     "sms_consent.frequency.body": {
         en: "Up to 30 messages per phone number per month under normal use; most workers receive five or fewer per month. Sign-in codes and account-event notifications are sent in real time as the event occurs; we do not batch or schedule them. Quiet hours are enforced between 9 PM and 7 AM Pacific time — no messages are sent during these hours, and any deferred message is delivered after 7 AM Pacific the following morning. Message and data rates may apply per your mobile carrier plan.",
         es: "Hasta 30 mensajes por número de teléfono por mes bajo uso normal; la mayoría de los trabajadores reciben cinco o menos por mes. Los códigos de inicio de sesión y notificaciones de eventos de cuenta se envían en tiempo real conforme ocurre el evento; no los agrupamos ni programamos. Las horas de silencio se respetan entre 9 PM y 7 AM hora del Pacífico — no se envían mensajes durante estas horas, y cualquier mensaje diferido se entrega después de las 7 AM del Pacífico la mañana siguiente. Las tarifas de mensajes y datos pueden aplicar según tu plan de operador móvil.",
     },
     "sms_consent.optout.body": {
-        en: "Reply STOP (or PARAR, CANCELAR, UNSUBSCRIBE, END, QUIT) to any AgConn message to immediately stop all SMS to your number. The mobile carrier confirms the unsubscribe and AgConn records it within seconds; no further messages will be sent to that number. You can also toggle SMS off in your account settings at agconn.com/worker/profile (workers) or agconn.com/employer/profile (employers), or visit agconn.com/unsubscribe directly. Opting out of SMS does not delete your account, does not stop email notifications, and does not affect your ability to log in (you can still receive sign-in codes by email if you opt out of SMS).",
-        es: "Responde STOP (o PARAR, CANCELAR, UNSUBSCRIBE, END, QUIT) a cualquier mensaje de AgConn para detener inmediatamente todos los SMS a tu número. El operador móvil confirma la cancelación y AgConn la registra en segundos; no se enviarán más mensajes a ese número. También puedes desactivar SMS en la configuración de tu cuenta en agconn.com/worker/profile (trabajadores) o agconn.com/employer/profile (empleadores), o visitar agconn.com/unsubscribe directamente. Cancelar SMS no elimina tu cuenta, no detiene las notificaciones por correo, y no afecta tu capacidad de iniciar sesión (todavía puedes recibir códigos de inicio de sesión por correo si cancelas SMS).",
+        en: "Reply STOP (or PARAR, CANCELAR, UNSUBSCRIBE, END, QUIT) to any AGCONN message to immediately stop all SMS to your number. The mobile carrier confirms the unsubscribe and AGCONN records it within seconds; no further messages will be sent to that number. You can also toggle SMS off in your account settings at agconn.com/worker/profile (workers) or agconn.com/employer/profile (employers), or visit agconn.com/unsubscribe directly. Opting out of SMS does not delete your account, does not stop email notifications, and does not affect your ability to log in (you can still receive sign-in codes by email if you opt out of SMS).",
+        es: "Responde STOP (o PARAR, CANCELAR, UNSUBSCRIBE, END, QUIT) a cualquier mensaje de AGCONN para detener inmediatamente todos los SMS a tu número. El operador móvil confirma la cancelación y AGCONN la registra en segundos; no se enviarán más mensajes a ese número. También puedes desactivar SMS en la configuración de tu cuenta en agconn.com/worker/profile (trabajadores) o agconn.com/employer/profile (empleadores), o visitar agconn.com/unsubscribe directamente. Cancelar SMS no elimina tu cuenta, no detiene las notificaciones por correo, y no afecta tu capacidad de iniciar sesión (todavía puedes recibir códigos de inicio de sesión por correo si cancelas SMS).",
     },
     "sms_consent.help.body": {
-        en: "Reply HELP (or AYUDA, INFO) to any AgConn message and you will receive a reply with a link to agconn.com/help and the contact email hello@agconn.com. For urgent issues — locked out of your account, a suspicious message claiming to be from AgConn, harassment from another user — email security@agconn.com or use the contact form at agconn.com/contact. Bilingual support (English and Spanish) is available; we respond within two business days.",
-        es: "Responde HELP (o AYUDA, INFO) a cualquier mensaje de AgConn y recibirás una respuesta con un enlace a agconn.com/help y el correo de contacto hello@agconn.com. Para problemas urgentes — bloqueado de tu cuenta, un mensaje sospechoso que dice ser de AgConn, acoso de otro usuario — escribe a security@agconn.com o usa el formulario de contacto en agconn.com/contact. Soporte bilingüe (inglés y español) disponible; respondemos en menos de dos días hábiles.",
+        en: "Reply HELP (or AYUDA, INFO) to any AGCONN message and you will receive a reply with a link to agconn.com/help and the contact email hello@agconn.com. For urgent issues — locked out of your account, a suspicious message claiming to be from AGCONN, harassment from another user — email security@agconn.com or use the contact form at agconn.com/contact. Bilingual support (English and Spanish) is available; we respond within two business days.",
+        es: "Responde HELP (o AYUDA, INFO) a cualquier mensaje de AGCONN y recibirás una respuesta con un enlace a agconn.com/help y el correo de contacto hello@agconn.com. Para problemas urgentes — bloqueado de tu cuenta, un mensaje sospechoso que dice ser de AGCONN, acoso de otro usuario — escribe a security@agconn.com o usa el formulario de contacto en agconn.com/contact. Soporte bilingüe (inglés y español) disponible; respondemos en menos de dos días hábiles.",
     },
     "sms_consent.privacy.body": {
-        en: "AgConn never sells, rents, trades, or shares your phone number for marketing or any other purpose. Your number is used only by AgConn (the platform) and the SMS infrastructure provider that delivers messages on AgConn's behalf under a Data Processing Agreement. Employers do not see your phone number; they communicate with you through AgConn's in-platform messaging, which optionally relays to SMS. The full data-handling policy is at agconn.com/privacy.",
-        es: "AgConn nunca vende, alquila, intercambia ni comparte tu número de teléfono para marketing ni para ningún otro propósito. Tu número solo es usado por AgConn (la plataforma) y el proveedor de infraestructura SMS que entrega mensajes en nombre de AgConn bajo un Acuerdo de Procesamiento de Datos. Los empleadores no ven tu número de teléfono; se comunican contigo a través de la mensajería interna de AgConn, que opcionalmente se transmite a SMS. La política completa de manejo de datos está en agconn.com/privacy.",
+        en: "AGCONN never sells, rents, trades, or shares your phone number for marketing or any other purpose. Your number is used only by AGCONN (the platform) and the SMS infrastructure provider that delivers messages on AGCONN's behalf under a Data Processing Agreement. Employers do not see your phone number; they communicate with you through AGCONN's in-platform messaging, which optionally relays to SMS. The full data-handling policy is at agconn.com/privacy.",
+        es: "AGCONN nunca vende, alquila, intercambia ni comparte tu número de teléfono para marketing ni para ningún otro propósito. Tu número solo es usado por AGCONN (la plataforma) y el proveedor de infraestructura SMS que entrega mensajes en nombre de AGCONN bajo un Acuerdo de Procesamiento de Datos. Los empleadores no ven tu número de teléfono; se comunican contigo a través de la mensajería interna de AGCONN, que opcionalmente se transmite a SMS. La política completa de manejo de datos está en agconn.com/privacy.",
     },
 
     // ========================================================================
     // /workers (Header "For workers" — dedicated worker landing)
     // ========================================================================
-    "workers_page.meta.title": { en: "For workers — AgConn", es: "Para trabajadores — AgConn" },
+    "workers_page.meta.title": { en: "For workers — AGCONN", es: "Para trabajadores — AGCONN" },
     "workers_page.meta.description": {
         en: "Find verified jobs, earn certifications, build a skills wallet that travels with you. Free, bilingual, built for Central Valley farmworkers.",
         es: "Encuentra trabajos verificados, gana certificaciones, construye una cartera de habilidades que viaja contigo. Gratis, bilingüe, construido para trabajadores agrícolas del Valle Central.",
@@ -1453,8 +1453,8 @@ export const marketing: TranslationBundle = {
         es: "Construye un registro que viaja contigo.",
     },
     "workers_page.intro": {
-        en: "AgConn is built for the people who pick, prune, pack, and drive across the Central Valley. Free profile in Spanish or English, verified jobs, certifications you keep forever.",
-        es: "AgConn está construido para las personas que cosechan, podan, empacan y conducen en el Valle Central. Perfil gratis en español o inglés, trabajos verificados, certificaciones que conservas para siempre.",
+        en: "AGCONN is built for the people who pick, prune, pack, and drive across the Central Valley. Free profile in Spanish or English, verified jobs, certifications you keep forever.",
+        es: "AGCONN está construido para las personas que cosechan, podan, empacan y conducen en el Valle Central. Perfil gratis en español o inglés, trabajos verificados, certificaciones que conservas para siempre.",
     },
     "workers_page.cta_primary": { en: "Create your free profile", es: "Crea tu perfil gratis" },
     "workers_page.cta_secondary": { en: "Browse open jobs", es: "Explorar empleos abiertos" },
@@ -1467,13 +1467,13 @@ export const marketing: TranslationBundle = {
     },
     "workers_page.benefits.search.title": { en: "Verified jobs", es: "Empleos verificados" },
     "workers_page.benefits.search.body": {
-        en: "Every employer on AgConn shows their CA FLC license number, MSPA registration, and current bond status. We re-verify every employer annually against state records.",
-        es: "Cada empleador en AgConn muestra su número de licencia FLC de CA, registro MSPA y estado actual de fianza. Reverificamos a cada empleador anualmente contra los registros estatales.",
+        en: "Every employer on AGCONN shows their CA FLC license number, MSPA registration, and current bond status. We re-verify every employer annually against state records.",
+        es: "Cada empleador en AGCONN muestra su número de licencia FLC de CA, registro MSPA y estado actual de fianza. Reverificamos a cada empleador anualmente contra los registros estatales.",
     },
     "workers_page.benefits.sms.title": { en: "Job alerts by SMS", es: "Alertas de empleo por SMS" },
     "workers_page.benefits.sms.body": {
-        en: "Don't have a smartphone every day? AgConn works over text message. Sign up by SMS, get job alerts by SMS, apply by replying. No app required.",
-        es: "¿No tienes teléfono inteligente todos los días? AgConn funciona por mensaje de texto. Regístrate por SMS, recibe alertas de empleo por SMS, postula respondiendo. No se requiere aplicación.",
+        en: "Don't have a smartphone every day? AGCONN works over text message. Sign up by SMS, get job alerts by SMS, apply by replying. No app required.",
+        es: "¿No tienes teléfono inteligente todos los días? AGCONN funciona por mensaje de texto. Regístrate por SMS, recibe alertas de empleo por SMS, postula respondiendo. No se requiere aplicación.",
     },
     "workers_page.benefits.bilingual.title": { en: "Spanish first", es: "Español primero" },
     "workers_page.benefits.bilingual.body": {
@@ -1508,8 +1508,8 @@ export const marketing: TranslationBundle = {
         es: "Tus datos, tu decisión.",
     },
     "workers_page.protection.body": {
-        en: "AgConn does not sell, share, or rent your phone number to anyone. We never check your immigration status. You can delete your account and all your data at any time. The skills wallet is yours — you can export it as a PDF and keep it forever, even if you stop using AgConn.",
-        es: "AgConn no vende, comparte ni alquila tu número de teléfono a nadie. Nunca verificamos tu estatus migratorio. Puedes eliminar tu cuenta y todos tus datos en cualquier momento. La cartera de habilidades es tuya — puedes exportarla como PDF y conservarla para siempre, incluso si dejas de usar AgConn.",
+        en: "AGCONN does not sell, share, or rent your phone number to anyone. We never check your immigration status. You can delete your account and all your data at any time. The skills wallet is yours — you can export it as a PDF and keep it forever, even if you stop using AGCONN.",
+        es: "AGCONN no vende, comparte ni alquila tu número de teléfono a nadie. Nunca verificamos tu estatus migratorio. Puedes eliminar tu cuenta y todos tus datos en cualquier momento. La cartera de habilidades es tuya — puedes exportarla como PDF y conservarla para siempre, incluso si dejas de usar AGCONN.",
     },
     "workers_page.protection.cta": { en: "Read our trust commitments", es: "Lee nuestros compromisos de confianza" },
     "workers_page.cta_section.eyebrow": { en: "Free to start", es: "Gratis para empezar" },
@@ -1526,10 +1526,10 @@ export const marketing: TranslationBundle = {
     // ========================================================================
     // /how-it-works (Header "How it works" — dedicated explainer)
     // ========================================================================
-    "how_it_works.meta.title": { en: "How AgConn works — AgConn", es: "Cómo funciona AgConn — AgConn" },
+    "how_it_works.meta.title": { en: "How AGCONN works — AGCONN", es: "Cómo funciona AGCONN — AGCONN" },
     "how_it_works.meta.description": {
-        en: "How AgConn pairs Central Valley farmworkers with verified employers, training programs, and workforce boards. Bilingual, mobile-first, multi-tenant.",
-        es: "Cómo AgConn empareja a los trabajadores agrícolas del Valle Central con empleadores verificados, programas de capacitación y juntas laborales. Bilingüe, móvil primero, multi-inquilino.",
+        en: "How AGCONN pairs Central Valley farmworkers with verified employers, training programs, and workforce boards. Bilingual, mobile-first, multi-tenant.",
+        es: "Cómo AGCONN empareja a los trabajadores agrícolas del Valle Central con empleadores verificados, programas de capacitación y juntas laborales. Bilingüe, móvil primero, multi-inquilino.",
     },
     "how_it_works.eyebrow": { en: "How it works", es: "Cómo funciona" },
     "how_it_works.headline": {
@@ -1537,8 +1537,8 @@ export const marketing: TranslationBundle = {
         es: "Una plataforma, cuatro audiencias, una meta.",
     },
     "how_it_works.intro": {
-        en: "AgConn connects four audiences who depend on each other but rarely share a system: farmworkers, the growers and FLCs who hire them, the training programs that certify them, and the workforce boards that fund the public-side investment. Here is how each side experiences the platform.",
-        es: "AgConn conecta cuatro audiencias que dependen unas de otras pero rara vez comparten un sistema: trabajadores agrícolas, los agricultores y FLCs que los contratan, los programas de capacitación que los certifican y las juntas laborales que financian la inversión del lado público. Así experimenta cada lado la plataforma.",
+        en: "AGCONN connects four audiences who depend on each other but rarely share a system: farmworkers, the growers and FLCs who hire them, the training programs that certify them, and the workforce boards that fund the public-side investment. Here is how each side experiences the platform.",
+        es: "AGCONN conecta cuatro audiencias que dependen unas de otras pero rara vez comparten un sistema: trabajadores agrícolas, los agricultores y FLCs que los contratan, los programas de capacitación que los certifican y las juntas laborales que financian la inversión del lado público. Así experimenta cada lado la plataforma.",
     },
     "how_it_works.workers.eyebrow": { en: "For workers", es: "Para trabajadores" },
     "how_it_works.workers.headline": { en: "Free, bilingual, three minutes to start.", es: "Gratis, bilingüe, tres minutos para empezar." },
@@ -1571,8 +1571,8 @@ export const marketing: TranslationBundle = {
     },
     "how_it_works.employers.s2.title": { en: "Post in either language", es: "Publica en cualquier idioma" },
     "how_it_works.employers.s2.body": {
-        en: "Write the posting once in English or Spanish. AgConn auto-generates the translation. Workers see it in their preferred language.",
-        es: "Escribe la publicación una vez en inglés o español. AgConn genera automáticamente la traducción. Los trabajadores la ven en su idioma preferido.",
+        en: "Write the posting once in English or Spanish. AGCONN auto-generates the translation. Workers see it in their preferred language.",
+        es: "Escribe la publicación una vez en inglés o español. AGCONN genera automáticamente la traducción. Los trabajadores la ven en su idioma preferido.",
     },
     "how_it_works.employers.s3.title": { en: "Review applicants on your phone", es: "Revisa aplicantes en tu teléfono" },
     "how_it_works.employers.s3.body": {
@@ -1581,20 +1581,20 @@ export const marketing: TranslationBundle = {
     },
     "how_it_works.employers.s4.title": { en: "Stay compliant by default", es: "Mantente en cumplimiento por defecto" },
     "how_it_works.employers.s4.body": {
-        en: "AgConn tracks renewal dates for your FLC license, MSPA registration, and crew certifications. Get notified before any of them expire.",
-        es: "AgConn rastrea las fechas de renovación de tu licencia FLC, registro MSPA y certificaciones de cuadrilla. Recibe notificación antes de que cualquiera expire.",
+        en: "AGCONN tracks renewal dates for your FLC license, MSPA registration, and crew certifications. Get notified before any of them expire.",
+        es: "AGCONN rastrea las fechas de renovación de tu licencia FLC, registro MSPA y certificaciones de cuadrilla. Recibe notificación antes de que cualquiera expire.",
     },
     "how_it_works.training.eyebrow": { en: "For training programs", es: "Para programas de capacitación" },
     "how_it_works.training.headline": { en: "Reach learners who are already job-ready.", es: "Alcanza a aprendices que ya están listos para trabajar." },
     "how_it_works.training.s1.title": { en: "List your courses", es: "Lista tus cursos" },
     "how_it_works.training.s1.body": {
-        en: "Submit your CDFA, F3, CalOSBA, or county-Ag-Extension program. We list it on AgConn with bilingual descriptions, dates, and registration links.",
-        es: "Envía tu programa CDFA, F3, CalOSBA o de Extensión Agrícola del condado. Lo listamos en AgConn con descripciones bilingües, fechas y enlaces de registro.",
+        en: "Submit your CDFA, F3, CalOSBA, or county-Ag-Extension program. We list it on AGCONN with bilingual descriptions, dates, and registration links.",
+        es: "Envía tu programa CDFA, F3, CalOSBA o de Extensión Agrícola del condado. Lo listamos en AGCONN con descripciones bilingües, fechas y enlaces de registro.",
     },
     "how_it_works.training.s2.title": { en: "Issue bilingual certificates", es: "Emite certificados bilingües" },
     "how_it_works.training.s2.body": {
-        en: "When a worker completes your course, AgConn issues an e-signed bilingual certificate to their skills wallet automatically. No paper to track, no manual data entry.",
-        es: "Cuando un trabajador completa tu curso, AgConn emite un certificado bilingüe firmado electrónicamente a su cartera de habilidades automáticamente. Sin papel que rastrear, sin entrada manual de datos.",
+        en: "When a worker completes your course, AGCONN issues an e-signed bilingual certificate to their skills wallet automatically. No paper to track, no manual data entry.",
+        es: "Cuando un trabajador completa tu curso, AGCONN emite un certificado bilingüe firmado electrónicamente a su cartera de habilidades automáticamente. Sin papel que rastrear, sin entrada manual de datos.",
     },
     "how_it_works.training.s3.title": { en: "Report on outcomes", es: "Reporta sobre resultados" },
     "how_it_works.training.s3.body": {
@@ -1605,8 +1605,8 @@ export const marketing: TranslationBundle = {
     "how_it_works.workforce.headline": { en: "WIOA reporting, automated.", es: "Reporte de WIOA, automatizado." },
     "how_it_works.workforce.s1.title": { en: "One worker intake, two systems satisfied", es: "Una admisión de trabajador, dos sistemas satisfechos" },
     "how_it_works.workforce.s1.body": {
-        en: "Workers complete a single AgConn profile. Required PIRL fields populate automatically for your WIOA Title I or Title III caseload.",
-        es: "Los trabajadores completan un perfil único de AgConn. Los campos PIRL requeridos se llenan automáticamente para tu carga de casos del Título I o Título III de WIOA.",
+        en: "Workers complete a single AGCONN profile. Required PIRL fields populate automatically for your WIOA Title I or Title III caseload.",
+        es: "Los trabajadores completan un perfil único de AGCONN. Los campos PIRL requeridos se llenan automáticamente para tu carga de casos del Título I o Título III de WIOA.",
     },
     "how_it_works.workforce.s2.title": { en: "Tenant-scoped data", es: "Datos a nivel de inquilino" },
     "how_it_works.workforce.s2.body": {
@@ -1615,8 +1615,8 @@ export const marketing: TranslationBundle = {
     },
     "how_it_works.workforce.s3.title": { en: "Quarterly export, audit-ready", es: "Exportación trimestral, lista para auditoría" },
     "how_it_works.workforce.s3.body": {
-        en: "AgConn exports a PIRL-compliant file for your quarterly federal submission. Audit logs include every data change with timestamp and case manager identity.",
-        es: "AgConn exporta un archivo compatible con PIRL para tu envío federal trimestral. Los registros de auditoría incluyen cada cambio de datos con marca de tiempo e identidad del administrador de casos.",
+        en: "AGCONN exports a PIRL-compliant file for your quarterly federal submission. Audit logs include every data change with timestamp and case manager identity.",
+        es: "AGCONN exporta un archivo compatible con PIRL para tu envío federal trimestral. Los registros de auditoría incluyen cada cambio de datos con marca de tiempo e identidad del administrador de casos.",
     },
     "how_it_works.trust.eyebrow": { en: "Trust mechanics", es: "Mecánica de confianza" },
     "how_it_works.trust.headline": { en: "How verification actually works.", es: "Cómo funciona realmente la verificación." },
@@ -1634,7 +1634,7 @@ export const marketing: TranslationBundle = {
     // ========================================================================
     // /pricing (Header "Pricing" — dedicated pricing page)
     // ========================================================================
-    "pricing_page.meta.title": { en: "Pricing — AgConn", es: "Precios — AgConn" },
+    "pricing_page.meta.title": { en: "Pricing — AGCONN", es: "Precios — AGCONN" },
     "pricing_page.meta.description": {
         en: "Three plans for employers — Seed (free), Field, and Farm. Founder pricing for the first 50 paid accounts. Workers and training organizations are always free.",
         es: "Tres planes para empleadores — Semilla (gratis), Campo y Rancho. Precio fundador para las primeras 50 cuentas pagas. Los trabajadores y las organizaciones de capacitación siempre son gratis.",
@@ -1911,8 +1911,8 @@ export const marketing: TranslationBundle = {
     "pricing_page.faq.headline": { en: "Common questions.", es: "Preguntas comunes." },
     "pricing_page.faq.q1.q": { en: "Is the worker side really always free?", es: "¿El lado del trabajador realmente siempre es gratis?" },
     "pricing_page.faq.q1.a": {
-        en: "Yes. Workers will never pay AgConn for profile creation, job search, applications, or skills wallet access. Our worker-side cost is covered by employer subscriptions and partner contracts. We will not introduce a worker fee in the future.",
-        es: "Sí. Los trabajadores nunca pagarán a AgConn por creación de perfil, búsqueda de empleo, postulaciones o acceso a la cartera de habilidades. Nuestro costo del lado del trabajador está cubierto por suscripciones de empleadores y contratos de socios. No introduciremos una tarifa para el trabajador en el futuro.",
+        en: "Yes. Workers will never pay AGCONN for profile creation, job search, applications, or skills wallet access. Our worker-side cost is covered by employer subscriptions and partner contracts. We will not introduce a worker fee in the future.",
+        es: "Sí. Los trabajadores nunca pagarán a AGCONN por creación de perfil, búsqueda de empleo, postulaciones o acceso a la cartera de habilidades. Nuestro costo del lado del trabajador está cubierto por suscripciones de empleadores y contratos de socios. No introduciremos una tarifa para el trabajador en el futuro.",
     },
     "pricing_page.faq.q2.q": { en: "How does founder pricing work?", es: "¿Cómo funciona el precio fundador?" },
     "pricing_page.faq.q2.a": {

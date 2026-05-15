@@ -12,43 +12,43 @@ import type { EmployerEmailTemplate, GrantReportEmailTemplate } from './queue.js
 
 let cachedResend: Resend | null = null;
 function getResend(): Resend {
-  if (cachedResend) return cachedResend;
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error('RESEND_API_KEY is not set');
-  cachedResend = new Resend(key);
-  return cachedResend;
+    if (cachedResend) return cachedResend;
+    const key = process.env.RESEND_API_KEY;
+    if (!key) throw new Error('RESEND_API_KEY is not set');
+    cachedResend = new Resend(key);
+    return cachedResend;
 }
 
 function getFrom(): string {
-  return process.env.RESEND_FROM_EMAIL ?? 'AgConn <hello@agconn.com>';
+    return process.env.RESEND_FROM_EMAIL ?? 'AGCONN <hello@agconn.com>';
 }
 
 function localeToLang(locale: Locale): Lang {
-  return locale === 'es' ? Lang.es : Lang.en;
+    return locale === 'es' ? Lang.es : Lang.en;
 }
 
 export type SendOutcome =
-  | { id: string; logId: string }
-  | { skipped: true; reason: 'no_api_key' | 'suppressed'; logId?: string };
+    | { id: string; logId: string }
+    | { skipped: true; reason: 'no_api_key' | 'suppressed'; logId?: string };
 
 type DispatchArgs = {
-  template:
+    template:
     | 'waitlist_confirm'
     | 'waitlist_welcome'
     | EmployerEmailTemplate
     | GrantReportEmailTemplate;
-  to: string;
-  locale: Locale;
-  subject: string;
-  html: string;
-  text: string;
-  unsubscribeUrl: string;
-  oneClickUnsubscribeUrl: string;
-  refType: string;
-  refId: string;
-  // Null for platform-level emails (waitlist confirm/welcome, grant reports).
-  // The email_log_service RLS policy permits NULL-tenant rows.
-  tenantId: string | null;
+    to: string;
+    locale: Locale;
+    subject: string;
+    html: string;
+    text: string;
+    unsubscribeUrl: string;
+    oneClickUnsubscribeUrl: string;
+    refType: string;
+    refId: string;
+    // Null for platform-level emails (waitlist confirm/welcome, grant reports).
+    // The email_log_service RLS policy permits NULL-tenant rows.
+    tenantId: string | null;
 };
 
 // Resend rejects tag values containing characters outside [A-Za-z0-9_-].
@@ -56,272 +56,272 @@ type DispatchArgs = {
 // Replace any disallowed character with '_' so the tag still surfaces in the
 // Resend dashboard for filtering without breaking the send.
 function sanitizeTag(value: string): string {
-  return value.replace(/[^A-Za-z0-9_-]/g, '_');
+    return value.replace(/[^A-Za-z0-9_-]/g, '_');
 }
 
 async function isSuppressed(db: Tx, email: string): Promise<boolean> {
-  const hit = await db.emailSuppression.findUnique({
-    where: { email: email.toLowerCase() },
-  });
-  return Boolean(hit);
+    const hit = await db.emailSuppression.findUnique({
+        where: { email: email.toLowerCase() },
+    });
+    return Boolean(hit);
 }
 
 async function logQueued(db: Tx, args: DispatchArgs): Promise<EmailLog> {
-  return db.emailLog.create({
-    data: {
-      tenantId: args.tenantId,
-      template: args.template,
-      locale: localeToLang(args.locale),
-      toEmail: args.to.toLowerCase(),
-      fromEmail: getFrom(),
-      subject: args.subject,
-      status: EmailStatus.queued,
-      refType: args.refType,
-      refId: args.refId,
-    },
-  });
+    return db.emailLog.create({
+        data: {
+            tenantId: args.tenantId,
+            template: args.template,
+            locale: localeToLang(args.locale),
+            toEmail: args.to.toLowerCase(),
+            fromEmail: getFrom(),
+            subject: args.subject,
+            status: EmailStatus.queued,
+            refType: args.refType,
+            refId: args.refId,
+        },
+    });
 }
 
 async function dispatch(db: Tx, args: DispatchArgs): Promise<SendOutcome> {
-  if (await isSuppressed(db, args.to)) {
-    const dropped = await db.emailLog.create({
-      data: {
-        tenantId: args.tenantId,
-        template: args.template,
-        locale: localeToLang(args.locale),
-        toEmail: args.to.toLowerCase(),
-        fromEmail: getFrom(),
-        subject: args.subject,
-        status: EmailStatus.dropped,
-        errorMsg: 'address_suppressed',
-        refType: args.refType,
-        refId: args.refId,
-      },
-    });
-    return { skipped: true, reason: 'suppressed', logId: dropped.id };
-  }
-
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('[email] RESEND_API_KEY missing — skipping send', { to: args.to });
-    return { skipped: true, reason: 'no_api_key' };
-  }
-
-  const log = await logQueued(db, args);
-
-  try {
-    const result = await getResend().emails.send({
-      from: getFrom(),
-      to: args.to,
-      subject: args.subject,
-      html: args.html,
-      text: args.text,
-      headers: {
-        'List-Unsubscribe': `<${args.oneClickUnsubscribeUrl}>, <${args.unsubscribeUrl}>`,
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-      },
-      tags: [
-        { name: 'template', value: sanitizeTag(args.template) },
-        { name: 'locale', value: args.locale },
-      ],
-    });
-
-    if (result.error) {
-      await db.emailLog.update({
-        where: { id: log.id },
-        data: {
-          status: EmailStatus.failed,
-          errorMsg: result.error.message,
-          failedAt: new Date(),
-        },
-      });
-      throw new Error(`Resend send failed: ${result.error.message}`);
+    if (await isSuppressed(db, args.to)) {
+        const dropped = await db.emailLog.create({
+            data: {
+                tenantId: args.tenantId,
+                template: args.template,
+                locale: localeToLang(args.locale),
+                toEmail: args.to.toLowerCase(),
+                fromEmail: getFrom(),
+                subject: args.subject,
+                status: EmailStatus.dropped,
+                errorMsg: 'address_suppressed',
+                refType: args.refType,
+                refId: args.refId,
+            },
+        });
+        return { skipped: true, reason: 'suppressed', logId: dropped.id };
     }
 
-    const providerId = result.data?.id ?? null;
-    await db.emailLog.update({
-      where: { id: log.id },
-      data: {
-        status: EmailStatus.sent,
-        providerId,
-        sentAt: new Date(),
-      },
-    });
-    return { id: providerId ?? 'unknown', logId: log.id };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    await db.emailLog.update({
-      where: { id: log.id },
-      data: {
-        status: EmailStatus.failed,
-        errorMsg: message.slice(0, 500),
-        failedAt: new Date(),
-      },
-    });
-    throw err;
-  }
+    if (!process.env.RESEND_API_KEY) {
+        console.warn('[email] RESEND_API_KEY missing — skipping send', { to: args.to });
+        return { skipped: true, reason: 'no_api_key' };
+    }
+
+    const log = await logQueued(db, args);
+
+    try {
+        const result = await getResend().emails.send({
+            from: getFrom(),
+            to: args.to,
+            subject: args.subject,
+            html: args.html,
+            text: args.text,
+            headers: {
+                'List-Unsubscribe': `<${args.oneClickUnsubscribeUrl}>, <${args.unsubscribeUrl}>`,
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+            },
+            tags: [
+                { name: 'template', value: sanitizeTag(args.template) },
+                { name: 'locale', value: args.locale },
+            ],
+        });
+
+        if (result.error) {
+            await db.emailLog.update({
+                where: { id: log.id },
+                data: {
+                    status: EmailStatus.failed,
+                    errorMsg: result.error.message,
+                    failedAt: new Date(),
+                },
+            });
+            throw new Error(`Resend send failed: ${result.error.message}`);
+        }
+
+        const providerId = result.data?.id ?? null;
+        await db.emailLog.update({
+            where: { id: log.id },
+            data: {
+                status: EmailStatus.sent,
+                providerId,
+                sentAt: new Date(),
+            },
+        });
+        return { id: providerId ?? 'unknown', logId: log.id };
+    } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        await db.emailLog.update({
+            where: { id: log.id },
+            data: {
+                status: EmailStatus.failed,
+                errorMsg: message.slice(0, 500),
+                failedAt: new Date(),
+            },
+        });
+        throw err;
+    }
 }
 
 type WaitlistConfirmInput = {
-  to: string;
-  locale: Locale;
-  confirmUrl: string;
-  unsubscribeUrl: string;
-  oneClickUnsubscribeUrl: string;
-  waitlistId: string;
+    to: string;
+    locale: Locale;
+    confirmUrl: string;
+    unsubscribeUrl: string;
+    oneClickUnsubscribeUrl: string;
+    waitlistId: string;
 };
 
 export async function sendWaitlistConfirm(
-  db: Tx,
-  input: WaitlistConfirmInput,
+    db: Tx,
+    input: WaitlistConfirmInput,
 ): Promise<SendOutcome> {
-  const subject = waitlistStrings[input.locale].confirm.subject;
-  const element = React.createElement(WaitlistConfirm, {
-    locale: input.locale,
-    confirmUrl: input.confirmUrl,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-  const [html, text] = await Promise.all([
-    render(element),
-    render(element, { plainText: true }),
-  ]);
-  return dispatch(db, {
-    template: 'waitlist_confirm',
-    to: input.to,
-    locale: input.locale,
-    subject,
-    html,
-    text,
-    unsubscribeUrl: input.unsubscribeUrl,
-    oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
-    refType: 'waitlist',
-    refId: input.waitlistId,
-    tenantId: null,
-  });
+    const subject = waitlistStrings[input.locale].confirm.subject;
+    const element = React.createElement(WaitlistConfirm, {
+        locale: input.locale,
+        confirmUrl: input.confirmUrl,
+        unsubscribeUrl: input.unsubscribeUrl,
+    });
+    const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+    ]);
+    return dispatch(db, {
+        template: 'waitlist_confirm',
+        to: input.to,
+        locale: input.locale,
+        subject,
+        html,
+        text,
+        unsubscribeUrl: input.unsubscribeUrl,
+        oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
+        refType: 'waitlist',
+        refId: input.waitlistId,
+        tenantId: null,
+    });
 }
 
 type WaitlistWelcomeInput = {
-  to: string;
-  locale: Locale;
-  homeUrl: string;
-  unsubscribeUrl: string;
-  oneClickUnsubscribeUrl: string;
-  waitlistId: string;
+    to: string;
+    locale: Locale;
+    homeUrl: string;
+    unsubscribeUrl: string;
+    oneClickUnsubscribeUrl: string;
+    waitlistId: string;
 };
 
 export async function sendWaitlistWelcome(
-  db: Tx,
-  input: WaitlistWelcomeInput,
+    db: Tx,
+    input: WaitlistWelcomeInput,
 ): Promise<SendOutcome> {
-  const subject = waitlistStrings[input.locale].welcome.subject;
-  const element = React.createElement(WaitlistWelcome, {
-    locale: input.locale,
-    homeUrl: input.homeUrl,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-  const [html, text] = await Promise.all([
-    render(element),
-    render(element, { plainText: true }),
-  ]);
-  return dispatch(db, {
-    template: 'waitlist_welcome',
-    to: input.to,
-    locale: input.locale,
-    subject,
-    html,
-    text,
-    unsubscribeUrl: input.unsubscribeUrl,
-    oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
-    refType: 'waitlist',
-    refId: input.waitlistId,
-    tenantId: null,
-  });
+    const subject = waitlistStrings[input.locale].welcome.subject;
+    const element = React.createElement(WaitlistWelcome, {
+        locale: input.locale,
+        homeUrl: input.homeUrl,
+        unsubscribeUrl: input.unsubscribeUrl,
+    });
+    const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+    ]);
+    return dispatch(db, {
+        template: 'waitlist_welcome',
+        to: input.to,
+        locale: input.locale,
+        subject,
+        html,
+        text,
+        unsubscribeUrl: input.unsubscribeUrl,
+        oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
+        refType: 'waitlist',
+        refId: input.waitlistId,
+        tenantId: null,
+    });
 }
 
 type EmployerNoticeInput = {
-  template: EmployerEmailTemplate;
-  to: string;
-  locale: Locale;
-  vars: Record<string, string | number | null | undefined>;
-  webBaseUrl: string;
-  unsubscribeUrl: string;
-  oneClickUnsubscribeUrl: string;
-  employerId: string;
-  tenantId: string;
+    template: EmployerEmailTemplate;
+    to: string;
+    locale: Locale;
+    vars: Record<string, string | number | null | undefined>;
+    webBaseUrl: string;
+    unsubscribeUrl: string;
+    oneClickUnsubscribeUrl: string;
+    employerId: string;
+    tenantId: string;
 };
 
 export async function sendEmployerNotice(
-  db: Tx,
-  input: EmployerNoticeInput,
+    db: Tx,
+    input: EmployerNoticeInput,
 ): Promise<SendOutcome> {
-  const copy = getEmployerCopy(input.template, input.locale, input.vars);
-  const ctaUrl = copy.cta
-    ? `${input.webBaseUrl.replace(/\/$/, '')}${copy.cta.pathByLocale[input.locale]}`
-    : undefined;
+    const copy = getEmployerCopy(input.template, input.locale, input.vars);
+    const ctaUrl = copy.cta
+        ? `${input.webBaseUrl.replace(/\/$/, '')}${copy.cta.pathByLocale[input.locale]}`
+        : undefined;
 
-  const element = React.createElement(EmployerNotice, {
-    locale: input.locale,
-    copy,
-    ctaUrl,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-  const [html, text] = await Promise.all([
-    render(element),
-    render(element, { plainText: true }),
-  ]);
+    const element = React.createElement(EmployerNotice, {
+        locale: input.locale,
+        copy,
+        ctaUrl,
+        unsubscribeUrl: input.unsubscribeUrl,
+    });
+    const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+    ]);
 
-  return dispatch(db, {
-    template: input.template,
-    to: input.to,
-    locale: input.locale,
-    subject: copy.subject,
-    html,
-    text,
-    unsubscribeUrl: input.unsubscribeUrl,
-    oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
-    refType: 'employer',
-    refId: input.employerId,
-    tenantId: input.tenantId,
-  });
+    return dispatch(db, {
+        template: input.template,
+        to: input.to,
+        locale: input.locale,
+        subject: copy.subject,
+        html,
+        text,
+        unsubscribeUrl: input.unsubscribeUrl,
+        oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
+        refType: 'employer',
+        refId: input.employerId,
+        tenantId: input.tenantId,
+    });
 }
 
 type GrantReportNoticeInput = {
-  template: GrantReportEmailTemplate;
-  to: string;
-  locale: Locale;
-  vars: Record<string, string | number | null | undefined>;
-  downloadUrl: string;
-  unsubscribeUrl: string;
-  oneClickUnsubscribeUrl: string;
-  reportRunId: string;
+    template: GrantReportEmailTemplate;
+    to: string;
+    locale: Locale;
+    vars: Record<string, string | number | null | undefined>;
+    downloadUrl: string;
+    unsubscribeUrl: string;
+    oneClickUnsubscribeUrl: string;
+    reportRunId: string;
 };
 
 export async function sendGrantReportNotice(
-  db: Tx,
-  input: GrantReportNoticeInput,
+    db: Tx,
+    input: GrantReportNoticeInput,
 ): Promise<SendOutcome> {
-  const copy = getGrantReportCopy(input.template, input.locale, input.vars);
-  const element = React.createElement(EmployerNotice, {
-    locale: input.locale,
-    copy,
-    ctaUrl: input.downloadUrl,
-    unsubscribeUrl: input.unsubscribeUrl,
-  });
-  const [html, text] = await Promise.all([
-    render(element),
-    render(element, { plainText: true }),
-  ]);
+    const copy = getGrantReportCopy(input.template, input.locale, input.vars);
+    const element = React.createElement(EmployerNotice, {
+        locale: input.locale,
+        copy,
+        ctaUrl: input.downloadUrl,
+        unsubscribeUrl: input.unsubscribeUrl,
+    });
+    const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+    ]);
 
-  return dispatch(db, {
-    template: input.template,
-    to: input.to,
-    locale: input.locale,
-    subject: copy.subject,
-    html,
-    text,
-    unsubscribeUrl: input.unsubscribeUrl,
-    oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
-    refType: 'report_run',
-    refId: input.reportRunId,
-    tenantId: null,
-  });
+    return dispatch(db, {
+        template: input.template,
+        to: input.to,
+        locale: input.locale,
+        subject: copy.subject,
+        html,
+        text,
+        unsubscribeUrl: input.unsubscribeUrl,
+        oneClickUnsubscribeUrl: input.oneClickUnsubscribeUrl,
+        refType: 'report_run',
+        refId: input.reportRunId,
+        tenantId: null,
+    });
 }

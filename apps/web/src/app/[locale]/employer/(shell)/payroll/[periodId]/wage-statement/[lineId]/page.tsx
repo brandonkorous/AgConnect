@@ -14,7 +14,7 @@ type Props = { params: Promise<{ locale: string; periodId: string; lineId: strin
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.payroll.wage_statement' });
-    return { title: `AgConn — ${t('title')}` };
+    return { title: `AGCONN — ${t('title')}` };
 }
 
 function fmtCents(cents: number, locale: string): string {

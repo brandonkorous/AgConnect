@@ -14,7 +14,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.billing' });
-    return { title: `AgConn — ${t('title')}` };
+    return { title: `AGCONN — ${t('title')}` };
 }
 
 export default async function BillingPage({ params }: Props) {

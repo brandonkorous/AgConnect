@@ -86,7 +86,7 @@ export const publicTraining: TranslationBundle = {
         es: "Programas de capacitación agrícola financiados por CDFA y F3 en el Valle Central. Obtén certificaciones que aumentan tu salario.",
     },
     "meta.title": {
-        en: "Free agriculture training · AgConn",
-        es: "Capacitación agrícola gratuita · AgConn",
+        en: "Free agriculture training · AGCONN",
+        es: "Capacitación agrícola gratuita · AGCONN",
     },
 };

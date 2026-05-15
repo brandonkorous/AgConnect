@@ -47,7 +47,7 @@ export function EmployerMobileShell({
                 </button>
                 <Link
                     href={`/${locale}/employer/dashboard` as Route}
-                    aria-label="AgConn home"
+                    aria-label="AGCONN home"
                     className="flex h-full items-center"
                 >
                     <Wordmark size="sm" tone="ink" />

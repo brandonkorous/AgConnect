@@ -112,7 +112,7 @@ await prisma.tenant.create({
     data: {
         id: '00000000-0000-0000-0000-000000000001',
         slug: 'central-valley',
-        name: 'AgConn Central Valley',
+        name: 'AGCONN Central Valley',
         plan: 'pro',
         settings: {
             reporting: { defaultExportFormat: 'csv', quartersOffset: 0 },

@@ -1,4 +1,4 @@
-# AgConn Landing Page
+# AGCONN Landing Page
 
 _Started 2026-04-30 22:59 UTC_
 
@@ -6,7 +6,7 @@ _Started 2026-04-30 22:59 UTC_
 
 ## User
 
-let's build out a landing page design for AgConn.com.  i have pasted a prompt in as well.
+let's build out a landing page design for AGCONN.com.  i have pasted a prompt in as well.
 
 ## Assistant
 
@@ -82,7 +82,7 @@ _[tool: done]_
 
 _[tool: fork_verifier_agent]_
 
-The AgConnect landing page is live at **AgConnect Landing.html**. 
+The AGCONN landing page is live at **AGCONN Landing.html**. 
 
 **What's in it**
 - **Hero** with the animated job-card stack (cards rotate every 3s, SMS + WhatsApp bubbles floating around it)
@@ -246,7 +246,7 @@ _[tool: fork_verifier_agent]_
 
 <a id="worker-dashboard-done"></a>
 
-The worker dashboard page is live at **AgConnect Worker Dashboard.html** — three core mobile screens presented inside iOS frames on a desktop canvas:
+The worker dashboard page is live at **AGCONN Worker Dashboard.html** — three core mobile screens presented inside iOS frames on a desktop canvas:
 
 1. **Home** — earnings card, quick stats, "up next" shift with directions/call CTAs, and matched jobs
 2. **Applications** — pipeline counters (Applied / Reviewed / Accepted) and a list of all active applications with confirm-shift action
@@ -284,7 +284,7 @@ _[tool: fork_verifier_agent]_
 
 _[tool: snip]_
 
-Rebuilt as an actual desktop **Worker Dashboard** at **AgConnect Worker Dashboard.html**:
+Rebuilt as an actual desktop **Worker Dashboard** at **AGCONN Worker Dashboard.html**:
 
 - **Left sidebar nav** — Dashboard / Browse jobs / Applications / Shifts / Pay & timesheets / Training / Documents / Messages, with badge counts and a worker profile chip at the bottom
 - **Top bar** — search, SMS-apply status, help, "Set availability" CTA
@@ -313,11 +313,11 @@ _[tool: snip]_
 
 <a id="daisyui-mapping"></a>
 
-Here's the AgConnect palette mapped to daisyUI's semantic theme tokens. DaisyUI v4 uses OKLCH but accepts HSL/hex; v5 expects OKLCH. I'll give you both.
+Here's the AGCONN palette mapped to daisyUI's semantic theme tokens. DaisyUI v4 uses OKLCH but accepts HSL/hex; v5 expects OKLCH. I'll give you both.
 
 ## Token mapping
 
-| daisyUI token | Role | AgConnect color | Hex |
+| daisyUI token | Role | AGCONN color | Hex |
 |---|---|---|---|
 | `primary` | Main brand actions | Deep teal | `#0F6E56` |
 | `primary-content` | Text on primary | Off-white | `#FAFAF8` |
@@ -420,7 +420,7 @@ _[tool: snip]_
 
 <a id="olive-gold-daisyui-final"></a>
 
-Here's the **olive + gold** AgConnect palette mapped to a daisyUI theme.
+Here's the **olive + gold** AGCONN palette mapped to a daisyUI theme.
 
 ## Token mapping
 
@@ -531,7 +531,7 @@ _[tool: snip]_
 
 <a id="dark-theme-final"></a>
 
-Here's the **dark variant** of the AgConnect olive + gold theme — same hue family, AA-contrast on dark surfaces, with primary lifted slightly so olive doesn't muddy on charcoal.
+Here's the **dark variant** of the AGCONN olive + gold theme — same hue family, AA-contrast on dark surfaces, with primary lifted slightly so olive doesn't muddy on charcoal.
 
 ## Token mapping
 
@@ -773,13 +773,13 @@ _[tool: snip]_
 
 All 7 sidebar pages are live and linked from the worker dashboard:
 
-- **AgConnect Browse Jobs.html** — filter bar, crop chips, jobs grid, mini map, SMS-apply card, saved searches
-- **AgConnect Applications.html** — pipeline counters, active applications table with stage-aware actions, archive
-- **AgConnect Shifts.html** — full month calendar with color-coded shifts (work / training / pending), agenda side panel, monthly stats
-- **AgConnect Pay.html** — YTD stats, 12-month earnings bars, paycheck hero, weekly paystub table, tax docs, wage transparency
-- **AgConnect Training.html** — in-progress radial progress, recommended programs (CDFA / F3-funded), earned certifications
-- **AgConnect Documents.html** — profile completeness meter, doc groups (ID / work / certs), recent share audit trail
-- **AgConnect Messages.html** — three-pane inbox (folders / threads / conversation) with pinned shift card and SMS/WhatsApp/in-app channel mix
+- **AGCONN Browse Jobs.html** — filter bar, crop chips, jobs grid, mini map, SMS-apply card, saved searches
+- **AGCONN Applications.html** — pipeline counters, active applications table with stage-aware actions, archive
+- **AGCONN Shifts.html** — full month calendar with color-coded shifts (work / training / pending), agenda side panel, monthly stats
+- **AGCONN Pay.html** — YTD stats, 12-month earnings bars, paycheck hero, weekly paystub table, tax docs, wage transparency
+- **AGCONN Training.html** — in-progress radial progress, recommended programs (CDFA / F3-funded), earned certifications
+- **AGCONN Documents.html** — profile completeness meter, doc groups (ID / work / certs), recent share audit trail
+- **AGCONN Messages.html** — three-pane inbox (folders / threads / conversation) with pinned shift card and SMS/WhatsApp/in-app channel mix
 
 All pages share a single `worker-shell.jsx` (sidebar + topbar) so the nav state stays consistent. They inherit the olive + gold + Grotesk tweaks from the dashboard.
 

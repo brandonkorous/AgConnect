@@ -1,5 +1,5 @@
 -- =============================================================================
--- AgConn — Multi-tenant RLS + default public tenant seed
+-- AGCONN — Multi-tenant RLS + default public tenant seed
 -- =============================================================================
 --
 -- Adds Row-Level Security with FORCE on every business-data table and
@@ -21,7 +21,7 @@ INSERT INTO "tenants" ("id", "slug", "name", "is_public", "settings", "updated_a
   VALUES (
     'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
     'public',
-    'AgConn Public',
+    'AGCONN Public',
     true,
     '{}',
     NOW()

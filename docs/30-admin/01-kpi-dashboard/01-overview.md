@@ -34,7 +34,7 @@ In scope:
 - Time + county filters
 - Per-tile drill-down
 - Trend indicators (vs. prior period)
-- Cross-tenant view for AgConn-internal admins; tenant-scoped view for tenant admins (Phase 2)
+- Cross-tenant view for AGCONN-internal admins; tenant-scoped view for tenant admins (Phase 2)
 
 Out of scope:
 

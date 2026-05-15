@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { fetchSms, fetchSmsOptOuts } from '@/lib/ops-api';
 import { SavedViews } from '@/components/SavedViews';
 
-export const metadata = { title: 'SMS — AgConn Admin' };
+export const metadata = { title: 'SMS — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

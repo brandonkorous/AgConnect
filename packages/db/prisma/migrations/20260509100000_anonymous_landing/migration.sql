@@ -1,5 +1,5 @@
 -- =============================================================================
--- AgConn — Anonymous landing role + null-tenant landing/waitlist plumbing
+-- AGCONN — Anonymous landing role + null-tenant landing/waitlist plumbing
 -- =============================================================================
 --
 -- Removes the PUBLIC_TENANT_ID pattern from the landing surface. The DB-side

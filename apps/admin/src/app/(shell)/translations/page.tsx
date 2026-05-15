@@ -7,7 +7,7 @@ import {
     type TranslationPair,
 } from '@/lib/translations-api';
 
-export const metadata = { title: 'Translations — AgConn Admin' };
+export const metadata = { title: 'Translations — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

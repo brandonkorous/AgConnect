@@ -126,7 +126,7 @@ export const admin: TranslationBundle = {
         es: "",
     },
     "audit.action.cert.issued.description": {
-        en: "AgConn issued a certificate",
+        en: "AGCONN issued a certificate",
         es: "",
     },
     "audit.action.cert.issued.label": {

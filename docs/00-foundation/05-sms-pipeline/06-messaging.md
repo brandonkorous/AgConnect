@@ -7,8 +7,8 @@ Templates live in `packages/sms/templates/<name>.ts`:
 ```ts
 // packages/sms/templates/welcome.ts
 export const welcome = {
-    en: 'Welcome to AgConn, {firstName}! Search jobs at agconn.com/jobs. Reply STOP to opt out.',
-    es: '¡Bienvenido a AgConn, {firstName}! Busca trabajos en agconn.com/jobs. Responde STOP para cancelar.',
+    en: 'Welcome to AGCONN, {firstName}! Search jobs at agconn.com/jobs. Reply STOP to opt out.',
+    es: '¡Bienvenido a AGCONN, {firstName}! Busca trabajos en agconn.com/jobs. Responde STOP para cancelar.',
     vars: ['firstName'] as const,
 };
 ```
@@ -27,7 +27,7 @@ Triggered on worker onboarding completion. See [10-worker/01-onboarding/06-messa
 
 |      | EN                                                                                     | ES                                                                                                 |
 | ---- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Body | Welcome to AgConn, {firstName}! Search jobs at agconn.com/jobs. Reply STOP to opt out. | ¡Bienvenido a AgConn, {firstName}! Busca trabajos en agconn.com/jobs. Responde STOP para cancelar. |
+| Body | Welcome to AGCONN, {firstName}! Search jobs at agconn.com/jobs. Reply STOP to opt out. | ¡Bienvenido a AGCONN, {firstName}! Busca trabajos en agconn.com/jobs. Responde STOP para cancelar. |
 | Vars | firstName                                                                              | firstName                                                                                          |
 
 ### application.applied
@@ -108,7 +108,7 @@ Phone collision across tenants — admin support flow.
 
 |      | EN                                                                                                      | ES                                                                                                           |
 | ---- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Body | A request to transfer your AgConn account was made. If this wasn't you, reply NO. Otherwise, reply YES. | Se hizo una solicitud para transferir tu cuenta de AgConn. Si no fuiste tú, responde NO. Si sí, responde SI. |
+| Body | A request to transfer your AGCONN account was made. If this wasn't you, reply NO. Otherwise, reply YES. | Se hizo una solicitud para transferir tu cuenta de AGCONN. Si no fuiste tú, responde NO. Si sí, responde SI. |
 | Vars | (none)                                                                                                  | (none)                                                                                                       |
 
 > **Inferred:** Two-way confirmation (YES/NO) is out of scope for MVP — the inbound webhook only handles STOP. For `account.transfer_request`, MVP uses an email magic-link instead. This template is reserved for Phase 2+.

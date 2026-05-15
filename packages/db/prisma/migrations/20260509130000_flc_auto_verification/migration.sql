@@ -1,8 +1,8 @@
 -- =============================================================================
--- AgConn — Automated FLC verification (CA DIR/DLSE + DOL MSPA)
+-- AGCONN — Automated FLC verification (CA DIR/DLSE + DOL MSPA)
 -- =============================================================================
 --
--- Backs the marketing claim that AgConn checks every Farm Labor Contractor
+-- Backs the marketing claim that AGCONN checks every Farm Labor Contractor
 -- license against the California DIR/DLSE registry on signup and re-verifies
 -- nightly. Two registries, two architectures:
 --

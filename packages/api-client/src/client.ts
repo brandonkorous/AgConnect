@@ -3,7 +3,7 @@ import type { ApiErr, ApiResponse } from './envelope.js';
 export type ApiClientOptions = {
   baseUrl: string;
   getLocale: () => 'en' | 'es';
-  getSession?: () => string | null;
+  getSession?: () => string | null | Promise<string | null>;
   onUnhandledError?: (err: ApiErr['error']) => void;
 };
 
@@ -77,7 +77,7 @@ export const createApiClient = (opts: ApiClientOptions): ApiClient => {
     }
 
     try {
-      const session = opts.getSession?.();
+      const session = await opts.getSession?.();
       const isFormData =
         typeof FormData !== 'undefined' && options.body instanceof FormData;
       const baseHeaders: Record<string, string> = {

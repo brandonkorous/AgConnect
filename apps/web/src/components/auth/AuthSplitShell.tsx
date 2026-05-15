@@ -46,7 +46,7 @@ export async function AuthSplitShell({ locale, variant, children }: Props) {
                     <Link
                         href={`/${locale}`}
                         className="inline-flex items-center self-start no-underline"
-                        aria-label="AgConn"
+                        aria-label="AGCONN"
                     >
                         <Wordmark size="lg" tone={isDark ? 'bone' : 'ink'} />
                     </Link>
@@ -130,7 +130,7 @@ export async function AuthSplitShell({ locale, variant, children }: Props) {
                             <Link
                                 href={`/${locale}`}
                                 className="text-base-content inline-flex items-center no-underline"
-                                aria-label="AgConn"
+                                aria-label="AGCONN"
                             >
                                 <Wordmark size="lg" tone="ink" />
                             </Link>

@@ -85,7 +85,7 @@ export function faqMetadata(args: { locale: Locale; title: string; description: 
       title: args.title,
       description: args.description,
       url: `${baseUrl}/${args.locale}${path}`,
-      siteName: 'AgConn',
+      siteName: 'AGCONN',
       images: [{ url: `${baseUrl}/og/landing?locale=${args.locale}`, width: 1200, height: 630 }],
       locale: args.locale === 'es' ? 'es_MX' : 'en_US',
       type: 'website',

@@ -143,7 +143,7 @@ A single bad job poisons the queue (e.g., parser worker hits a bug on a specific
 
 ## Open questions
 
-1. Multi-region failover — when does AgConn's growth justify a second region? Probably never for an MVP-scale Central Valley platform; revisit if expanding nationally.
+1. Multi-region failover — when does AGCONN's growth justify a second region? Probably never for an MVP-scale Central Valley platform; revisit if expanding nationally.
 2. Self-hosted runners for cost control — when do GHA bills justify the ops overhead? Probably never for MVP.
 3. Service mesh (Linkerd/Istio) — not needed at MVP scale; revisit at 20+ services.
 4. Database read replicas — when do KPI dashboards and worker search justify? Probably 6 months in.

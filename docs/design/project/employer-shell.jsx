@@ -2,14 +2,14 @@
 
 const ESidebar = ({ active = 'home' }) => {
   const items = [
-    { k: 'home', i: 'kanban', l: 'Dashboard', href: 'AgConnect Employer Dashboard.html' },
-    { k: 'jobs', i: 'leaf', l: 'Job postings', count: 8, href: 'AgConnect Employer Jobs.html' },
-    { k: 'cand', i: 'users', l: 'Candidates', count: 47, dot: true, href: 'AgConnect Employer Candidates.html' },
-    { k: 'crews', i: 'calendar', l: 'Crews & shifts', href: 'AgConnect Employer Crews.html' },
-    { k: 'pay', i: 'cash', l: 'Payroll', href: 'AgConnect Employer Payroll.html' },
-    { k: 'comp', i: 'shield', l: 'Compliance', count: 2, href: 'AgConnect Employer Compliance.html' },
-    { k: 'msg', i: 'chat', l: 'Messages', count: 6, href: 'AgConnect Employer Messages.html' },
-    { k: 'rep', i: 'spark', l: 'Reports', href: 'AgConnect Employer Reports.html' },
+    { k: 'home', i: 'kanban', l: 'Dashboard', href: 'AGCONN Employer Dashboard.html' },
+    { k: 'jobs', i: 'leaf', l: 'Job postings', count: 8, href: 'AGCONN Employer Jobs.html' },
+    { k: 'cand', i: 'users', l: 'Candidates', count: 47, dot: true, href: 'AGCONN Employer Candidates.html' },
+    { k: 'crews', i: 'calendar', l: 'Crews & shifts', href: 'AGCONN Employer Crews.html' },
+    { k: 'pay', i: 'cash', l: 'Payroll', href: 'AGCONN Employer Payroll.html' },
+    { k: 'comp', i: 'shield', l: 'Compliance', count: 2, href: 'AGCONN Employer Compliance.html' },
+    { k: 'msg', i: 'chat', l: 'Messages', count: 6, href: 'AGCONN Employer Messages.html' },
+    { k: 'rep', i: 'spark', l: 'Reports', href: 'AGCONN Employer Reports.html' },
   ];
   return (
     <aside style={{
@@ -19,7 +19,7 @@ const ESidebar = ({ active = 'home' }) => {
       position: 'sticky', top: 0, alignSelf: 'flex-start',
     }}>
       <div style={{ padding: '4px 8px 6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="AgConnect Landing.html" style={{ textDecoration: 'none' }}><Logo size={20}/></a>
+        <a href="AGCONN Landing.html" style={{ textDecoration: 'none' }}><Logo size={20}/></a>
         <span style={{ fontSize: 9.5, fontFamily: 'var(--f-mono)', fontWeight: 700, padding: '3px 7px', borderRadius: 4, background: 'var(--c-ink)', color: 'var(--c-bg)', letterSpacing: '0.08em' }}>HIRE</span>
       </div>
       <div style={{ padding: '10px 8px 18px' }}>

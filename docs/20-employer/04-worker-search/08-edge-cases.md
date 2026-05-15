@@ -41,9 +41,9 @@ Employer notices `matchScore` correlates with apply rate; tries to game by addin
 
 ## Cert-filtering bypass
 
-Worker self-reports a certification (in `worker_profiles.certifications`). Employer filters for that cert; gets the self-reported worker mixed with AgConn-verified workers.
+Worker self-reports a certification (in `worker_profiles.certifications`). Employer filters for that cert; gets the self-reported worker mixed with AGCONN-verified workers.
 
-**Decision:** the search filter `certTopics` matches against `enrollments` (AgConn-verified) only. Self-reported certs do NOT satisfy the cert filter.
+**Decision:** the search filter `certTopics` matches against `enrollments` (AGCONN-verified) only. Self-reported certs do NOT satisfy the cert filter.
 
 > **Inferred:** Employers searching by cert want verified holders. Self-reported certs visible in the profile but not searchable as filters. Adjust if employers complain.
 

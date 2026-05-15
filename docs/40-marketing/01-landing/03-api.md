@@ -136,7 +136,7 @@ export async function GET(req: Request) {
 }
 ```
 
-`<LandingOG>` mirrors the hero composition: bone background, large Fraunces italic display headline, AgConn wordmark, "Central Valley" subhead, honey accent dot.
+`<LandingOG>` mirrors the hero composition: bone background, large Fraunces italic display headline, AGCONN wordmark, "Central Valley" subhead, honey accent dot.
 
 ### GET /sitemap.xml
 

@@ -239,7 +239,7 @@ const TrainingNudge = () => (
 const MessagesCard = () => {
   const msgs = [
     { from: 'Sunridge Vineyards', body: 'See you tomorrow at 6 AM. Bring water — it will be hot.', time: '2h', channel: 'WhatsApp' },
-    { from: 'AgConnect', body: 'Your Forklift cert seat opens next Mon. Reply YES to claim.', time: '5h', channel: 'SMS' },
+    { from: 'AGCONN', body: 'Your Forklift cert seat opens next Mon. Reply YES to claim.', time: '5h', channel: 'SMS' },
     { from: 'Westside Orchards', body: 'Interview scheduled for Thu 9 AM at the Modesto office.', time: '1d', channel: 'In-app' },
   ];
   return (

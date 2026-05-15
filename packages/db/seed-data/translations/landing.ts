@@ -102,8 +102,8 @@ export const landing: TranslationBundle = {
         es: "Encuentra trabajo esta semana. Construye un registro que viaja contigo.",
     },
     "confirm.already.body": {
-        en: "This email is already on the AgConn list — no need to confirm again. We'll be in touch when we open in your area.",
-        es: "Este correo ya está en la lista de AgConn — no hace falta confirmar de nuevo. Te contactaremos cuando lleguemos a tu zona.",
+        en: "This email is already on the AGCONN list — no need to confirm again. We'll be in touch when we open in your area.",
+        es: "Este correo ya está en la lista de AGCONN — no hace falta confirmar de nuevo. Te contactaremos cuando lleguemos a tu zona.",
     },
     "confirm.already.eyebrow": {
         en: "ALREADY CONFIRMED",
@@ -114,8 +114,8 @@ export const landing: TranslationBundle = {
         es: "Ya estás dentro.",
     },
     "confirm.confirmed.body": {
-        en: "Thanks for confirming. We saved your spot on the AgConn list — we'll reach out the moment we open in your area, in the language you signed up with.",
-        es: "Gracias por confirmar. Guardamos tu lugar en la lista de AgConn — te avisaremos en cuanto lleguemos a tu zona, en el idioma con el que te registraste.",
+        en: "Thanks for confirming. We saved your spot on the AGCONN list — we'll reach out the moment we open in your area, in the language you signed up with.",
+        es: "Gracias por confirmar. Guardamos tu lugar en la lista de AGCONN — te avisaremos en cuanto lleguemos a tu zona, en el idioma con el que te registraste.",
     },
     "confirm.confirmed.eyebrow": {
         en: "CONFIRMED",
@@ -126,8 +126,8 @@ export const landing: TranslationBundle = {
         es: "Listo, estás dentro.",
     },
     "confirm.cta_home": {
-        en: "Visit AgConn",
-        es: "Visitar AgConn",
+        en: "Visit AGCONN",
+        es: "Visitar AGCONN",
     },
     "confirm.expired.body": {
         en: "Confirmation links expire after 7 days. Sign up again from the homepage and we'll send a fresh link.",
@@ -226,8 +226,8 @@ export const landing: TranslationBundle = {
         es: "Sí. Los trabajadores nunca pagan — ni por registrarse, ni por aplicar, ni por certificados, ni por notificaciones SMS. La plataforma se financia con suscripciones de empleadores y alianzas de subvenciones.",
     },
     "faq.items.1.q": {
-        en: "Is AgConn really free for workers?",
-        es: "¿AgConn es realmente gratis para los trabajadores?",
+        en: "Is AGCONN really free for workers?",
+        es: "¿AGCONN es realmente gratis para los trabajadores?",
     },
     "faq.items.2.a": {
         en: "Every FLC must hold an active CA DIR/DLSE license and a federal MSPA registration. We confirm both manually at signup (within 1 business day) and re-check nightly via scraper. License lapses or revocations are flagged automatically and the employer's postings are paused until resolved.",
@@ -242,24 +242,24 @@ export const landing: TranslationBundle = {
         es: "Sí. Los certificados son documentos React-PDF firmados electrónicamente bajo CA UETA, con verificación criptográfica embebida. Incluyen el identificador de la organización emisora, el financiador del programa, fechas, y un ID de credencial único verificable desde la página pública del certificado.",
     },
     "faq.items.3.q": {
-        en: "Are AgConn certificates legally valid?",
-        es: "¿Los certificados de AgConn son legalmente válidos?",
+        en: "Are AGCONN certificates legally valid?",
+        es: "¿Los certificados de AGCONN son legalmente válidos?",
     },
     "faq.items.4.a": {
-        en: "No. AgConn works on any phone that can receive SMS — no computer, no smartphone, no app store, no email. Sign up with your phone number, receive job alerts by text, and apply with one tap.",
-        es: "No. AgConn funciona en cualquier teléfono con SMS — no necesitas computadora, smartphone, app store, ni correo electrónico. Te registras con tu número de teléfono, recibes alertas de trabajos por mensaje de texto, y aplicas con un toque.",
+        en: "No. AGCONN works on any phone that can receive SMS — no computer, no smartphone, no app store, no email. Sign up with your phone number, receive job alerts by text, and apply with one tap.",
+        es: "No. AGCONN funciona en cualquier teléfono con SMS — no necesitas computadora, smartphone, app store, ni correo electrónico. Te registras con tu número de teléfono, recibes alertas de trabajos por mensaje de texto, y aplicas con un toque.",
     },
     "faq.items.4.q": {
-        en: "Do I need a computer to use AgConn?",
-        es: "¿Necesito una computadora para usar AgConn?",
+        en: "Do I need a computer to use AGCONN?",
+        es: "¿Necesito una computadora para usar AGCONN?",
     },
     "faq.items.5.a": {
         en: "Exports include all required WIOA Title I fields plus CalJOBS-specific extensions: PIRL elements 100–1900, demographic data (where consented), placement details with employer + wage + start date, training program completions, credential IDs, and follow-up retention. Available as CSV and XLSX, with a custom field mapper for state-specific overlays.",
         es: "Los exportes incluyen todos los campos requeridos del Título I de WIOA más extensiones específicas para CalJOBS: elementos PIRL 100–1900, datos demográficos (con consentimiento), detalles de colocación con empleador + salario + fecha de inicio, completaciones de capacitación, IDs de credencial, y retención de seguimiento. Disponible como CSV y XLSX, con un mapeador de campos personalizado.",
     },
     "faq.items.5.q": {
-        en: "What WIOA fields do AgConn exports include?",
-        es: "¿Qué campos WIOA incluyen los exportes de AgConn?",
+        en: "What WIOA fields do AGCONN exports include?",
+        es: "¿Qué campos WIOA incluyen los exportes de AGCONN?",
     },
     "faq.items.6.a": {
         en: "Yes — at any time, in JSON or CSV, with no fee and no exit ramp. Workers can export their full profile + applications + certificates. Employers can export their postings + applicant pipeline + hires. Training orgs can export rosters + completions + certificate metadata.",
@@ -274,8 +274,8 @@ export const landing: TranslationBundle = {
         es: "El Condado Imperial y el Valle de Salinas son los siguientes en el roadmap (objetivo Q4 2026), pendiente de alineación de subvenciones con socios regionales de CDFA. Fuera de California requerirá diligencia legal y de licencias estado por estado — estamos comenzando ese trabajo pero no comprometeremos una fecha hasta que la infraestructura de verificación sea confiable.",
     },
     "faq.items.7.q": {
-        en: "When will AgConn expand beyond the Central Valley?",
-        es: "¿Cuándo expandirá AgConn más allá del Valle Central?",
+        en: "When will AGCONN expand beyond the Central Valley?",
+        es: "¿Cuándo expandirá AGCONN más allá del Valle Central?",
     },
     "faq.items.8.a": {
         en: "Yes. Worker personal data is never shared without explicit consent. Employers see only the profiles of applicants who apply to them. Grant reports are aggregated and anonymous. We comply with CCPA, FERPA (for training data), and federal WIOA privacy policy.",
@@ -890,12 +890,12 @@ export const landing: TranslationBundle = {
         es: "$18.50–$22 / hr",
     },
     "hero.subhead": {
-        en: "AgConn connects Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs — bilingual from day one, with a portable record of your skills that travels with you to the next harvest.",
-        es: "AgConn conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA — bilingüe desde el primer día, con un registro portátil de tus habilidades que te acompaña a la siguiente cosecha.",
+        en: "AGCONN connects Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs — bilingual from day one, with a portable record of your skills that travels with you to the next harvest.",
+        es: "AGCONN conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA — bilingüe desde el primer día, con un registro portátil de tus habilidades que te acompaña a la siguiente cosecha.",
     },
     "hero.trust.line_dynamic": {
         en: "Trusted by {workers} workers and {employers} verified employers across the Valley",
-        es: "{workers} trabajadores y {employers} empleadores verificados confían en AgConn",
+        es: "{workers} trabajadores y {employers} empleadores verificados confían en AGCONN",
     },
     "hero.trust.line_fallback": {
         en: "Built with Central Valley farmworkers and verified employers",
@@ -1034,8 +1034,8 @@ export const landing: TranslationBundle = {
         es: "Construido en Fresno, CA",
     },
     "legal.copyright": {
-        en: "© 2026 AgConn, PBC · A California Public Benefit Corp.",
-        es: "© 2026 AgConn, PBC · Una California Public Benefit Corp.",
+        en: "© 2026 AGCONN, PBC · A California Public Benefit Corp.",
+        es: "© 2026 AGCONN, PBC · Una California Public Benefit Corp.",
     },
     "legal.llms_txt": {
         en: "llms.txt",
@@ -1418,8 +1418,8 @@ export const landing: TranslationBundle = {
         es: "Janelle Park, MPA",
     },
     "testimonials.3.quote": {
-        en: "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AgConn generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.",
-        es: "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AgConn generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.",
+        en: "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AGCONN generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.",
+        es: "We were issuing certificates by hand and re-keying outcomes into CalJOBS by week's end. AGCONN generates the bilingual PDF, e-signs it, and the data flows straight into our CDFA quarterly. Hours saved, every cohort.",
     },
     "testimonials.3.role": {
         en: "Workforce Director · Fresno EOC",
@@ -1494,8 +1494,8 @@ export const landing: TranslationBundle = {
         es: "Financiadores y socios en todo el Valle",
     },
     "unsubscribe.already.body": {
-        en: "This email isn't on the AgConn list — nothing more to do. If you'd like to opt back in, sign up again from the homepage.",
-        es: "Este correo no está en la lista de AgConn — no hay nada más que hacer. Si quieres volver a inscribirte, regístrate desde la página principal.",
+        en: "This email isn't on the AGCONN list — nothing more to do. If you'd like to opt back in, sign up again from the homepage.",
+        es: "Este correo no está en la lista de AGCONN — no hay nada más que hacer. Si quieres volver a inscribirte, regístrate desde la página principal.",
     },
     "unsubscribe.already.eyebrow": {
         en: "ALREADY UNSUBSCRIBED",
@@ -1506,8 +1506,8 @@ export const landing: TranslationBundle = {
         es: "Ya estás fuera de la lista.",
     },
     "unsubscribe.cta_home": {
-        en: "Back to AgConn",
-        es: "Volver a AgConn",
+        en: "Back to AGCONN",
+        es: "Volver a AGCONN",
     },
     "unsubscribe.invalid.body": {
         en: "The unsubscribe link looks incomplete. If you're still receiving emails you don't want, reply to one and we'll remove you manually.",
@@ -1522,8 +1522,8 @@ export const landing: TranslationBundle = {
         es: "No pudimos leer ese enlace.",
     },
     "unsubscribe.unsubscribed.body": {
-        en: "We removed you from the AgConn list — no more emails from us. If this was a mistake, you can sign up again from the homepage at any time.",
-        es: "Te quitamos de la lista de AgConn — no recibirás más correos de nosotros. Si fue por error, puedes registrarte de nuevo desde la página principal cuando quieras.",
+        en: "We removed you from the AGCONN list — no more emails from us. If this was a mistake, you can sign up again from the homepage at any time.",
+        es: "Te quitamos de la lista de AGCONN — no recibirás más correos de nosotros. Si fue por error, puedes registrarte de nuevo desde la página principal cuando quieras.",
     },
     "unsubscribe.unsubscribed.eyebrow": {
         en: "UNSUBSCRIBED",

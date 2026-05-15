@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { fetchConversations, fetchKeywords } from '@/lib/ops-api';
 
-export const metadata = { title: 'Messaging — AgConn Admin' };
+export const metadata = { title: 'Messaging — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

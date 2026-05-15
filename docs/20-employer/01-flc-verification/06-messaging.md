@@ -8,11 +8,11 @@ Sent immediately after employer submits onboarding form. Informational.
 
 |         | EN                                           | ES                                                   |
 | ------- | -------------------------------------------- | ---------------------------------------------------- |
-| Subject | We're verifying your AgConn employer account | Estamos verificando tu cuenta de empleador de AgConn |
+| Subject | We're verifying your AGCONN employer account | Estamos verificando tu cuenta de empleador de AGCONN |
 
 Body covers:
 
-- "Thanks for joining AgConn."
+- "Thanks for joining AGCONN."
 - "We'll verify your business details within 1 business day."
 - "You can prepare job drafts in the meantime."
 - Link to the dashboard.
@@ -27,7 +27,7 @@ Defined in catalog as `employer.flc_verified`.
 
 |         | EN                              | ES                                  |
 | ------- | ------------------------------- | ----------------------------------- |
-| Subject | Your AgConn account is verified | Tu cuenta de AgConn está verificada |
+| Subject | Your AGCONN account is verified | Tu cuenta de AGCONN está verificada |
 
 Body:
 
@@ -44,7 +44,7 @@ Sent when admin rejects with a reason.
 
 |         | EN                                        | ES                                             |
 | ------- | ----------------------------------------- | ---------------------------------------------- |
-| Subject | Action needed: verify your AgConn account | Acción requerida: verifica tu cuenta de AgConn |
+| Subject | Action needed: verify your AGCONN account | Acción requerida: verifica tu cuenta de AGCONN |
 
 Body:
 

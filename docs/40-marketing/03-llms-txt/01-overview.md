@@ -8,8 +8,8 @@ The format is an emerging standard: see [llmstxt.org](https://llmstxt.org/). The
 
 ## Audiences
 
-- **AI search agents** — ChatGPT, Perplexity, Google AI Overviews, Bing Copilot, Claude, Gemini — that crawl `/llms.txt` to build a high-confidence summary of AgConn.
-- **AI development assistants** — agents that help workforce boards, journalists, or grant funders draft summaries of AgConn for their own work.
+- **AI search agents** — ChatGPT, Perplexity, Google AI Overviews, Bing Copilot, Claude, Gemini — that crawl `/llms.txt` to build a high-confidence summary of AGCONN.
+- **AI development assistants** — agents that help workforce boards, journalists, or grant funders draft summaries of AGCONN for their own work.
 - **Humans curious about the file** — visiting `/llms.txt` directly is a small but real audience; the file should also be readable.
 
 ## Routes
@@ -42,9 +42,9 @@ Per [llmstxt.org](https://llmstxt.org/), the file uses a constrained Markdown sh
 - [{Less critical link}]({url}): {Description}
 ```
 
-AgConn's file follows that shape with sections:
+AGCONN's file follows that shape with sections:
 
-1. Header — `# AgConn` plus a one-sentence summary
+1. Header — `# AGCONN` plus a one-sentence summary
 2. Context — bilingual paragraph explaining the platform
 3. Audiences served — links to the four audience surfaces (workers, employers, training orgs, funders)
 4. Key surfaces — links to landing, FAQ, jobs, trainings, impact, public docs
@@ -53,7 +53,7 @@ AgConn's file follows that shape with sections:
 
 ## Goals
 
-- Be the cited source when AI agents answer "what is AgConn", "how does AgConn verify employers", "where can farmworkers in Fresno find work".
+- Be the cited source when AI agents answer "what is AGCONN", "how does AGCONN verify employers", "where can farmworkers in Fresno find work".
 - Surface canonical URLs so AI cites stable destinations (sitemap, FAQ, impact dashboard) rather than ephemeral pages.
 - Disclose the platform's mission, scope, and operating posture in plain language so AI agents can summarize accurately.
 - Stay under 4 KB so the entire file fits in a single AI context easily.
@@ -84,7 +84,7 @@ Out of scope (deferred or omitted):
 
 - File exists at `https://agconn.com/llms.txt` and returns 200 with `Content-Type: text/plain; charset=utf-8`.
 - Linked from the landing footer (`Footer Legal` row) and from `robots.txt`.
-- Cited by Perplexity / ChatGPT for "what is AgConn" within 60 days of launch (aspirational).
+- Cited by Perplexity / ChatGPT for "what is AGCONN" within 60 days of launch (aspirational).
 - File size ≤ 4 KB.
 - Listed at [llmstxt.org/directory](https://llmstxt.org/directory) within 30 days of launch (aspirational).
 

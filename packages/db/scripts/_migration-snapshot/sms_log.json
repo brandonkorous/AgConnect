@@ -1,24 +1,24 @@
 [
-  {
-    "id": "ab019c29-14ad-4fc9-9fb0-9a5eff864808",
-    "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
-    "userId": "test_worker_1777844344062",
-    "template": "worker.shift.updated",
-    "locale": "es",
-    "toPhone": "+15551234567",
-    "body": "Turno actualizado: 2026-05-05 a las 07:00 · Block 12 · 4321 Avenue 12, Madera, CA 93637. Revisa tu horario en AgConn.",
-    "vars": {
-      "location": "Block 12 · 4321 Avenue 12, Madera, CA 93637",
-      "shiftDate": "2026-05-05",
-      "startTime": "07:00"
-    },
-    "status": "sent",
-    "providerSid": "dry-run",
-    "errorCode": null,
-    "optedOutAt": null,
-    "queuedAt": "2026-05-04T00:58:04.958Z",
-    "sentAt": "2026-05-04T00:58:04.966Z",
-    "deliveredAt": null,
-    "failedAt": null
-  }
+    {
+        "id": "ab019c29-14ad-4fc9-9fb0-9a5eff864808",
+        "tenantId": "0c1e0875-b3c0-4c03-a077-8514a78eb21b",
+        "userId": "test_worker_1777844344062",
+        "template": "worker.shift.updated",
+        "locale": "es",
+        "toPhone": "+15551234567",
+        "body": "Turno actualizado: 2026-05-05 a las 07:00 · Block 12 · 4321 Avenue 12, Madera, CA 93637. Revisa tu horario en AGCONN.",
+        "vars": {
+            "location": "Block 12 · 4321 Avenue 12, Madera, CA 93637",
+            "shiftDate": "2026-05-05",
+            "startTime": "07:00"
+        },
+        "status": "sent",
+        "providerSid": "dry-run",
+        "errorCode": null,
+        "optedOutAt": null,
+        "queuedAt": "2026-05-04T00:58:04.958Z",
+        "sentAt": "2026-05-04T00:58:04.966Z",
+        "deliveredAt": null,
+        "failedAt": null
+    }
 ]

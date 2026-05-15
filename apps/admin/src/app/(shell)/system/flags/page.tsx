@@ -3,7 +3,7 @@ import { fetchFlags } from '@/lib/system-api';
 import { FlagToggle } from './FlagToggle';
 import { AddTenantOverride } from './AddTenantOverride';
 
-export const metadata = { title: 'Feature flags — AgConn Admin' };
+export const metadata = { title: 'Feature flags — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function FlagsPage() {

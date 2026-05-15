@@ -157,7 +157,7 @@ Properties:
 - **Visibility:** every state transition pages on-call via Sentry `level: fatal`.
 - **Recovery emits a meta-event:** `system.audit.breaker.recovered` records the drained count so the gap is itself audited. The window in which writes were queued (and any drops) is recoverable from Sentry + this meta-event.
 
-This trades strict atomicity during a 60-second outage for availability — explicitly acceptable because the alternative is "AgConn returns 500 to every user any time the audit table hiccups."
+This trades strict atomicity during a 60-second outage for availability — explicitly acceptable because the alternative is "AGCONN returns 500 to every user any time the audit table hiccups."
 
 > **Behavior under sustained outage (> 60 s with non-recovery):** the breaker keeps cycling open / half_open / open. Business requests stay available; queue overflow drops events at 1,000 with a fatal Sentry. On-call has 60 s of warning before any drop occurs.
 

@@ -117,7 +117,7 @@ Some readers (and some AI agents) prefer RSS for content discovery.
 ## Open questions
 
 1. **Editorial cadence target** — weekly is too aggressive for a 1-person editorial post; quarterly is too sparse. Initial target: monthly, scaling with traffic.
-2. **Author bylines** — single voice ("AgConn editorial") for v2; multi-author with author pages if a contributor program launches.
+2. **Author bylines** — single voice ("AGCONN editorial") for v2; multi-author with author pages if a contributor program launches.
 3. **Sponsorship / underwriting tags** — articles supported by grant funders (e.g., "Underwritten by CDFA") — out of scope MVP, revisit when grant relationships shift to multi-year support.
 4. **Translation provenance** — should articles disclose which language was the source (EN-original vs ES-original)? Aligns with editorial transparency. Decide before v2 launch.
 5. **Print stylesheet** — articles may benefit from a print-friendly CSS for offline distribution at workforce-board events. Out of scope MVP; revisit if requested.

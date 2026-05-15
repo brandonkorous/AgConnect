@@ -26,7 +26,7 @@ Worker shares a link, recipient opens it 25 hours later. Signed URL expired.
 
 Worker manually adds "Tractor Safety — issued 2020" with no proof. Appears in wallet labeled "Self-reported".
 
-**Behavior:** that's the design. Employers seeing the worker's profile know to distinguish "AgConn verified" (we issued) from "Self-reported" (worker claims). Trust calibration is the employer's call.
+**Behavior:** that's the design. Employers seeing the worker's profile know to distinguish "AGCONN verified" (we issued) from "Self-reported" (worker claims). Trust calibration is the employer's call.
 
 ## Long cert lists
 
@@ -88,7 +88,7 @@ A worker who moves tenants — should their previous tenant's certs follow?
 
 **Decision (MVP):** No. Each tenant has its own cert namespace. The worker re-enrolls in the new tenant's programs.
 
-Phase 2: portable cert IDs at the AgConn level, regardless of tenant. Out of scope.
+Phase 2: portable cert IDs at the AGCONN level, regardless of tenant. Out of scope.
 
 ## Cert PDF deletion
 
@@ -103,5 +103,5 @@ If the underlying object is deleted (storage cleanup, accidental), the wallet sh
 
 1. Public verification page — do partner orgs need it before launch? Test with one stakeholder before committing scope.
 2. Cert revocation — what's the policy? Confirm with at least one CDFA contact.
-3. Federated certs (AgConn cert recognized by other workforce platforms) — is there an industry standard (Open Badges, BadgeCert)? Worth investigating Phase 3.
+3. Federated certs (AGCONN cert recognized by other workforce platforms) — is there an industry standard (Open Badges, BadgeCert)? Worth investigating Phase 3.
 4. Self-reported cert verification — should we offer "request verification" flow? Out of scope for MVP.

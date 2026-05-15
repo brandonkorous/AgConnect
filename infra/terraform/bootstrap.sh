@@ -30,7 +30,7 @@ if [[ -z "${BILLING_ACCOUNT}" ]]; then
 fi
 
 echo "==> Creating project ${PROJECT_ID} (skip if exists)"
-gcloud projects create "${PROJECT_ID}" --name="AgConn" 2>/dev/null || true
+gcloud projects create "${PROJECT_ID}" --name="AGCONN" 2>/dev/null || true
 
 echo "==> Linking billing account"
 gcloud billing projects link "${PROJECT_ID}" --billing-account="${BILLING_ACCOUNT}"

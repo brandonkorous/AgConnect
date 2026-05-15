@@ -30,8 +30,8 @@ export const forkliftCertification: ResourceArticle = {
                 es: 'La capacitación bilingüe está reconocida',
             },
             body: {
-                en: 'OSHA explicitly accepts training delivered in Spanish. The certification card and the workplace evaluation are recognized just as in English. AgConn\'s partner training organizations deliver the formal instruction in Spanish, and the practical evaluation is conducted by a certified bilingual trainer at the equipment site.',
-                es: 'OSHA acepta explícitamente la capacitación impartida en español. La tarjeta de certificación y la evaluación en el lugar de trabajo se reconocen igual que en inglés. Las organizaciones de capacitación asociadas con AgConn imparten la instrucción formal en español, y la evaluación práctica la realiza un entrenador bilingüe certificado en el sitio del equipo.',
+                en: 'OSHA explicitly accepts training delivered in Spanish. The certification card and the workplace evaluation are recognized just as in English. AGCONN\'s partner training organizations deliver the formal instruction in Spanish, and the practical evaluation is conducted by a certified bilingual trainer at the equipment site.',
+                es: 'OSHA acepta explícitamente la capacitación impartida en español. La tarjeta de certificación y la evaluación en el lugar de trabajo se reconocen igual que en inglés. Las organizaciones de capacitación asociadas con AGCONN imparten la instrucción formal en español, y la evaluación práctica la realiza un entrenador bilingüe certificado en el sitio del equipo.',
             },
         },
         {

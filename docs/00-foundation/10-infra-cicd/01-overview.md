@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Host AgConn on Azure Kubernetes Service (AKS), build and store images in GitHub Container Registry (GHCR), and deploy via GitHub Actions on push to `main`. Per kickoff ADR-004 and §3.
+Host AGCONN on Azure Kubernetes Service (AKS), build and store images in GitHub Container Registry (GHCR), and deploy via GitHub Actions on push to `main`. Per kickoff ADR-004 and §3.
 
 ## What this layer owns
 

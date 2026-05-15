@@ -70,8 +70,8 @@ export default async function ResourceArticlePage({ params }: RouteProps) {
                     datePublished: article.publishedAt,
                     inLanguage: locale === 'es' ? 'es-MX' : 'en-US',
                     description: pickLocale(article.summary, locale),
-                    author: { '@type': 'Organization', name: 'AgConn' },
-                    publisher: { '@type': 'Organization', name: 'AgConn' },
+                    author: { '@type': 'Organization', name: 'AGCONN' },
+                    publisher: { '@type': 'Organization', name: 'AGCONN' },
                 }}
             />
 

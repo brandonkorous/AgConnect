@@ -70,7 +70,7 @@ export const publicJobs: TranslationBundle = {
         es: "Trabajos agrícolas verificados en todo el Valle Central. Inscríbete gratis para postular por SMS — no necesitas inglés.",
     },
     "meta.title": {
-        en: "California Central Valley farm jobs · AgConn",
-        es: "Trabajos agrícolas en el Valle Central de California · AgConn",
+        en: "California Central Valley farm jobs · AGCONN",
+        es: "Trabajos agrícolas en el Valle Central de California · AGCONN",
     },
 };

@@ -1,8 +1,8 @@
-# AgConn Documentation
+# AGCONN Documentation
 
-Source: [AgConn-Architecture-Kickoff.docx](AgConn-Architecture-Kickoff.docx)
+Source: [AGCONN-Architecture-Kickoff.docx](AGCONN-Architecture-Kickoff.docx)
 
-This directory contains complete, implementation-ready specifications for every AgConn feature, organized by domain. Each feature folder is **self-contained** — you should not need to re-read the kickoff document to implement it.
+This directory contains complete, implementation-ready specifications for every AGCONN feature, organized by domain. Each feature folder is **self-contained** — you should not need to re-read the kickoff document to implement it.
 
 ## Conventions
 

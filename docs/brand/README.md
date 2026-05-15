@@ -1,6 +1,6 @@
 # Tierra — Brand System
 
-Tierra is the visual and verbal identity for AgConn. Spanish for "earth / land," it positions AgConn not as gig-tech but as a serious, dignified workforce platform built for the long arc of agricultural work in California's Central Valley.
+Tierra is the visual and verbal identity for AGCONN. Spanish for "earth / land," it positions AGCONN not as gig-tech but as a serious, dignified workforce platform built for the long arc of agricultural work in California's Central Valley.
 
 This folder is the source of truth for design and copy decisions. Implementations (Tailwind config, daisyUI theme, React components, marketing site, certificates, SMS templates) should derive from these files. When this folder and a running implementation disagree, this folder wins — open an issue, then fix the code.
 

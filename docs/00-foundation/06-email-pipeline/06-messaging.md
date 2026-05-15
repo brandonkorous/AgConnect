@@ -11,7 +11,7 @@ See [10-worker/01-onboarding/06-messaging.md](../../10-worker/01-onboarding/06-m
 
 |         | EN                | ES                  |
 | ------- | ----------------- | ------------------- |
-| Subject | Welcome to AgConn | Bienvenido a AgConn |
+| Subject | Welcome to AGCONN | Bienvenido a AGCONN |
 
 ### employer.welcome
 
@@ -19,7 +19,7 @@ Triggered on employer onboarding completion (after FLC verification or grower si
 
 |         | EN                                                | ES                                                       |
 | ------- | ------------------------------------------------- | -------------------------------------------------------- |
-| Subject | Welcome to AgConn — your employer account is live | Bienvenido a AgConn — tu cuenta de empleador está activa |
+| Subject | Welcome to AGCONN — your employer account is live | Bienvenido a AGCONN — tu cuenta de empleador está activa |
 
 ### employer.flc_verified
 
@@ -75,7 +75,7 @@ Stripe checkout completed.
 
 |         | EN                       | ES                         |
 | ------- | ------------------------ | -------------------------- |
-| Subject | Welcome to AgConn {plan} | Bienvenido a AgConn {plan} |
+| Subject | Welcome to AGCONN {plan} | Bienvenido a AGCONN {plan} |
 
 ### billing.payment_failed
 
@@ -83,7 +83,7 @@ Stripe payment dunning.
 
 |         | EN                                          | ES                                               |
 | ------- | ------------------------------------------- | ------------------------------------------------ |
-| Subject | Payment issue with your AgConn subscription | Problema con el pago de tu suscripción de AgConn |
+| Subject | Payment issue with your AGCONN subscription | Problema con el pago de tu suscripción de AGCONN |
 
 ### billing.invoice_paid
 
@@ -91,7 +91,7 @@ Stripe invoice paid; receipt with PDF link from Stripe.
 
 |         | EN                                   | ES                                 |
 | ------- | ------------------------------------ | ---------------------------------- |
-| Subject | Receipt for your AgConn subscription | Recibo de tu suscripción de AgConn |
+| Subject | Receipt for your AGCONN subscription | Recibo de tu suscripción de AGCONN |
 
 ### billing.subscription_canceled
 
@@ -99,7 +99,7 @@ Confirmation of cancellation.
 
 |         | EN                                   | ES                                      |
 | ------- | ------------------------------------ | --------------------------------------- |
-| Subject | Your AgConn subscription is canceled | Tu suscripción de AgConn está cancelada |
+| Subject | Your AGCONN subscription is canceled | Tu suscripción de AGCONN está cancelada |
 
 ### grant.report_ready
 

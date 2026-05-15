@@ -1,26 +1,26 @@
 // Bilingual certificate HTML renderer. Emits a single self-contained HTML
-// document with the AgConn Tierra palette. Production should switch to
+// document with the AGCONN Tierra palette. Production should switch to
 // React-PDF for crisper print output, but HTML is a reasonable starting point
 // — it renders identically in browser preview and "Save as PDF".
 
 type Args = {
-  workerFirstName: string;
-  workerLastName: string;
-  programTitleEn: string;
-  programTitleEs: string;
-  funder: string;
-  orgName: string;
-  completedAt: Date;
-  certificateId: string;
+    workerFirstName: string;
+    workerLastName: string;
+    programTitleEn: string;
+    programTitleEs: string;
+    funder: string;
+    orgName: string;
+    completedAt: Date;
+    certificateId: string;
 };
 
 export function renderCertHtml(a: Args): string {
-  const completed = a.completedAt.toISOString().slice(0, 10);
-  return `<!doctype html>
+    const completed = a.completedAt.toISOString().slice(0, 10);
+    return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>${escapeHtml(a.programTitleEn)} — AgConn Certificate</title>
+<title>${escapeHtml(a.programTitleEn)} — AGCONN Certificate</title>
 <style>
   :root {
     --ink: oklch(28% 0.04 70);
@@ -119,7 +119,7 @@ export function renderCertHtml(a: Args): string {
 </head>
 <body>
   <main class="cert">
-    <div class="eyebrow">AgConn · Certificate of Completion</div>
+    <div class="eyebrow">AGCONN · Certificate of Completion</div>
     <h1>${escapeHtml(a.programTitleEn)}</h1>
     <div class="meta">Funded by ${escapeHtml(a.funder)} · Issued by ${escapeHtml(a.orgName)}</div>
 
@@ -148,10 +148,10 @@ export function renderCertHtml(a: Args): string {
 }
 
 function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }

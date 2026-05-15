@@ -49,7 +49,7 @@ enum FlcCheckStatus {
 }
 ```
 
-**Display rule:** the public-facing employer name is `dbaName ?? legalName`. The legal name is used for Stripe customer creation, 1099/tax docs, and the DLSE comparison during verification. Verified-badge tooltip surfaces both: `"AgConn verified — legal entity: {legalName}"`.
+**Display rule:** the public-facing employer name is `dbaName ?? legalName`. The legal name is used for Stripe customer creation, 1099/tax docs, and the DLSE comparison during verification. Verified-badge tooltip surfaces both: `"AGCONN verified — legal entity: {legalName}"`.
 
 `flcVerifiedAt` is promoted automatically by the worker the first time DLSE returns `Active` for the registered license number. Once promoted, it stays set even if a later check returns an error — the snapshot fields tell the admin what happened, but a transient DLSE outage doesn't strip the badge.
 

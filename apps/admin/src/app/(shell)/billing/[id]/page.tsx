@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchBillingEvent } from '@/lib/ops-api';
 
-export const metadata = { title: 'Billing event — AgConn Admin' };
+export const metadata = { title: 'Billing event — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function BillingEventDetailPage({

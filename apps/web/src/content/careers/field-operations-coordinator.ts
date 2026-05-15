@@ -12,8 +12,8 @@ export const fieldOperationsCoordinator: CareerRole = {
         es: 'Coordinadora o Coordinador de Operaciones de Campo',
     },
     summary: {
-        en: 'Be AgConn\'s on-the-ground point of contact for growers, Farm Labor Contractors, and training partners across Tulare and Kings counties. Mostly in person — at packing sheds, FLC offices, and Ag Extension training rooms.',
-        es: 'Sea el punto de contacto de campo de AgConn para agricultores, Contratistas de Trabajo Agrícola y socios de capacitación en los condados de Tulare y Kings. La mayoría en persona — en empacadoras, oficinas de FLC y salas de capacitación de Extensión Agrícola.',
+        en: 'Be AGCONN\'s on-the-ground point of contact for growers, Farm Labor Contractors, and training partners across Tulare and Kings counties. Mostly in person — at packing sheds, FLC offices, and Ag Extension training rooms.',
+        es: 'Sea el punto de contacto de campo de AGCONN para agricultores, Contratistas de Trabajo Agrícola y socios de capacitación en los condados de Tulare y Kings. La mayoría en persona — en empacadoras, oficinas de FLC y salas de capacitación de Extensión Agrícola.',
     },
     responsibilities: [
         {
@@ -29,8 +29,8 @@ export const fieldOperationsCoordinator: CareerRole = {
             es: 'Maneje escalamientos de trabajadores y empleadores que no se pueden resolver por teléfono o correo electrónico; visite en persona cuando sea necesario.',
         },
         {
-            en: 'Maintain relationships with the Tulare County Workforce Investment Board and other regional workforce partners as the primary on-the-ground AgConn presence.',
-            es: 'Mantenga relaciones con la Junta de Inversión Laboral del Condado de Tulare y otros socios laborales regionales como la presencia principal de AgConn en el campo.',
+            en: 'Maintain relationships with the Tulare County Workforce Investment Board and other regional workforce partners as the primary on-the-ground AGCONN presence.',
+            es: 'Mantenga relaciones con la Junta de Inversión Laboral del Condado de Tulare y otros socios laborales regionales como la presencia principal de AGCONN en el campo.',
         },
     ],
     qualifications: [

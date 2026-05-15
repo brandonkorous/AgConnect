@@ -1,6 +1,6 @@
 ---
 name: tierra-brand
-description: Use whenever producing AgConnect user-facing output — UI, CSS, JSX/TSX, Tailwind/daisyUI components, marketing copy, landing-page sections, email or SMS templates, certificate text, dashboard labels, charts, illustrations, photography direction, or any visible brand surface in either EN or ES. Loads the Tierra brand system from docs/brand/ and enforces its invariants (palette, typography, voice, spacing, accessibility) so output stays on brand.
+description: Use whenever producing AGCONN user-facing output — UI, CSS, JSX/TSX, Tailwind/daisyUI components, marketing copy, landing-page sections, email or SMS templates, certificate text, dashboard labels, charts, illustrations, photography direction, or any visible brand surface in either EN or ES. Loads the Tierra brand system from docs/brand/ and enforces its invariants (palette, typography, voice, spacing, accessibility) so output stays on brand.
 ---
 
 # Tierra Brand Skill

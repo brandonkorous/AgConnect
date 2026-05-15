@@ -50,7 +50,7 @@ write sms_log row (status: queued)
 
 ## Provider configuration
 
-- **A2P 10DLC registration** required for US SMS at scale. Register the AgConn brand and a "Customer Notifications" campaign.
+- **A2P 10DLC registration** required for US SMS at scale. Register the AGCONN brand and a "Customer Notifications" campaign.
 - **Messaging Service** with Sender Pool of 1+ short codes or 10DLC long codes.
 - **Inbound webhook** points to `api.agconn.com/webhooks/twilio/inbound` (handles STOP).
 - **Status callback** points to `api.agconn.com/webhooks/twilio/status` (handles delivery updates).

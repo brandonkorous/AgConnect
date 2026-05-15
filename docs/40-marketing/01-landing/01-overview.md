@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The public landing page at `agconn.com` (and `/en` / `/es` locale routes). Explains AgConn to four audiences in under 30 seconds:
+The public landing page at `agconn.com` (and `/en` / `/es` locale routes). Explains AGCONN to four audiences in under 30 seconds:
 
 - **Workers** — farmworkers in California's Central Valley deciding whether to sign up.
 - **Employers** — growers and Farm Labor Contractors deciding whether to publish jobs.
@@ -49,7 +49,7 @@ Per the Paper artboard:
 
 ## Goals
 
-- Explain AgConn's value to all four audiences in under 30 seconds of scroll on mobile.
+- Explain AGCONN's value to all four audiences in under 30 seconds of scroll on mobile.
 - Drive conversions: phone-OTP sign-up (workers), magic-link sign-up (employers, training orgs), waitlist email (out-of-area or pre-launch).
 - Rank for queries like "Central Valley farm jobs", "Fresno strawberry harvest jobs", "CDFA farm labor training Fresno".
 - Be citable by AI search tools (ChatGPT, Perplexity, Google AI Overviews) — direct-answer paragraphs, JSON-LD, llms.txt.

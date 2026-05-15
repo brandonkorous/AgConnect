@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { fetchQueues, fetchRecentJobs } from '@/lib/system-api';
 import { ReplayButton } from './ReplayButton';
 
-export const metadata = { title: 'Job queues — AgConn Admin' };
+export const metadata = { title: 'Job queues — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

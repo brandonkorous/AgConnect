@@ -42,13 +42,13 @@ faConfig.autoAddCss = false;
 
 export const metadata: Metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'),
-    title: 'AgConn',
+    title: 'AGCONN',
     description: 'From the field, to your future.',
     manifest: '/manifest.webmanifest',
     appleWebApp: {
         capable: true,
         statusBarStyle: 'default',
-        title: 'AgConn',
+        title: 'AGCONN',
     },
 };
 

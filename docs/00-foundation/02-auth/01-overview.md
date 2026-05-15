@@ -2,12 +2,12 @@
 
 ## Purpose
 
-All authentication for AgConn runs through Clerk. The choice is recorded in kickoff ADR-003: Clerk's multi-tenant Organization model maps directly to AgConn's tenant + employer structure, the SMS OTP flow is purpose-built for low-friction phone signup, and the role/metadata system gives us per-user RBAC without building auth infrastructure.
+All authentication for AGCONN runs through Clerk. The choice is recorded in kickoff ADR-003: Clerk's multi-tenant Organization model maps directly to AGCONN's tenant + employer structure, the SMS OTP flow is purpose-built for low-friction phone signup, and the role/metadata system gives us per-user RBAC without building auth infrastructure.
 
 ## Auth flows by role
 
 - **Worker** — Phone + SMS OTP via Clerk hosted UI. No email, no password. Phone is verified at signup; subsequent sign-ins re-OTP.
-- **Employer / Training Org** — Email + magic link via Clerk hosted UI (Clerk delivers the link via Resend, configured in Clerk Dashboard). Each employer/training-org account is a member of a Clerk Organization that represents either their business or the AgConn tenant they belong to.
+- **Employer / Training Org** — Email + magic link via Clerk hosted UI (Clerk delivers the link via Resend, configured in Clerk Dashboard). Each employer/training-org account is a member of a Clerk Organization that represents either their business or the AGCONN tenant they belong to.
 - **Admin** — Email + magic link via Clerk, plus a hardware-token TOTP second factor (enforced at the Clerk policy level for any user with `publicMetadata.role === 'admin'`).
 
 ## Tenancy mapping

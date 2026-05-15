@@ -40,8 +40,8 @@ export const foodSafetyGap: ResourceArticle = {
                 es: 'Inversión de costo y tiempo',
             },
             body: {
-                en: 'Course fees range from free (when offered through county Ag Extension) to about $150 through private providers. The certificate is permanent — no renewal required as long as you stay in the role. Some employers reimburse the fee after a successful completion. AgConn lists active sessions across the Central Valley, with bilingual options highlighted.',
-                es: 'Las tarifas del curso van de gratis (cuando se ofrece a través de Extensión Agrícola del condado) a aproximadamente $150 a través de proveedores privados. El certificado es permanente — no se requiere renovación mientras se mantenga en el puesto. Algunos empleadores reembolsan la tarifa después de una finalización exitosa. AgConn lista las sesiones activas en todo el Valle Central, con opciones bilingües destacadas.',
+                en: 'Course fees range from free (when offered through county Ag Extension) to about $150 through private providers. The certificate is permanent — no renewal required as long as you stay in the role. Some employers reimburse the fee after a successful completion. AGCONN lists active sessions across the Central Valley, with bilingual options highlighted.',
+                es: 'Las tarifas del curso van de gratis (cuando se ofrece a través de Extensión Agrícola del condado) a aproximadamente $150 a través de proveedores privados. El certificado es permanente — no se requiere renovación mientras se mantenga en el puesto. Algunos empleadores reembolsan la tarifa después de una finalización exitosa. AGCONN lista las sesiones activas en todo el Valle Central, con opciones bilingües destacadas.',
             },
         },
         {

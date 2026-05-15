@@ -38,9 +38,9 @@ Twilio delivery to certain rural carriers fails silently or is delayed.
 
 ## County not in the 5-county list
 
-**Scenario:** A worker who lives in Stanislaus County wants to use AgConn.
+**Scenario:** A worker who lives in Stanislaus County wants to use AGCONN.
 
-**Behavior:** They see the "I'm in another county" link → waitlist form. Account remains live but `worker_profiles.county` stays null and `onboardedAt` stays null — they cannot apply for jobs. When AgConn expands to their county (admin updates County enum + Prisma migration), an outbound campaign re-engages them.
+**Behavior:** They see the "I'm in another county" link → waitlist form. Account remains live but `worker_profiles.county` stays null and `onboardedAt` stays null — they cannot apply for jobs. When AGCONN expands to their county (admin updates County enum + Prisma migration), an outbound campaign re-engages them.
 
 > **Inferred:** Waitlist users do NOT receive job alerts (since they have no county). They get a one-time confirmation SMS in their `preferredLang`. Confirm with product before launch.
 
@@ -50,13 +50,13 @@ Resume parser may extract skills not in our standard list. UI shows them as user
 
 ## Compliance: minor signups
 
-US Department of Labor restricts farm work for under-16. AgConn should not facilitate underage placement.
+US Department of Labor restricts farm work for under-16. AGCONN should not facilitate underage placement.
 
 > **Inferred:** Add age confirmation step in onboarding — "Are you 16 or older?". If no → soft-block with explanation in EN/ES. Birthdate not collected (privacy minimization). Re-validate at first job apply with the same affirmation. **This is a MUST-fix before launch — confirm legal language with counsel.**
 
 ## Data minimization
 
-- Don't collect SSN, work auth status, or immigration status. Ever. These belong only in WIOA/CalJOBS submitted by the grantee org, not in AgConn.
+- Don't collect SSN, work auth status, or immigration status. Ever. These belong only in WIOA/CalJOBS submitted by the grantee org, not in AGCONN.
 - Phone is hashed (`phoneHash`) for matching but the cleartext is stored to send SMS — there's no way around this. Encrypt at rest via Azure Postgres TDE.
 - Resume raw file (`resume_raw_url`) is kept for audit — but accessible only to admin and the owning user. Never to employers. Employers see the parsed JSON rendered as a profile, not the original document.
 
@@ -74,7 +74,7 @@ The MVP "default to the only tenant" path is a footgun for the second tenant. Tr
 
 ## SMS opt-out compliance
 
-US carriers require honoring STOP. Twilio handles this automatically — but the welcome SMS must include "Reply STOP to opt out" / "Responde STOP para cancelar" in both languages. Once a user opts out, no further SMS from any AgConn number; in-app messaging continues to work.
+US carriers require honoring STOP. Twilio handles this automatically — but the welcome SMS must include "Reply STOP to opt out" / "Responde STOP para cancelar" in both languages. Once a user opts out, no further SMS from any AGCONN number; in-app messaging continues to work.
 
 `sms_log` records `opted_out_at` per user. Job-alert SMS templates check this flag before send.
 

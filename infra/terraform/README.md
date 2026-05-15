@@ -1,4 +1,4 @@
-# Terraform — GCP infrastructure for AgConn
+# Terraform — GCP infrastructure for AGCONN
 
 Provisions a GKE zonal cluster (`us-west1-a`), Workload Identity Federation for
 GitHub Actions, a static external IP for nginx-ingress, and Cloudflare DNS
@@ -23,7 +23,7 @@ bash bootstrap.sh
 # 3. Configure variables.
 cp terraform.tfvars.example terraform.tfvars
 #    Edit cloudflare_zone_id (Cloudflare dashboard → agconn.com → sidebar)
-#    Edit github_repository (e.g. wizeworks/AgConnect)
+#    Edit github_repository (e.g. wizeworks/AGCONN)
 export TF_VAR_cloudflare_api_token=$(read -s; echo $REPLY)
 
 # 4. Apply.
@@ -45,7 +45,7 @@ $env:BILLING_ACCOUNT = "0X0X0X-0X0X0X-0X0X0X"
 # 3. Configure variables.
 Copy-Item terraform.tfvars.example terraform.tfvars
 #    Edit cloudflare_zone_id (Cloudflare dashboard -> agconn.com -> sidebar)
-#    Edit github_repository (e.g. wizeworks/AgConnect)
+#    Edit github_repository (e.g. wizeworks/AGCONN)
 $env:TF_VAR_cloudflare_api_token = "..."
 
 # 4. Apply.

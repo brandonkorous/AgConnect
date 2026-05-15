@@ -12,8 +12,8 @@ export const seniorFullstackEngineer: CareerRole = {
         es: 'Ingeniera o Ingeniero Full-Stack Senior',
     },
     summary: {
-        en: 'Own end-to-end features across the AgConn worker app, employer dashboard, and public API. TypeScript, Next.js, Postgres, and a multi-tenant architecture with row-level security throughout.',
-        es: 'Tome propiedad de funciones de extremo a extremo en la aplicación de trabajadores de AgConn, el panel del empleador y la API pública. TypeScript, Next.js, Postgres y una arquitectura multi-inquilino con seguridad a nivel de fila en todo.',
+        en: 'Own end-to-end features across the AGCONN worker app, employer dashboard, and public API. TypeScript, Next.js, Postgres, and a multi-tenant architecture with row-level security throughout.',
+        es: 'Tome propiedad de funciones de extremo a extremo en la aplicación de trabajadores de AGCONN, el panel del empleador y la API pública. TypeScript, Next.js, Postgres y una arquitectura multi-inquilino con seguridad a nivel de fila en todo.',
     },
     responsibilities: [
         {
@@ -47,8 +47,8 @@ export const seniorFullstackEngineer: CareerRole = {
             es: 'Historial de tomar propiedad de funciones a través del ciclo de vida completo — investigación, diseño, implementación, observabilidad, soporte.',
         },
         {
-            en: 'Genuine interest in the AgConn mission. We want engineers who are curious about why farmworker turnover is high and what software can actually do about it.',
-            es: 'Interés genuino en la misión de AgConn. Queremos ingenieros curiosos sobre por qué la rotación de trabajadores agrícolas es alta y qué puede hacer realmente el software al respecto.',
+            en: 'Genuine interest in the AGCONN mission. We want engineers who are curious about why farmworker turnover is high and what software can actually do about it.',
+            es: 'Interés genuino en la misión de AGCONN. Queremos ingenieros curiosos sobre por qué la rotación de trabajadores agrícolas es alta y qué puede hacer realmente el software al respecto.',
         },
     ],
     niceToHave: [

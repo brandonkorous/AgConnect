@@ -36,7 +36,7 @@ Full interaction sweep of every `/[locale]/employer/**` page in **EN and ES**. E
 ## 1 · Shell (top-bar / sidebar / global nav)
 
 ### What I exercised
-- Topbar: AgConn logo, `HIRE` pill, search input + `⌘K` hint, Help link, `+ Post a job` button, theme toggle.
+- Topbar: AGCONN logo, `HIRE` pill, search input + `⌘K` hint, Help link, `+ Post a job` button, theme toggle.
 - Sidebar: Dashboard / Job postings (badge: 1) / Candidates / Find workers (PRO badge) / Crews & shifts / Payroll / Compliance / Messages / Reports / Billing / Business profile.
 - User menu (bottom-left pill): Business profile / My account / Help & support / Language ES|EN / Sign out.
 - Search: typed `walnut`, pressed Enter → routed to `/employer/jobs?q=walnut` and rendered "1 match for "walnut"". ✓
@@ -109,7 +109,7 @@ Full interaction sweep of every `/[locale]/employer/**` page in **EN and ES**. E
 ### Findings
 
 - **[expected] No `/employer/lookups` UI page.** API-only surface. Not a bug, but worth confirming with the team that there's no plan to surface a UI for crops/roles/sites administration in this MVP. If admins need to add a crop or county, today they have to go through engineering.
-- **[high] 404 page is the un-branded Next.js default.** Pure black background, default sans-serif `404 | This page could not be found.`, no AgConn branding, no shell/sidebar, no theme respect (would also be black in light mode), no `Go back to dashboard` link, no "Did you mean…" hint. This is the *most likely* page a confused user lands on when they mistype a URL or follow a stale link — the absence of any orientation back to the app is a real UX hole. Add a branded `/[locale]/not-found.tsx` with the topbar+sidebar shell, a calm Tierra message, and a `← Back to dashboard` link in EN/ES.
+- **[high] 404 page is the un-branded Next.js default.** Pure black background, default sans-serif `404 | This page could not be found.`, no AGCONN branding, no shell/sidebar, no theme respect (would also be black in light mode), no `Go back to dashboard` link, no "Did you mean…" hint. This is the *most likely* page a confused user lands on when they mistype a URL or follow a stale link — the absence of any orientation back to the app is a real UX hole. Add a branded `/[locale]/not-found.tsx` with the topbar+sidebar shell, a calm Tierra message, and a `← Back to dashboard` link in EN/ES.
 
 ---
 

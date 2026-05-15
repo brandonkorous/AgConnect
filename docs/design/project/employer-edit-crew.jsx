@@ -58,7 +58,7 @@ const EditCrewPage = () => {
   return (
     <EmployerPage active="crews" topBarCta={
       <div style={{ display: 'flex', gap: 8 }}>
-        <a href="AgConnect Employer Crews.html" style={{ background: 'transparent', border: '1px solid var(--c-line)', borderRadius: 999, padding: '8px 14px', fontSize: 13, fontWeight: 600, textDecoration: 'none', color: 'var(--c-ink-2)' }}>Cancel</a>
+        <a href="AGCONN Employer Crews.html" style={{ background: 'transparent', border: '1px solid var(--c-line)', borderRadius: 999, padding: '8px 14px', fontSize: 13, fontWeight: 600, textDecoration: 'none', color: 'var(--c-ink-2)' }}>Cancel</a>
         <button className="btn btn-primary" style={{ padding: '8px 14px', fontSize: 13 }}>
           <Icon name="check" size={14}/> Save crew
         </button>
@@ -67,7 +67,7 @@ const EditCrewPage = () => {
       {/* Breadcrumbs + title */}
       <div style={{ marginBottom: 26 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--c-ink-3)', marginBottom: 8 }}>
-          <a href="AgConnect Employer Crews.html" style={{ color: 'inherit', textDecoration: 'none' }}>Crews & shifts</a>
+          <a href="AGCONN Employer Crews.html" style={{ color: 'inherit', textDecoration: 'none' }}>Crews & shifts</a>
           <Icon name="arrow" size={10}/>
           <span style={{ color: 'var(--c-ink-2)', fontWeight: 600 }}>Crew A · edit</span>
         </div>
@@ -352,7 +352,7 @@ const EditCrewPage = () => {
       <div style={{ position: 'sticky', bottom: 0, marginTop: 24, padding: '16px 0', background: 'rgba(250,250,248,0.92)', backdropFilter: 'blur(10px)', borderTop: '1px solid var(--c-line)', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 12, color: 'var(--c-ink-3)' }}>Last edited 8 min ago · auto-saved</span>
         <div style={{ flex: 1 }}/>
-        <a href="AgConnect Employer Crews.html" style={{ background: 'transparent', border: '1px solid var(--c-line)', borderRadius: 999, padding: '10px 18px', fontSize: 13, fontWeight: 600, textDecoration: 'none', color: 'var(--c-ink-2)' }}>Cancel</a>
+        <a href="AGCONN Employer Crews.html" style={{ background: 'transparent', border: '1px solid var(--c-line)', borderRadius: 999, padding: '10px 18px', fontSize: 13, fontWeight: 600, textDecoration: 'none', color: 'var(--c-ink-2)' }}>Cancel</a>
         <button style={{ background: 'white', border: '1px solid var(--c-line)', borderRadius: 999, padding: '10px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Save draft</button>
         <button style={{ background: 'var(--c-ink)', color: 'var(--c-bg)', border: 0, borderRadius: 999, padding: '10px 22px', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <Icon name="check" size={14}/> Save crew

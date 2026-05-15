@@ -117,7 +117,7 @@ export function EmployerSidebar({
     return (
         <aside className={wrapperClass}>
             <div className="flex items-center justify-between px-2 pb-4 pt-1">
-                <Link href={`/${locale}`} aria-label="AgConn home">
+                <Link href={`/${locale}`} aria-label="AGCONN home">
                     <Wordmark size="sm" tone="ink" />
                 </Link>
                 <span className="badge badge-neutral badge-sm font-mono tracking-wider">

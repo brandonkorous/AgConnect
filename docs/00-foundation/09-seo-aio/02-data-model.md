@@ -149,7 +149,7 @@ export function organizationJsonLd(tenant: Tenant) {
     return {
         '@context': 'https://schema.org/',
         '@type': 'Organization',
-        name: 'AgConn',
+        name: 'AGCONN',
         url: 'https://agconn.com',
         logo: 'https://agconn.com/logo.png',
         sameAs: [
@@ -187,9 +187,9 @@ export function faqJsonLd(items: { q: string; a: string }[]) {
 Static or generated from settings:
 
 ```
-# AgConn
+# AGCONN
 
-AgConn is a bilingual (English/Spanish) workforce platform for the Central Valley of California. It connects farmworkers to verified seasonal jobs and CDFA / F3-funded training programs, and provides employers with a vetted worker pool.
+AGCONN is a bilingual (English/Spanish) workforce platform for the Central Valley of California. It connects farmworkers to verified seasonal jobs and CDFA / F3-funded training programs, and provides employers with a vetted worker pool.
 
 ## Service area
 

@@ -8,7 +8,7 @@
 --               carries a per-row owner, scoped to that owner)
 --
 -- See docs/00-foundation/03-database/04-rls.md for the policy contract and
--- the AgConn three-bucket tenancy model.
+-- the AGCONN three-bucket tenancy model.
 
 -- ============================================================================
 -- compliance_score_snapshots — daily score rollup per employer profile.

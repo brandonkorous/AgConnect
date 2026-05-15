@@ -34,7 +34,7 @@ export function WorkerMobileShell({ locale, counts }: Props) {
                 </button>
                 <Link
                     href={`/${locale}/worker/dashboard` as Route}
-                    aria-label="AgConn home"
+                    aria-label="AGCONN home"
                     className="flex h-full items-center"
                 >
                     <Wordmark size="sm" tone="ink" />

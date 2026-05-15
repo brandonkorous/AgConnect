@@ -9,8 +9,8 @@ export const auth: TranslationBundle = {
         es: "Volver al inicio",
     },
     "shared.brand": {
-        en: "AgConn",
-        es: "AgConn",
+        en: "AGCONN",
+        es: "AGCONN",
     },
     "shared.errors.generic": {
         en: "Something went wrong. Try again.",
@@ -157,8 +157,8 @@ export const auth: TranslationBundle = {
 
     // Sign-in (unified, phone or email auto-detect)
     "sign_in.meta_title": {
-        en: "Sign in to AgConn",
-        es: "Inicia sesión en AgConn",
+        en: "Sign in to AGCONN",
+        es: "Inicia sesión en AGCONN",
     },
     "sign_in.eyebrow": {
         en: "Welcome back",
@@ -223,8 +223,8 @@ export const auth: TranslationBundle = {
 
     // Worker sign-up (phone OR email)
     "sign_up_worker.meta_title": {
-        en: "Sign up — Workers · AgConn",
-        es: "Crear cuenta — Trabajadores · AgConn",
+        en: "Sign up — Workers · AGCONN",
+        es: "Crear cuenta — Trabajadores · AGCONN",
     },
     "sign_up_worker.eyebrow": {
         en: "Worker sign-up",
@@ -357,8 +357,8 @@ export const auth: TranslationBundle = {
 
     // Employer sign-up (email required, phone optional)
     "sign_up_employer.meta_title": {
-        en: "Sign up — Employers · AgConn",
-        es: "Crear cuenta — Empleadores · AgConn",
+        en: "Sign up — Employers · AGCONN",
+        es: "Crear cuenta — Empleadores · AGCONN",
     },
     "sign_up_employer.eyebrow": {
         en: "Employer sign-up",

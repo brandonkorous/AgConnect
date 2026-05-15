@@ -23,7 +23,7 @@ Tone shifts by surface but never abandons the voice principles.
 | Empty state    | reassuring, action-forward     | No saved jobs yet. Browse to start a list.                                          | Aún no tienes trabajos guardados. Explora para empezar tu lista.                                  |
 | Error          | precise, never blaming         | We couldn't read that file. Try a PDF or DOCX.                                      | No pudimos leer ese archivo. Prueba con PDF o DOCX.                                               |
 | Success        | small, specific                | Hired by Bonita Farms · Apr 29                                                      | Contratado por Bonita Farms · 29 abr.                                                             |
-| SMS            | plain, complete in one message | AgConn: Tu código es 482 619. Válido 10 min.                                        | AgConn: Your code is 482 619. Valid 10 min.                                                       |
+| SMS            | plain, complete in one message | AGCONN: Tu código es 482 619. Válido 10 min.                                        | AGCONN: Your code is 482 619. Valid 10 min.                                                       |
 | Certificate    | formal, archival               | This certifies that **María R.** completed Heat Illness Prevention on Apr 29, 2026. | Se certifica que **María R.** completó Prevención de Enfermedad por Calor el 29 de abril de 2026. |
 
 ## Don'ts
@@ -83,7 +83,7 @@ A short, opinionated glossary. Update as questions come up.
 
 SMS is the primary product channel for many workers. Bilingual, 160-character-aware, never marketing.
 
-- **First word of every SMS is `AgConn:`** so the recipient instantly knows the source. Spam complaints drop when the brand name leads.
+- **First word of every SMS is `AGCONN:`** so the recipient instantly knows the source. Spam complaints drop when the brand name leads.
 - **Stay under 160 characters when possible.** GSM-7 only — no emoji, no curly quotes in SMS. Use straight quotes here as the exception.
 - **Provide STOP/AYUDA paths** in onboarding messages to comply with carrier requirements: `Reply STOP to opt out` / `Responde AYUDA para ayuda`.
 - **No URLs unless essential.** When a URL is necessary, prefer a short branded subdomain (`go.agconn.app/...`).
@@ -91,9 +91,9 @@ SMS is the primary product channel for many workers. Bilingual, 160-character-aw
 Examples:
 
 ```
-AgConn: Tu código es 482 619. Válido 10 min. No lo compartas.
-AgConn: Bonita Farms te contrató para Pisca de Uva el 29 abr. Detalles: go.agconn.app/j/3F2
-AgConn: Recordatorio — Capacitación Heat Illness mañana 7am, Selma. Ver: go.agconn.app/t/HI4
+AGCONN: Tu código es 482 619. Válido 10 min. No lo compartas.
+AGCONN: Bonita Farms te contrató para Pisca de Uva el 29 abr. Detalles: go.agconn.app/j/3F2
+AGCONN: Recordatorio — Capacitación Heat Illness mañana 7am, Selma. Ver: go.agconn.app/t/HI4
 ```
 
 ## Email
@@ -101,7 +101,7 @@ AgConn: Recordatorio — Capacitación Heat Illness mañana 7am, Selma. Ver: go.
 Email is for richer content (welcome messages, certificates, weekly digests). The voice is the same; the format is more spacious.
 
 - Plain-text-equivalent every HTML email. Many recipients read on slow connections or text-only clients.
-- Subject lines: 6 words or fewer, sentence case, no emoji. `Your AgConn certificate is ready` / `Tu certificado AgConn está listo`.
+- Subject lines: 6 words or fewer, sentence case, no emoji. `Your AGCONN certificate is ready` / `Tu certificado AGCONN está listo`.
 - One primary CTA per email. If you need a second, you have two emails.
 
 ## Certificates and reports

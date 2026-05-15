@@ -17,7 +17,7 @@
 
 ## Content quality
 
-- [ ] Summary describes AgConn's mission in one sentence in EN and one in ES.
+- [ ] Summary describes AGCONN's mission in one sentence in EN and one in ES.
 - [ ] Includes platform scope (5 counties, 4 audiences, bilingual default).
 - [ ] Lists at least 5 surface URLs (landing EN/ES, FAQ EN/ES, jobs, trainings, impact).
 - [ ] Includes pricing summary in plain language (Free / Pro / Enterprise rates).
@@ -28,7 +28,7 @@
 
 ### Unit
 
-1. `GET /llms.txt` returns body with `# AgConn` as the first header.
+1. `GET /llms.txt` returns body with `# AGCONN` as the first header.
 2. Body interpolates `process.env.NEXT_PUBLIC_SITE_URL` correctly when set.
 3. Default URL fallback (`https://agconn.com`) used when env var is unset.
 

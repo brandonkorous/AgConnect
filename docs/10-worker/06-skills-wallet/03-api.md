@@ -68,8 +68,8 @@ const ShareResponse = z.object({
 Pre-rendered share text:
 
 ```ts
-shareTextEn: 'I earned a certificate in {programTitle} via AgConn. View it: {shareUrl}',
-shareTextEs: 'Obtuve un certificado en {programTitle} con AgConn. Velo aquí: {shareUrl}',
+shareTextEn: 'I earned a certificate in {programTitle} via AGCONN. View it: {shareUrl}',
+shareTextEs: 'Obtuve un certificado en {programTitle} con AGCONN. Velo aquí: {shareUrl}',
 ```
 
 Used by the share menu to populate WhatsApp / SMS bodies.
@@ -91,7 +91,7 @@ const VerifyResponse = z.object({
 });
 ```
 
-For MVP, returns: `{ valid: false, message: 'Verification page coming soon. Contact AgConn support to verify a certificate.' }`. The PDF footer points to this URL anyway, so the page exists; it just doesn't yet do live verification.
+For MVP, returns: `{ valid: false, message: 'Verification page coming soon. Contact AGCONN support to verify a certificate.' }`. The PDF footer points to this URL anyway, so the page exists; it just doesn't yet do live verification.
 
 ## Errors
 

@@ -25,7 +25,7 @@ resource "google_iam_workload_identity_pool_provider" "github_actions" {
 
 resource "google_service_account" "deploy" {
   account_id   = "agconn-deploy"
-  display_name = "AgConn deploy (GitHub Actions)"
+  display_name = "AGCONN deploy (GitHub Actions)"
   description  = "Used by GitHub Actions to apply manifests to the GKE cluster."
 }
 

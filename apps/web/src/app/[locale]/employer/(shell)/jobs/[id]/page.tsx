@@ -17,7 +17,7 @@ type Props = { params: Promise<{ locale: string; id: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.jobs.list' });
-    return { title: `AgConn — ${t('edit_posting')}` };
+    return { title: `AGCONN — ${t('edit_posting')}` };
 }
 
 export default async function EditJobPage({ params }: Props) {

@@ -1,5 +1,5 @@
 -- =============================================================================
--- AgConn — H-2A flag, DOL inspection tracking, compliance score snapshots
+-- AGCONN — H-2A flag, DOL inspection tracking, compliance score snapshots
 -- =============================================================================
 --
 -- Adds the H-2A program participant flag, DOL inspection columns, and the

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Every AgConn deployment serves multiple isolated organizational tenants. A tenant is an organizational deployment of AgConn — for example, a regional workforce board, a state agency partner, or a white-label licensee. For MVP, there is one tenant (`AgConn Central Valley`); the architecture supports adding more without schema migration.
+Every AGCONN deployment serves multiple isolated organizational tenants. A tenant is an organizational deployment of AGCONN — for example, a regional workforce board, a state agency partner, or a white-label licensee. For MVP, there is one tenant (`AGCONN Central Valley`); the architecture supports adding more without schema migration.
 
 ## Why multi-tenant from day one
 

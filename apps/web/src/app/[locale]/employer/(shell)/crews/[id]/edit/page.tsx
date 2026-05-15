@@ -7,29 +7,29 @@ import { CrewEditorPage } from '@/components/employer/crews/edit-crew/CrewEditor
 type Props = { params: Promise<{ locale: string; id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, id } = await params;
-  const t = await getTranslations({ locale, namespace: 'employer.crews.edit_crew' });
-  const detail = await getCrew(id);
-  if (!detail) return { title: `AgConn — ${t('breadcrumb_edit')}` };
-  return { title: `AgConn — ${detail.crew.name}` };
+    const { locale, id } = await params;
+    const t = await getTranslations({ locale, namespace: 'employer.crews.edit_crew' });
+    const detail = await getCrew(id);
+    if (!detail) return { title: `AGCONN — ${t('breadcrumb_edit')}` };
+    return { title: `AGCONN — ${detail.crew.name}` };
 }
 
 export default async function EditCrewRoute({ params }: Props) {
-  const { locale, id } = await params;
-  const [detail, insights, hires] = await Promise.all([
-    getCrew(id),
-    getCrewInsights(id),
-    listActiveHires(),
-  ]);
-  if (!detail) notFound();
-  return (
-    <CrewEditorPage
-      locale={locale}
-      mode="edit"
-      crew={detail.crew}
-      members={detail.members}
-      insights={insights}
-      hires={hires}
-    />
-  );
+    const { locale, id } = await params;
+    const [detail, insights, hires] = await Promise.all([
+        getCrew(id),
+        getCrewInsights(id),
+        listActiveHires(),
+    ]);
+    if (!detail) notFound();
+    return (
+        <CrewEditorPage
+            locale={locale}
+            mode="edit"
+            crew={detail.crew}
+            members={detail.members}
+            insights={insights}
+            hires={hires}
+        />
+    );
 }

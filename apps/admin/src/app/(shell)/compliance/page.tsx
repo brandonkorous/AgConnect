@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { fetchComplianceItems, fetchScoreboard } from '@/lib/work-api';
 
-export const metadata = { title: 'Compliance — AgConn Admin' };
+export const metadata = { title: 'Compliance — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

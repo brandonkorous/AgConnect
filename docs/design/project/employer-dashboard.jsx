@@ -78,7 +78,7 @@ const ActiveJobsBoard = () => {
           <div style={{ fontFamily: 'var(--f-display)', fontSize: 22, letterSpacing: '-0.02em', fontWeight: 400 }}>Active job postings</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-3)', marginTop: 2 }}>4 open · 47 applicants this week</div>
         </div>
-        <a href="AgConnect Employer Jobs.html" style={{ fontSize: 13, color: 'var(--c-primary)', textDecoration: 'none', fontWeight: 600 }}>Manage all →</a>
+        <a href="AGCONN Employer Jobs.html" style={{ fontSize: 13, color: 'var(--c-primary)', textDecoration: 'none', fontWeight: 600 }}>Manage all →</a>
       </div>
       {jobs.map((j, i) => {
         const t = tones[j.urgency];
@@ -142,7 +142,7 @@ const HiringPipeline = () => {
           <div style={{ fontFamily: 'var(--f-display)', fontSize: 22, letterSpacing: '-0.02em', fontWeight: 400 }}>Hiring pipeline</div>
           <div style={{ fontSize: 12.5, color: 'var(--c-ink-3)', marginTop: 2 }}>Drag candidates between stages · 47 active</div>
         </div>
-        <a href="AgConnect Employer Candidates.html" style={{ fontSize: 13, color: 'var(--c-primary)', textDecoration: 'none', fontWeight: 600 }}>Open full pipeline →</a>
+        <a href="AGCONN Employer Candidates.html" style={{ fontSize: 13, color: 'var(--c-primary)', textDecoration: 'none', fontWeight: 600 }}>Open full pipeline →</a>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {cols.map((c, i) => (

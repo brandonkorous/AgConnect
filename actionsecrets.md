@@ -1,4 +1,4 @@
-# GitHub Actions Secrets — AgConn
+# GitHub Actions Secrets — AGCONN
 
 Set under **Settings → Secrets and variables → Actions** at the repo level (or
 under a `prod` GitHub Environment if you want to scope them later). Total: 33.

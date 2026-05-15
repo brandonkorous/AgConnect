@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { fetchWaitlist } from '@/lib/ops-api';
 
-export const metadata = { title: 'Waitlist — AgConn Admin' };
+export const metadata = { title: 'Waitlist — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

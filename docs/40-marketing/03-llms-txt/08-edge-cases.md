@@ -2,12 +2,12 @@
 
 ## Domain rebrand
 
-The product may rebrand from "AgConn" before launch (the `.com` may not be available — see [01-landing/08-edge-cases.md](../01-landing/08-edge-cases.md)).
+The product may rebrand from "AGCONN" before launch (the `.com` may not be available — see [01-landing/08-edge-cases.md](../01-landing/08-edge-cases.md)).
 
 **Mitigation:**
 
 - Body content references `process.env.NEXT_PUBLIC_SITE_URL` — domain swap is an env var change.
-- Product name "AgConn" appears literally in the file. On rebrand, edit the route file directly. One PR, one merge, ISR revalidates.
+- Product name "AGCONN" appears literally in the file. On rebrand, edit the route file directly. One PR, one merge, ISR revalidates.
 - Platform description ("bilingual workforce platform connecting Central Valley farmworkers...") stays valid regardless of name.
 
 ## Stale links
@@ -37,11 +37,11 @@ Worst case: nobody reads `/llms.txt` and the investment doesn't pay off in citat
 
 - Ship anyway — the file is < 100 lines and zero ongoing cost.
 - Adoption is increasing across the AI search space; the bet is asymmetric (low cost, potentially high upside).
-- Track: monthly Perplexity / ChatGPT search for "what is AgConn"; note whether the answer cites our domain. If after 90 days no citation, deprioritize but keep the file.
+- Track: monthly Perplexity / ChatGPT search for "what is AGCONN"; note whether the answer cites our domain. If after 90 days no citation, deprioritize but keep the file.
 
 ## Hand-edited file diverges from site reality
 
-Body claims AgConn serves five counties, but a tenant launches and adds a sixth. The file says "Free plan = 2 active postings", but pricing changes to 3.
+Body claims AGCONN serves five counties, but a tenant launches and adds a sixth. The file says "Free plan = 2 active postings", but pricing changes to 3.
 
 **Mitigation:**
 
@@ -88,5 +88,5 @@ Next.js's i18n middleware would normally rewrite `/llms.txt` to `/es/llms.txt`. 
 ## Open questions
 
 1. **`/llms-full.txt` expanded version** — when does the simple 4 KB version stop being enough? Add the expanded file when a real-world AI agent demonstrably benefits.
-2. **Per-tenant `llms.txt`** — when a workforce-board tenant runs their own AgConn instance, do they get their own `/llms.txt`? Out of scope MVP; reconsider if multi-tenant marketing surface ships.
+2. **Per-tenant `llms.txt`** — when a workforce-board tenant runs their own AGCONN instance, do they get their own `/llms.txt`? Out of scope MVP; reconsider if multi-tenant marketing surface ships.
 3. **Markdown formatting variants** — some llmstxt.org examples use `## Pages` instead of `## Surfaces`. Watch the spec; adjust if the de-facto format changes.

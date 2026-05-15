@@ -10,7 +10,7 @@
 // component rather than re-introducing a NEXT_PUBLIC_ env var.
 //
 // Future multi-region expansion:
-//   When AgConn extends past the Central Valley (Salinas Valley, Imperial
+//   When AGCONN extends past the Central Valley (Salinas Valley, Imperial
 //   Valley, etc.), each region gets its own 10DLC number registered to the
 //   same brand under separate A2P campaigns. The single env var below will
 //   be replaced by a `region_phone_numbers` table keyed by (region, locale)
@@ -20,7 +20,7 @@
 const RAW_FALLBACK = '+15597444422';
 
 function raw(): string {
-  return process.env.TWILIO_INBOUND_PHONE || RAW_FALLBACK;
+    return process.env.TWILIO_INBOUND_PHONE || RAW_FALLBACK;
 }
 
 /**
@@ -28,7 +28,7 @@ function raw(): string {
  * Example: `+15597444422`
  */
 export function inboundPhoneTel(): string {
-  return raw();
+    return raw();
 }
 
 /**
@@ -38,10 +38,10 @@ export function inboundPhoneTel(): string {
  * Example: `+15597444422` -> `(559) 744-4422`
  */
 export function inboundPhoneDisplay(): string {
-  const e164 = raw();
-  const match = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(e164);
-  if (!match) return e164;
-  return `(${match[1]}) ${match[2]}-${match[3]}`;
+    const e164 = raw();
+    const match = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(e164);
+    if (!match) return e164;
+    return `(${match[1]}) ${match[2]}-${match[3]}`;
 }
 
 /**
@@ -50,5 +50,5 @@ export function inboundPhoneDisplay(): string {
  * just the one we show on flyers and landing pages for each language.
  */
 export function inboundOptInKeyword(locale: 'en' | 'es'): string {
-  return locale === 'es' ? 'TRABAJO' : 'JOBS';
+    return locale === 'es' ? 'TRABAJO' : 'JOBS';
 }

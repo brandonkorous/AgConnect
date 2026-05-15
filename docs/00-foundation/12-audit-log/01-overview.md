@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A tenant-scoped, append-only record of every consequential action in AgConn — who did what, when, to which resource, with what outcome. The audit log is the source of truth for:
+A tenant-scoped, append-only record of every consequential action in AGCONN — who did what, when, to which resource, with what outcome. The audit log is the source of truth for:
 
 - **Security incident response** — "who logged in from this IP yesterday?", "did anyone access this worker's profile?"
 - **Compliance** — CCPA right-to-know responses, WIOA grant placement event provenance, SOC-2 Type II attestation evidence (post-MVP), Stripe billing reconciliation.

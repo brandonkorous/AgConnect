@@ -44,16 +44,16 @@ type NavItem = {
 };
 
 const ITEMS: NavItem[] = [
-    { key: 'dashboard',       icon: faChartLine,       path: '/worker/dashboard' },
-    { key: 'browse_jobs',     icon: faLeaf,            path: '/worker/jobs' },
-    { key: 'saved_searches',  icon: faBookmark,        path: '/worker/saved-searches' },
-    { key: 'my_applications', icon: faClipboardCheck,  path: '/worker/applications' },
-    { key: 'my_shifts',       icon: faCalendarDays,    path: '/worker/shifts' },
-    { key: 'pay',             icon: faSackDollar,      path: '/worker/pay' },
-    { key: 'wallet',          icon: faWallet,          path: '/worker/wallet' },
-    { key: 'training',        icon: faGraduationCap,   path: '/worker/training' },
-    { key: 'documents',       icon: faIdBadge,         path: '/worker/documents' },
-    { key: 'messages',        icon: faComments,        path: '/worker/messages', accent: true },
+    { key: 'dashboard', icon: faChartLine, path: '/worker/dashboard' },
+    { key: 'browse_jobs', icon: faLeaf, path: '/worker/jobs' },
+    { key: 'saved_searches', icon: faBookmark, path: '/worker/saved-searches' },
+    { key: 'my_applications', icon: faClipboardCheck, path: '/worker/applications' },
+    { key: 'my_shifts', icon: faCalendarDays, path: '/worker/shifts' },
+    { key: 'pay', icon: faSackDollar, path: '/worker/pay' },
+    { key: 'wallet', icon: faWallet, path: '/worker/wallet' },
+    { key: 'training', icon: faGraduationCap, path: '/worker/training' },
+    { key: 'documents', icon: faIdBadge, path: '/worker/documents' },
+    { key: 'messages', icon: faComments, path: '/worker/messages', accent: true },
 ];
 
 type Props = {
@@ -91,7 +91,7 @@ export function WorkerSidebar({ active, locale, variant = 'inline', counts }: Pr
     return (
         <aside className={wrapperClass}>
             <div className="flex items-center px-2 pb-4 pt-1">
-                <Link href={`/${locale}`} aria-label="AgConn home">
+                <Link href={`/${locale}`} aria-label="AGCONN home">
                     <Wordmark size="sm" tone="ink" />
                 </Link>
             </div>
@@ -120,8 +120,8 @@ export function WorkerSidebar({ active, locale, variant = 'inline', counts }: Pr
                                             item.accent
                                                 ? 'badge-accent'
                                                 : isActive
-                                                  ? 'badge-ghost'
-                                                  : 'badge-neutral badge-soft',
+                                                    ? 'badge-ghost'
+                                                    : 'badge-neutral badge-soft',
                                         ].join(' ')}
                                     >
                                         {count}

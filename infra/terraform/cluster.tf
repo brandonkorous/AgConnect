@@ -1,6 +1,6 @@
 resource "google_service_account" "gke_node" {
   account_id   = "agconn-gke-node"
-  display_name = "AgConn GKE node"
+  display_name = "AGCONN GKE node"
   description  = "Identity used by GKE node VMs. Carries the bundled minimum-permissions role for node ops (logging, monitoring, autoscaling metrics, AR pull)."
   depends_on   = [google_project_service.enabled]
 }

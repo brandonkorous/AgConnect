@@ -1,5 +1,5 @@
 -- =============================================================================
--- AgConn — Three-bucket tenancy model
+-- AGCONN — Three-bucket tenancy model
 -- =============================================================================
 --
 -- Reshapes data isolation from "every table tenant-scoped" to three buckets:

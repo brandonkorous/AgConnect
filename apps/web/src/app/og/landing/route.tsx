@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     const localeRaw = searchParams.get('locale');
     const locale = localeRaw === 'en' ? 'en' : 'es';
     const headline = headlines[locale];
-    const brand = process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AgConn';
+    const brand = process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AGCONN';
 
     return new ImageResponse(
         (

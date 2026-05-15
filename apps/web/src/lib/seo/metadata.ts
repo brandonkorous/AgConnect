@@ -9,7 +9,7 @@ function siteUrl(): string {
 }
 
 export function brandName(): string {
-    return process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AgConn';
+    return process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AGCONN';
 }
 
 type LocalizedPath = (locale: Locale) => string;

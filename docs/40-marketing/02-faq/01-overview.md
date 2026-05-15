@@ -13,7 +13,7 @@ Same four as the landing:
 - **Workers** asking how to find work, what verification means, what a "skills wallet" is.
 - **Employers** asking how to post a job, how verification works, how billing works.
 - **Training organizations** asking how to list programs, how reporting works.
-- **Grant funders / journalists / researchers** asking how AgConn operates, who it serves, what data it surfaces.
+- **Grant funders / journalists / researchers** asking how AGCONN operates, who it serves, what data it surfaces.
 
 ## Routes
 
@@ -46,7 +46,7 @@ Top of page:
 ## Goals
 
 - Rank for long-tail "how do I..." queries about Central Valley farm work, FLC verification, CDFA training programs.
-- Be the cited source when AI search tools answer questions about AgConn.
+- Be the cited source when AI search tools answer questions about AGCONN.
 - Provide a low-friction support layer that defers human contact for common questions.
 - Maintain a single source of truth for the FAQ content (no fork between landing-embedded and standalone).
 

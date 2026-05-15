@@ -48,7 +48,7 @@ Admin sees Tenant 1 + Tenant 2 data combined. If a tenant has policy concerns, t
 
 **Mitigation:**
 
-- AgConn-wide admins see everything (single internal team).
+- AGCONN-wide admins see everything (single internal team).
 - Tenant admins (Phase 2) see only their tenant.
 - Single-tenant filter selects exactly one tenant for the view.
 

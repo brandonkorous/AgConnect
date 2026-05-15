@@ -31,7 +31,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.messages' });
-    return { title: `AgConn — ${t('title')}` };
+    return { title: `AGCONN — ${t('title')}` };
 }
 
 const VALID_FOLDERS: ReadonlyArray<FolderKey> = [

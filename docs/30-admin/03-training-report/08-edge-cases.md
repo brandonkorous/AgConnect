@@ -58,7 +58,7 @@ Defensive: program with `org_id` referencing a deleted user.
 
 We deliberately don't collect race / ethnicity / SSN. Some grantees ask for these.
 
-**Position:** AgConn is the platform; demographic surveys belong to the grantee's separate intake process. We provide what we have (county, language).
+**Position:** AGCONN is the platform; demographic surveys belong to the grantee's separate intake process. We provide what we have (county, language).
 
 > **Inferred:** Reaffirming this position is important. Grantees might pressure for more data; we hold the line on minimization.
 

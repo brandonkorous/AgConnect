@@ -406,7 +406,7 @@ Each duration above is grounded in a binding obligation or a defensible industry
 | 4 y    | 1460  | `worker.profile.*`, `worker.resume.*`, `job.posting.*`      | CA Labor Code §1174(d) — employer must keep employment + recruitment records 4 years.             |
 | 7 y    | 2555  | placement, billing, training, cert, FLC, tenant, admin, role | Composite of: WIOA §116 + 2 CFR §200.334 (federal grant records, 3 y post grant + safety margin); IRS §6001 (7 y for tax-relevant records); industry norm for security-significant insider-abuse investigation. |
 
-We default to 7 years for everything compliance-touching because (a) the longest binding obligation for AgConn data classes is 7 y, and (b) one consistent number is operationally simpler than a rainbow of bespoke values that CSP partners may push back on.
+We default to 7 years for everything compliance-touching because (a) the longest binding obligation for AGCONN data classes is 7 y, and (b) one consistent number is operationally simpler than a rainbow of bespoke values that CSP partners may push back on.
 
 If a partner organization signs an agreement requiring shorter retention (e.g., GDPR right-to-be-forgotten with strict deletion windows), the action-level retention can be tightened without a schema change — the registry is the contract.
 

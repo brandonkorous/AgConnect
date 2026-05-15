@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { fetchBilling } from '@/lib/ops-api';
 
-export const metadata = { title: 'Billing — AgConn Admin' };
+export const metadata = { title: 'Billing — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 type SearchParams = Record<string, string | string[] | undefined>;

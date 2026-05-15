@@ -1,4 +1,4 @@
-/* AgConnect — body sections: how-it-works, stats, app preview, features, training, testimonials, trust, partners, FAQ, CTA, footer */
+/* AGCONN — body sections: how-it-works, stats, app preview, features, training, testimonials, trust, partners, FAQ, CTA, footer */
 
 /* ─────────────────────────── HOW IT WORKS ─────────────────────────── */
 const HowItWorks = () => {
@@ -350,7 +350,7 @@ const Training = () => {
             </h2>
           </div>
           <p className="lede" style={{ maxWidth: 380 }}>
-            Curated from CDFA, F3, and community colleges — every program is bilingual, paid for, and tied to real job listings on AgConnect.
+            Curated from CDFA, F3, and community colleges — every program is bilingual, paid for, and tied to real job listings on AGCONN.
           </p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
@@ -454,7 +454,7 @@ const Trust = () => {
             <span className="section-num">§ 07 — Trust & safety</span>
             <h2 className="h-section" style={{ marginTop: 16 }}>The boring parts <em>matter most</em>.</h2>
             <p className="lede" style={{ marginTop: 20, fontSize: 17 }}>
-              We built AgConnect with worker advocates and grower associations — because trust is what keeps this thing alive.
+              We built AGCONN with worker advocates and grower associations — because trust is what keeps this thing alive.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, border: '1px solid var(--c-line)', borderRadius: 'var(--r-lg)', overflow: 'hidden', background: 'white' }}>
@@ -506,12 +506,12 @@ const Partners = () => {
 /* ─────────────────────────── FAQ ─────────────────────────── */
 const FAQ = () => {
   const faqs = [
-    { q: 'Does AgConnect cost workers anything?', a: "No. Workers never pay to find a job, get matched, take training, or use the app. Employer subscriptions and CDFA workforce grants cover the platform." },
+    { q: 'Does AGCONN cost workers anything?', a: "No. Workers never pay to find a job, get matched, take training, or use the app. Employer subscriptions and CDFA workforce grants cover the platform." },
     { q: "What if I don't have a smartphone?", a: 'Everything works over plain SMS. You can search jobs, apply, and confirm shifts without ever opening the app — and you can save the page on any browser as a PWA.' },
     { q: 'How do you verify employers?', a: 'Tax ID + contractor license, on-site visit by a partner organization, and a 90-day probation where worker reviews are weighted more heavily. Bad actors are removed.' },
     { q: 'Is my data shared with ICE or any federal agency?', a: "No. We don't collect immigration status. Worker records are encrypted and only released with the worker's explicit consent — not by subpoena, not by request." },
     { q: 'Which counties are covered today?', a: 'Madera, Fresno, Tulare, Kings, Stanislaus, Merced, San Joaquin, Yolo, and Monterey. Kern and Sutter coming summer 2026.' },
-    { q: 'Can my training program list courses on AgConnect?', a: 'Yes — if your program is CDFA-eligible or F3-affiliated, you can apply to be listed in the training directory at no cost.' },
+    { q: 'Can my training program list courses on AGCONN?', a: 'Yes — if your program is CDFA-eligible or F3-affiliated, you can apply to be listed in the training directory at no cost.' },
   ];
   const [open, setOpen] = React.useState(0);
   return (
@@ -604,7 +604,7 @@ const InstallCard = () => (
         <Logo size={14} mono/>
       </div>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600 }}>AgConnect</div>
+        <div style={{ fontSize: 14, fontWeight: 600 }}>AGCONN</div>
         <div style={{ fontSize: 12, color: 'var(--c-ink-3)' }}>agconnect.com · PWA</div>
       </div>
       <button style={{ marginLeft: 'auto', background: 'var(--c-ink)', color: 'var(--c-bg)', border: 0, borderRadius: 999, padding: '8px 14px', fontSize: 12.5, fontWeight: 600 }}>
@@ -635,7 +635,7 @@ const Footer = () => {
     { h: 'For Workers · Para Trabajadores', l: ['Find a job · Buscar trabajo', 'Training programs', 'Get paid faster', 'Worker rights', 'Help via SMS'] },
     { h: 'For Employers', l: ['Post a job', 'Pricing', 'Compliance & I-9', 'Payroll integrations', 'Book a demo'] },
     { h: 'Programs', l: ['CDFA workforce grants', 'F3 Innovate', 'County partners', 'List your training', 'Research & data'] },
-    { h: 'Company', l: ['About AgConnect', 'Impact report', 'Press', 'Careers', 'Contact'] },
+    { h: 'Company', l: ['About AGCONN', 'Impact report', 'Press', 'Careers', 'Contact'] },
   ];
   return (
     <footer style={{ background: 'var(--c-bg-warm)', borderTop: '1px solid var(--c-line)', padding: '80px 0 40px' }}>
@@ -663,7 +663,7 @@ const Footer = () => {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 24, borderTop: '1px solid var(--c-line)', flexWrap: 'wrap', gap: 12 }}>
           <div style={{ fontSize: 12.5, color: 'var(--c-ink-3)' }}>
-            © 2026 AgConnect PBC · Fresno, CA · Made with the United Farm Workers Foundation
+            © 2026 AGCONN PBC · Fresno, CA · Made with the United Farm Workers Foundation
           </div>
           <div style={{ display: 'flex', gap: 20, fontSize: 12.5, color: 'var(--c-ink-3)' }}>
             <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</a>
@@ -674,7 +674,7 @@ const Footer = () => {
         </div>
         {/* Big wordmark */}
         <div style={{ marginTop: 60, fontFamily: 'var(--f-display)', fontSize: 'clamp(80px, 16vw, 220px)', lineHeight: 0.9, letterSpacing: '-0.04em', color: 'var(--c-primary)', opacity: 0.18, textAlign: 'center' }}>
-          AgConnect
+          AGCONN
         </div>
       </div>
     </footer>

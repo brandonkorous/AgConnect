@@ -44,7 +44,7 @@ export default async function EmployerOnboardingPage({ params }: Props) {
                 <Link
                     href={`/${locale}`}
                     className="text-base-content no-underline"
-                    aria-label="AgConn"
+                    aria-label="AGCONN"
                 >
                     <Wordmark size="sm" tone="ink" />
                 </Link>

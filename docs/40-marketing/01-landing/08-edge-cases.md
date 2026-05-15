@@ -2,16 +2,16 @@
 
 ## Brand-name change pre-launch
 
-The user notes the `.com` domain may not be available, forcing a rebrand from "AgConn".
+The user notes the `.com` domain may not be available, forcing a rebrand from "AGCONN".
 
 **Mitigation:**
 
-- Wherever the literal name "AgConn" appears in copy, route through an i18n key (e.g., `brand.product_name`) so a single string change updates every surface.
+- Wherever the literal name "AGCONN" appears in copy, route through an i18n key (e.g., `brand.product_name`) so a single string change updates every surface.
 - Keep the **Tierra theme** independent of the product name. The brand folder is named for the theme, not the product.
 - Logo, wordmark, and OG image generation are parameterized on `brand.product_name`.
-- Footer NAP "AgConn, PBC" is also a key (`landing.footer.nap.org`); legal entity name swap is a config change, not a re-render.
+- Footer NAP "AGCONN, PBC" is also a key (`landing.footer.nap.org`); legal entity name swap is a config change, not a re-render.
 
-> **Inferred:** Adding a `brand.product_name` key now (even though it's "AgConn" today) future-proofs the rename. Cost: trivial. Skipping it now: every component file gets edited later.
+> **Inferred:** Adding a `brand.product_name` key now (even though it's "AGCONN" today) future-proofs the rename. Cost: trivial. Skipping it now: every component file gets edited later.
 
 ## Hero typography on small phones
 
@@ -111,7 +111,7 @@ Per `brand/README.md`, the logo lands as `09-logo.md` later. Until then the land
 
 **Mitigation:**
 
-- Use the Fraunces semibold "AgConn" wordmark + a simple SVG mark (sun-mark or land-mark) until logo finalizes.
+- Use the Fraunces semibold "AGCONN" wordmark + a simple SVG mark (sun-mark or land-mark) until logo finalizes.
 - All logo references go through a single component (`<Wordmark />`) so the swap is one PR.
 - OG image generator imports the same component.
 

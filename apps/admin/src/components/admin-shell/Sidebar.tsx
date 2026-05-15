@@ -38,7 +38,7 @@ export function Sidebar({ scope, tenantId }: SidebarProps) {
                     A
                 </div>
                 <div className="leading-tight">
-                    <div className="font-serif text-sm font-medium">AgConn</div>
+                    <div className="font-serif text-sm font-medium">AGCONN</div>
                     <div className="text-base-content/60 text-xs tracking-wide uppercase">Admin</div>
                 </div>
             </div>

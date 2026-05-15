@@ -1,5 +1,5 @@
 -- =============================================================================
--- AgConn — DB-backed UI translations (replaces apps/web/messages/{en,es}.json)
+-- AGCONN — DB-backed UI translations (replaces apps/web/messages/{en,es}.json)
 -- =============================================================================
 --
 -- Single source of truth for UI copy. Locale + namespace + key, scoped by

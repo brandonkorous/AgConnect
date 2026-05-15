@@ -40,11 +40,11 @@ The 8 entries surfaced on both landing and `/faq` come from the existing `landin
 ```ts
 // apps/web/src/app/[locale]/(marketing)/_data/faq-extras.ts
 export const FAQ_EXTRA_IDS = [
-  'data-privacy',           // What does AgConn do with my phone number?
+  'data-privacy',           // What does AGCONN do with my phone number?
   'wage-disputes',          // What if my employer pays less than the posted wage?
   'training-cert-validity', // Does my CDFA cert work outside California?
   'employer-payouts',       // When does an employer get charged?
-  'tenant-onboarding',      // Can a workforce board run their own AgConn instance?
+  'tenant-onboarding',      // Can a workforce board run their own AGCONN instance?
   'platform-uptime',        // What's the SLA / uptime?
 ] as const;
 ```

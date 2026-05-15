@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchTenant } from '@/lib/directory-api';
 
-export const metadata = { title: 'Tenant — AgConn Admin' };
+export const metadata = { title: 'Tenant — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function TenantDetailPage({

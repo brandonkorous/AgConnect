@@ -1,6 +1,6 @@
 # 08 — Tierra: Accessibility
 
-The brand promise is dignity. Accessibility is the operational version of that promise. AgConn targets users on older Android devices, with intermittent connectivity, in two languages, sometimes wearing field gloves. Tierra's accessibility floor is therefore not "WCAG 2.1 AA" alone — it includes ergonomics for the actual use context.
+The brand promise is dignity. Accessibility is the operational version of that promise. AGCONN targets users on older Android devices, with intermittent connectivity, in two languages, sometimes wearing field gloves. Tierra's accessibility floor is therefore not "WCAG 2.1 AA" alone — it includes ergonomics for the actual use context.
 
 ## Standards we conform to
 

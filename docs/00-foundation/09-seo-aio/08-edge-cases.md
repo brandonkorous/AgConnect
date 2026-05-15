@@ -75,7 +75,7 @@ ES content needs Google to know it's Spanish (geo + language signals).
 
 ## Geographic targeting
 
-AgConn is California-only for MVP. Some pages explicitly target counties (Fresno, Kern, etc.). Need to signal this clearly so the platform doesn't compete with national job boards.
+AGCONN is California-only for MVP. Some pages explicitly target counties (Fresno, Kern, etc.). Need to signal this clearly so the platform doesn't compete with national job boards.
 
 **Mitigation:**
 

@@ -1,4 +1,4 @@
-/* AgConnect — Icons & shared primitives
+/* AGCONN — Icons & shared primitives
    Custom-drawn iconography for crops + UI. Avoids generic emoji.
 */
 

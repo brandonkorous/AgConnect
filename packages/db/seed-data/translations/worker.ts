@@ -1514,8 +1514,8 @@ export const worker: TranslationBundle = {
         es: "{unread, plural, =0 {Sin leer: 0} =1 {1 sin leer} other {# sin leer}} · {count, plural, =0 {sin conversaciones} =1 {1 conversación} other {# conversaciones}}",
     },
     "messages.folders.agconn": {
-        en: "AgConn",
-        es: "AgConn",
+        en: "AGCONN",
+        es: "AGCONN",
     },
     "messages.folders.all": {
         en: "All messages",
@@ -1558,8 +1558,8 @@ export const worker: TranslationBundle = {
         es: "Pregunta",
     },
     "messages.sub": {
-        en: "One inbox for SMS, WhatsApp, and in-app messages from employers, foremen, and AgConn.",
-        es: "Una sola bandeja para SMS, WhatsApp y mensajes en la app de empleadores, capataces y AgConn.",
+        en: "One inbox for SMS, WhatsApp, and in-app messages from employers, foremen, and AGCONN.",
+        es: "Una sola bandeja para SMS, WhatsApp y mensajes en la app de empleadores, capataces y AGCONN.",
     },
     "messages.thread.attach": {
         en: "Attach",
@@ -2002,8 +2002,8 @@ export const worker: TranslationBundle = {
         es: "Teléfono (opcional)",
     },
     "onboarding.waitlist.subtitle": {
-        en: "AgConn serves the Central Valley today. Leave your contact info to be notified when we reach your area.",
-        es: "AgConn sirve al Valle Central por ahora. Déjanos tus datos para avisarte cuando lleguemos a tu zona.",
+        en: "AGCONN serves the Central Valley today. Leave your contact info to be notified when we reach your area.",
+        es: "AGCONN sirve al Valle Central por ahora. Déjanos tus datos para avisarte cuando lleguemos a tu zona.",
     },
     "onboarding.waitlist.thanks": {
         en: "Thanks! We'll be in touch.",
@@ -3070,8 +3070,8 @@ export const worker: TranslationBundle = {
         es: "Verificar un certificado",
     },
     "verify.valid_badge": {
-        en: "Verified · this certificate was issued by AgConn.",
-        es: "Verificado · este certificado fue emitido por AgConn.",
+        en: "Verified · this certificate was issued by AGCONN.",
+        es: "Verificado · este certificado fue emitido por AGCONN.",
     },
     "verify.not_found": {
         en: "We couldn't verify this certificate. The ID may be mistyped, or the record may have been removed. To check, contact support@agconn.com.",
@@ -3102,8 +3102,8 @@ export const worker: TranslationBundle = {
         es: "Completado",
     },
     "verify.footnote": {
-        en: "AgConn shows the recipient's first name and last initial only. To request the full record, the worker can share it with you directly from their skills wallet.",
-        es: "AgConn muestra solo el primer nombre y la inicial del apellido del destinatario. Para solicitar el registro completo, el trabajador puede compartirlo directamente desde su cartera de habilidades.",
+        en: "AGCONN shows the recipient's first name and last initial only. To request the full record, the worker can share it with you directly from their skills wallet.",
+        es: "AGCONN muestra solo el primer nombre y la inicial del apellido del destinatario. Para solicitar el registro completo, el trabajador puede compartirlo directamente desde su cartera de habilidades.",
     },
     "wallet.back": {
         en: "Dashboard",
@@ -3150,8 +3150,8 @@ export const worker: TranslationBundle = {
         es: "Aún sin certificaciones",
     },
     "wallet.source.agconn": {
-        en: "AgConn verified",
-        es: "Verificado por AgConn",
+        en: "AGCONN verified",
+        es: "Verificado por AGCONN",
     },
     "wallet.source.self": {
         en: "Self-reported",
@@ -3170,8 +3170,8 @@ export const worker: TranslationBundle = {
         es: "Vista previa · cómo se ve una credencial",
     },
     "wallet.sample.badge": {
-        en: "AgConn Verified",
-        es: "Verificado por AgConn",
+        en: "AGCONN Verified",
+        es: "Verificado por AGCONN",
     },
     "wallet.sample.title": {
         en: "Forklift Operator · OSHA-compliant",
@@ -3182,8 +3182,8 @@ export const worker: TranslationBundle = {
         es: "WIOA · Workforce de Madera · Muestra",
     },
     "wallet.sample.hint": {
-        en: "Each AgConn credential includes a QR code that employers can scan to verify it on the spot.",
-        es: "Cada credencial AgConn incluye un código QR que los empleadores pueden escanear para verificarla.",
+        en: "Each AGCONN credential includes a QR code that employers can scan to verify it on the spot.",
+        es: "Cada credencial AGCONN incluye un código QR que los empleadores pueden escanear para verificarla.",
     },
     "wallet.subtitle": {
         en: "Trainings, certificates, and credentials you've earned. Tap a record to download or share.",
@@ -3198,16 +3198,16 @@ export const worker: TranslationBundle = {
         es: "Una vista más simple para usar con una sola mano en el campo.",
     },
     "field.meta.title": {
-        en: "Field Mode — AgConn",
-        es: "Modo de campo — AgConn",
+        en: "Field Mode — AGCONN",
+        es: "Modo de campo — AGCONN",
     },
     "field.meta.description": {
-        en: "A simpler view of AgConn for use in the field.",
-        es: "Una vista más simple de AgConn para usar en el campo.",
+        en: "A simpler view of AGCONN for use in the field.",
+        es: "Una vista más simple de AGCONN para usar en el campo.",
     },
     "field.header.home_aria": {
-        en: "AgConn Field Mode home",
-        es: "Inicio del Modo de campo de AgConn",
+        en: "AGCONN Field Mode home",
+        es: "Inicio del Modo de campo de AGCONN",
     },
     "field.header.switch_locale_aria": {
         en: "Switch language to {locale}",

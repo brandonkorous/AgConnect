@@ -20,69 +20,69 @@ const SYSTEM_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 // request 401s.
 
 function publicApiUrl(c: { req: { url: string } }): string {
-  // Prefer PUBLIC_API_URL when set so we match what Twilio used to compute the
-  // signature, even when the API is behind a proxy that rewrites Host. Fall
-  // back to the request URL in dev.
-  const fromEnv = process.env.PUBLIC_API_URL;
-  if (fromEnv) {
-    const url = new URL(c.req.url);
-    return new URL(`${url.pathname}${url.search}`, fromEnv).toString();
-  }
-  return c.req.url;
+    // Prefer PUBLIC_API_URL when set so we match what Twilio used to compute the
+    // signature, even when the API is behind a proxy that rewrites Host. Fall
+    // back to the request URL in dev.
+    const fromEnv = process.env.PUBLIC_API_URL;
+    if (fromEnv) {
+        const url = new URL(c.req.url);
+        return new URL(`${url.pathname}${url.search}`, fromEnv).toString();
+    }
+    return c.req.url;
 }
 
 function mapTwilioStatus(s: string | undefined): SmsStatus | null {
-  switch ((s ?? '').toLowerCase()) {
-    case 'queued':
-      return 'queued';
-    case 'sending':
-      return 'sending';
-    case 'sent':
-      return 'sent';
-    case 'delivered':
-      return 'delivered';
-    case 'failed':
-    case 'undelivered':
-      return 'failed';
-    default:
-      return null;
-  }
+    switch ((s ?? '').toLowerCase()) {
+        case 'queued':
+            return 'queued';
+        case 'sending':
+            return 'sending';
+        case 'sent':
+            return 'sent';
+        case 'delivered':
+            return 'delivered';
+        case 'failed':
+        case 'undelivered':
+            return 'failed';
+        default:
+            return null;
+    }
 }
 
 export const twilioWebhookRoutes = new Hono();
 
 twilioWebhookRoutes.post('/status', async (c) => {
-  const params = Object.fromEntries(new URLSearchParams(await c.req.text())) as Record<string, string>;
-  const valid = validateTwilioSignature({
-    signature: c.req.header('x-twilio-signature'),
-    url: publicApiUrl(c),
-    params,
-  });
-  if (!valid) {
-    return err(c, 401, 'unauthenticated', 'invalid Twilio signature');
-  }
-
-  const logId = c.req.query('logId');
-  const status = mapTwilioStatus(params.MessageStatus);
-  if (!logId || !status) {
-    return ok(c, { received: true });
-  }
-
-  const now = new Date();
-  await pools.webhooks.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-    await tx.smsLog.update({
-      where: { id: logId },
-      data: {
-        status,
-        deliveredAt: status === 'delivered' ? now : undefined,
-        failedAt: status === 'failed' ? now : undefined,
-        errorCode: params.ErrorCode || undefined,
-      },
+    const params = Object.fromEntries(new URLSearchParams(await c.req.text())) as Record<string, string>;
+    const valid = validateTwilioSignature({
+        signature: c.req.header('x-twilio-signature'),
+        url: publicApiUrl(c),
+        params,
     });
-  });
+    if (!valid) {
+        return err(c, 401, 'unauthenticated', 'invalid Twilio signature');
+    }
 
-  return ok(c, { received: true });
+    const logId = c.req.query('logId');
+    const status = mapTwilioStatus(params.MessageStatus);
+    if (!logId || !status) {
+        return ok(c, { received: true });
+    }
+
+    const now = new Date();
+    await pools.webhooks.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        await tx.smsLog.update({
+            where: { id: logId },
+            data: {
+                status,
+                deliveredAt: status === 'delivered' ? now : undefined,
+                failedAt: status === 'failed' ? now : undefined,
+                errorCode: params.ErrorCode || undefined,
+            },
+        });
+    });
+
+    return ok(c, { received: true });
 });
 
 const STOP_KEYWORDS = new Set(['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']);
@@ -96,238 +96,238 @@ const ES_OPT_IN_KEYWORDS = new Set(['TRABAJO']);
 const CONFIRM_KEYWORDS = new Set(['YES', 'Y', 'SI', 'SÍ', 'YEP', 'YEAH', 'OK']);
 
 twilioWebhookRoutes.post('/inbound', async (c) => {
-  const params = Object.fromEntries(new URLSearchParams(await c.req.text())) as Record<string, string>;
-  const valid = validateTwilioSignature({
-    signature: c.req.header('x-twilio-signature'),
-    url: publicApiUrl(c),
-    params,
-  });
-  if (!valid) {
-    return err(c, 401, 'unauthenticated', 'invalid Twilio signature');
-  }
+    const params = Object.fromEntries(new URLSearchParams(await c.req.text())) as Record<string, string>;
+    const valid = validateTwilioSignature({
+        signature: c.req.header('x-twilio-signature'),
+        url: publicApiUrl(c),
+        params,
+    });
+    if (!valid) {
+        return err(c, 401, 'unauthenticated', 'invalid Twilio signature');
+    }
 
-  const text = (params.Body ?? '').trim().toUpperCase();
-  const from = params.From ?? '';
+    const text = (params.Body ?? '').trim().toUpperCase();
+    const from = params.From ?? '';
 
-  // 1. STOP keywords — always wins, even on a pending stub.
-  if (from && STOP_KEYWORDS.has(text)) {
-    await handleStop(from);
+    // 1. STOP keywords — always wins, even on a pending stub.
+    if (from && STOP_KEYWORDS.has(text)) {
+        await handleStop(from);
+        return ok(c, { received: true });
+    }
+
+    if (!from) return ok(c, { received: true });
+
+    // 2. Pending stub awaiting confirmation — YES advances; anything else
+    //    re-prompts. We look up by phone so this works whether the existing
+    //    user came from web signup or a prior SMS opt-in.
+    const existing = await pools.webhooks.user.findFirst({
+        where: { phone: from, role: UserRole.worker },
+    });
+
+    if (existing?.smsOptInState === 'pending_confirm') {
+        if (CONFIRM_KEYWORDS.has(text)) {
+            await confirmOptIn(existing.id);
+            return ok(c, { received: true, optIn: 'confirmed' });
+        }
+        await enqueueSms({
+            tenantId: SYSTEM_TENANT_ID,
+            userId: existing.id,
+            template: 'sms.optin.invalid',
+            vars: {},
+            jobKey: `optin-invalid-${existing.id}-${Date.now()}`,
+        });
+        return ok(c, { received: true, optIn: 'pending' });
+    }
+
+    const tokens = text.split(/\s+/);
+
+    // 3. New opt-in via published keyword. Only for unknown phones — known
+    //    workers texting JOBS again don't get re-onboarded.
+    if (!existing) {
+        const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
+        if (optInToken) {
+            await startOptIn(from, optInToken);
+            return ok(c, { received: true, optIn: 'started', keyword: optInToken });
+        }
+    }
+
+    // 4. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
+    //    the job's keyword is) to apply. Only for already-consented workers;
+    //    handleJobApply itself drops on unknown phone.
+    for (const token of tokens) {
+        if (token.length < 4 || token.length > 24) continue;
+        const keyword = await pools.webhooks.smsKeyword.findFirst({
+            where: { keyword: { equals: token, mode: 'insensitive' }, active: true },
+        });
+        if (!keyword || keyword.kind !== 'job_apply') continue;
+
+        await handleJobApply({ keyword, fromPhone: from });
+        return ok(c, { received: true, keyword: token });
+    }
+
     return ok(c, { received: true });
-  }
-
-  if (!from) return ok(c, { received: true });
-
-  // 2. Pending stub awaiting confirmation — YES advances; anything else
-  //    re-prompts. We look up by phone so this works whether the existing
-  //    user came from web signup or a prior SMS opt-in.
-  const existing = await pools.webhooks.user.findFirst({
-    where: { phone: from, role: UserRole.worker },
-  });
-
-  if (existing?.smsOptInState === 'pending_confirm') {
-    if (CONFIRM_KEYWORDS.has(text)) {
-      await confirmOptIn(existing.id);
-      return ok(c, { received: true, optIn: 'confirmed' });
-    }
-    await enqueueSms({
-      tenantId: SYSTEM_TENANT_ID,
-      userId: existing.id,
-      template: 'sms.optin.invalid',
-      vars: {},
-      jobKey: `optin-invalid-${existing.id}-${Date.now()}`,
-    });
-    return ok(c, { received: true, optIn: 'pending' });
-  }
-
-  const tokens = text.split(/\s+/);
-
-  // 3. New opt-in via published keyword. Only for unknown phones — known
-  //    workers texting JOBS again don't get re-onboarded.
-  if (!existing) {
-    const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
-    if (optInToken) {
-      await startOptIn(from, optInToken);
-      return ok(c, { received: true, optIn: 'started', keyword: optInToken });
-    }
-  }
-
-  // 4. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
-  //    the job's keyword is) to apply. Only for already-consented workers;
-  //    handleJobApply itself drops on unknown phone.
-  for (const token of tokens) {
-    if (token.length < 4 || token.length > 24) continue;
-    const keyword = await pools.webhooks.smsKeyword.findFirst({
-      where: { keyword: { equals: token, mode: 'insensitive' }, active: true },
-    });
-    if (!keyword || keyword.kind !== 'job_apply') continue;
-
-    await handleJobApply({ keyword, fromPhone: from });
-    return ok(c, { received: true, keyword: token });
-  }
-
-  return ok(c, { received: true });
 });
 
 async function handleStop(from: string): Promise<void> {
-  await pools.webhooks.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-    await tx.smsOptOut.upsert({
-      where: { phone: from },
-      create: { phone: from, source: 'STOP' },
-      update: {},
+    await pools.webhooks.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        await tx.smsOptOut.upsert({
+            where: { phone: from },
+            create: { phone: from, source: 'STOP' },
+            update: {},
+        });
     });
-  });
-  await emitSystemAudit({
-    action: 'system.sms.opt_out_received',
-    resourceType: 'sms_opt_out',
-    resourceId: from,
-    metadata: { phone: from, source: 'STOP' },
-  });
+    await emitSystemAudit({
+        action: 'system.sms.opt_out_received',
+        resourceType: 'sms_opt_out',
+        resourceId: from,
+        metadata: { phone: from, source: 'STOP' },
+    });
 }
 
 async function startOptIn(from: string, keyword: string): Promise<void> {
-  // Synthetic id (sms_-prefixed) distinguishes SMS-originated stubs from
-  // Clerk-issued user_-prefixed ids. When the same phone later signs up
-  // through Clerk, the clerk webhook handler must merge the two records;
-  // see TODO in webhooks/clerk.ts. Workers that never sign up online keep
-  // operating with this id forever, which is the design goal — no signup.
-  const id = `sms_${randomBytes(8).toString('hex')}`;
-  const lang = ES_OPT_IN_KEYWORDS.has(keyword) ? Lang.es : Lang.en;
+    // Synthetic id (sms_-prefixed) distinguishes SMS-originated stubs from
+    // Clerk-issued user_-prefixed ids. When the same phone later signs up
+    // through Clerk, the clerk webhook handler must merge the two records;
+    // see TODO in webhooks/clerk.ts. Workers that never sign up online keep
+    // operating with this id forever, which is the design goal — no signup.
+    const id = `sms_${randomBytes(8).toString('hex')}`;
+    const lang = ES_OPT_IN_KEYWORDS.has(keyword) ? Lang.es : Lang.en;
 
-  // Race: if two inbound texts land for the same phone within the same
-  // tick (network retries), upsert keeps the first stub. Either path
-  // ends in a single confirm prompt below.
-  const user = await pools.webhooks.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-    const existing = await tx.user.findFirst({
-      where: { phone: from, role: UserRole.worker },
+    // Race: if two inbound texts land for the same phone within the same
+    // tick (network retries), upsert keeps the first stub. Either path
+    // ends in a single confirm prompt below.
+    const user = await pools.webhooks.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        const existing = await tx.user.findFirst({
+            where: { phone: from, role: UserRole.worker },
+        });
+        if (existing) return existing;
+        return tx.user.create({
+            data: {
+                id,
+                role: UserRole.worker,
+                phone: from,
+                preferredLang: lang,
+                smsOptInState: 'pending_confirm',
+            },
+        });
     });
-    if (existing) return existing;
-    return tx.user.create({
-      data: {
-        id,
-        role: UserRole.worker,
-        phone: from,
-        preferredLang: lang,
-        smsOptInState: 'pending_confirm',
-      },
+
+    await emitSystemAudit({
+        action: 'system.sms.opt_in_pending',
+        resourceType: 'user',
+        resourceId: user.id,
+        metadata: { phone: from, keyword, lang: lang.toString() },
     });
-  });
 
-  await emitSystemAudit({
-    action: 'system.sms.opt_in_pending',
-    resourceType: 'user',
-    resourceId: user.id,
-    metadata: { phone: from, keyword, lang: lang.toString() },
-  });
-
-  await enqueueSms({
-    tenantId: SYSTEM_TENANT_ID,
-    userId: user.id,
-    template: 'sms.optin.confirm',
-    vars: {},
-    jobKey: `optin-confirm-${user.id}`,
-  });
+    await enqueueSms({
+        tenantId: SYSTEM_TENANT_ID,
+        userId: user.id,
+        template: 'sms.optin.confirm',
+        vars: {},
+        jobKey: `optin-confirm-${user.id}`,
+    });
 }
 
 async function confirmOptIn(userId: string): Promise<void> {
-  const now = new Date();
-  const user = await pools.webhooks.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-    return tx.user.update({
-      where: { id: userId },
-      data: {
-        smsOptInState: 'consented',
-        consentMethod: 'sms_double_opt_in',
-        consentedAt: now,
-        onboarded: true,
-      },
+    const now = new Date();
+    const user = await pools.webhooks.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        return tx.user.update({
+            where: { id: userId },
+            data: {
+                smsOptInState: 'consented',
+                consentMethod: 'sms_double_opt_in',
+                consentedAt: now,
+                onboarded: true,
+            },
+        });
     });
-  });
 
-  await emitSystemAudit({
-    action: 'system.sms.opt_in_confirmed',
-    resourceType: 'user',
-    resourceId: user.id,
-    metadata: {
-      phone: user.phone ?? '',
-      userId: user.id,
-      lang: user.preferredLang.toString(),
-    },
-  });
+    await emitSystemAudit({
+        action: 'system.sms.opt_in_confirmed',
+        resourceType: 'user',
+        resourceId: user.id,
+        metadata: {
+            phone: user.phone ?? '',
+            userId: user.id,
+            lang: user.preferredLang.toString(),
+        },
+    });
 
-  await enqueueSms({
-    tenantId: SYSTEM_TENANT_ID,
-    userId: user.id,
-    template: 'sms.optin.welcome',
-    vars: {},
-    jobKey: `optin-welcome-${user.id}`,
-  });
+    await enqueueSms({
+        tenantId: SYSTEM_TENANT_ID,
+        userId: user.id,
+        template: 'sms.optin.welcome',
+        vars: {},
+        jobKey: `optin-welcome-${user.id}`,
+    });
 }
 
 async function handleJobApply(args: {
-  keyword: { id: string; tenantId: string; keyword: string; entityId: string };
-  fromPhone: string;
+    keyword: { id: string; tenantId: string; keyword: string; entityId: string };
+    fromPhone: string;
 }): Promise<void> {
-  const { keyword, fromPhone } = args;
-  if (!fromPhone) return;
+    const { keyword, fromPhone } = args;
+    if (!fromPhone) return;
 
-  const job = await pools.webhooks.jobPosting.findFirst({
-    where: { id: keyword.entityId, deletedAt: null, status: 'active' },
-    include: { employer: { include: { employerProfile: true } } },
-  });
-  if (!job) return;
-
-  // Resolve worker by phone. If unknown, send a "we couldn't find your
-  // account" reply — onboarding flow handles registration separately.
-  const worker = await pools.webhooks.user.findFirst({
-    where: { phone: fromPhone, role: 'worker', deletedAt: null },
-  });
-  if (!worker) {
-    await emitSystemAudit({
-      action: 'system.sms.dropped',
-      resourceType: 'sms_log',
-      resourceId: '',
-      metadata: { template: 'sms.apply.unknown_phone', reason: 'unknown_worker', toPhone: fromPhone },
+    const job = await pools.webhooks.jobPosting.findFirst({
+        where: { id: keyword.entityId, deletedAt: null, status: 'active' },
+        include: { employer: { include: { employerProfile: true } } },
     });
-    return;
-  }
+    if (!job) return;
 
-  // Idempotent: skip if this worker already applied to this job.
-  const existing = await pools.webhooks.application.findFirst({
-    where: { jobId: job.id, workerId: worker.id },
-  });
+    // Resolve worker by phone. If unknown, send a "we couldn't find your
+    // account" reply — onboarding flow handles registration separately.
+    const worker = await pools.webhooks.user.findFirst({
+        where: { phone: fromPhone, role: 'worker', deletedAt: null },
+    });
+    if (!worker) {
+        await emitSystemAudit({
+            action: 'system.sms.dropped',
+            resourceType: 'sms_log',
+            resourceId: '',
+            metadata: { template: 'sms.apply.unknown_phone', reason: 'unknown_worker', toPhone: fromPhone },
+        });
+        return;
+    }
 
-  let applicationId = existing?.id;
-  if (!existing) {
-    const created = await pools.webhooks.application.create({
-      data: {
+    // Idempotent: skip if this worker already applied to this job.
+    const existing = await pools.webhooks.application.findFirst({
+        where: { jobId: job.id, workerId: worker.id },
+    });
+
+    let applicationId = existing?.id;
+    if (!existing) {
+        const created = await pools.webhooks.application.create({
+            data: {
+                tenantId: job.tenantId,
+                jobId: job.id,
+                workerId: worker.id,
+                status: AppStatus.applied,
+                countyAtApply: job.county,
+                skillsAtApply: [],
+            },
+        });
+        applicationId = created.id;
+    }
+
+    // Bump keyword usage so the employer can see SMS-apply traffic.
+    await pools.webhooks.smsKeyword.update({
+        where: { id: keyword.id },
+        data: { lastUsedAt: new Date() },
+    });
+
+    const employer =
+        job.employer.employerProfile?.dbaName ??
+        job.employer.employerProfile?.legalName ??
+        'AGCONN employer';
+    await enqueueSms({
         tenantId: job.tenantId,
-        jobId: job.id,
-        workerId: worker.id,
-        status: AppStatus.applied,
-        countyAtApply: job.county,
-        skillsAtApply: [],
-      },
+        userId: worker.id,
+        template: 'sms.apply.confirmed',
+        vars: { jobTitle: job.titleEn, employer },
+        jobKey: `apply-confirm-${applicationId}`,
     });
-    applicationId = created.id;
-  }
-
-  // Bump keyword usage so the employer can see SMS-apply traffic.
-  await pools.webhooks.smsKeyword.update({
-    where: { id: keyword.id },
-    data: { lastUsedAt: new Date() },
-  });
-
-  const employer =
-    job.employer.employerProfile?.dbaName ??
-    job.employer.employerProfile?.legalName ??
-    'AgConn employer';
-  await enqueueSms({
-    tenantId: job.tenantId,
-    userId: worker.id,
-    template: 'sms.apply.confirmed',
-    vars: { jobTitle: job.titleEn, employer },
-    jobKey: `apply-confirm-${applicationId}`,
-  });
 }

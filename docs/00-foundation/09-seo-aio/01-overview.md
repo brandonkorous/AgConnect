@@ -2,7 +2,7 @@
 
 ## Purpose
 
-AgConn must rank well in Google for job seekers and employers searching in the Central Valley, AND be discoverable / citable by AI search tools (ChatGPT, Perplexity, Google AI Overviews) — a capability category the kickoff calls AIO (AI Optimization). See kickoff §13.
+AGCONN must rank well in Google for job seekers and employers searching in the Central Valley, AND be discoverable / citable by AI search tools (ChatGPT, Perplexity, Google AI Overviews) — a capability category the kickoff calls AIO (AI Optimization). See kickoff §13.
 
 ## What's covered
 
@@ -72,7 +72,7 @@ Out of scope:
 - Lighthouse SEO score ≥ 95 on every public page.
 - LCP < 2.5s, CLS < 0.1, INP < 200ms (Core Web Vitals "Good") on mobile 4G.
 - Pages indexed in Google within 7 days of publish (verified via Search Console).
-- AI search citations: AgConn cited by Perplexity / ChatGPT for "find seasonal farm work in Fresno" within 60 days of launch (aspirational).
+- AI search citations: AGCONN cited by Perplexity / ChatGPT for "find seasonal farm work in Fresno" within 60 days of launch (aspirational).
 
 ## Dependencies
 

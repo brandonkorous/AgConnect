@@ -183,7 +183,7 @@ Edge-runtime routes (`/og/landing` and any future `runtime: 'edge'` route) **can
 
 ```ts
 // apps/web/src/app/og/landing/route.tsx (edge runtime)
-const brand = process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AgConn';
+const brand = process.env.NEXT_PUBLIC_BRAND_NAME ?? 'AGCONN';
 const headline = locale === 'es' ? 'Del campo, a tu futuro.' : 'From the field, to your future.';
 ```
 

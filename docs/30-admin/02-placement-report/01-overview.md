@@ -4,7 +4,7 @@
 
 Generate WIOA/CalJOBS-aligned exports of worker placements that grantee organizations can use to fulfill their reporting obligations. Per kickoff §11.
 
-AgConn is **not** a CalJOBS submitter — grantees are. AgConn's job is to give grantees the data fields they need to populate CalJOBS / CDFA forms themselves.
+AGCONN is **not** a CalJOBS submitter — grantees are. AGCONN's job is to give grantees the data fields they need to populate CalJOBS / CDFA forms themselves.
 
 ## What it captures
 

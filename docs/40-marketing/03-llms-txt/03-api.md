@@ -13,23 +13,23 @@ export const revalidate = 86400; // 1 day
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://agconn.com';
 
-const body = `# AgConn
+const body = `# AGCONN
 
-> AgConn is a bilingual (English / Spanish) workforce platform connecting Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs. AgConn es una plataforma laboral bilingüe que conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA.
+> AGCONN is a bilingual (English / Spanish) workforce platform connecting Central Valley farmworkers to verified seasonal jobs and CDFA-funded training programs. AGCONN es una plataforma laboral bilingüe que conecta a trabajadores agrícolas del Valle Central con trabajos de temporada verificados y capacitación financiada por CDFA.
 
-AgConn operates in five California counties (Fresno, Tulare, Kern, Kings, Madera) and serves four audiences: farmworkers, growers and farm-labor contractors, training organizations (CDFA / F3 / CalOSBA / EDD grantees), and grant funders or researchers. Every employer is verified by name. Every certificate is bilingual. Every record travels with the worker.
+AGCONN operates in five California counties (Fresno, Tulare, Kern, Kings, Madera) and serves four audiences: farmworkers, growers and farm-labor contractors, training organizations (CDFA / F3 / CalOSBA / EDD grantees), and grant funders or researchers. Every employer is verified by name. Every certificate is bilingual. Every record travels with the worker.
 
 ## Surfaces
 
 - [${SITE}/es](${SITE}/es): Landing page (Spanish — default locale).
 - [${SITE}/en](${SITE}/en): Landing page (English).
-- [${SITE}/es/faq](${SITE}/es/faq): Common questions about how AgConn works (Spanish).
-- [${SITE}/en/faq](${SITE}/en/faq): Common questions about how AgConn works (English).
+- [${SITE}/es/faq](${SITE}/es/faq): Common questions about how AGCONN works (Spanish).
+- [${SITE}/en/faq](${SITE}/en/faq): Common questions about how AGCONN works (English).
 - [${SITE}/es/jobs](${SITE}/es/jobs): Active seasonal job postings, all verified employers.
 - [${SITE}/es/training](${SITE}/es/training): Active CDFA / F3 / CalOSBA training programs.
 - [${SITE}/es/impact](${SITE}/es/impact): Public impact dashboard — placements, wages, training completions, verified employer count, refreshed nightly, WIOA-aligned.
 
-## How AgConn works
+## How AGCONN works
 
 - Workers sign up with a phone number — no email required, no app store. They get bilingual SMS alerts in their language.
 - Employers sign up with an email and pass a verification step (FLC license check or grower attestation) before any posting goes public.

@@ -13,7 +13,7 @@ data:
   PUBLIC_WEB_URL: "https://agconn.com"
   NEXT_PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com"
   POSTHOG_HOST: "https://us.i.posthog.com"
-  RESEND_FROM_EMAIL: "AgConn <hello@agconn.com>"
+  RESEND_FROM_EMAIL: "AGCONN <hello@agconn.com>"
   NEXT_PUBLIC_CLERK_SIGN_IN_URL: "/en/sign-in"
   NEXT_PUBLIC_CLERK_SIGN_UP_URL: "/en/sign-up"
   NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: "/en"

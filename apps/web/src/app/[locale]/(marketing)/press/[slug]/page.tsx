@@ -69,8 +69,8 @@ export default async function PressReleasePage({ params }: RouteProps) {
                     dateline: release.location,
                     inLanguage: locale === 'es' ? 'es-MX' : 'en-US',
                     description: pickLocale(release.summary, locale),
-                    author: { '@type': 'Organization', name: 'AgConn' },
-                    publisher: { '@type': 'Organization', name: 'AgConn' },
+                    author: { '@type': 'Organization', name: 'AGCONN' },
+                    publisher: { '@type': 'Organization', name: 'AGCONN' },
                 }}
             />
 

@@ -6,7 +6,7 @@ Triggered by `POST /v1/onboarding/complete`. Enqueued via `pg-boss` job `welcome
 
 |               | EN                                                                                     | ES                                                                                                 |
 | ------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Body          | Welcome to AgConn, {firstName}! Search jobs at agconn.com/jobs. Reply STOP to opt out. | ¡Bienvenido a AgConn, {firstName}! Busca trabajos en agconn.com/jobs. Responde STOP para cancelar. |
+| Body          | Welcome to AGCONN, {firstName}! Search jobs at agconn.com/jobs. Reply STOP to opt out. | ¡Bienvenido a AGCONN, {firstName}! Busca trabajos en agconn.com/jobs. Responde STOP para cancelar. |
 | Length budget | 160 GSM-7 chars (single segment)                                                       | 160 GSM-7 chars (single segment)                                                                   |
 
 Variables: `{firstName}` from `worker_profiles.first_name`. Truncate to 20 chars to stay within segment budget for long names.
@@ -21,7 +21,7 @@ Sent only if `users.email` was provided during profile review. Sent via Resend w
 
 |           | EN                                        | ES                                                 |
 | --------- | ----------------------------------------- | -------------------------------------------------- |
-| Subject   | Welcome to AgConn                         | Bienvenido a AgConn                                |
+| Subject   | Welcome to AGCONN                         | Bienvenido a AGCONN                                |
 | Preheader | Your profile is live. Find jobs near you. | Tu perfil está activo. Busca trabajos cerca de ti. |
 
 Template structure (React Email components):
@@ -54,7 +54,7 @@ i18n keys (under `email.welcome.*`):
 
 | key                 | en                                                           | es                                                                 |
 | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `title`             | Welcome to AgConn, {name}                                    | Bienvenido a AgConn, {name}                                        |
+| `title`             | Welcome to AGCONN, {name}                                    | Bienvenido a AGCONN, {name}                                        |
 | `intro`             | Your profile is live. Here are three things you can do next. | Tu perfil está activo. Aquí hay tres cosas que puedes hacer ahora. |
 | `card.jobs`         | Browse jobs                                                  | Ver trabajos                                                       |
 | `card.jobs.cta`     | See jobs                                                     | Ver trabajos                                                       |

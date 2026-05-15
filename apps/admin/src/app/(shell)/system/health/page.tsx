@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { fetchHealth } from '@/lib/system-api';
 
-export const metadata = { title: 'Service health — AgConn Admin' };
+export const metadata = { title: 'Service health — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 function statusBadge(status: 'ok' | 'degraded' | 'down' | 'unknown') {

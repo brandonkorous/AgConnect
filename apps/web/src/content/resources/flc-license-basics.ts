@@ -56,12 +56,12 @@ export const flcLicenseBasics: ResourceArticle = {
         },
         {
             heading: {
-                en: 'How AgConn handles verification',
-                es: 'Cómo AgConn maneja la verificación',
+                en: 'How AGCONN handles verification',
+                es: 'Cómo AGCONN maneja la verificación',
             },
             body: {
-                en: 'When you create an employer tenant on AgConn, we verify your CA FLC license number against the Division of Labor Standards Enforcement public registry and check MSPA status with the U.S. Department of Labor. Verified employers display a badge to job seekers, which materially improves application rates. We re-verify annually.',
-                es: 'Cuando crea un inquilino empleador en AgConn, verificamos su número de licencia FLC de CA contra el registro público de la División de Cumplimiento de Estándares Laborales y verificamos el estado MSPA con el Departamento de Trabajo de EE. UU. Los empleadores verificados muestran una insignia a los solicitantes de empleo, lo que mejora materialmente las tasas de solicitud. Re-verificamos anualmente.',
+                en: 'When you create an employer tenant on AGCONN, we verify your CA FLC license number against the Division of Labor Standards Enforcement public registry and check MSPA status with the U.S. Department of Labor. Verified employers display a badge to job seekers, which materially improves application rates. We re-verify annually.',
+                es: 'Cuando crea un inquilino empleador en AGCONN, verificamos su número de licencia FLC de CA contra el registro público de la División de Cumplimiento de Estándares Laborales y verificamos el estado MSPA con el Departamento de Trabajo de EE. UU. Los empleadores verificados muestran una insignia a los solicitantes de empleo, lo que mejora materialmente las tasas de solicitud. Re-verificamos anualmente.',
             },
         },
     ],

@@ -10,7 +10,7 @@ Sent on `customer.subscription.created` (and the first transition to active).
 
 |         | EN                       | ES                         |
 | ------- | ------------------------ | -------------------------- |
-| Subject | Welcome to AgConn {plan} | Bienvenido a AgConn {plan} |
+| Subject | Welcome to AGCONN {plan} | Bienvenido a AGCONN {plan} |
 
 Body:
 
@@ -28,7 +28,7 @@ Sent on `invoice.payment_succeeded`.
 
 |         | EN                                   | ES                                 |
 | ------- | ------------------------------------ | ---------------------------------- |
-| Subject | Receipt for your AgConn subscription | Recibo de tu suscripción de AgConn |
+| Subject | Receipt for your AGCONN subscription | Recibo de tu suscripción de AGCONN |
 
 Body:
 
@@ -46,7 +46,7 @@ Sent on `invoice.payment_failed`.
 
 |         | EN                                          | ES                                               |
 | ------- | ------------------------------------------- | ------------------------------------------------ |
-| Subject | Payment issue with your AgConn subscription | Problema con el pago de tu suscripción de AgConn |
+| Subject | Payment issue with your AGCONN subscription | Problema con el pago de tu suscripción de AGCONN |
 
 Body:
 
@@ -66,13 +66,13 @@ For immediate cancellation:
 
 |         | EN                                   | ES                                      |
 | ------- | ------------------------------------ | --------------------------------------- |
-| Subject | Your AgConn subscription is canceled | Tu suscripción de AgConn está cancelada |
+| Subject | Your AGCONN subscription is canceled | Tu suscripción de AGCONN está cancelada |
 
 For end-of-period cancellation:
 
 |         | EN                                          | ES                                           |
 | ------- | ------------------------------------------- | -------------------------------------------- |
-| Subject | Your AgConn subscription will end on {date} | Tu suscripción de AgConn terminará el {date} |
+| Subject | Your AGCONN subscription will end on {date} | Tu suscripción de AGCONN terminará el {date} |
 
 Body covers:
 
@@ -90,7 +90,7 @@ When the plan tier changes (mid-cycle), send a confirmation email summarizing th
 
 |         | EN                                 | ES                                |
 | ------- | ---------------------------------- | --------------------------------- |
-| Subject | Your AgConn plan changed to {plan} | Tu plan de AgConn cambió a {plan} |
+| Subject | Your AGCONN plan changed to {plan} | Tu plan de AGCONN cambió a {plan} |
 
 Body details prorated charges (Stripe handles the math; we just relay).
 

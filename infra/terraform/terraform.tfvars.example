@@ -3,7 +3,7 @@ region               = "us-west1"
 zone                 = "us-west1-a"
 cluster_name         = "agconn-prod"
 domain               = "agconn.com"
-github_repository    = "wizeworks/AgConnect"
+github_repository    = "wizeworks/AGCONN"
 
 # Find this on dash.cloudflare.com → agconn.com → right sidebar.
 cloudflare_zone_id   = "REPLACE_WITH_ZONE_ID"

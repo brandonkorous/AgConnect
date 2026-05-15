@@ -22,7 +22,7 @@ If deeply deleted (CCPA hard-delete with PII anonymization), some fields may sho
 
 Soft-deleted tenant's data still in DB. Should it appear in cross-tenant reports?
 
-**Decision:** include unless admin specifies. Soft-deleted tenants have a flag visible in the export ("Tenant: AgConn Central Valley (archived)") for clarity.
+**Decision:** include unless admin specifies. Soft-deleted tenants have a flag visible in the export ("Tenant: AGCONN Central Valley (archived)") for clarity.
 
 ## SOC code requirement
 
@@ -32,7 +32,7 @@ Some grantees require SOC codes (Standard Occupational Classification).
 
 ## Q2 / Q4 retention
 
-WIOA requires re-employment check at Q2 (2nd quarter post-exit) and Q4. AgConn can't auto-detect re-employment elsewhere.
+WIOA requires re-employment check at Q2 (2nd quarter post-exit) and Q4. AGCONN can't auto-detect re-employment elsewhere.
 
 **Decision:** column placeholder for grantee to fill manually after their own follow-up. Document in the export's first-row comments.
 
@@ -40,7 +40,7 @@ WIOA requires re-employment check at Q2 (2nd quarter post-exit) and Q4. AgConn c
 
 Some grants require placement at or above prevailing wage.
 
-**Behavior:** the report exposes the wage; grantee compares to prevailing wage themselves. AgConn doesn't enforce.
+**Behavior:** the report exposes the wage; grantee compares to prevailing wage themselves. AGCONN doesn't enforce.
 
 ## Anonymized ID instability
 

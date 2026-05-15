@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchConversation } from '@/lib/ops-api';
 
-export const metadata = { title: 'Conversation — AgConn Admin' };
+export const metadata = { title: 'Conversation — AGCONN Admin' };
 export const dynamic = 'force-dynamic';
 
 export default async function ConversationDetailPage({

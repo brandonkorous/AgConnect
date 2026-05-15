@@ -60,8 +60,8 @@ export const mspaComplianceEssentials: ResourceArticle = {
                 es: 'Las tres brechas de auditoría que más cuestan',
             },
             body: {
-                en: 'In wage and hour enforcement data, the highest-cost MSPA violations are: failure to provide written disclosures in Spanish, failure to keep complete payroll records, and failure to maintain transportation insurance at MSPA-required levels. Each is a paperwork issue you can close before any inspector arrives. AgConn\'s employer dashboard prompts you when each of these is approaching expiry.',
-                es: 'En los datos de cumplimiento de salarios y horas, las violaciones MSPA de mayor costo son: no proporcionar divulgaciones escritas en español, no mantener registros de nómina completos y no mantener el seguro de transporte en los niveles requeridos por MSPA. Cada una es un problema de papeleo que puede cerrar antes de que llegue cualquier inspector. El panel del empleador de AgConn le avisa cuando cada uno de estos se acerca a su vencimiento.',
+                en: 'In wage and hour enforcement data, the highest-cost MSPA violations are: failure to provide written disclosures in Spanish, failure to keep complete payroll records, and failure to maintain transportation insurance at MSPA-required levels. Each is a paperwork issue you can close before any inspector arrives. AGCONN\'s employer dashboard prompts you when each of these is approaching expiry.',
+                es: 'En los datos de cumplimiento de salarios y horas, las violaciones MSPA de mayor costo son: no proporcionar divulgaciones escritas en español, no mantener registros de nómina completos y no mantener el seguro de transporte en los niveles requeridos por MSPA. Cada una es un problema de papeleo que puede cerrar antes de que llegue cualquier inspector. El panel del empleador de AGCONN le avisa cuando cada uno de estos se acerca a su vencimiento.',
             },
         },
     ],

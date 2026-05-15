@@ -1,6 +1,6 @@
-# AgConn — Project Plan
+# AGCONN — Project Plan
 
-A phased build plan for AgConn (Tierra brand). This plan ties the [feature spec folders](README.md) and the [Tierra brand system](brand/) to a sequence of concrete deliverables, milestones, and decisions.
+A phased build plan for AGCONN (Tierra brand). This plan ties the [feature spec folders](README.md) and the [Tierra brand system](brand/) to a sequence of concrete deliverables, milestones, and decisions.
 
 **How to read this plan**
 
@@ -41,11 +41,11 @@ Add a "40 — Marketing" section to [README.md](README.md) once the new folder l
 
 ## Phases
 
-The kickoff (§16) defines six phases. This plan reorganizes them slightly to make the **landing page the first shippable artifact**, in parallel with foundation work, so AgConn can collect waitlist interest and partner intros while engineers are wiring up Clerk and Postgres.
+The kickoff (§16) defines six phases. This plan reorganizes them slightly to make the **landing page the first shippable artifact**, in parallel with foundation work, so AGCONN can collect waitlist interest and partner intros while engineers are wiring up Clerk and Postgres.
 
 ### Phase A — Marketing v1 (Week 1, parallel with Phase 0)
 
-**Goal:** ship a static, bilingual, indexable landing page at `agconn.com` (or replacement domain) that explains AgConn to workers, employers, training orgs, and grant funders. No real authentication, no real data — but live and crawlable.
+**Goal:** ship a static, bilingual, indexable landing page at `agconn.com` (or replacement domain) that explains AGCONN to workers, employers, training orgs, and grant funders. No real authentication, no real data — but live and crawlable.
 
 **Builds:**
 
@@ -158,7 +158,7 @@ The kickoff (§16) defines six phases. This plan reorganizes them slightly to ma
 - A worker enrolls, attends (org marks completed), gets a cert SMS + email with PDF attached.
 - 48h and 2h reminders fire via dispatcher (bypassing quiet hours per spec).
 - Visual snapshot test of cert PDF passes; PDF renders identically in Adobe / Preview / Chrome / mobile Gmail preview.
-- Wallet shows AgConn-verified vs. self-reported certs distinctly.
+- Wallet shows AGCONN-verified vs. self-reported certs distinctly.
 
 ### Phase 4 — Grant Reporting (Week 6)
 
@@ -232,7 +232,7 @@ Document each version's mock vs. real in `40-marketing/01-landing/08-edge-cases.
 | ------------------------------------------------------------------ | ------------------ | ------------------------------ | ------------------------------------------ |
 | Public domain (`agconn.com` confirmed available?)                  | founder            | before Phase A                 | open — user noted .com may force a rebrand |
 | Brand name (Tierra theme stays regardless; legal name = ?)         | founder + legal    | before Phase A                 | open                                       |
-| California PBC formed and registered?                              | founder + legal    | before launch                  | open — footer copy says "AgConn, PBC"      |
+| California PBC formed and registered?                              | founder + legal    | before launch                  | open — footer copy says "AGCONN, PBC"      |
 | Twilio Messaging Service + A2P 10DLC campaign details              | engineer           | Day 1 of Phase 0               | open                                       |
 | Resend account, sending domain, DNS                                | engineer           | Day 1 of Phase 0               | open                                       |
 | Clerk account, SMS OTP enabled, Resend integration set             | engineer           | Day 1 of Phase 0               | open                                       |
@@ -276,7 +276,7 @@ A single short list, verified end-to-end before flipping the public DNS:
 - **Brand folder is the visual/verbal source of truth.** When a Tailwind class disagrees with [brand/02-color.md](brand/02-color.md), the brand wins.
 - **Bilingual at the same time.** No EN string ships without an ES string, in any surface (UI, SMS, email, cert, OG image).
 - **Inferred decisions are overridable.** Anywhere you see `> **Inferred:**` in a spec, override it freely with a documented reason.
-- **No emoji** in product UI or marketing copy. Workers and employers can use them; AgConn doesn't (per [brand/05-voice-tone.md](brand/05-voice-tone.md)).
+- **No emoji** in product UI or marketing copy. Workers and employers can use them; AGCONN doesn't (per [brand/05-voice-tone.md](brand/05-voice-tone.md)).
 
 ## Re-planning cadence
 

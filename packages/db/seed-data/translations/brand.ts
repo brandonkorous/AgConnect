@@ -6,7 +6,7 @@ import type { TranslationBundle } from '../types';
 
 export const brand: TranslationBundle = {
     "product_name": {
-        en: "AgConn",
-        es: "AgConn",
+        en: "AGCONN",
+        es: "AGCONN",
     },
 };

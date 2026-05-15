@@ -66,7 +66,7 @@ Once a worker dismisses the install card, they may regret it later but never see
 
 **Mitigation:**
 
-- Add a manual "Install AgConn" link in the worker dashboard footer. Clicking it clears the localStorage flag and re-shows the prompt on the next eligible event.
+- Add a manual "Install AGCONN" link in the worker dashboard footer. Clicking it clears the localStorage flag and re-shows the prompt on the next eligible event.
 - `iOS install hint` has its own flag (`pwa.install.ios.dismissed`) — same pattern.
 
 ## iOS adds quirks

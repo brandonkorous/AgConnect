@@ -75,7 +75,7 @@ export default async function CareersPage({ params }: RouteProps) {
                                 jobLocation: { '@type': 'Place', address: r.location },
                                 hiringOrganization: {
                                     '@type': 'Organization',
-                                    name: 'AgConn',
+                                    name: 'AGCONN',
                                     sameAs: 'https://agconn.com',
                                 },
                             },

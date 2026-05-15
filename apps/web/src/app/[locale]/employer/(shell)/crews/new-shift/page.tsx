@@ -11,7 +11,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'employer.crews.new_shift' });
-    return { title: `AgConn — ${t('title')}` };
+    return { title: `AGCONN — ${t('title')}` };
 }
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;

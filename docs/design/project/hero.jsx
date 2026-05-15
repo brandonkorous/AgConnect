@@ -241,7 +241,7 @@ const Hero = () => {
               Where the <em style={{ fontFamily: "\"Inter Tight\"", fontWeight: "600" }}>harvest</em><br />finds its hands.
             </h1>
             <p className="lede" style={{ marginTop: 28, fontSize: 21 }}>
-              AgConnect is the bilingual workforce platform for California agriculture — connecting farmworkers, growers, and training providers in one place. By SMS, WhatsApp, or app.
+              AGCONN is the bilingual workforce platform for California agriculture — connecting farmworkers, growers, and training providers in one place. By SMS, WhatsApp, or app.
             </p>
             <div style={{ display: 'flex', gap: 12, marginTop: 36, flexWrap: 'wrap' }}>
               <a href="#workers" className="btn btn-primary">
