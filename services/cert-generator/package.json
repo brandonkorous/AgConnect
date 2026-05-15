@@ -12,10 +12,14 @@
   "dependencies": {
     "@agconn/db": "workspace:*",
     "@agconn/sms": "workspace:*",
-    "pg-boss": "12.18.1"
+    "@react-pdf/renderer": "^4.5.1",
+    "@supabase/supabase-js": "^2.105.1",
+    "pg-boss": "12.18.1",
+    "react": "^19.2.5"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@types/react": "^19.2.14",
     "tsx": "^4.19.0",
     "typescript": "6.0.3"
   }

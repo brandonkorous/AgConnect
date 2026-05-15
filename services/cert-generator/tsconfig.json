@@ -11,12 +11,14 @@
         "noEmit": false,
         "declaration": false,
         "sourceMap": true,
+        "jsx": "react",
         "types": [
             "node"
         ]
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "src/**/*.tsx"
     ],
     "exclude": [
         "node_modules",

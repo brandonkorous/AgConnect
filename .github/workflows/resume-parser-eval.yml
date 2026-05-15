@@ -1,0 +1,65 @@
+name: Resume parser eval
+
+# Runs the resume-parser eval harness against the live Anthropic API when
+# the parser source or its prompts/fixtures change. Burns real tokens, so
+# we gate strictly on the `paths` filter — docs-only PRs don't pay the cost.
+#
+# Thresholds (enforced by eval/run.ts; merge blocks on failure):
+#   - schema-valid ≥ 90%
+#   - field-agreement ≥ 80%
+#   - median latency < 12s, P99 < 60s
+#   - mean cost < $0.05/parse
+
+on:
+    pull_request:
+        branches: [main]
+        paths:
+            - services/resume-parser/**
+            - packages/llm/**
+            - packages/schemas/src/resume.ts
+            - .github/workflows/resume-parser-eval.yml
+    push:
+        branches: [main]
+        paths:
+            - services/resume-parser/**
+            - packages/llm/**
+            - packages/schemas/src/resume.ts
+
+concurrency:
+    group: resume-parser-eval-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    eval:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        env:
+            FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+            ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+            # Cheapest model first — eval enforces the quality bar even on Haiku.
+            LLM_RESUME_PARSER_MODEL: claude-haiku-4-5-20251001
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 10.9.0
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.12.0
+                  cache: pnpm
+
+            - run: pnpm install --frozen-lockfile
+
+            - name: Generate Prisma client
+              run: pnpm --filter @agconn/db db:generate
+
+            - name: Typecheck resume-parser
+              run: pnpm --filter @agconn/resume-parser typecheck
+
+            - name: Run eval (cold cache pass)
+              run: pnpm --filter @agconn/resume-parser eval
+
+            - name: Run eval (warm cache pass — cache-hit rate check)
+              run: pnpm --filter @agconn/resume-parser eval

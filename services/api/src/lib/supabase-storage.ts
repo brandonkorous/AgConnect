@@ -18,6 +18,7 @@ const BUCKETS = {
   jobPhotos: 'job-photos',
   complianceEvidence: 'compliance-evidence',
   grantReports: 'grant-reports',
+  certs: 'certs',
 } as const;
 
 let cached: SupabaseClient | null = null;
@@ -232,6 +233,22 @@ export async function signGrantReportUrl(
   expiresInSeconds: number = 300,
 ): Promise<string> {
   return signedUrl(BUCKETS.grantReports, storageKey, expiresInSeconds);
+}
+
+// ─────────────────────────────────────────────────── Certs (private bucket)
+//
+// Layout: `<tenantId>/<enrollmentId>/<certificateId>.pdf`. Uploaded by the
+// cert-generator service; read by the wallet API via 24h signed URLs.
+
+export function certBucket(): string {
+  return BUCKETS.certs;
+}
+
+export async function signCertUrl(
+  storageKey: string,
+  expiresInSeconds: number = 60 * 60 * 24,
+): Promise<string> {
+  return signedUrl(BUCKETS.certs, storageKey, expiresInSeconds);
 }
 
 const ALLOWED_EVIDENCE_TYPES = new Set([

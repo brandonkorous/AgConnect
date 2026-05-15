@@ -16,6 +16,9 @@ import { fetchPublicJob } from '@/lib/api/public-jobs';
 import { inferCrop } from '@/lib/crop';
 import { PublicShell } from '@/components/public/PublicShell';
 import { getSmsApplyNumber, getSmsApplyKeyword } from '@/lib/sms-apply';
+import { jobPostingJsonLd } from '@/lib/seo/json-ld';
+import { getSiteUrl } from '@/lib/seo/metadata';
+import type { Locale } from '@/lib/seo/metadata';
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -45,6 +48,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description,
             type: 'website',
             url: `/${locale}/jobs/${slug}`,
+            images: [
+                {
+                    url: `${getSiteUrl()}/og/job/${slug}?locale=${locale}`,
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                },
+            ],
         },
     };
 }
@@ -78,50 +89,13 @@ export default async function PublicJobDetailPage({ params }: Props) {
     const description = locale === 'es' ? job.descriptionEs : job.descriptionEn;
     const crop = inferCrop(job.titleEn, job.skills);
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-    const jobPostingJsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'JobPosting',
-        title,
-        description: description || `${job.employerName} hiring ${title}.`,
-        datePosted: job.publishedAt ?? job.createdAt,
-        validThrough: job.applyBy ?? undefined,
-        employmentType: 'SEASONAL',
-        hiringOrganization: { '@type': 'Organization', name: job.employerName },
-        jobLocation: {
-            '@type': 'Place',
-            address: {
-                '@type': 'PostalAddress',
-                addressRegion: 'CA',
-                addressCountry: 'US',
-                addressLocality: job.city ?? `${job.county} County`,
-            },
-        },
-        baseSalary: {
-            '@type': 'MonetaryAmount',
-            currency: 'USD',
-            value: {
-                '@type': 'QuantitativeValue',
-                minValue: job.wageMin,
-                maxValue: job.wageMax,
-                unitText: job.wageUnit.toUpperCase(),
-            },
-        },
-        industry: 'Agriculture',
-        jobBenefits: [
-            job.housing ? 'Housing provided' : null,
-            job.transport ? 'Transportation provided' : null,
-        ]
-            .filter(Boolean)
-            .join(', ') || undefined,
-        url: `${siteUrl}/${locale}/jobs/${slug}`,
-    };
+    const ldJson = jobPostingJsonLd({ locale: locale as Locale, slug, job });
 
     return (
         <PublicShell locale={locale} title={title}>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
             />
             <Link
                 href={`/${locale}/jobs`}

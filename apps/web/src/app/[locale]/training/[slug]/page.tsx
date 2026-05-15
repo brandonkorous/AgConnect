@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCertificate, faMessage } from '@fortawesome/free-solid-svg-icons';
 import { PublicShell } from '@/components/public/PublicShell';
 import { fetchPublicProgram } from '@/lib/api/public-training';
+import { educationalOccupationalProgramJsonLd } from '@/lib/seo/json-ld';
+import { getSiteUrl, type Locale } from '@/lib/seo/metadata';
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -24,7 +26,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `/${locale}/training/${slug}`,
       languages: { en: `/en/training/${slug}`, es: `/es/training/${slug}` },
     },
-    openGraph: { title, description, type: 'website' },
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: `/${locale}/training/${slug}`,
+      images: [
+        {
+          url: `${getSiteUrl()}/og/training/${slug}?locale=${locale}`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
   };
 }
 
@@ -45,33 +60,24 @@ export default async function ProgramDetailPage({ params }: Props) {
     day: 'numeric',
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  const courseJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Course',
-    name: title,
-    description: description || `${program.funder}-funded training in ${program.county} County.`,
-    provider: { '@type': 'Organization', name: program.orgName },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      availability:
-        program.spotsLeft > 0
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/SoldOut',
-      validThrough: program.startDate,
+  const ldJson = educationalOccupationalProgramJsonLd({
+    locale: locale as Locale,
+    program: {
+      titleEn: program.titleEn,
+      titleEs: program.titleEs,
+      descriptionEn: program.descriptionEn,
+      descriptionEs: program.descriptionEs,
+      seoSlug: slug,
+      funder: program.funder,
+      orgName: program.orgName,
     },
-    courseMode: 'in-person',
-    inLanguage: ['en', 'es'],
-    url: `${siteUrl}/${locale}/training/${slug}`,
-  };
+  });
 
   return (
     <PublicShell locale={locale} title={title}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
       />
       <Link
         href={`/${locale}/training`}

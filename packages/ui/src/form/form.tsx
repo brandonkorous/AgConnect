@@ -27,8 +27,12 @@ export function Form<TValues extends FieldValues>({
   className,
   id,
 }: FormProps<TValues>) {
+  // Zod 4's ZodType is a deeply-recursive generic; passing TValues through
+  // zodResolver triggers TS2589. We launder the schema through `never` so
+  // the resolver's inference can't traverse it, then assert the result as
+  // the resolver shape useForm expects.
   const form = useForm<TValues>({
-    resolver: zodResolver(schema as z.ZodType<TValues>) as never,
+    resolver: zodResolver(schema as never) as never,
     defaultValues,
     mode: 'onTouched',
   });

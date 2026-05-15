@@ -7,12 +7,16 @@
     "dev": "tsx watch --env-file=../../.env src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.eval.json",
+    "eval": "tsx --env-file=../../.env eval/run.ts"
   },
   "dependencies": {
     "@agconn/db": "workspace:*",
     "@agconn/llm": "workspace:*",
     "@agconn/schemas": "workspace:*",
+    "libphonenumber-js": "^1.13.1",
+    "mammoth": "^1.12.0",
+    "pdfjs-dist": "^4.10.38",
     "pg-boss": "12.18.1"
   },
   "devDependencies": {

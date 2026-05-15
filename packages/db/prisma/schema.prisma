@@ -108,6 +108,21 @@ enum ParserStatus {
   failed
 }
 
+enum ParseJobStatus {
+  queued
+  running
+  succeeded
+  failed
+}
+
+enum ParseExtractKind {
+  pdf_text
+  pdf_ocr
+  docx
+  plaintext
+  html
+}
+
 enum AppStatus {
   applied
   reviewed
@@ -810,6 +825,36 @@ model WorkerProfile {
   @@index([county])
   @@index([phoneHash])
   @@map("worker_profiles")
+}
+
+// Per-parse audit row produced by the resume-parser service. Persists token
+// counts + computed cost so monthly billing rollups can attribute LLM spend
+// per tenant. See docs/00-foundation/07-resume-parser/02-data-model.md.
+model ResumeParseJob {
+  id               String           @id @default(uuid()) @db.Uuid
+  tenantId         String           @map("tenant_id") @db.Uuid
+  userId           String           @map("user_id")
+  blobPath         String           @map("blob_path")
+  extractKind      ParseExtractKind? @map("extract_kind")
+  rawTextLength    Int?             @map("raw_text_length")
+  status           ParseJobStatus
+  modelUsed        String?          @map("model_used")
+  inputTokens      Int?             @map("input_tokens")
+  outputTokens     Int?             @map("output_tokens")
+  cacheReadTokens  Int?             @map("cache_read_tokens")
+  cacheWriteTokens Int?             @map("cache_write_tokens")
+  costUsd          Decimal?         @map("cost_usd") @db.Decimal(10, 5)
+  parseDurationMs  Int?             @map("parse_duration_ms")
+  errorCode        String?          @map("error_code")
+  errorMsg         String?          @map("error_msg")
+  repairAttempted  Boolean          @default(false) @map("repair_attempted")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  completedAt      DateTime?        @map("completed_at")
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status, createdAt])
+  @@map("resume_parse_jobs")
 }
 
 // Job postings created by employers. SEO slug-routed for crawlable URLs.

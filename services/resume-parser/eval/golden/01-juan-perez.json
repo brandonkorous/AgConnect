@@ -1,0 +1,67 @@
+{
+  "contact": {
+    "firstName": "Juan",
+    "lastName": "Perez",
+    "email": "juan.perez.farm@gmail.com",
+    "phone": "+15595550182",
+    "city": "Fresno",
+    "state": "CA",
+    "zipCode": "93650"
+  },
+  "experience": [
+    {
+      "title": "Lead Pruner",
+      "employer": "Sun Valley Vineyards",
+      "city": "Madera",
+      "startDate": "2021-03",
+      "current": true,
+      "bullets": [
+        "Lead a crew of 8 in winter cane pruning across 240 acres of wine grapes",
+        "Trained 12 new hires in 2024 season; zero recordable injuries on crew",
+        "Maintained Stihl pole saws and Felco shears across two seasons"
+      ]
+    },
+    {
+      "title": "Harvest Crew",
+      "employer": "Fowler Packing",
+      "city": "Fresno",
+      "startDate": "2018",
+      "endDate": "2020",
+      "bullets": [
+        "Hand-picked Thompson seedless grapes for table and raisin packs",
+        "Operated walk-behind tractor for end-of-row cleanup"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Reedley College",
+      "degree": "AA",
+      "field": "Agricultural Business",
+      "year": "2017"
+    }
+  ],
+  "skills": [
+    "Pruning",
+    "harvesting",
+    "tractor_operation",
+    "crew_lead",
+    "bilingual_communication"
+  ],
+  "certifications": [
+    {
+      "name": "Pesticide Applicator (Category B)",
+      "issuer": "CDPR",
+      "issuedAt": "2022-03-14"
+    },
+    {
+      "name": "First Aid / CPR",
+      "issuer": "American Red Cross",
+      "expiresAt": "2027-04-01"
+    }
+  ],
+  "languages": [
+    { "name": "Spanish", "level": "native" },
+    { "name": "English", "level": "fluent" }
+  ]
+}

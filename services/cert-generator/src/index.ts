@@ -1,13 +1,13 @@
 import { PgBoss } from 'pg-boss';
 import { prisma, EnrollmentStatus } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
-import { renderCertHtml } from './render.js';
-import { writeCert, type CertWriter } from './storage.js';
+import { renderCertPdf } from './render.js';
+import { uploadCert } from './storage.js';
 
 // Cert generator: consumes `enrollment.completed` events and produces a
-// bilingual certificate. Writes the artifact via the configured storage
-// adapter, stamps `certUrl` + `certificateId` on the Enrollment, then enqueues
-// `training.completed` SMS so the worker is notified to download.
+// bilingual certificate PDF. Renders via React-PDF, uploads to the private
+// Supabase 'certs' bucket, stamps the resulting storage key on the Enrollment.
+// The wallet API mints 24h signed URLs on read.
 //
 // Producers: training/routes.ts mark-complete + employer org training tools
 // publish to this queue. The queue is created here so producers can blind-fire
@@ -20,22 +20,16 @@ export type CompletionJob = {
     tenantId: string;
 };
 
-const ENV_KEYS_REQUIRED = ['DATABASE_URL'] as const;
+const ENV_KEYS_REQUIRED = ['DATABASE_URL', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'] as const;
 
 function assertEnv(): void {
     const missing = ENV_KEYS_REQUIRED.filter((k) => !process.env[k]);
     if (missing.length > 0) {
         throw new Error(`cert-generator: missing required env: ${missing.join(', ')}`);
     }
-    // Supabase Storage is the target backend but isn't wired yet — for now
-    // we always use the local fs writer.
-    console.warn(
-        '[cert-generator] Supabase Storage adapter not yet implemented — using local fs writer',
-    );
 }
 
 let boss: PgBoss | null = null;
-let writer: CertWriter | null = null;
 
 async function start(): Promise<void> {
     assertEnv();
@@ -46,8 +40,6 @@ async function start(): Promise<void> {
     boss.on('error', (e) => console.error('[cert-generator] pg-boss error', e));
     await boss.start();
     await boss.createQueue(QUEUE);
-
-    writer = await writeCert.init();
 
     await boss.work<CompletionJob>(QUEUE, async (jobs) => {
         for (const job of jobs) {
@@ -67,23 +59,25 @@ async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> 
         return;
     }
     if (enrollment.status !== EnrollmentStatus.completed) {
-        // Producer fired before mark-complete persisted; skip silently — pg-boss
-        // will retry up to retryLimit and the next attempt will see the row.
         console.warn('[cert-generator] enrollment not completed yet', {
             enrollmentId,
             status: enrollment.status,
         });
         return;
     }
-    if (enrollment.certUrl) return; // idempotent
+    if (enrollment.certUrl) return; // idempotent — already rendered
 
     const certificateId =
         enrollment.certificateId ??
         `AC-${new Date().getFullYear()}-${enrollmentId.slice(0, 8).toUpperCase()}`;
 
-    const html = renderCertHtml({
-        workerFirstName: '', // populated from workerProfile next block
-        workerLastName: '',
+    const profile = await prisma.workerProfile.findUnique({
+        where: { id: enrollment.workerId },
+    });
+
+    const pdfBuffer = await renderCertPdf({
+        workerFirstName: profile?.firstName ?? '',
+        workerLastName: profile?.lastName ?? '',
         programTitleEn: enrollment.program.titleEn,
         programTitleEs: enrollment.program.titleEs,
         funder: enrollment.program.funder,
@@ -93,26 +87,18 @@ async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> 
         certificateId,
     });
 
-    // We want the worker's name on the certificate. Pull from workerProfile
-    // since the user row only has phone/email.
-    const profile = await prisma.workerProfile.findUnique({
-        where: { id: enrollment.workerId },
-    });
-    const finalHtml = html
-        .replace('__WORKER_FIRST__', profile?.firstName ?? '')
-        .replace('__WORKER_LAST__', profile?.lastName ?? '');
-
-    const certUrl = await writer!.write({
+    const storageKey = await uploadCert({
         tenantId,
         enrollmentId,
         certificateId,
-        contentType: 'text/html',
-        body: Buffer.from(finalHtml, 'utf8'),
+        body: pdfBuffer,
     });
 
+    // certUrl now stores the Supabase storage key, not a directly-fetchable URL.
+    // The wallet endpoint signs it on read with a 24h TTL.
     await prisma.enrollment.update({
         where: { id: enrollmentId },
-        data: { certificateId, certUrl },
+        data: { certificateId, certUrl: storageKey, certGeneratedAt: new Date() },
     });
 
     try {
@@ -122,7 +108,9 @@ async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> 
             template: 'training.completed',
             vars: {
                 programTitle: enrollment.program.titleEn,
-                certUrl,
+                // SMS gets the wallet deep link rather than the raw storage key —
+                // worker opens the wallet, which mints a signed URL on the fly.
+                certUrl: `${process.env.PUBLIC_WEB_URL ?? 'https://agconn.com'}/wallet/cert/${enrollmentId}`,
             },
             jobKey: `training.completed-${enrollmentId}`,
         });

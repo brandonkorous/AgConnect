@@ -3,6 +3,7 @@ import { ok, err } from '@agconn/api-client/server';
 import { EnrollmentStatus, type Tx } from '@agconn/db';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
 import type { AuditCtxVars } from '../middleware/audit.js';
+import { signCertUrl } from '../lib/supabase-storage.js';
 
 export const walletRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 
@@ -36,7 +37,11 @@ walletRoutes.get('/', async (c) => {
         funder: e.program.funder,
         orgName: e.program.org?.email ?? 'Training organization',
         completedAt: e.completedAt?.toISOString().slice(0, 10) ?? '',
-        certUrl: e.certUrl, // signed-URL generation deferred to 08-cert-generation
+        // List view returns null for the URL — the worker has to open the cert
+        // detail to mint a signed URL. Keeps the list endpoint cheap and stops
+        // signed URLs being scraped from this response (TTL 24h, but still).
+        certUrl: null,
+        hasCert: Boolean(e.certUrl),
         issuedAt: e.completedAt?.toISOString().slice(0, 10) ?? '',
         expiresAt: null,
     }));
@@ -65,6 +70,19 @@ walletRoutes.get('/cert/:enrollmentId', async (c) => {
     });
     if (!enrollment) return err(c, 404, 'not_found');
 
+    let signedUrl: string | null = null;
+    if (enrollment.certUrl) {
+        try {
+            signedUrl = await signCertUrl(enrollment.certUrl);
+        } catch (e) {
+            console.error('[wallet] sign cert failed', {
+                enrollmentId: id,
+                err: e instanceof Error ? e.message : String(e),
+            });
+            return err(c, 500, 'internal_error');
+        }
+    }
+
     return ok(c, {
         certificateId: enrollment.certificateId,
         programTitleEn: enrollment.program.titleEn,
@@ -75,7 +93,8 @@ walletRoutes.get('/cert/:enrollmentId', async (c) => {
         },
         funder: enrollment.program.funder,
         completedAt: enrollment.completedAt?.toISOString().slice(0, 10) ?? null,
-        signedUrl: enrollment.certUrl, // 24h signed url generation deferred
+        signedUrl,
+        signedUrlExpiresInSec: signedUrl ? 60 * 60 * 24 : null,
     });
 });
 

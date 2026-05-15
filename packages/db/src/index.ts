@@ -65,6 +65,8 @@ export {
     JobEditEventKind,
     RenotifyChannel,
     RenotifyStatus,
+    ParseJobStatus,
+    ParseExtractKind,
 } from '@prisma/client';
 export type {
     Tenant,

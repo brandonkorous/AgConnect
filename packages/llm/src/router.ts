@@ -1,4 +1,4 @@
-import { createRouter, type Router } from 'llm-harness';
+import { createRouter, type ModelRoute, type ProviderId, type Router } from 'llm-harness';
 
 type Aliases =
   | 'translate'
@@ -11,11 +11,19 @@ const ALIAS_ENV: Record<Aliases, { env: string; fallback: string }> = {
   },
   'resume-parser': {
     env: 'LLM_RESUME_PARSER_MODEL',
-    fallback: 'claude-sonnet-4-6-20250514',
+    fallback: 'claude-haiku-4-5-20251001',
   },
 };
 
 let router: Router | null = null;
+
+function providerForModel(modelId: string): ProviderId {
+  if (modelId.startsWith('claude-')) return 'anthropic';
+  if (modelId.startsWith('gpt-') || modelId.startsWith('o1') || modelId.startsWith('o3')) {
+    return 'openai';
+  }
+  return 'anthropic';
+}
 
 function buildRouter(): Router {
   const anthropicKey = process.env.ANTHROPIC_API_KEY ?? '';
@@ -25,12 +33,13 @@ function buildRouter(): Router {
   if (anthropicKey) providers.anthropic = { apiKey: anthropicKey };
   if (openaiKey) providers.openai = { apiKey: openaiKey };
 
-  const models: Record<string, string> = {};
+  const models: Record<string, ModelRoute> = {};
   for (const [alias, { env, fallback }] of Object.entries(ALIAS_ENV) as [
     Aliases,
     { env: string; fallback: string },
   ][]) {
-    models[alias] = process.env[env] ?? fallback;
+    const modelId = process.env[env] ?? fallback;
+    models[alias] = { provider: providerForModel(modelId), modelId };
   }
 
   const fallbacks = (process.env.LLM_FALLBACKS ?? '')

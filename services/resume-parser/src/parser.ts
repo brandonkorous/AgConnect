@@ -1,97 +1,219 @@
-import { llm, isProviderConfigured } from '@agconn/llm';
+import { isProviderConfigured } from '@agconn/llm';
 import { ResumeSchema, type Resume } from '@agconn/schemas';
+import { extract, type ExtractKind } from './extract.js';
+import { normalize } from './normalize.js';
+import { ParserError, type ParserErrorCode } from './errors.js';
+import {
+    callForPdf,
+    callForText,
+    callRepair,
+    extractJson,
+    type LlmResult,
+} from './llm.js';
+import { computeCostUsd, type Usage } from './cost.js';
 
-export type ParseResult =
-    | { status: 'parsed'; resume: Resume }
-    | { status: 'failed'; reason: 'no_provider' | 'fetch_failed' | 'parser_error' | 'schema_mismatch' };
+// Orchestrator: extract → call LLM (router) → schema validate → repair-reprompt
+// once if invalid → normalize. Text+repair route through llm-harness; image-
+// only PDFs go straight to Claude until the harness supports document inputs.
+// Returns a discriminated result the queue consumer (index.ts) persists.
+//
+// Spec: docs/00-foundation/07-resume-parser/
+
+const MIN_TEXT_LENGTH = 50;
+
+export type ParseSuccess = {
+    status: 'parsed';
+    resume: Resume;
+    extractKind: ExtractKind;
+    rawTextLength: number;
+    modelUsed: string;
+    usage: Usage;
+    costUsd: number;
+    repairAttempted: boolean;
+    parseDurationMs: number;
+};
+
+export type ParseFailure = {
+    status: 'failed';
+    code: ParserErrorCode;
+    message: string;
+    extractKind: ExtractKind | null;
+    rawTextLength: number;
+    modelUsed: string | null;
+    usage: Usage | null;
+    costUsd: number;
+    repairAttempted: boolean;
+    parseDurationMs: number;
+};
+
+export type ParseResult = ParseSuccess | ParseFailure;
 
 export type ParseArgs = {
     resumeRawUrl: string;
+    // Optional pre-extracted text — bypasses fetch+extract when the upload
+    // path already produced clean text synchronously.
     rawText?: string;
 };
 
-const SYSTEM_PROMPT = `You extract a worker's resume into a strict JSON schema. Output JSON only — no prose, no markdown.
-Rules:
-- The "experience" array lists farm/agriculture jobs first, with most recent first.
-- "skills" is a flat array of plain-language tags (e.g. "Pruning", "Tractor", "Pesticide handling"). Translate from Spanish if needed.
-- Dates use YYYY-MM. If only a year is given, use YYYY-01.
-- If a field is unknown, omit it. Don't invent.`;
-
 export async function parseResume(args: ParseArgs): Promise<ParseResult> {
+    const startedAt = Date.now();
+    let extractKind: ExtractKind | null = null;
+    let rawTextLength = 0;
+    let repairAttempted = false;
+    let cumUsage: Usage = { inputTokens: 0, outputTokens: 0, cacheReadInputTokens: 0, cacheCreationInputTokens: 0 };
+    let cumCost = 0;
+    let modelUsed: string | null = null;
+
+    const fail = (code: ParserErrorCode, message: string): ParseFailure => ({
+        status: 'failed',
+        code,
+        message,
+        extractKind,
+        rawTextLength,
+        modelUsed,
+        usage: cumUsage.inputTokens > 0 ? cumUsage : null,
+        costUsd: cumCost,
+        repairAttempted,
+        parseDurationMs: Date.now() - startedAt,
+    });
+
     if (!isProviderConfigured()) {
-        return { status: 'failed', reason: 'no_provider' };
+        return fail('no_provider', 'no LLM provider configured');
     }
 
-    let text = args.rawText;
-    if (!text) {
+    // Step 1 — extract text, or hand the PDF directly to the Claude path
+    let llmCall: () => Promise<LlmResult>;
+    let sourceTextForRepair = '';
+    try {
+        if (args.rawText !== undefined) {
+            extractKind = 'plaintext';
+            rawTextLength = args.rawText.length;
+            if (args.rawText.trim().length < MIN_TEXT_LENGTH) {
+                return fail('too_little_text', `pre-extracted text is ${args.rawText.length} chars`);
+            }
+            sourceTextForRepair = args.rawText;
+            llmCall = () => callForText(args.rawText!);
+        } else {
+            const extracted = await extract({ url: args.resumeRawUrl });
+            extractKind = extracted.kind;
+            if (extracted.kind === 'pdf_ocr') {
+                // Image-only PDF — Claude reads the document directly. We
+                // don't have source text for the repair prompt, so it falls
+                // back to an empty placeholder; the LLM still has its prior
+                // JSON output to anchor on.
+                rawTextLength = 0;
+                llmCall = () => callForPdf(extracted.pdf);
+            } else {
+                rawTextLength = extracted.text.length;
+                if (extracted.text.trim().length < MIN_TEXT_LENGTH) {
+                    return fail('too_little_text', `${extracted.kind} produced ${extracted.text.length} chars`);
+                }
+                sourceTextForRepair = extracted.text;
+                llmCall = () => callForText(extracted.text);
+            }
+        }
+    } catch (e) {
+        if (e instanceof ParserError) return fail(e.code, e.message);
+        return fail('fetch_failed', e instanceof Error ? e.message : String(e));
+    }
+
+    // Step 2 — first LLM call
+    let result: LlmResult;
+    try {
+        result = await llmCall();
+    } catch (e) {
+        if (e instanceof ParserError) return fail(e.code, e.message);
+        return fail('llm_failed', e instanceof Error ? e.message : String(e));
+    }
+    modelUsed = result.model;
+    cumUsage = sumUsage(cumUsage, result.usage);
+    cumCost += computeCostUsd(result.model, result.usage);
+
+    let json = extractJson(result.rawJson);
+    if (json === null) {
+        // Empty output / non-JSON / fenced gibberish — repair once.
+        repairAttempted = true;
         try {
-            text = await fetchAsText(args.resumeRawUrl);
-        } catch (e) {
-            console.error('[resume-parser] fetch failed', {
-                url: args.resumeRawUrl,
-                err: e instanceof Error ? e.message : String(e),
+            const repair = await callRepair({
+                previousJsonText: result.rawJson,
+                issues: ['Response was not valid JSON. Return JSON only.'],
+                originalText: sourceTextForRepair,
             });
-            return { status: 'failed', reason: 'fetch_failed' };
+            cumUsage = sumUsage(cumUsage, repair.usage);
+            cumCost += computeCostUsd(repair.model, repair.usage);
+            json = extractJson(repair.rawJson);
+            if (json === null) {
+                return fail('invalid_json', 'LLM returned non-JSON twice');
+            }
+            result = repair;
+            modelUsed = repair.model;
+        } catch (e) {
+            if (e instanceof ParserError) return fail(e.code, e.message);
+            return fail('llm_failed', e instanceof Error ? e.message : String(e));
         }
     }
 
-    if (!text || text.trim().length === 0) {
-        return { status: 'failed', reason: 'fetch_failed' };
+    let parsed = ResumeSchema.safeParse(json);
+    if (!parsed.success && !repairAttempted) {
+        // Step 3 — schema mismatch: one repair re-prompt with the specific issues
+        repairAttempted = true;
+        const issues = parsed.error.issues.slice(0, 8).map(formatIssue);
+        try {
+            const repair = await callRepair({
+                previousJsonText: result.rawJson,
+                issues,
+                originalText: sourceTextForRepair,
+            });
+            cumUsage = sumUsage(cumUsage, repair.usage);
+            cumCost += computeCostUsd(repair.model, repair.usage);
+            const repairJson = extractJson(repair.rawJson);
+            if (repairJson !== null) {
+                parsed = ResumeSchema.safeParse(repairJson);
+            }
+            modelUsed = repair.model;
+        } catch (e) {
+            // Repair call failed — surface as schema_mismatch since we have
+            // a valid-but-wrong response in hand.
+            if (e instanceof ParserError) return fail(e.code, e.message);
+            return fail('llm_failed', e instanceof Error ? e.message : String(e));
+        }
     }
 
-    let raw: string;
-    try {
-        const result = await llm.complete({
-            model: 'resume-parser',
-            system: SYSTEM_PROMPT,
-            messages: [
-                {
-                    role: 'user',
-                    content: `Extract this resume into the AGCONN ResumeSchema:\n\n${text.slice(0, 20000)}`,
-                },
-            ],
-            maxTokens: 4000,
-            temperature: 0,
-        });
-        raw = result.text;
-    } catch (e) {
-        console.error('[resume-parser] llm threw', {
-            err: e instanceof Error ? e.message : String(e),
-        });
-        return { status: 'failed', reason: 'parser_error' };
-    }
-
-    const json = extractJson(raw);
-    if (!json) return { status: 'failed', reason: 'parser_error' };
-
-    const parsed = ResumeSchema.safeParse(json);
     if (!parsed.success) {
-        console.warn('[resume-parser] schema mismatch', {
-            issues: parsed.error.issues.slice(0, 3),
-        });
-        return { status: 'failed', reason: 'schema_mismatch' };
+        return fail('schema_mismatch', summarizeIssues(parsed.error.issues));
     }
-    return { status: 'parsed', resume: parsed.data };
+
+    const normalized = normalize(parsed.data);
+    return {
+        status: 'parsed',
+        resume: normalized,
+        extractKind: extractKind!,
+        rawTextLength,
+        modelUsed: modelUsed ?? 'unknown',
+        usage: cumUsage,
+        costUsd: cumCost,
+        repairAttempted,
+        parseDurationMs: Date.now() - startedAt,
+    };
 }
 
-async function fetchAsText(url: string): Promise<string> {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`fetch ${url} → ${res.status}`);
-    // Best-effort text extraction for plain text or HTML uploads. Real PDF
-    // parsing should hit a textract step before this service — we don't ship a
-    // PDF parser here.
-    return await res.text();
+function formatIssue(issue: { path: ReadonlyArray<PropertyKey>; message: string }): string {
+    const path = issue.path.length > 0 ? issue.path.map(String).join('.') : '(root)';
+    return `${path}: ${issue.message}`;
 }
 
-function extractJson(raw: string): unknown | null {
-    // The model usually returns `{...}` directly. Tolerate code-fenced output
-    // (```json\n...\n```) just in case.
-    const trimmed = raw.trim();
-    const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-    const candidate = fenced?.[1] ?? trimmed;
-    try {
-        return JSON.parse(candidate);
-    } catch {
-        return null;
-    }
+function summarizeIssues(
+    issues: ReadonlyArray<{ path: ReadonlyArray<PropertyKey>; message: string }>,
+): string {
+    return issues.slice(0, 3).map(formatIssue).join(' | ');
+}
+
+function sumUsage(a: Usage, b: Usage): Usage {
+    return {
+        inputTokens: a.inputTokens + b.inputTokens,
+        outputTokens: a.outputTokens + b.outputTokens,
+        cacheReadInputTokens: (a.cacheReadInputTokens ?? 0) + (b.cacheReadInputTokens ?? 0),
+        cacheCreationInputTokens:
+            (a.cacheCreationInputTokens ?? 0) + (b.cacheCreationInputTokens ?? 0),
+    };
 }

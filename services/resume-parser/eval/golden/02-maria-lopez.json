@@ -1,0 +1,61 @@
+{
+  "contact": {
+    "firstName": "María",
+    "lastName": "López",
+    "email": "maria.lopez88@example.com",
+    "phone": "+15595550244",
+    "city": "Visalia",
+    "state": "CA",
+    "zipCode": "93277"
+  },
+  "experience": [
+    {
+      "title": "Packer",
+      "employer": "Fruta del Sol Packing",
+      "city": "Visalia",
+      "startDate": "2022-05",
+      "current": true,
+      "bullets": [
+        "Packed peaches and nectarines on a 12-person line",
+        "Quality inspection and sorting of export-grade fruit",
+        "Washed and maintained reusable bins"
+      ]
+    },
+    {
+      "title": "Farm Laborer",
+      "employer": "Rancho San Joaquín",
+      "city": "Tulare",
+      "startDate": "2019-03",
+      "endDate": "2021-10",
+      "bullets": [
+        "Picked raisin and table grapes during harvest season",
+        "Furrow irrigation and drip line maintenance",
+        "Loaded crates onto trailers during harvest"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Hanford West High School",
+      "degree": "Diploma",
+      "year": "2017"
+    }
+  ],
+  "skills": [
+    "packing",
+    "harvesting",
+    "irrigation",
+    "bilingual_communication"
+  ],
+  "certifications": [
+    {
+      "name": "California Food Handler Card",
+      "issuer": "California Food Handler Card",
+      "issuedAt": "2023-02-15"
+    }
+  ],
+  "languages": [
+    { "name": "Spanish", "level": "native" },
+    { "name": "English", "level": "conversational" }
+  ]
+}

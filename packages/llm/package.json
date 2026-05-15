@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "llm-harness": "0.2.0"
+    "llm-harness": "0.3.1"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": "*",
