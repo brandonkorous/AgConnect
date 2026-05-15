@@ -173,6 +173,21 @@ export const auditRegistry = {
     retentionDays: 2555,
     metadata: ['programId', 'workerId', 'hoursCompleted'],
   },
+  'training.program.canceled': {
+    resourceType: 'training_program',
+    retentionDays: 2555,
+    metadata: ['programId', 'enrolledCount', 'reason'],
+  },
+  'training.program.updated': {
+    resourceType: 'training_program',
+    retentionDays: 2555,
+    metadata: ['programId', 'fields'],
+  },
+  'training.enrollments.bulk_updated': {
+    resourceType: 'training_program',
+    retentionDays: 2555,
+    metadata: ['programId', 'enrollmentIds', 'status', 'noShow'],
+  },
   'cert.issued': {
     resourceType: 'certificate',
     retentionDays: 2555,

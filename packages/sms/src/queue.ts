@@ -70,10 +70,17 @@ const SEND_OPTS = {
 
 // Templates that bypass quiet-hours by default. Two-hour training reminders
 // must fire before the class; hire confirmations are time-critical for the
-// worker. Everything else defers to 7 AM Pacific to comply with FCC guidance.
+// worker. Opt-in confirm/welcome/invalid are direct replies to a user-initiated
+// inbound SMS — TCPA quiet-hours apply to unsolicited outreach, not to two-way
+// conversational responses, and a delayed confirm prompt looks like a broken
+// service to a worker who just texted JOBS. Everything else defers to 7 AM
+// Pacific to comply with FCC guidance.
 const QUIET_HOURS_BYPASS: ReadonlySet<SmsTemplateName> = new Set([
   'application.hired',
   'training.reminder.2h',
+  'sms.optin.confirm',
+  'sms.optin.welcome',
+  'sms.optin.invalid',
 ]);
 
 export type EnqueueSmsArgs<T extends SmsTemplateName = SmsTemplateName> = SmsJob<T> & {

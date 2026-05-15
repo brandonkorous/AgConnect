@@ -171,6 +171,42 @@ const COPY: Record<EmployerEmailTemplate, Record<Locale, EmployerEmailCopy>> = {
             signoff: '— El equipo de AGCONN',
         },
     },
+    'employer.application_withdrawn': {
+        en: {
+            subject: 'Applicant withdrew their application',
+            preheader: 'A worker withdrew from {jobTitle}.',
+            heading: 'An applicant withdrew',
+            intro: 'A worker withdrew their application for {jobTitle}.',
+            body: [
+                'You can review your remaining applicants from your dashboard.',
+            ],
+            cta: {
+                label: 'Open applicants',
+                pathByLocale: {
+                    en: '/en/employer/applications',
+                    es: '/es/employer/applications',
+                },
+            },
+            signoff: '— The AGCONN team',
+        },
+        es: {
+            subject: 'Un aplicante retiró su solicitud',
+            preheader: 'Un trabajador retiró su aplicación para {jobTitle}.',
+            heading: 'Un aplicante se retiró',
+            intro: 'Un trabajador retiró su aplicación para {jobTitle}.',
+            body: [
+                'Puedes revisar a los aplicantes restantes desde tu panel.',
+            ],
+            cta: {
+                label: 'Ver aplicantes',
+                pathByLocale: {
+                    en: '/en/employer/applications',
+                    es: '/es/employer/applications',
+                },
+            },
+            signoff: '— El equipo de AGCONN',
+        },
+    },
     'employer.billing.invoice_paid': {
         en: {
             subject: 'Receipt: ${amount} paid',

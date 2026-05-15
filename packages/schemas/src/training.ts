@@ -109,3 +109,28 @@ export const UpdateEnrollmentBody = z
     noShow: z.boolean().optional(),
   })
   .strict();
+
+export const UpdateProgramBody = z
+  .object({
+    descriptionEn: z.string().min(20).max(5000).optional(),
+    descriptionEs: z.string().min(20).max(5000).optional(),
+    sessionTimes: SessionTimesSchema.optional(),
+    locationName: z.string().min(1).max(200).optional(),
+    locationAddress: z.string().min(1).max(300).optional(),
+  })
+  .strict()
+  .refine((v) => Object.keys(v).length > 0, { message: 'no_fields' });
+
+export const CancelProgramBody = z
+  .object({
+    reason: z.string().min(1).max(500).optional(),
+  })
+  .strict();
+
+export const BulkUpdateEnrollmentsBody = z
+  .object({
+    enrollmentIds: z.array(z.string().uuid()).min(1).max(200),
+    status: z.enum(['completed', 'dropped']),
+    noShow: z.boolean().optional(),
+  })
+  .strict();

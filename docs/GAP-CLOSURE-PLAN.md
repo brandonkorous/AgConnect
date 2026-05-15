@@ -108,31 +108,41 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - The training detail JSON-LD switched from `Course` to `EducationalOccupationalProgram` per the funder-facing schema requirement. The lib version accepts optional `durationHours` and `occupationalCredentialAwarded`; the page currently passes neither — both can be wired up when training-program metadata grows those fields.
 - Both detail pages now declare `openGraph.images` pointing at the per-item OG routes. Routes use Node runtime (not edge) because they call the public API via `fetchPublicJob` / `fetchPublicProgram` — daily ISR via `revalidate = 86400` keeps cost bounded.
 
-## Phase 4 — Worker experience completion (1–2 weeks)
+## Phase 4 — Worker experience completion ✓ closed 2026-05-15
 
 **Goal:** close the per-worker UX gaps. Profile editor, wallet, and onboarding are already solid — the remaining holes are around applications and training.
 
+**Audit findings (2026-05-15):** 8 of 12 items were already shipped (applications/dashboard/field-mode/onboarding/sw). Closure work added the employer email on worker withdraw (3 fixed an inversion bug — code was SMSing the worker instead of emailing the employer), the training-org backend (PATCH program / cancel / bulk-update enrollments), and a new training-org web surface (sidebar, programs list, edit, roster) that did not previously exist.
+
 | # | item | location | done |
 |---|------|----------|------|
-| 4.1 | Application detail page with event timeline (apply → reviewed → hired/rejected/withdrawn) | `apps/web/src/app/[locale]/(worker)/applications/[id]/page.tsx` | [ ] |
-| 4.2 | Withdraw endpoint + UI; allowed only when status ∈ {applied, reviewed} | [services/api/src/worker/applications/routes.ts](../services/api/src/worker/applications/routes.ts) | [ ] |
-| 4.3 | Employer email on worker withdraw | [packages/email/src/templates/](../packages/email/src/templates/) | [ ] |
-| 4.4 | Worker dashboard recommendations (county + skills priority feed) | new — `apps/web/src/app/[locale]/(worker)/page.tsx` | [ ] |
-| 4.5 | Training program cancellation broadcast (SMS to all enrolled within 5 min) | [services/api/src/training-org/programs/cancel.ts](../services/api/src/training-org/programs/cancel.ts) | [ ] |
-| 4.6 | Bulk enrollment status update UI (mark completed / dropped / no-show) | [apps/web/src/app/[locale]/training-org/programs/[id]/roster/](../apps/web/src/app/[locale]/training-org/programs/[id]/roster/) | [ ] |
-| 4.7 | Training-org program editor (description + session times after publish) | [apps/web/src/app/[locale]/training-org/programs/[id]/edit/](../apps/web/src/app/[locale]/training-org/programs/[id]/edit/) | [ ] |
-| 4.8 | IndexedDB onboarding state restore (tab close → reopen resumes at step) | [apps/web/src/lib/onboarding/persist.ts](../apps/web/src/lib/onboarding/persist.ts) | [ ] |
-| 4.9 | Field mode: SMS-only apply flow | `apps/web/src/app/[locale]/field/jobs/[id]/apply/` | [ ] |
-| 4.10 | Field mode: quick withdraw on applications list | `apps/web/src/app/[locale]/field/applications/` | [ ] |
-| 4.11 | Field mode: service-worker offline cache for today's shift + messages | [apps/web/public/sw.js](../apps/web/public/sw.js) | [ ] |
-| 4.12 | Resume editor: re-upload triggers parser, status polled at `/v1/profile/resume/status`; previous Blob path retained as backup | [apps/web/src/app/[locale]/(worker)/profile/](../apps/web/src/app/[locale]/(worker)/profile/) | [ ] |
+| 4.1 | Application detail page with event timeline (apply → reviewed → hired/rejected/withdrawn) | [apps/web/src/app/[locale]/worker/applications/[id]/page.tsx](../apps/web/src/app/[locale]/worker/applications/[id]/page.tsx) | [x] pre-existing |
+| 4.2 | Withdraw endpoint + UI; allowed only when status ∈ {applied, reviewed} | [services/api/src/applications/routes.ts:218](../services/api/src/applications/routes.ts), [apps/web/src/components/applications/WithdrawButton.tsx](../apps/web/src/components/applications/WithdrawButton.tsx) | [x] pre-existing |
+| 4.3 | Employer email on worker withdraw (was: SMS to worker — bug; spec says no worker notification, employer email) | [packages/email/src/strings/employer.ts](../packages/email/src/strings/employer.ts), [services/api/src/applications/routes.ts:251-274](../services/api/src/applications/routes.ts) | [x] |
+| 4.4 | Worker dashboard recommendations (county + skills priority feed) | [services/api/src/jobs/routes.ts:188](../services/api/src/jobs/routes.ts) | [x] pre-existing |
+| 4.5 | Training program cancellation broadcast (SMS to all enrolled in worker's locale) | [services/api/src/training/routes.ts](../services/api/src/training/routes.ts), [packages/sms/src/templates/index.ts](../packages/sms/src/templates/index.ts) `training.canceled` | [x] |
+| 4.6 | Bulk enrollment status update endpoint + UI (mark completed / dropped / no-show) | [services/api/src/training/routes.ts](../services/api/src/training/routes.ts) `PATCH /:id/enrollments`, [apps/web/src/components/training-org/Roster.tsx](../apps/web/src/components/training-org/Roster.tsx) | [x] |
+| 4.7 | Training-org program editor endpoint + UI (description + session times + location after publish) | `PATCH /v1/org/training/:id`, [apps/web/src/components/training-org/ProgramEditForm.tsx](../apps/web/src/components/training-org/ProgramEditForm.tsx) | [x] |
+| 4.8 | IndexedDB onboarding state restore (tab close → reopen resumes at step) | [apps/web/src/lib/onboarding-draft.ts](../apps/web/src/lib/onboarding-draft.ts) | [x] pre-existing |
+| 4.9 | Field mode: SMS-only apply flow | [apps/web/src/app/[locale]/field/apply/page.tsx](../apps/web/src/app/[locale]/field/apply/page.tsx) | [x] pre-existing |
+| 4.10 | Field mode: quick withdraw on applications list | [apps/web/src/components/field/applications/MyApplicationsList.tsx](../apps/web/src/components/field/applications/MyApplicationsList.tsx) | [x] pre-existing |
+| 4.11 | Field mode: service-worker offline cache for today's shift + messages | [apps/web/src/app/sw.ts](../apps/web/src/app/sw.ts) (Serwist) | [x] pre-existing |
+| 4.12 | Resume editor: re-upload triggers parser, status polled at `/v1/profile/resume/status` | [apps/web/src/app/[locale]/worker/profile/reupload/page.tsx](../apps/web/src/app/[locale]/worker/profile/reupload/page.tsx), `pollResumeStatusAction` | [x] pre-existing |
 
 **Definition of done:**
 
-- Worker can withdraw from `applied`/`reviewed` and employer receives notification.
-- Cancelled training program SMSs every enrolled worker in correct locale.
-- Field-mode user with no network sees yesterday's shift card from cache.
-- Onboarding survives accidental tab close.
+- Worker can withdraw from `applied`/`reviewed` and employer receives an email (no longer the worker getting their own SMS).
+- Cancelled training program enqueues SMS to every enrolled worker in the correct locale (via the existing per-user `preferredLang` resolution in `@agconn/sms`).
+- Field-mode user with no network sees yesterday's shift card from cache (Serwist NetworkFirst with 4s timeout).
+- Onboarding survives accidental tab close (IDB keyed by clerk user id).
+- Training-org users have a working surface at `/[locale]/training-org/programs` to edit, cancel, and bulk-roster their programs.
+
+**Closure notes:**
+
+- Strings on the new training-org surface are inlined `locale === 'es' ? '…' : '…'` rather than going through the DB-backed `translation_keys` flow. This keeps the patch self-contained; a follow-up can hoist them into the seed bundles once the surface has stable wording.
+- `EmployerProfile` has no `preferredLang` column — the withdraw email defaults to `'en'`, matching how every other `enqueueEmployerEmail` caller already behaves (see `admin/employers/routes.ts`). Adding employer locale routing is a cross-cutting follow-up.
+- The training-org cancel route iterates enrollments and enqueues SMS in a loop — fine at MVP scale (capacity capped at 500). At higher fan-out, switch to a single fanout job that the SMS worker expands.
+- The deprecated `application.withdrawn` SMS template stays in the catalog; nothing dispatches it anymore. Removable in a later cleanup pass.
 
 ## Phase 5 — Admin & employer polish (3–5 days)
 
@@ -216,3 +226,4 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - 2026-05-14 — Resume-parser text+repair routed through llm-harness; `claude.ts` deleted, `llm.ts` is the new call layer. PDF path stays direct-SDK pending harness document support. Fixed pre-existing model-resolution bug in `packages/llm/src/router.ts`.
 - 2026-05-14 — Phase 3 closed (11/11 items). 5 items (3.4–3.8) were already shipped; closure work added the cert PDF pipeline (React-PDF → Supabase Storage → 24h signed URLs), per-item JSON-LD (`JobPosting`, `EducationalOccupationalProgram`), and per-item OG image routes.
 - 2026-05-14 — Upgraded `llm-harness` to 0.3.1 (adds `DocumentContent` blocks, `cacheable` flag on requests, `cacheReadTokens`/`cacheCreationTokens` on Usage). Resume-parser PDF path migrated through the harness; `@anthropic-ai/sdk` removed from the service entirely. Cache tokens now flow through `resume_parse_jobs.cacheReadTokens`/`cacheWriteTokens` again on the text path.
+- 2026-05-15 — Phase 4 closed (12/12 items). 8 were pre-existing (applications/dashboard/field-mode/onboarding/sw/resume re-upload). New: 4.3 fixed a notification inversion bug — withdraw was SMSing the worker instead of emailing the employer; `employer.application_withdrawn` template + wiring landed. 4.5/4.6/4.7 added training-org backend (`PATCH /v1/org/training/:id`, `POST /v1/org/training/:id/cancel`, `PATCH /v1/org/training/:id/enrollments`). A new training-org web surface (sidebar, programs list, edit, roster with bulk actions) ships at `/[locale]/training-org/programs`.

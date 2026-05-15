@@ -29,7 +29,8 @@ export type EmployerEmailTemplate =
   | 'employer.billing.subscription_started'
   | 'employer.billing.subscription_canceled'
   | 'employer.billing.payment_failed'
-  | 'employer.billing.invoice_paid';
+  | 'employer.billing.invoice_paid'
+  | 'employer.application_withdrawn';
 
 export type EmployerEmailJob = {
   template: EmployerEmailTemplate;

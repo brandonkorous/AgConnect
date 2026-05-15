@@ -4,6 +4,7 @@ import { ok, err, validate } from '@agconn/api-client/server';
 import { AppStatus, JobStatus, UserRole, type Tx } from '@agconn/db';
 import { ApplicationsQuery } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
+import { enqueueEmployerEmail } from '@agconn/email';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
 import type { AuditCtxVars } from '../middleware/audit.js';
 
@@ -247,24 +248,27 @@ applicationsRoutes.post('/:id/withdraw', async (c) => {
         metadata: { jobId: app.jobId, reason: 'worker_initiated' },
     });
 
+    // Spec: no worker notification on withdraw (they triggered it); email the
+    // employer instead. See docs/10-worker/04-application-tracker/06-messaging.md.
     try {
         const job = await c.var.db.jobPosting.findUnique({
             where: { id: app.jobId },
             include: { employer: { include: { employerProfile: true } } },
         });
-        if (job) {
-            await enqueueSms({
+        const employerProfile = job?.employer?.employerProfile;
+        if (employerProfile) {
+            await enqueueEmployerEmail({
+                template: 'employer.application_withdrawn',
+                employerId: employerProfile.id,
                 tenantId: app.tenantId,
-                userId: c.var.userId,
-                template: 'application.withdrawn',
-                vars: {
-                    jobTitle: job.titleEn,
-                    employer: job.employer?.employerProfile?.legalName ?? 'AGCONN employer',
-                },
+                to: employerProfile.contactEmail,
+                locale: 'en',
+                vars: { jobTitle: job?.titleEn ?? '' },
+                idempotencyKey: `app-${app.id}-withdrawn`,
             });
         }
     } catch (e) {
-        console.error('[applications] application.withdrawn SMS enqueue failed', {
+        console.error('[applications] application.withdrawn employer email enqueue failed', {
             applicationId: app.id,
             err: e instanceof Error ? e.message : String(e),
         });

@@ -7,7 +7,14 @@ import {
     ProgramStatus,
     type Tx,
 } from '@agconn/db';
-import { CreateProgramBody, TrainingQuery, UpdateEnrollmentBody } from '@agconn/schemas';
+import {
+    BulkUpdateEnrollmentsBody,
+    CancelProgramBody,
+    CreateProgramBody,
+    TrainingQuery,
+    UpdateEnrollmentBody,
+    UpdateProgramBody,
+} from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
 import type { AuditCtxVars } from '../middleware/audit.js';
@@ -314,6 +321,35 @@ export const orgTrainingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }
 orgTrainingRoutes.use('*', requireAuth('training'));
 orgTrainingRoutes.use('*', requireRole('training_org'));
 
+orgTrainingRoutes.get('/training', async (c) => {
+    const tenantId = c.var.tenantId;
+    if (!tenantId) return err(c, 403, 'no_tenant');
+    const rows = await c.var.db.trainingProgram.findMany({
+        where: { tenantId, orgId: c.var.userId, deletedAt: null },
+        orderBy: [{ startDate: 'desc' }, { id: 'desc' }],
+        take: 100,
+    });
+    return ok(c, { programs: rows.map(shapeProgramCard) });
+});
+
+orgTrainingRoutes.get('/training/:id', async (c) => {
+    const id = c.req.param('id');
+    const program = await c.var.db.trainingProgram.findFirst({
+        where: { id, orgId: c.var.userId, deletedAt: null },
+    });
+    if (!program) return err(c, 404, 'not_found');
+    return ok(c, {
+        program: {
+            ...shapeProgramCard(program),
+            descriptionEn: program.descriptionEn,
+            descriptionEs: program.descriptionEs,
+            locationName: program.locationName,
+            locationAddress: program.locationAddress,
+            sessionTimes: program.sessionTimes,
+        },
+    });
+});
+
 orgTrainingRoutes.post('/training', validate('json', CreateProgramBody), async (c) => {
     const tenantId = c.var.tenantId;
     if (!tenantId) return err(c, 403, 'no_tenant');
@@ -353,6 +389,175 @@ orgTrainingRoutes.post('/training', validate('json', CreateProgramBody), async (
 
     return ok(c, shapeProgramCard(program));
 });
+
+orgTrainingRoutes.patch(
+    '/training/:id',
+    validate('json', UpdateProgramBody),
+    async (c) => {
+        const id = c.req.param('id');
+        const body = c.var.body;
+        const program = await c.var.db.trainingProgram.findFirst({
+            where: { id, orgId: c.var.userId, deletedAt: null },
+        });
+        if (!program) return err(c, 404, 'not_found');
+        if (
+            program.status === ProgramStatus.canceled ||
+            program.status === ProgramStatus.closed
+        ) {
+            return err(c, 422, 'validation_failed', 'program_not_editable');
+        }
+
+        const data: Record<string, unknown> = {};
+        const fields: string[] = [];
+        if (body.descriptionEn !== undefined) {
+            data.descriptionEn = body.descriptionEn;
+            fields.push('descriptionEn');
+        }
+        if (body.descriptionEs !== undefined) {
+            data.descriptionEs = body.descriptionEs;
+            fields.push('descriptionEs');
+        }
+        if (body.sessionTimes !== undefined) {
+            data.sessionTimes = body.sessionTimes as object;
+            fields.push('sessionTimes');
+        }
+        if (body.locationName !== undefined) {
+            data.locationName = body.locationName;
+            fields.push('locationName');
+        }
+        if (body.locationAddress !== undefined) {
+            data.locationAddress = body.locationAddress;
+            fields.push('locationAddress');
+        }
+
+        const updated = await c.var.db.trainingProgram.update({
+            where: { id },
+            data: data as never,
+        });
+
+        await c.var.audit.log({
+            action: 'training.program.updated',
+            resourceId: id,
+            metadata: { programId: id, fields },
+        });
+
+        return ok(c, shapeProgramCard(updated));
+    },
+);
+
+orgTrainingRoutes.post(
+    '/training/:id/cancel',
+    validate('json', CancelProgramBody),
+    async (c) => {
+        const id = c.req.param('id');
+        const body = c.var.body;
+        const program = await c.var.db.trainingProgram.findFirst({
+            where: { id, orgId: c.var.userId, deletedAt: null },
+        });
+        if (!program) return err(c, 404, 'not_found');
+        if (program.status === ProgramStatus.canceled) {
+            return err(c, 422, 'validation_failed', 'program_already_canceled');
+        }
+
+        const enrolled = await c.var.db.enrollment.findMany({
+            where: {
+                programId: id,
+                status: EnrollmentStatus.enrolled,
+                deletedAt: null,
+            },
+            select: { id: true, workerId: true, tenantId: true },
+        });
+
+        await c.var.db.trainingProgram.update({
+            where: { id },
+            data: { status: ProgramStatus.canceled },
+        });
+
+        await c.var.audit.log({
+            action: 'training.program.canceled',
+            resourceId: id,
+            metadata: {
+                programId: id,
+                enrolledCount: enrolled.length,
+                reason: body.reason ?? '',
+            },
+        });
+
+        const startDate = program.startDate.toISOString().slice(0, 10);
+        for (const e of enrolled) {
+            try {
+                await enqueueSms({
+                    tenantId: e.tenantId,
+                    userId: e.workerId,
+                    template: 'training.canceled',
+                    vars: { programTitle: program.titleEn, startDate },
+                    jobKey: `training.canceled-${id}-${e.workerId}`,
+                });
+            } catch (smsErr) {
+                console.error('[training] cancel broadcast SMS enqueue failed', {
+                    programId: id,
+                    workerId: e.workerId,
+                    err: smsErr instanceof Error ? smsErr.message : String(smsErr),
+                });
+            }
+        }
+
+        return ok(c, { ok: true, notified: enrolled.length });
+    },
+);
+
+orgTrainingRoutes.patch(
+    '/training/:id/enrollments',
+    validate('json', BulkUpdateEnrollmentsBody),
+    async (c) => {
+        const id = c.req.param('id');
+        const body = c.var.body;
+        const program = await c.var.db.trainingProgram.findFirst({
+            where: { id, orgId: c.var.userId, deletedAt: null },
+        });
+        if (!program) return err(c, 404, 'not_found');
+
+        const enrollments = await c.var.db.enrollment.findMany({
+            where: {
+                id: { in: body.enrollmentIds },
+                programId: id,
+                deletedAt: null,
+            },
+            select: { id: true },
+        });
+        if (enrollments.length !== body.enrollmentIds.length) {
+            return err(c, 422, 'validation_failed', 'unknown_enrollments');
+        }
+
+        const targetStatus =
+            body.status === 'completed'
+                ? EnrollmentStatus.completed
+                : EnrollmentStatus.dropped;
+        const stampField = body.status === 'completed' ? 'completedAt' : 'droppedAt';
+
+        await c.var.db.enrollment.updateMany({
+            where: { id: { in: body.enrollmentIds } },
+            data: {
+                status: targetStatus,
+                [stampField]: new Date(),
+                ...(body.noShow !== undefined ? { noShow: body.noShow } : {}),
+            } as never,
+        });
+
+        await c.var.audit.log({
+            action: 'training.enrollments.bulk_updated',
+            resourceId: id,
+            metadata: {
+                programId: id,
+                enrollmentIds: body.enrollmentIds,
+                status: body.status,
+                noShow: body.noShow ?? false,
+            },
+        });
+
+        return ok(c, { ok: true, updated: enrollments.length });
+    },
+);
 
 orgTrainingRoutes.post('/training/:id/publish', async (c) => {
     const id = c.req.param('id');

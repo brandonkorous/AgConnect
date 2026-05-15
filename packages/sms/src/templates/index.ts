@@ -81,6 +81,11 @@ export const smsTemplates = {
         es: 'Cancelaste {programTitle}. Ver más programas: agconn.com/training',
         vars: ['programTitle'] as const,
     }),
+    'training.canceled': def({
+        en: '{programTitle} on {startDate} has been canceled. We refunded your spot — browse more programs: agconn.com/training',
+        es: '{programTitle} del {startDate} fue cancelado. Liberamos tu lugar — ver más programas: agconn.com/training',
+        vars: ['programTitle', 'startDate'] as const,
+    }),
     'job.posting.edited': def({
         en: '{employer} updated {jobTitle} ({fields}). Review the new details: agconn.com/applications',
         es: '{employer} actualizó {jobTitle} ({fields}). Revisa los nuevos detalles: agconn.com/applications',
