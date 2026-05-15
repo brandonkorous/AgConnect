@@ -26,12 +26,39 @@ interface MarketingMetadataInput {
     noIndex?: boolean;
 }
 
+const PAGE_OG_IDS = new Set([
+    'faq',
+    'impact',
+    'pricing',
+    'about',
+    'workers',
+    'employers',
+    'partners',
+    'how-it-works',
+    'resources',
+    'worker-rights',
+    'skills-wallet',
+    'promotora',
+    'careers',
+    'press',
+    'trust',
+    'contact',
+]);
+
+function derivedOgPath(localePath: string, locale: Locale): string {
+    const stripped = localePath.replace(/^\/(en|es)\/?/, '').split('/')[0] ?? '';
+    if (stripped && PAGE_OG_IDS.has(stripped)) {
+        return `/og/page/${stripped}?locale=${locale}`;
+    }
+    return `/og/landing?locale=${locale}`;
+}
+
 export function marketingMetadata(args: MarketingMetadataInput): Metadata {
     const base = siteUrl();
     const path = args.pathByLocale(args.locale);
     const enPath = args.pathByLocale('en');
     const esPath = args.pathByLocale('es');
-    const ogImage = `${base}${args.ogPath ?? `/og/landing?locale=${args.locale}`}`;
+    const ogImage = `${base}${args.ogPath ?? derivedOgPath(path, args.locale)}`;
     return {
         title: args.title,
         description: args.description.slice(0, 160),

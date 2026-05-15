@@ -7,7 +7,7 @@ The authoritative workflows live in [`.github/workflows/`](../../../.github/work
 | workflow                  | trigger                  | purpose                                                            |
 | ------------------------- | ------------------------ | ------------------------------------------------------------------ |
 | `ci.yml`                  | PR + push to `main`      | typecheck, conventions (tenant_id, RLS), i18n parity, build smoke  |
-| `deploy.yml`              | push to `main` + manual  | build matrix → Trivy → migrate Job → kustomize apply → rollout     |
+| `deploy.yml`              | push to `main` + manual  | build matrix → migrate Job → kustomize apply → rollout             |
 | `lighthouse.yml`          | PR touching `apps/web/`  | Perf ≥80, A11y ≥95, SEO ≥95 on top public pages                    |
 | `resume-parser-eval.yml`  | parser-touching changes  | parser schema-valid / field-agreement / latency / cost thresholds  |
 | `preview.yml` *(planned)* | PR open/sync             | preview namespace at `pr-<id>.preview.agconn.com` *(Phase 6 gap)*  |
@@ -39,12 +39,13 @@ Each leg:
 1. Federates to GCP via Workload Identity Federation (`google-github-actions/auth`).
 2. Configures docker for Artifact Registry.
 3. Builds and pushes with `cache-from`/`cache-to` GHA scope per image.
-4. Runs **Trivy** against the just-pushed image — HIGH/CRITICAL with `ignore-unfixed: true` exits 1 and blocks the deploy.
-5. `NEXT_PUBLIC_*` build-args are inlined into web/admin client bundles. `SENTRY_RELEASE=${{ github.sha }}` is passed as a build-arg and an env var so all SDKs tag events with the deploy commit.
+4. `NEXT_PUBLIC_*` build-args are inlined into web/admin client bundles. `SENTRY_RELEASE=${{ github.sha }}` is passed as a build-arg and an env var so all SDKs tag events with the deploy commit.
+
+*Trivy CVE scan gate is deferred at MVP — see Phase 6 item 6.8 in [GAP-CLOSURE-PLAN.md](../../GAP-CLOSURE-PLAN.md). When re-enabled it slots in as step 5.*
 
 ### `deploy` (single)
 
-`needs: build` so any failed Trivy scan blocks the entire deploy.
+`needs: build` so any failed build (or, when re-enabled, Trivy scan) blocks the entire deploy.
 
 1. Federates to GCP, fetches GKE credentials for `agconn-prod` in `us-west1-a`.
 2. Applies namespace + ServiceAccount + ConfigMap (bootstrap resources the migrate Job needs).

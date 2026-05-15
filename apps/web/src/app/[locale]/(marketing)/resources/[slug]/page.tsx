@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: RouteProps) {
         title: pickLocale(article.title, locale),
         description: pickLocale(article.summary, locale),
         pathByLocale: (l) => `/${l}/resources/${slug}`,
+        ogPath: `/og/resource/${slug}?locale=${locale}`,
     });
 }
 
@@ -75,10 +76,33 @@ export default async function ResourceArticlePage({ params }: RouteProps) {
                     '@type': 'Article',
                     headline: pickLocale(article.title, locale),
                     datePublished: article.publishedAt,
+                    dateModified: article.publishedAt,
                     inLanguage: locale === 'es' ? 'es-MX' : 'en-US',
                     description: pickLocale(article.summary, locale),
-                    author: { '@type': 'Organization', name: 'AGCONN' },
-                    publisher: { '@type': 'Organization', name: 'AGCONN' },
+                    author: {
+                        '@type': 'Organization',
+                        name: 'AGCONN Editorial',
+                        url: 'https://agconn.com/en/about',
+                    },
+                    publisher: {
+                        '@type': 'Organization',
+                        name: 'AGCONN',
+                        url: 'https://agconn.com',
+                        logo: {
+                            '@type': 'ImageObject',
+                            url: 'https://agconn.com/icons/icon-512.png',
+                        },
+                    },
+                    reviewedBy: {
+                        '@type': 'Organization',
+                        name: 'AGCONN Editorial',
+                        url: 'https://agconn.com/en/about',
+                    },
+                    mainEntityOfPage: `https://agconn.com/${locale}/resources/${slug}`,
+                    speakable: {
+                        '@type': 'SpeakableSpecification',
+                        cssSelector: ['h1', '.max-w-prose > p', 'article h2'],
+                    },
                 }}
             />
 

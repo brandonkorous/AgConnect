@@ -37,6 +37,7 @@ export async function generateMetadata({ params }: RouteProps) {
         title: pickLocale(role.title, locale),
         description: pickLocale(role.summary, locale),
         pathByLocale: (l) => `/${l}/careers/${slug}`,
+        ogPath: `/og/career/${slug}?locale=${locale}`,
     });
 }
 

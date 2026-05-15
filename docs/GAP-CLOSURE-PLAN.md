@@ -188,7 +188,7 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 | 6.5 | DB migrations as a one-shot Job that gates the kustomize apply | [deploy/k8s/base/db-migrate-job.yaml](../deploy/k8s/base/db-migrate-job.yaml) | [x] pre-existing |
 | 6.6 | GitHub Actions deploy pipeline: build matrix → AR push → migrate Job → apply → rollout | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) | [x] pre-existing |
 | 6.7 | PR preview environments at `pr-<id>.preview.agconn.com` | `.github/workflows/preview.yml` (not yet created) | [ ] deferred |
-| 6.8 | Trivy image scan gate after each AR push (HIGH/CRITICAL + fix-available → fail) | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) | [x] |
+| 6.8 | Trivy image scan gate after each AR push (HIGH/CRITICAL + fix-available → fail) | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) | [ ] deferred |
 | 6.9a | Namespace PSS `enforce: restricted` + per-container priv-esc/cap drop | [namespace.yaml](../deploy/k8s/base/namespace.yaml), [kustomization.yaml](../deploy/k8s/base/kustomization.yaml) | [x] |
 | 6.9b | NetworkPolicy default-deny + scoped allow rules (staged but inert; awaits cluster-level enable) | [deploy/k8s/base/network-policy.yaml](../deploy/k8s/base/network-policy.yaml) | [~] staged |
 | 6.10 | Sentry release = `GITHUB_SHA` for web, admin, api, audit-retention, audit-verifier | [.github/workflows/deploy.yml](../.github/workflows/deploy.yml), web/admin/services Sentry init configs | [x] |
@@ -216,23 +216,37 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 
 **Follow-up before next deploy:**
 
-- Verify Trivy-action version `0.28.0` is current; bump if Renovate isn't wired yet.
 - Provision the 3 new images in Artifact Registry on first push: `resume-parser`, `cert-generator`, `scheduler`. The Artifact Registry repo is shared (`containers`), so no Terraform change needed.
 - After first deploy with PSS restricted enforced, confirm no pod is rejected by Pod Security Admission (`kubectl get events -n agconn --field-selector reason=FailedCreate`).
 
-## Phase 7 — Resources v2 + content (Q3 2026, deferred)
+## Phase 7 — Resources v2 + content ✓ closed 2026-05-15
 
-**Goal:** ship the long-form content that [40-marketing/04-resources](40-marketing/04-resources/) reserves space for. Empty state and route are already live.
+**Goal:** ship the long-form content that [40-marketing/04-resources](40-marketing/04-resources/) reserves space for.
 
-| # | item | done |
-|---|------|------|
-| 7.1 | 6 launch articles in MDX (EN + ES), 3 worker-facing + 3 employer-facing | [ ] |
-| 7.2 | Per-article `Article` JSON-LD | [ ] |
-| 7.3 | Per-article OG image generator | [ ] |
-| 7.4 | RSS feed at `/rss.xml` | [ ] |
-| 7.5 | Category filter + reading-time | [ ] |
+**Audit findings (2026-05-15):** 7.1 and 7.2 were already shipped — nine articles live in `apps/web/src/content/resources/` as typed TS modules with EN+ES `title`, `summary`, and sectioned `body`, beating the plan's "6 launch articles" target. The `Article` JSON-LD is rendered by [`/resources/[slug]/page.tsx`](../apps/web/src/app/[locale]/(marketing)/resources/[slug]/page.tsx). Reading-time is on every article. Closure work added the three missing pieces: per-article OG generator, per-locale RSS feed, category-filtered index route.
 
-**Definition of done:** 6 articles indexed by Google within 7 days of publish; RSS validates.
+| # | item | location | done |
+|---|------|----------|------|
+| 7.1 | 9 launch articles in EN+ES (3 worker rights, 3 employer guides, 3 training explainers) | [apps/web/src/content/resources/](../apps/web/src/content/resources/) | [x] pre-existing |
+| 7.2 | Per-article `Article` JSON-LD | [/resources/[slug]/page.tsx](../apps/web/src/app/[locale]/(marketing)/resources/[slug]/page.tsx) | [x] pre-existing |
+| 7.3 | Per-article OG image generator | [/og/resource/[slug]/route.tsx](../apps/web/src/app/og/resource/[slug]/route.tsx); wired via `ogPath` in the slug page metadata | [x] |
+| 7.4 | RSS feed at `/[locale]/resources/feed.xml`; `<link rel="alternate" type="application/rss+xml">` on the index | [/resources/feed.xml/route.ts](../apps/web/src/app/[locale]/(marketing)/resources/feed.xml/route.ts) | [x] |
+| 7.5 | Category filter route (reading-time was already on every article) | [/resources/category/[category]/page.tsx](../apps/web/src/app/[locale]/(marketing)/resources/category/[category]/page.tsx); sitemap entries added | [x] |
+
+**Definition of done:**
+
+- Per-article OG images render at `/og/resource/<slug>?locale={en,es}` (1200×630, Tierra palette, category eyebrow + title + published date).
+- RSS validates at `/[locale]/resources/feed.xml` (RSS 2.0, atom self-link, hreflang alternate per item).
+- Category pages render at `/[locale]/resources/category/{workers_rights,employer_guides,training_explainers}` with hreflang alternates, breadcrumb, and "browse other categories" footer.
+- Sitemap includes all article slugs and category routes with `alternates.languages` for hreflang.
+- Resources index now links to per-category views from each section heading.
+
+**Closure notes:**
+
+- Plan said MDX, code went with typed TS modules (`ResourceArticle` shape). Functionally identical for a 9-article corpus — no MDX runtime overhead, and the strict shape (`title.en/es`, `summary.en/es`, `sections[].heading.en/es`, `sections[].body.en/es`) makes bilingual parity a compile-time check. Switch to MDX only if the cadence grows enough that an editorial-friendly content surface matters more than typed strictness.
+- RSS feed is per-locale (`/en/resources/feed.xml`, `/es/resources/feed.xml`) rather than a single `/rss.xml` as the plan literally said — subscribers want one language, and hreflang `xhtml:link` per item still surfaces the other side. Daily revalidate + 1-hour browser cache.
+- Category translation keys (`resources.category.{intro,empty,back_all,other_categories}`) added to `packages/db/seed-data/translations/marketing.ts`. Run `pnpm --filter @agconn/db i18n:seed` before deploy.
+- OG route uses `getResourceBySlug()` directly (synchronous), so `runtime = 'nodejs'` + `revalidate = 86400` keeps cost bounded — same shape as the existing `/og/training` and `/og/job` routes.
 
 ## Sequencing notes
 
@@ -262,4 +276,5 @@ Worker UI and employer UI are substantially complete — Profile editor, FLC ver
 - 2026-05-14 — Upgraded `llm-harness` to 0.3.1 (adds `DocumentContent` blocks, `cacheable` flag on requests, `cacheReadTokens`/`cacheCreationTokens` on Usage). Resume-parser PDF path migrated through the harness; `@anthropic-ai/sdk` removed from the service entirely. Cache tokens now flow through `resume_parse_jobs.cacheReadTokens`/`cacheWriteTokens` again on the text path.
 - 2026-05-15 — Phase 4 closed (12/12 items). 8 were pre-existing (applications/dashboard/field-mode/onboarding/sw/resume re-upload). New: 4.3 fixed a notification inversion bug — withdraw was SMSing the worker instead of emailing the employer; `employer.application_withdrawn` template + wiring landed. 4.5/4.6/4.7 added training-org backend (`PATCH /v1/org/training/:id`, `POST /v1/org/training/:id/cancel`, `PATCH /v1/org/training/:id/enrollments`). A new training-org web surface (sidebar, programs list, edit, roster with bulk actions) ships at `/[locale]/training-org/programs`.
 - 2026-05-15 — Phase 5 closed (4/5 items). 5.1 KPI CSV (`GET /admin/v1/kpi/export.csv`, 4-row metrics shape), 5.2 KPI auto-refresh (URL-state toggle, 60s `router.refresh()`), 5.3 evidence index added to the existing print-to-PDF audit binder, 5.4 compliance CSV (`GET /v1/employer/compliance/export.csv` + web proxy). 5.5 (cross-tenant KPI test) deferred to Phase 6 — no test runner exists in the monorepo yet, and the KPI service is already structurally cross-tenant.
-- 2026-05-15 — Phase 6 partially closed. 6 items were pre-existing (GKE Terraform, ingress + cert-manager + DNS01, Artifact Registry + Workload Identity, 8/11 service manifests, db-migrate Job, deploy pipeline). New: 6.4b Dockerfiles + k8s manifests for resume-parser/cert-generator/scheduler; 6.8 Trivy scan gate after each AR push; 6.9a namespace PSS-restricted + Kustomize JSON-patches for container-level priv-esc/cap drop; 6.10 Sentry release tagging across web/admin/api/audit services; 6.11 Lighthouse CI workflow + `.lighthouserc.json` on top-5 public pages; 6.12 spec reconcile (AKS+GHCR+Helm → GKE+AR+Kustomize across 5 spec files). **6.7 PR previews deferred** pending design decisions. **6.9b NetworkPolicy staged but inert** — manifests committed but `network_policy.enabled = false` keeps GKE from enforcing them. Pick up when business demand (first paying enterprise tenant, security review) makes the cluster recycle worth scheduling.
+- 2026-05-15 — Phase 6 partially closed. 6 items were pre-existing (GKE Terraform, ingress + cert-manager + DNS01, Artifact Registry + Workload Identity, 8/11 service manifests, db-migrate Job, deploy pipeline). New: 6.4b Dockerfiles + k8s manifests for resume-parser/cert-generator/scheduler; 6.9a namespace PSS-restricted + Kustomize JSON-patches for container-level priv-esc/cap drop; 6.10 Sentry release tagging across web/admin/api/audit services; 6.11 Lighthouse CI workflow + `.lighthouserc.json` on top-5 public pages; 6.12 spec reconcile (AKS+GHCR+Helm → GKE+AR+Kustomize across 5 spec files). **6.7 PR previews deferred** pending design decisions. **6.8 Trivy scan deferred** — preventative hygiene; defer until real users hit prod and the cost of a vulnerable base image outweighs deploy-gate noise. **6.9b NetworkPolicy staged but inert** — manifests committed but `network_policy.enabled = false` keeps GKE from enforcing them. Pick up when business demand (first paying enterprise tenant, security review) makes the cluster recycle worth scheduling.
+- 2026-05-15 — Phase 7 closed (5/5 items). 7.1 + 7.2 were pre-existing — 9 articles already shipped in `apps/web/src/content/resources/` as typed TS (not MDX), and `Article` JSON-LD was already wired on the detail page. New: 7.3 per-article OG generator at `/og/resource/[slug]` matching the `/og/training` + `/og/job` pattern (wired via `ogPath` in the article slug page metadata); 7.4 per-locale RSS feed at `/[locale]/resources/feed.xml` (RSS 2.0 + atom self-link + per-item hreflang alternates) with `<link rel="alternate" type="application/rss+xml">` on the index for auto-discovery; 7.5 category-filter route at `/[locale]/resources/category/[category]` for each of the three categories, hreflang-aware, with sitemap entries. Category headings on the resources index now link to their per-category view.

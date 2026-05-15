@@ -38,6 +38,8 @@ AGCONN operates in five California counties (Fresno, Tulare, Kern, Kings, Madera
 
 - [mailto:support@agconn.com](mailto:support@agconn.com): Support contact, response within two business days, in English or Spanish.
 - [mailto:partnerships@agconn.com](mailto:partnerships@agconn.com): Partner / tenant onboarding.
+- [mailto:press@agconn.com](mailto:press@agconn.com): Press, editorial, and media inquiries.
+- [mailto:security@agconn.com](mailto:security@agconn.com): Security disclosures and uptime subscriptions.
 `;
 
 export async function GET() {

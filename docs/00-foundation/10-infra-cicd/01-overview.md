@@ -7,7 +7,7 @@ Host AGCONN on **Google Kubernetes Engine (GKE) Standard zonal**, build and stor
 ## What this layer owns
 
 - GKE cluster topology — Deployments, Services, Ingress, HPA, NetworkPolicy, Pod Security Admission
-- Artifact Registry image build, push, retention, Trivy CVE scan
+- Artifact Registry image build, push, retention
 - GitHub Actions pipeline — build → scan → migrate → apply → rollout
 - Environment strategy — local / PR preview / prod (no separate staging cluster at MVP)
 - Secret management — GitHub Actions secrets → K8s `agconn-env` Secret
@@ -25,7 +25,7 @@ Host AGCONN on **Google Kubernetes Engine (GKE) Standard zonal**, build and stor
 - **nginx-ingress** — Layer 7 ingress, single static IP
 - **cert-manager** — Let's Encrypt automation via Cloudflare DNS01 (HTTP01 doesn't work behind Cloudflare proxy)
 - **Cloudflare** — DNS + WAF (orange-cloud proxied)
-- **Trivy** — image CVE scan gate in CI (HIGH/CRITICAL + fixed-available fails the build)
+- **Trivy** — image CVE scan gate *(deferred at MVP; see Phase 6 item 6.8)*
 - **Lighthouse CI** — perf / a11y / SEO gate on top public pages
 - **Sentry** — application error tracking (web, admin, api, audit-retention, audit-verifier)
 - **Supabase** — Postgres + Storage (managed; outside cluster)
@@ -89,7 +89,7 @@ agconn/                       # single repo (monorepo)
   .github/
     workflows/
       ci.yml                      # PR builds + typecheck + i18n parity + convention checks
-      deploy.yml                  # main → build matrix → Trivy scan → migrate Job → kustomize apply
+      deploy.yml                  # main → build matrix → migrate Job → kustomize apply
       lighthouse.yml              # PR Lighthouse gate
       resume-parser-eval.yml      # parser eval harness
       preview.yml                 # (planned) per-PR preview env
@@ -106,7 +106,7 @@ In scope:
 - GitHub Actions workflows: CI, deploy, Lighthouse, resume-parser eval, (planned) preview
 - Secrets stored as GitHub Actions secrets → applied as a single `agconn-env` K8s Secret on every deploy
 - Production deploy with optional manual approval via GitHub Environment protection rules
-- Trivy CVE scan gate on every image push
+- Trivy CVE scan gate *(deferred at MVP)*
 - Sentry release tagging with `GITHUB_SHA`
 - Lighthouse CI gates on top public pages
 - Pod Security Admission `restricted` namespace label
@@ -127,7 +127,7 @@ Out of scope (MVP):
 - Zero-downtime rollout for any standard release (rolling deploy with readiness probes; `db-migrate` Job blocks rollout on failure).
 - Rollback to the previous image takes < 2 minutes (`kubectl rollout undo`).
 - All secrets in GH Actions secrets — never in repo, never in plain env files.
-- Trivy HIGH/CRITICAL with a known fix blocks merge to `main`.
+- Trivy HIGH/CRITICAL with a known fix blocks merge to `main`. *(Deferred at MVP — re-enable when real users hit prod.)*
 - Lighthouse CI: Perf ≥80, A11y ≥95, SEO ≥95 on top-5 public pages.
 
 ## Dependencies

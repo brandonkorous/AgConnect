@@ -8,7 +8,7 @@
 - [x] All apps + services deploy as `Deployment`s with `envFrom: secretRef: agconn-env` and `envFrom: configMapRef: agconn-config`; web and api have HPA (cpu=70%, 1–2 replicas).
 - [x] All runtime secrets sourced from GitHub Actions secrets → applied as the `agconn-env` K8s Secret each deploy; no plaintext secrets in manifests or repo.
 - [x] TLS certificates auto-provisioned via cert-manager + Let's Encrypt for: `agconn.com`, `www.agconn.com`, `api.agconn.com`, `admin.agconn.com`.
-- [x] Push to `main` triggers: build matrix → Trivy scan → migrate Job → kustomize apply → rollout status for every Deployment.
+- [x] Push to `main` triggers: build matrix → migrate Job → kustomize apply → rollout status for every Deployment. *(Trivy scan step deferred — see 6.8.)*
 - [ ] Per-PR preview environments deploy to `pr-<id>.preview.agconn.com` within 10 minutes of PR open and tear down on PR close. *(planned — Phase 6 gap 6.7.)*
 - [x] Database migrations run as a one-shot `Job` (not Init Container) before the kustomize apply step; failed migrations dump logs and exit 1, leaving the previous rollout intact.
 - [x] Rolling deploy: zero-downtime under normal load — every Deployment uses `maxSurge: 1, maxUnavailable: 0` and a readiness probe.
@@ -26,7 +26,7 @@
 
 - [x] Pod Security Standards: `enforce: restricted` on the `agconn` namespace; pod-level `runAsNonRoot: true`, non-zero `runAsUser`, `seccompProfile: RuntimeDefault`; container-level `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`.
 - [x] No privileged containers, no host-network, no host-path mounts.
-- [x] Container images scanned by Trivy after push; HIGH/CRITICAL with `ignore-unfixed: true` fails the deploy.
+- [ ] Container images scanned by Trivy after push; HIGH/CRITICAL with `ignore-unfixed: true` fails the deploy. *(Deferred until real users hit prod — see Phase 6 item 6.8 in [GAP-CLOSURE-PLAN.md](../../GAP-CLOSURE-PLAN.md).)*
 - [~] NetworkPolicy default-deny ingress on `agconn` namespace; scoped allow rules for ingress-nginx → web/api/admin and intra-namespace → api. *(Manifests staged but inert — cluster-level `network_policy.enabled = false`. Enable when business demand justifies the node-pool recycle; see Phase 6 item 6.9b in [GAP-CLOSURE-PLAN.md](../../GAP-CLOSURE-PLAN.md).)*
 - [x] Workload Identity Federation: no long-lived GCP keys in GH secrets.
 - [x] Cloudflare WAF in front of all public hostnames (orange-cloud proxied).
@@ -44,7 +44,7 @@
 
 ### Manual smoke
 
-1. Push a commit to `main` → build matrix green → Trivy green → migrate Job succeeds → prod deploy succeeds → all rollouts converge within 15 min.
+1. Push a commit to `main` → build matrix green → migrate Job succeeds → prod deploy succeeds → all rollouts converge within 15 min.
 2. Force a failed migration in a test branch → deploy run → migrate Job exits 1 → kustomize apply step is not reached → previous version still serving.
 3. `kubectl rollout undo deployment/web -n agconn` → previous image deployed within 2 minutes.
 4. Open a PR touching `apps/web/` → Lighthouse CI runs → fails if any threshold regresses → must fix before merge.

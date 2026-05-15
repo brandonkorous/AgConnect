@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { fetchJobsSitemap } from '@/lib/api/public-jobs';
 import { fetchTrainingSitemap } from '@/lib/api/public-training';
-import { getAllResources } from '@/content/resources';
+import { getAllResources, RESOURCE_CATEGORIES } from '@/content/resources';
 import { getAllPressReleases } from '@/content/press';
 import { getAllCareerRoles } from '@/content/careers';
 
@@ -93,6 +93,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
+  const resourceCategoryEntries: MetadataRoute.Sitemap = RESOURCE_CATEGORIES.flatMap((category) =>
+    routing.locales.map((locale) => ({
+      url: `${base}/${locale}/resources/category/${category}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.55,
+      alternates: { languages: langsFor(`/resources/category/${category}`) },
+    })),
+  );
+
   const pressEntries: MetadataRoute.Sitemap = getAllPressReleases().flatMap((release) =>
     routing.locales.map((locale) => ({
       url: `${base}/${locale}/press/${release.slug}`,
@@ -119,6 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...jobEntries,
     ...programEntries,
     ...resourceEntries,
+    ...resourceCategoryEntries,
     ...pressEntries,
     ...careerEntries,
   ];

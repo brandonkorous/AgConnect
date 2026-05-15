@@ -19,6 +19,24 @@ export function organizationJsonLd() {
                 contactType: 'customer support',
                 availableLanguage: ['en', 'es'],
             },
+            {
+                '@type': 'ContactPoint',
+                email: 'partnerships@agconn.com',
+                contactType: 'sales',
+                availableLanguage: ['en', 'es'],
+            },
+            {
+                '@type': 'ContactPoint',
+                email: 'press@agconn.com',
+                contactType: 'press',
+                availableLanguage: ['en', 'es'],
+            },
+            {
+                '@type': 'ContactPoint',
+                email: 'security@agconn.com',
+                contactType: 'security',
+                availableLanguage: ['en', 'es'],
+            },
         ],
         address: {
             '@type': 'PostalAddress',
@@ -27,6 +45,77 @@ export function organizationJsonLd() {
             addressCountry: 'US',
         },
         areaServed: ['Fresno County', 'Tulare County', 'Kern County', 'Kings County', 'Madera County'],
+    };
+}
+
+export function impactDatasetJsonLd(args: {
+    locale: Locale;
+    generatedAt: string;
+    windowMonths: number;
+}) {
+    const base = getSiteUrl();
+    const apiBase =
+        process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? `${base}/api`;
+    const name =
+        args.locale === 'es'
+            ? 'AGCONN Panel de impacto público'
+            : 'AGCONN public impact dashboard';
+    const description =
+        args.locale === 'es'
+            ? `Colocaciones, salarios medianos, capacitaciones completadas y empleadores verificados de AGCONN en el Valle Central de California. Ventana móvil de ${args.windowMonths} meses, refrescado todas las noches, alineado con WIOA.`
+            : `AGCONN placements, median wages, training completions, and verified employers in the California Central Valley. Trailing ${args.windowMonths}-month window, refreshed nightly, WIOA-aligned.`;
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        name,
+        description,
+        url: `${base}/${args.locale}/impact`,
+        identifier: `${base}/${args.locale}/impact`,
+        inLanguage: inLanguage(args.locale),
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        creator: {
+            '@type': 'Organization',
+            name: 'AGCONN',
+            url: base,
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'AGCONN',
+            url: base,
+        },
+        temporalCoverage: `P${args.windowMonths}M`,
+        spatialCoverage: {
+            '@type': 'Place',
+            name: 'Central Valley, California, United States',
+            geo: {
+                '@type': 'GeoShape',
+                addressCountry: 'US',
+                addressRegion: 'CA',
+            },
+            containsPlace: [
+                'Fresno County, CA',
+                'Tulare County, CA',
+                'Kern County, CA',
+                'Kings County, CA',
+                'Madera County, CA',
+            ],
+        },
+        dateModified: args.generatedAt,
+        keywords: [
+            'farmworker placements',
+            'agricultural wages',
+            'CDFA training',
+            'WIOA',
+            'Central Valley',
+            'verified employers',
+        ],
+        distribution: [
+            {
+                '@type': 'DataDownload',
+                encodingFormat: 'application/json',
+                contentUrl: `${apiBase}/v1/landing/impact`,
+            },
+        ],
     };
 }
 
@@ -107,11 +196,31 @@ export function trainingItemListJsonLd(args: { locale: Locale; programs: Feature
     };
 }
 
+function wageUnitText(unit: string): string {
+    const u = unit.toLowerCase();
+    if (u === 'hour') return 'HOUR';
+    if (u === 'day') return 'DAY';
+    if (u === 'week') return 'WEEK';
+    if (u === 'piece') return 'PIECE';
+    return unit.toUpperCase();
+}
+
+const VALID_THROUGH_DEFAULT_DAYS = 30;
+
+function defaultValidThrough(datePosted: string): string {
+    const d = new Date(datePosted);
+    if (Number.isNaN(d.getTime())) return datePosted;
+    d.setUTCDate(d.getUTCDate() + VALID_THROUGH_DEFAULT_DAYS);
+    return d.toISOString();
+}
+
 export function jobPostingJsonLd(args: { locale: Locale; slug: string; job: PublicJobDetail }) {
     const base = getSiteUrl();
     const { locale, slug, job } = args;
     const title = locale === 'es' ? job.titleEs : job.titleEn;
     const description = locale === 'es' ? job.descriptionEs : job.descriptionEn;
+    const datePosted = job.publishedAt ?? job.createdAt;
+    const validThrough = job.applyBy ?? defaultValidThrough(datePosted);
     const benefits = [
         job.housing ? (locale === 'es' ? 'Vivienda proporcionada' : 'Housing provided') : null,
         job.transport ? (locale === 'es' ? 'Transporte proporcionado' : 'Transportation provided') : null,
@@ -123,10 +232,19 @@ export function jobPostingJsonLd(args: { locale: Locale; slug: string; job: Publ
         '@type': 'JobPosting',
         title,
         description: description || `${job.employerName} hiring ${title}.`,
-        datePosted: job.publishedAt ?? job.createdAt,
-        validThrough: job.applyBy ?? undefined,
-        employmentType: 'SEASONAL',
-        hiringOrganization: { '@type': 'Organization', name: job.employerName },
+        identifier: {
+            '@type': 'PropertyValue',
+            name: 'AGCONN',
+            value: job.seoSlug || job.id,
+        },
+        datePosted,
+        validThrough,
+        employmentType: ['SEASONAL', 'TEMPORARY'],
+        hiringOrganization: {
+            '@type': 'Organization',
+            name: job.employerName,
+            sameAs: `${base}/${locale}/jobs/${slug}`,
+        },
         jobLocation: {
             '@type': 'Place',
             address: {
@@ -136,6 +254,10 @@ export function jobPostingJsonLd(args: { locale: Locale; slug: string; job: Publ
                 addressCountry: 'US',
             },
         },
+        applicantLocationRequirements: {
+            '@type': 'Country',
+            name: 'US',
+        },
         baseSalary: {
             '@type': 'MonetaryAmount',
             currency: 'USD',
@@ -143,11 +265,14 @@ export function jobPostingJsonLd(args: { locale: Locale; slug: string; job: Publ
                 '@type': 'QuantitativeValue',
                 minValue: job.wageMin,
                 maxValue: job.wageMax,
-                unitText: job.wageUnit.toUpperCase(),
+                unitText: wageUnitText(job.wageUnit),
             },
         },
         industry: 'Agriculture',
+        occupationalCategory: '45-2092 Farmworkers and Laborers, Crop',
         inLanguage: inLanguage(locale),
+        directApply: true,
+        ...(job.skills && job.skills.length ? { skills: job.skills.join(', ') } : {}),
         ...(benefits ? { jobBenefits: benefits } : {}),
         url: `${base}/${locale}/jobs/${slug}`,
     };

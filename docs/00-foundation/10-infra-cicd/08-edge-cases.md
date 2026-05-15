@@ -119,8 +119,7 @@ A CVE is published for a base image after deploy.
 
 **Mitigation:**
 
-- Trivy scans every image after push in `deploy.yml`; HIGH/CRITICAL + fix-available fails the deploy.
-- Trivy `ignore-unfixed: true` keeps the gate actionable — CVEs without an upstream patch can't be remediated by a rebuild.
+- Trivy scan gate is deferred at MVP — see Phase 6 item 6.8 in [GAP-CLOSURE-PLAN.md](../../GAP-CLOSURE-PLAN.md). When re-enabled, scan runs after each image push with `severity: HIGH,CRITICAL` and `ignore-unfixed: true` (CVEs without an upstream patch can't be remediated by a rebuild).
 - Periodic dependency bumps via Renovate or Dependabot keep base images current. *(not yet wired.)*
 
 ## NetworkPolicy gotcha *(currently inert)*

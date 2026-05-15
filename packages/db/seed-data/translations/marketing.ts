@@ -402,6 +402,22 @@ export const marketing: TranslationBundle = {
         en: "This article summarizes public regulations and is not legal advice. For specific situations, consult a qualified attorney or your local legal aid clinic.",
         es: "Este artículo resume regulaciones públicas y no es asesoría legal. Para situaciones específicas, consulte a un abogado calificado o a su clínica de ayuda legal local.",
     },
+    "resources.category.intro": {
+        en: "{count, plural, one {# guide} other {# guides}} in this category. Updated as the rules and programs change.",
+        es: "{count, plural, one {# guía} other {# guías}} en esta categoría. Se actualiza conforme cambian las reglas y los programas.",
+    },
+    "resources.category.empty": {
+        en: "No articles in this category yet — check back soon.",
+        es: "Aún no hay artículos en esta categoría — vuelva pronto.",
+    },
+    "resources.category.back_all": {
+        en: "All categories",
+        es: "Todas las categorías",
+    },
+    "resources.category.other_categories": {
+        en: "Browse other categories",
+        es: "Explorar otras categorías",
+    },
 
     // ========================================================================
     // /skills-wallet (Workers → Skills wallet info page)

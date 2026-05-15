@@ -20,7 +20,16 @@ export const revalidate = 86400;
 export async function generateMetadata({ params }: RouteProps) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'marketing.resources' });
-    return resourcesMetadata({ locale, title: t('meta.title'), description: t('meta.description') });
+    const base = resourcesMetadata({ locale, title: t('meta.title'), description: t('meta.description') });
+    return {
+        ...base,
+        alternates: {
+            ...(base.alternates ?? {}),
+            types: {
+                'application/rss+xml': `/${locale}/resources/feed.xml`,
+            },
+        },
+    };
 }
 
 export default async function ResourcesPage({ params }: RouteProps) {
@@ -99,9 +108,14 @@ export default async function ResourcesPage({ params }: RouteProps) {
                             <div className="flex flex-wrap items-end justify-between gap-6 border-secondary/15 border-b pb-6">
                                 <div className="flex flex-col gap-3">
                                     <EyebrowLabel tone="soil">{t(`categories.${category}.label`)}</EyebrowLabel>
-                                    <h3 className="text-base-content font-serif text-2xl font-medium leading-tight tracking-tight md:text-3xl">
-                                        {t(`preview.categories.${category}.title`)}
-                                    </h3>
+                                    <Link
+                                        href={`/${locale}/resources/category/${category}`}
+                                        className="group"
+                                    >
+                                        <h3 className="text-base-content font-serif text-2xl font-medium leading-tight tracking-tight md:text-3xl group-hover:text-primary transition-colors">
+                                            {t(`preview.categories.${category}.title`)}
+                                        </h3>
+                                    </Link>
                                 </div>
                                 <p className="text-secondary max-w-md font-sans text-sm leading-relaxed">
                                     {t(`preview.categories.${category}.body`)}

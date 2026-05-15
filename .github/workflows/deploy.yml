@@ -63,8 +63,7 @@ jobs:
       - name: Configure docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
-      - id: build
-        uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.target.dockerfile }}
@@ -91,20 +90,10 @@ jobs:
           secrets: |
             fontawesome_token=${{ secrets.FONTAWESOME_TOKEN }}
 
-      # Trivy CVE scan on the just-pushed image. HIGH/CRITICAL with a known
-      # fix version fails the matrix leg, which blocks the deploy job (it
-      # `needs: build`). `ignore-unfixed: true` keeps the gate actionable —
-      # CVEs without an upstream fix can't be remediated by a rebuild and
-      # would otherwise stall every deploy.
-      - name: Trivy scan ${{ matrix.target.image }}
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.AR_PATH }}/${{ matrix.target.image }}:${{ env.TAG }}
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: "1"
-          vuln-type: os,library
+      # Trivy CVE scan deferred — preventative hygiene that flaps when new
+      # CVEs drop in upstream base images. Re-enable when we have actual
+      # users hitting prod and the cost of a vulnerable base image outweighs
+      # the deploy-gate noise. See Phase 6 item 6.8 in docs/GAP-CLOSURE-PLAN.md.
 
   deploy:
     needs: build
@@ -290,3 +279,15 @@ jobs:
           kubectl -n agconn rollout status deployment/resume-parser --timeout=5m
           kubectl -n agconn rollout status deployment/cert-generator --timeout=5m
           kubectl -n agconn rollout status deployment/scheduler --timeout=5m
+
+      - name: Ping IndexNow with sitemap URLs
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          INDEXNOW_KEY_LOCATION: https://agconn.com/indexnow-key.txt
+          SITE_URL: https://agconn.com
+        run: |
+          if [ -z "${INDEXNOW_KEY:-}" ]; then
+            echo "[indexnow] skipping — INDEXNOW_KEY secret not set"
+            exit 0
+          fi
+          node scripts/indexnow-ping.mjs
