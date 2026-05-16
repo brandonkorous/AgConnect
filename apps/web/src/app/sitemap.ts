@@ -5,9 +5,10 @@ import { fetchTrainingSitemap } from '@/lib/api/public-training';
 import { getAllResources, RESOURCE_CATEGORIES } from '@/content/resources';
 import { getAllPressReleases } from '@/content/press';
 import { getAllCareerRoles } from '@/content/careers';
+import { getSiteUrl } from '@/lib/seo/metadata';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+  const base = getSiteUrl();
   const langsFor = (path: string) =>
     Object.fromEntries(routing.locales.map((l) => [l, `${base}/${l}${path}`]));
 
