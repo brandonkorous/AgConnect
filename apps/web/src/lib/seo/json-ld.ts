@@ -55,7 +55,8 @@ export function impactDatasetJsonLd(args: {
 }) {
     const base = getSiteUrl();
     const apiBase =
-        process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? `${base}/api`;
+        process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ??
+        base.replace('://', '://api.');
     const name =
         args.locale === 'es'
             ? 'AGCONN Panel de impacto público'

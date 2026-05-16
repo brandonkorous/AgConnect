@@ -76,5 +76,5 @@ export default clerkConfigured
   : ((req: NextRequest): NextResponse | Promise<NextResponse> => intl(req));
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|__dev|og|.*\\..*).*)'],
+  matcher: ['/((?!api|_next|_vercel|__dev|og|monitoring|.*\\..*).*)'],
 };

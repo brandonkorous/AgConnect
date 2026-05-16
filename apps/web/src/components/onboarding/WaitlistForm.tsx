@@ -27,7 +27,7 @@ export function OnboardingWaitlistForm({ locale }: Props) {
     setError(null);
     try {
       const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? 'http://localhost:3001';
+        process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? 'http://localhost:3001';
       const res = await fetch(`${baseUrl}/v1/landing/waitlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
