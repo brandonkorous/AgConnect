@@ -16,6 +16,10 @@ export interface RlsContext {
   role: RlsRole;
   userId?: string;
   tenantId?: string;
+  // Active employer profile id for an employer member request. Policies on
+  // the employer data surface compare to NULLIF(current_setting,'')::uuid so
+  // an unset value (workers / non-employer requests) fails closed, not errors.
+  employerId?: string;
 }
 
 const ALLOWED_ROLES: ReadonlySet<RlsRole> = new Set([
@@ -56,7 +60,8 @@ export async function applyRlsToTx(
     SELECT
       set_config('app.role', ${ctx.role}, true),
       set_config('app.user_id', ${ctx.userId ?? ''}, true),
-      set_config('app.tenant_id', ${ctx.tenantId ?? ''}, true)
+      set_config('app.tenant_id', ${ctx.tenantId ?? ''}, true),
+      set_config('app.employer_id', ${ctx.employerId ?? ''}, true)
   `;
 }
 

@@ -7,7 +7,7 @@ import type {
 export function shapeEmployer(p: DbEmployerProfile): EmployerProfile {
   return {
     id: p.id,
-    userId: p.userId,
+    ownerContactId: p.ownerContactId,
     tenantId: p.tenantId,
     legalName: p.legalName,
     dbaName: p.dbaName,

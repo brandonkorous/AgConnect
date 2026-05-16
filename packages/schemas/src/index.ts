@@ -9,6 +9,7 @@ export * from './wallet.js';
 export * from './permissions.js';
 export * from './plans.js';
 export * from './employer.js';
+export * from './employer-members.js';
 export * from './employer-jobs.js';
 export * from './skill-slugs.js';
 export * from './employer-applications.js';

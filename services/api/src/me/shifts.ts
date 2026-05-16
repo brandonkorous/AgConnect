@@ -31,7 +31,7 @@ meShiftsRoutes.get('/', async (c) => {
         include: {
             shift: {
                 include: {
-                    employer: { include: { employerProfile: true } },
+                    employer: { select: { dbaName: true, legalName: true } },
                     crew: { include: { foreman: true } },
                 },
             },
@@ -72,8 +72,8 @@ meShiftsRoutes.get('/', async (c) => {
                     status: a.shift.status,
                     notes: a.shift.notes,
                     employer:
-                        a.shift.employer?.employerProfile?.dbaName ??
-                        a.shift.employer?.employerProfile?.legalName ??
+                        a.shift.employer?.dbaName ??
+                        a.shift.employer?.legalName ??
                         'AGCONN employer',
                     crewName: a.shift.crew?.name ?? null,
                     foremanPhone: foreman?.phone ?? null,

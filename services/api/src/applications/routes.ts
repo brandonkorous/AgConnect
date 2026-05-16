@@ -95,7 +95,7 @@ jobApplyRoute.post('/:jobId/apply', async (c) => {
 
     try {
         const employerProfile = await c.var.db.employerProfile.findUnique({
-            where: { userId: job.employerId },
+            where: { id: job.employerId },
         });
         await enqueueSms({
             tenantId,
@@ -144,7 +144,7 @@ applicationsRoutes.get('/', validate('query', ApplicationsQuery), async (c) => {
         where,
         orderBy: [{ appliedAt: 'desc' }, { id: 'desc' }],
         take: limit + 1,
-        include: { job: { include: { employer: { include: { employerProfile: true } } } } },
+        include: { job: { include: { employer: { select: { legalName: true } } } } },
     });
 
     const slice = rows.slice(0, limit);
@@ -165,7 +165,7 @@ applicationsRoutes.get('/', validate('query', ApplicationsQuery), async (c) => {
                 wageMin: Number(a.job.wageMin.toString()),
                 wageMax: Number(a.job.wageMax.toString()),
                 startDate: a.job.startDate.toISOString().slice(0, 10),
-                employerName: a.job.employer?.employerProfile?.legalName ?? 'AGCONN employer',
+                employerName: a.job.employer?.legalName ?? 'AGCONN employer',
             },
         })),
         nextCursor,
@@ -177,7 +177,17 @@ applicationsRoutes.get('/:id', async (c) => {
     const app = await c.var.db.application.findFirst({
         where: { id, workerId: c.var.userId, deletedAt: null },
         include: {
-            job: { include: { employer: { include: { employerProfile: true } } } },
+            job: {
+                include: {
+                    employer: {
+                        select: {
+                            legalName: true,
+                            contactPhone: true,
+                            contactEmail: true,
+                        },
+                    },
+                },
+            },
             events: { orderBy: { createdAt: 'asc' } },
         },
     });
@@ -209,9 +219,9 @@ applicationsRoutes.get('/:id', async (c) => {
         })),
         employer: {
             id: app.job.employerId,
-            name: app.job.employer?.employerProfile?.legalName ?? 'AGCONN employer',
-            phone: app.job.employer?.phone ?? null,
-            email: app.job.employer?.email ?? null,
+            name: app.job.employer?.legalName ?? 'AGCONN employer',
+            phone: app.job.employer?.contactPhone ?? null,
+            email: app.job.employer?.contactEmail ?? null,
         },
     });
 });
@@ -253,9 +263,9 @@ applicationsRoutes.post('/:id/withdraw', async (c) => {
     try {
         const job = await c.var.db.jobPosting.findUnique({
             where: { id: app.jobId },
-            include: { employer: { include: { employerProfile: true } } },
+            include: { employer: true },
         });
-        const employerProfile = job?.employer?.employerProfile;
+        const employerProfile = job?.employer;
         if (employerProfile) {
             await enqueueEmployerEmail({
                 template: 'employer.application_withdrawn',

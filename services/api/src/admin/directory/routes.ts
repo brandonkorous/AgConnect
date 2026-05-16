@@ -212,8 +212,20 @@ adminDirectoryRoutes.get('/users/:id', async (c) => {
       workerProfile: {
         select: { firstName: true, lastName: true, county: true, onboardedAt: true },
       },
-      employerProfile: {
-        select: { id: true, legalName: true, licenseType: true, flcVerifiedAt: true },
+      employerContacts: {
+        where: { deletedAt: null },
+        take: 1,
+        orderBy: { createdAt: 'asc' },
+        select: {
+          employer: {
+            select: {
+              id: true,
+              legalName: true,
+              licenseType: true,
+              flcVerifiedAt: true,
+            },
+          },
+        },
       },
     },
   });
@@ -248,12 +260,12 @@ adminDirectoryRoutes.get('/users/:id', async (c) => {
             onboardedAt: user.workerProfile.onboardedAt?.toISOString() ?? null,
           }
         : null,
-      employerProfile: user.employerProfile
+      employerProfile: user.employerContacts[0]?.employer
         ? {
-            id: user.employerProfile.id,
-            legalName: user.employerProfile.legalName,
-            licenseType: user.employerProfile.licenseType,
-            verified: user.employerProfile.flcVerifiedAt !== null,
+            id: user.employerContacts[0].employer.id,
+            legalName: user.employerContacts[0].employer.legalName,
+            licenseType: user.employerContacts[0].employer.licenseType,
+            verified: user.employerContacts[0].employer.flcVerifiedAt !== null,
           }
         : null,
     },

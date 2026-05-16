@@ -31,6 +31,24 @@ meRoutes.get('/', async (c) => {
   });
 });
 
+// Employer memberships for the active session. Drives the web shell's
+// employer switcher and permission-gated nav: the switcher needs every
+// employer this identity belongs to (not just the active one), so this
+// sits on /v1/me and only requires auth — no active-employer gate.
+meRoutes.get('/employer-memberships', async (c) => {
+  return ok(c, {
+    activeEmployerId: c.var.employerId,
+    memberships: c.var.employerMemberships.map((m) => ({
+      employerId: m.employerId,
+      tenantId: m.tenantId,
+      legalName: m.legalName,
+      roleKey: m.roleKey,
+      permissions: m.permissions,
+      scopeQualifier: m.scopeQualifier,
+    })),
+  });
+});
+
 meRoutes.get('/tenant', async (c) => {
   const tenantId = c.var.tenantId;
 

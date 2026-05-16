@@ -18,10 +18,13 @@ import {
     faShieldHalved,
     faCommentDots,
     faChartColumn,
+    faUserGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { hasPermission, type Permission } from '@agconn/schemas';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { UserMenu } from '@/components/shell/UserMenu';
+import { EmployerSwitcher } from '@/components/employer/EmployerSwitcher';
 
 export type EmployerNavKey =
     | 'dashboard'
@@ -34,6 +37,7 @@ export type EmployerNavKey =
     | 'messages'
     | 'reports'
     | 'billing'
+    | 'team'
     | 'profile';
 
 type NavItem = {
@@ -44,7 +48,13 @@ type NavItem = {
     countTitle?: string;
     accent?: boolean;
     pro?: boolean;
+    // Permission scopes that reveal this item. Empty = always visible to
+    // any member. An item shows if the active role grants ANY listed scope
+    // (owner holds the '*' wildcard, so it sees everything).
+    perms?: Permission[];
 };
+
+export type SwitcherEmployer = { employerId: string; legalName: string };
 
 type Props = {
     locale: string;
@@ -55,6 +65,13 @@ type Props = {
     jobsCount?: number;
     complianceCount?: number;
     messagesCount?: number;
+    /** Active membership's effective permission scopes (drives nav visibility). */
+    permissions?: string[];
+    /** Active role scope qualifier; 'self_crew' = foreman (crew-only shell). */
+    scope?: string | null;
+    /** All employers this identity belongs to (switcher shows when > 1). */
+    employers?: SwitcherEmployer[];
+    activeEmployerId?: string | null;
     /** 'inline' renders the desktop aside (md+); 'drawer' renders the body for the mobile drawer. */
     variant?: 'inline' | 'drawer';
 };
@@ -68,6 +85,10 @@ export function EmployerSidebar({
     jobsCount,
     complianceCount,
     messagesCount,
+    permissions = [],
+    scope = null,
+    employers = [],
+    activeEmployerId = null,
     variant = 'inline',
 }: Props) {
     const t = useTranslations('employer.shell.nav');
@@ -83,7 +104,7 @@ export function EmployerSidebar({
         user?.primaryPhoneNumber?.phoneNumber ||
         null;
 
-    const items: NavItem[] = [
+    const allItems: NavItem[] = [
         { key: 'dashboard', icon: faChartLine, path: '/employer/dashboard' },
         {
             key: 'jobs',
@@ -91,6 +112,7 @@ export function EmployerSidebar({
             path: '/employer/jobs',
             count: jobsCount,
             countTitle: tBadge('active_postings_title'),
+            perms: ['jobs.read'],
         },
         {
             key: 'candidates',
@@ -98,16 +120,52 @@ export function EmployerSidebar({
             path: '/employer/inbox',
             count: candidatesCount,
             accent: (candidatesCount ?? 0) > 0,
+            perms: ['applicants.read'],
         },
-        { key: 'workers', icon: faMagnifyingGlass, path: '/employer/workers', pro: true },
-        { key: 'crews', icon: faCalendarDays, path: '/employer/crews' },
-        { key: 'payroll', icon: faCoins, path: '/employer/payroll' },
-        { key: 'compliance', icon: faShieldHalved, path: '/employer/compliance', count: complianceCount },
-        { key: 'messages', icon: faCommentDots, path: '/employer/messages', count: messagesCount, accent: (messagesCount ?? 0) > 0 },
-        { key: 'reports', icon: faChartColumn, path: '/employer/reports' },
-        { key: 'billing', icon: faCreditCard, path: '/employer/billing' },
+        {
+            key: 'workers',
+            icon: faMagnifyingGlass,
+            path: '/employer/workers',
+            pro: true,
+            perms: ['worker_search.use'],
+        },
+        { key: 'crews', icon: faCalendarDays, path: '/employer/crews', perms: ['crews.read'] },
+        {
+            key: 'payroll',
+            icon: faCoins,
+            path: '/employer/payroll',
+            perms: ['payroll.read', 'payroll.record'],
+        },
+        {
+            key: 'compliance',
+            icon: faShieldHalved,
+            path: '/employer/compliance',
+            count: complianceCount,
+            perms: ['compliance.read'],
+        },
+        {
+            key: 'messages',
+            icon: faCommentDots,
+            path: '/employer/messages',
+            count: messagesCount,
+            accent: (messagesCount ?? 0) > 0,
+            perms: ['messaging.use'],
+        },
+        { key: 'reports', icon: faChartColumn, path: '/employer/reports', perms: ['reports.read'] },
+        { key: 'billing', icon: faCreditCard, path: '/employer/billing', perms: ['billing.manage'] },
+        { key: 'team', icon: faUserGroup, path: '/employer/team', perms: ['members.read'] },
         { key: 'profile', icon: faIdBadge, path: '/employer/profile' },
     ];
+
+    // Foreman (self_crew scope) gets a deliberately bare shell: just the crew
+    // schedule and crew hour/piece recording. Everyone else sees an item when
+    // their role grants one of its scopes; unscoped items are always shown.
+    const isForeman = scope === 'self_crew';
+    const items = isForeman
+        ? allItems.filter((i) => i.key === 'crews' || i.key === 'payroll')
+        : allItems.filter(
+              (i) => !i.perms || i.perms.some((p) => hasPermission(permissions, p)),
+          );
 
     const wrapperClass =
         variant === 'inline'
@@ -124,6 +182,10 @@ export function EmployerSidebar({
                     {tBadge('surface_hire')}
                 </span>
             </div>
+
+            {employers.length > 1 && (
+                <EmployerSwitcher options={employers} activeEmployerId={activeEmployerId} />
+            )}
 
             <ul className="menu menu-md w-full flex-1 flex-nowrap overflow-y-auto p-0 gap-2">
                 {items.map((item) => {

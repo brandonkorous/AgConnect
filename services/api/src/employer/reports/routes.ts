@@ -4,7 +4,8 @@ import { AppStatus } from '@agconn/db';
 import { ReportsOverviewQuery } from '@agconn/schemas';
 import {
   requireAuth,
-  requireRole,
+  requireActiveEmployer,
+  requireEmployerPermission,
   requireTenant,
   type AuthVars,
 } from '../../middleware/authContext.js';
@@ -15,11 +16,11 @@ import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerReportsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerReportsRoutes.use('*', requireAuth('employer'));
-employerReportsRoutes.use('*', requireRole('employer'));
+employerReportsRoutes.use('*', requireActiveEmployer);
 employerReportsRoutes.use('*', requireTenant);
 
-employerReportsRoutes.get('/overview', validate('query', ReportsOverviewQuery), async (c) => {
-  const userId = c.var.userId;
+employerReportsRoutes.get('/overview', requireEmployerPermission('reports.read'), validate('query', ReportsOverviewQuery), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
 
   // Compute season window — current calendar year for now.
@@ -27,7 +28,7 @@ employerReportsRoutes.get('/overview', validate('query', ReportsOverviewQuery), 
   const seasonStart = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
 
   const jobs = await c.var.db.jobPosting.findMany({
-    where: { tenantId, employerId: userId, deletedAt: null, createdAt: { gte: seasonStart } },
+    where: { tenantId, employerId, deletedAt: null, createdAt: { gte: seasonStart } },
     select: {
       id: true,
       titleEn: true,
@@ -39,7 +40,7 @@ employerReportsRoutes.get('/overview', validate('query', ReportsOverviewQuery), 
   });
 
   const apps = await c.var.db.application.findMany({
-    where: { tenantId, job: { employerId: userId }, appliedAt: { gte: seasonStart } },
+    where: { tenantId, job: { employerId }, appliedAt: { gte: seasonStart } },
     select: {
       jobId: true,
       status: true,
@@ -112,7 +113,7 @@ employerReportsRoutes.get('/overview', validate('query', ReportsOverviewQuery), 
   // Top performers — by total net pay across payroll lines (when present).
   const topPayroll = await c.var.db.payrollLine.groupBy({
     by: ['workerUserId'],
-    where: { tenantId, period: { employerId: userId } },
+    where: { tenantId, period: { employerId } },
     _sum: { netCents: true, hours: true },
     orderBy: { _sum: { netCents: 'desc' } },
     take: 5,
@@ -159,13 +160,13 @@ employerReportsRoutes.get('/overview', validate('query', ReportsOverviewQuery), 
   });
 });
 
-employerReportsRoutes.get('/overview.csv', async (c) => {
-  const userId = c.var.userId;
+employerReportsRoutes.get('/overview.csv', requireEmployerPermission('reports.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const seasonStart = new Date(Date.UTC(new Date().getUTCFullYear(), 0, 1));
 
   const jobs = await c.var.db.jobPosting.findMany({
-    where: { tenantId, employerId: userId, deletedAt: null, createdAt: { gte: seasonStart } },
+    where: { tenantId, employerId, deletedAt: null, createdAt: { gte: seasonStart } },
     select: {
       id: true,
       titleEn: true,
@@ -179,7 +180,7 @@ employerReportsRoutes.get('/overview.csv', async (c) => {
   });
 
   const apps = await c.var.db.application.findMany({
-    where: { tenantId, job: { employerId: userId }, appliedAt: { gte: seasonStart } },
+    where: { tenantId, job: { employerId }, appliedAt: { gte: seasonStart } },
     select: { jobId: true, status: true },
   });
 

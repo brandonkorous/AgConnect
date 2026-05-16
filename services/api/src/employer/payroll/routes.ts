@@ -8,7 +8,8 @@ import {
 } from '@agconn/schemas';
 import {
   requireAuth,
-  requireRole,
+  requireActiveEmployer,
+  requireEmployerPermission,
   requireTenant,
   type AuthVars,
 } from '../../middleware/authContext.js';
@@ -24,15 +25,15 @@ import {
 
 export const employerPayrollRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerPayrollRoutes.use('*', requireAuth('crews'));
-employerPayrollRoutes.use('*', requireRole('employer'));
+employerPayrollRoutes.use('*', requireActiveEmployer);
 employerPayrollRoutes.use('*', requireTenant);
 
-employerPayrollRoutes.get('/periods', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.get('/periods', requireEmployerPermission('payroll.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
 
   const periods = await c.var.db.payrollPeriod.findMany({
-    where: { tenantId, employerId: userId },
+    where: { tenantId, employerId },
     orderBy: { startDate: 'desc' },
     take: 24,
     include: { lines: { select: { hours: true, grossCents: true, bonusCents: true, taxesCents: true, netCents: true, workerUserId: true } } },
@@ -53,15 +54,15 @@ employerPayrollRoutes.get('/periods', async (c) => {
   });
 });
 
-employerPayrollRoutes.post('/periods', validate('json', CreatePayrollPeriodBody), async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.post('/periods', requireEmployerPermission('payroll.manage'), validate('json', CreatePayrollPeriodBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const body = c.var.body;
 
   const created = await c.var.db.payrollPeriod.create({
     data: {
       tenantId,
-      employerId: userId,
+      employerId,
       startDate: new Date(body.startDate),
       endDate: new Date(body.endDate),
       payDate: new Date(body.payDate),
@@ -93,14 +94,14 @@ employerPayrollRoutes.post('/periods', validate('json', CreatePayrollPeriodBody)
   });
 });
 
-employerPayrollRoutes.patch('/periods/:id', validate('json', PatchPayrollPeriodBody), async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.patch('/periods/:id', requireEmployerPermission('payroll.manage'), validate('json', PatchPayrollPeriodBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const existing = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -110,7 +111,7 @@ employerPayrollRoutes.patch('/periods/:id', validate('json', PatchPayrollPeriodB
     data.status = body.status;
     if (body.status === PayrollPeriodStatus.approved && !existing.approvedAt) {
       data.approvedAt = new Date();
-      data.approvedById = userId;
+      data.approvedById = c.var.userId;
     }
     if (body.status === PayrollPeriodStatus.paid && !existing.paidAt) {
       data.paidAt = new Date();
@@ -118,7 +119,7 @@ employerPayrollRoutes.patch('/periods/:id', validate('json', PatchPayrollPeriodB
   }
 
   const updateResult = await c.var.db.payrollPeriod.updateMany({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
     data,
   });
   if (updateResult.count !== 1) return err(c, 404, 'not_found');
@@ -146,13 +147,13 @@ employerPayrollRoutes.patch('/periods/:id', validate('json', PatchPayrollPeriodB
   });
 });
 
-employerPayrollRoutes.get('/periods/:id/lines', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.get('/periods/:id/lines', requireEmployerPermission('payroll.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const period = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!period) return err(c, 404, 'not_found');
 
@@ -199,16 +200,17 @@ employerPayrollRoutes.get('/periods/:id/lines', async (c) => {
 
 employerPayrollRoutes.patch(
   '/periods/:id/lines/:lineId',
+  requireEmployerPermission('payroll.manage'),
   validate('json', PatchPayrollLineBody),
   async (c) => {
-    const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const id = c.req.param('id');
     const lineId = c.req.param('lineId');
     const body = c.var.body;
 
     const period = await c.var.db.payrollPeriod.findFirst({
-      where: { id, tenantId, employerId: userId },
+      where: { id, tenantId, employerId },
     });
     if (!period) return err(c, 404, 'not_found');
     if (period.status !== PayrollPeriodStatus.draft) return err(c, 422, 'period_locked');
@@ -258,10 +260,10 @@ employerPayrollRoutes.patch(
 // H-2A payroll context: surfaces participation flag + active AEWR row for
 // the employer's state. Used by the payroll page H-2A callout to render
 // real numbers instead of placeholder text.
-employerPayrollRoutes.get('/h2a-context', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.get('/h2a-context', requireEmployerPermission('payroll.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const employer = await c.var.db.employerProfile.findUnique({
-    where: { userId },
+    where: { id: employerId },
     select: { participatesInH2a: true, stateCode: true },
   });
   const stateCode = employer?.stateCode ?? 'CA';
@@ -286,14 +288,14 @@ employerPayrollRoutes.get('/h2a-context', async (c) => {
 // Wage statement (CA Labor Code §226-aligned). Returns a single line's
 // full breakdown plus the period and employer details needed to print the
 // itemized statement.
-employerPayrollRoutes.get('/periods/:id/lines/:lineId/wage-statement', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.get('/periods/:id/lines/:lineId/wage-statement', requireEmployerPermission('payroll.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const lineId = c.req.param('lineId');
 
   const period = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!period) return err(c, 404, 'not_found');
 
@@ -304,7 +306,7 @@ employerPayrollRoutes.get('/periods/:id/lines/:lineId/wage-statement', async (c)
   if (!line) return err(c, 404, 'not_found');
 
   const employer = await c.var.db.employerProfile.findUnique({
-    where: { userId },
+    where: { id: employerId },
     select: {
       legalName: true,
       dbaName: true,
@@ -367,13 +369,13 @@ employerPayrollRoutes.get('/periods/:id/lines/:lineId/wage-statement', async (c)
 // gross from a default rate (or piece-rate when present), bonus from piece
 // totals, taxes a flat 14.2% (federal+CA approximate), net = gross + bonus
 // - taxes. Existing lines for the same (period, worker) are upserted.
-employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.post('/periods/:id/generate-lines', requireEmployerPermission('payroll.manage'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const period = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!period) return err(c, 404, 'not_found');
   if (period.status !== PayrollPeriodStatus.draft) return err(c, 422, 'period_locked');
@@ -383,7 +385,7 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
       where: {
         tenantId,
         shift: {
-          employerId: userId,
+          employerId,
           shiftDate: { gte: period.startDate, lte: period.endDate },
         },
         status: { in: [ShiftAssignmentStatus.completed, ShiftAssignmentStatus.confirmed] },
@@ -396,7 +398,7 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
       },
     }),
     c.var.db.employerProfile.findUnique({
-      where: { userId },
+      where: { id: employerId },
       select: { participatesInH2a: true, stateCode: true },
     }),
     c.var.db.aewrRate.findFirst({
@@ -503,13 +505,13 @@ employerPayrollRoutes.post('/periods/:id/generate-lines', async (c) => {
   return ok(c, { generated: writes });
 });
 
-employerPayrollRoutes.post('/periods/:id/approve', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.post('/periods/:id/approve', requireEmployerPermission('payroll.manage'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const existing = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!existing) return err(c, 404, 'not_found');
   if (existing.status !== PayrollPeriodStatus.draft) return err(c, 422, 'period_locked');
@@ -519,7 +521,7 @@ employerPayrollRoutes.post('/periods/:id/approve', async (c) => {
     data: {
       status: PayrollPeriodStatus.approved,
       approvedAt: new Date(),
-      approvedById: userId,
+      approvedById: c.var.userId,
     },
   });
 
@@ -544,15 +546,15 @@ employerPayrollRoutes.post('/periods/:id/approve', async (c) => {
 });
 
 // audit-required:exempt — CSV view of already-audited payroll lines.
-employerPayrollRoutes.get('/periods/:id/export', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.get('/periods/:id/export', requireEmployerPermission('payroll.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const formRaw = (c.req.query('form') ?? '941').toLowerCase();
   const form = formRaw === 'de9' || formRaw === 'de-9' ? 'de9' : '941';
 
   const period = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!period) return new Response('not_found', { status: 404 });
 
@@ -595,13 +597,13 @@ employerPayrollRoutes.get('/periods/:id/export', async (c) => {
 });
 
 // audit-required:exempt — CSV view of already-audited payroll lines.
-employerPayrollRoutes.get('/periods/:id/lines.csv', async (c) => {
-  const userId = c.var.userId;
+employerPayrollRoutes.get('/periods/:id/lines.csv', requireEmployerPermission('payroll.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const period = await c.var.db.payrollPeriod.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!period) return new Response('not_found', { status: 404 });
 

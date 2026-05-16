@@ -10,16 +10,26 @@ import {
     canUseFeature,
 } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import {
+    requireAuth,
+    requireActiveEmployer,
+    requireEmployerPermission,
+    requireTenant,
+    type AuthVars,
+} from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerInboxRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerInboxRoutes.use('*', requireAuth('employer'));
-employerInboxRoutes.use('*', requireRole('employer'));
+employerInboxRoutes.use('*', requireActiveEmployer);
 employerInboxRoutes.use('*', requireTenant);
 
-employerInboxRoutes.get('/inbox', validate('query', InboxQuery), async (c) => {
-    const userId = c.var.userId;
+employerInboxRoutes.get(
+    '/inbox',
+    requireEmployerPermission('applicants.read'),
+    validate('query', InboxQuery),
+    async (c) => {
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const q = c.var.body;
 
@@ -29,7 +39,7 @@ employerInboxRoutes.get('/inbox', validate('query', InboxQuery), async (c) => {
         where: {
             tenantId,
             deletedAt: null,
-            job: { employerId: userId, deletedAt: null },
+            job: { employerId, deletedAt: null },
             ...(q.status ? { status: q.status as AppStatus } : {}),
             ...(q.jobId ? { jobId: q.jobId } : {}),
             ...(cursor
@@ -68,18 +78,22 @@ employerInboxRoutes.get('/inbox', validate('query', InboxQuery), async (c) => {
         nextCursor,
         unreadCount: 0,
     });
-});
+    },
+);
 
 export const employerJobApplicantsRoute = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerJobApplicantsRoute.use('*', requireAuth('employer'));
-employerJobApplicantsRoute.use('*', requireRole('employer'));
+employerJobApplicantsRoute.use('*', requireActiveEmployer);
 employerJobApplicantsRoute.use('*', requireTenant);
 
-employerJobApplicantsRoute.get('/:jobId/applicants', async (c) => {
-    const userId = c.var.userId;
+employerJobApplicantsRoute.get(
+    '/:jobId/applicants',
+    requireEmployerPermission('applicants.read'),
+    async (c) => {
+    const employerId = c.var.employerId!;
     const jobId = c.req.param('jobId');
     const job = await c.var.db.jobPosting.findFirst({
-        where: { id: jobId, employerId: userId, deletedAt: null },
+        where: { id: jobId, employerId, deletedAt: null },
     });
     if (!job) return err(c, 404, 'not_found');
 
@@ -111,19 +125,23 @@ employerJobApplicantsRoute.get('/:jobId/applicants', async (c) => {
         },
         rejectedCount,
     });
-});
+    },
+);
 
 export const employerApplicationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerApplicationsRoutes.use('*', requireAuth('employer'));
-employerApplicationsRoutes.use('*', requireRole('employer'));
+employerApplicationsRoutes.use('*', requireActiveEmployer);
 employerApplicationsRoutes.use('*', requireTenant);
 
-employerApplicationsRoutes.get('/:id', async (c) => {
-    const userId = c.var.userId;
+employerApplicationsRoutes.get(
+    '/:id',
+    requireEmployerPermission('applicants.read'),
+    async (c) => {
+    const employerId = c.var.employerId!;
     const id = c.req.param('id');
 
     const app = await c.var.db.application.findFirst({
-        where: { id, deletedAt: null, job: { employerId: userId } },
+        where: { id, deletedAt: null, job: { employerId } },
         include: {
             job: true,
             worker: {
@@ -181,13 +199,16 @@ employerApplicationsRoutes.get('/:id', async (c) => {
             createdAt: e.createdAt.toISOString(),
         })),
     });
-});
+    },
+);
 
 employerApplicationsRoutes.post(
     '/:id/transition',
+    requireEmployerPermission('applicants.write'),
     validate('json', TransitionBody),
     async (c) => {
         const userId = c.var.userId;
+        const employerId = c.var.employerId!;
         const tenantId = c.var.tenantId!;
         const id = c.req.param('id');
         const body = c.var.body;
@@ -196,7 +217,7 @@ employerApplicationsRoutes.post(
         // hire counter). Routed through the shared pool.
         const result = await dbClients.shared.$transaction(async (tx) => {
             const app = await tx.application.findFirst({
-                where: { id, deletedAt: null, job: { employerId: userId } },
+                where: { id, deletedAt: null, job: { employerId } },
                 include: { job: true },
             });
             if (!app) return { kind: 'not_found' as const };
@@ -275,7 +296,7 @@ employerApplicationsRoutes.post(
                 body.toStatus === 'hired'
                     ? {
                         jobId: result.app.jobId,
-                        employerId: userId,
+                        employerId,
                         startDate: result.app.startDate?.toISOString() ?? '',
                     }
                     : {
@@ -287,7 +308,7 @@ employerApplicationsRoutes.post(
 
         try {
             const employerProfile = await c.var.db.employerProfile.findUnique({
-                where: { userId },
+                where: { id: employerId },
             });
             // Free-tier employers don't get applicant SMS — the kanban transition
             // writes its event row but skips the Twilio enqueue. Workers still get
@@ -346,9 +367,11 @@ employerApplicationsRoutes.post(
 
 employerApplicationsRoutes.post(
     '/bulk-transition',
+    requireEmployerPermission('applicants.write'),
     validate('json', BulkTransitionBody),
     async (c) => {
         const userId = c.var.userId;
+        const employerId = c.var.employerId!;
         const tenantId = c.var.tenantId!;
         const body = c.var.body;
 
@@ -360,7 +383,7 @@ employerApplicationsRoutes.post(
             try {
                 await c.var.db.$transaction(async (tx) => {
                     const app = await tx.application.findFirst({
-                        where: { id, deletedAt: null, job: { employerId: userId } },
+                        where: { id, deletedAt: null, job: { employerId } },
                         include: { job: { select: { titleEn: true } } },
                     });
                     if (!app) {
@@ -413,7 +436,7 @@ employerApplicationsRoutes.post(
         ) {
             try {
                 const employerProfile = await c.var.db.employerProfile.findUnique({
-                    where: { userId },
+                    where: { id: employerId },
                 });
                 // See single-transition handler — free tier skips Twilio.
                 if (!employerProfile || !canUseFeature(employerProfile.plan, 'applicantSms')) {
@@ -458,15 +481,17 @@ employerApplicationsRoutes.post(
 
 employerApplicationsRoutes.post(
     '/:id/message',
+    requireEmployerPermission('applicants.write'),
     validate('json', SendMessageBody),
     async (c) => {
         const userId = c.var.userId;
+        const employerId = c.var.employerId!;
         const tenantId = c.var.tenantId!;
         const id = c.req.param('id');
         const body = c.var.body;
 
         const app = await c.var.db.application.findFirst({
-            where: { id, deletedAt: null, job: { employerId: userId } },
+            where: { id, deletedAt: null, job: { employerId } },
             include: {
                 worker: { include: { workerProfile: { select: { firstName: true, lastName: true } } } },
                 job: { select: { titleEn: true } },
@@ -480,7 +505,7 @@ employerApplicationsRoutes.post(
             const existing = await tx.conversation.findFirst({
                 where: {
                     tenantId,
-                    employerId: userId,
+                    employerId,
                     isGroup: false,
                     deletedAt: null,
                     participants: { some: { userId: app.workerId, leftAt: null } },
@@ -492,7 +517,7 @@ employerApplicationsRoutes.post(
                 (await tx.conversation.create({
                     data: {
                         tenantId,
-                        employerId: userId,
+                        employerId,
                         title:
                             `${app.worker.workerProfile?.firstName ?? ''} ${app.worker.workerProfile?.lastName ?? ''}`.trim() ||
                             app.job.titleEn,
@@ -554,13 +579,17 @@ employerApplicationsRoutes.post(
     },
 );
 
-employerApplicationsRoutes.post('/:id/note', validate('json', NoteBody), async (c) => {
-    const userId = c.var.userId;
+employerApplicationsRoutes.post(
+    '/:id/note',
+    requireEmployerPermission('applicants.write'),
+    validate('json', NoteBody),
+    async (c) => {
+    const employerId = c.var.employerId!;
     const id = c.req.param('id');
     const body = c.var.body;
 
     const existing = await c.var.db.application.findFirst({
-        where: { id, deletedAt: null, job: { employerId: userId } },
+        where: { id, deletedAt: null, job: { employerId } },
     });
     if (!existing) return err(c, 404, 'not_found');
 
@@ -570,7 +599,8 @@ employerApplicationsRoutes.post('/:id/note', validate('json', NoteBody), async (
     });
 
     return ok(c, { ok: true });
-});
+    },
+);
 
 // Helpers ------------------------------------------------------------------
 

@@ -8,7 +8,7 @@
 import { Hono } from 'hono';
 import { ok, validate } from '@agconn/api-client/server';
 import { MatchPreviewQuery } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import { requireAuth, requireActiveEmployer, requireEmployerPermission, requireTenant, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 import { COUNTY_CENTROIDS, haversineMiles } from '../../lib/distance.js';
 
@@ -19,10 +19,10 @@ export const employerJobMatchPreviewRoutes = new Hono<{
   Variables: AuthVars & AuditCtxVars;
 }>();
 employerJobMatchPreviewRoutes.use('*', requireAuth('employer'));
-employerJobMatchPreviewRoutes.use('*', requireRole('employer'));
+employerJobMatchPreviewRoutes.use('*', requireActiveEmployer);
 employerJobMatchPreviewRoutes.use('*', requireTenant);
 
-employerJobMatchPreviewRoutes.get('/', validate('query', MatchPreviewQuery), async (c) => {
+employerJobMatchPreviewRoutes.get('/', requireEmployerPermission('jobs.read'), validate('query', MatchPreviewQuery), async (c) => {
   const q = c.var.body;
   const wantedSkills = (q.skills ?? []).map((s) => s.toLowerCase());
   const radius = q.radiusMiles;

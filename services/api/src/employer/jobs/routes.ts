@@ -11,7 +11,7 @@ import {
   activePostingLimit,
 } from '@agconn/schemas';
 import { translate } from '@agconn/llm';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import { requireAuth, requireActiveEmployer, requireEmployerPermission, requireTenant, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 import { isVerified } from '../shared.js';
 import { shapeJob } from './shape.js';
@@ -22,20 +22,17 @@ import { employerJobScreeningRoutes } from './screening.js';
 
 export const employerJobsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerJobsRoutes.use('*', requireAuth('employer'));
-employerJobsRoutes.use('*', requireRole('employer'));
+employerJobsRoutes.use('*', requireActiveEmployer);
 employerJobsRoutes.use('*', requireTenant);
 
 // ─── List ──────────────────────────────────────────────────────────────────
-employerJobsRoutes.get('/', validate('query', EmployerJobsQuery), async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.get('/', requireEmployerPermission('jobs.read'), validate('query', EmployerJobsQuery), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const q = c.var.body;
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
-  if (!profile) return err(c, 404, 'not_found');
-
   const where = {
-    employerId: userId,
+    employerId,
     tenantId,
     deletedAt: null,
     ...(q.status ? { status: q.status as JobStatus } : {}),
@@ -46,7 +43,7 @@ employerJobsRoutes.get('/', validate('query', EmployerJobsQuery), async (c) => {
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     take: q.limit + 1,
     include: {
-      foremanContact: true,
+      foremanContact: { include: { role: true } },
       photos: { orderBy: { sortOrder: 'asc' } },
       screeningQuestions: { orderBy: { sortOrder: 'asc' } },
     },
@@ -83,8 +80,9 @@ employerJobsRoutes.get('/', validate('query', EmployerJobsQuery), async (c) => {
 });
 
 // ─── Create ────────────────────────────────────────────────────────────────
-employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
+employerJobsRoutes.post('/', requireEmployerPermission('jobs.write'), validate('json', CreateJobBody), async (c) => {
   const userId = c.var.userId;
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const body = c.var.body;
 
@@ -95,7 +93,7 @@ employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
     const job = await tx.jobPosting.create({
       data: {
         tenantId,
-        employerId: userId,
+        employerId,
         ...mapV1Fields(body),
         ...mapV2Fields(body),
         humanId,
@@ -104,7 +102,7 @@ employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
         lastEditedById: userId,
       },
       include: {
-        foremanContact: true,
+        foremanContact: { include: { role: true } },
         photos: true,
         screeningQuestions: true,
       },
@@ -142,7 +140,7 @@ employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
   const final = await c.var.db.jobPosting.findUnique({
     where: { id: created.id },
     include: {
-      foremanContact: true,
+      foremanContact: { include: { role: true } },
       photos: { orderBy: { sortOrder: 'asc' } },
       screeningQuestions: { orderBy: { sortOrder: 'asc' } },
     },
@@ -151,13 +149,13 @@ employerJobsRoutes.post('/', validate('json', CreateJobBody), async (c) => {
 });
 
 // ─── Detail ────────────────────────────────────────────────────────────────
-employerJobsRoutes.get('/:id', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.get('/:id', requireEmployerPermission('jobs.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     include: {
-      foremanContact: true,
+      foremanContact: { include: { role: true } },
       photos: { orderBy: { sortOrder: 'asc' } },
       screeningQuestions: { orderBy: { sortOrder: 'asc' } },
     },
@@ -174,14 +172,15 @@ employerJobsRoutes.get('/:id', async (c) => {
 });
 
 // ─── Patch (loosened — published edits are allowed; logged + re-notified) ─
-employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
+employerJobsRoutes.patch('/:id', requireEmployerPermission('jobs.write'), validate('json', PatchJobBody), async (c) => {
   const userId = c.var.userId;
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const existing = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -204,7 +203,7 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
   }
 
   const employerProfile = await c.var.db.employerProfile.findUnique({
-    where: { userId },
+    where: { id: employerId },
     select: { dbaName: true, legalName: true },
   });
   const employerName = employerProfile?.dbaName || employerProfile?.legalName || 'Your employer';
@@ -219,7 +218,7 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
         autosavedAt: null, // explicit save clears the autosave watermark
       },
       include: {
-        foremanContact: true,
+        foremanContact: { include: { role: true } },
         photos: { orderBy: { sortOrder: 'asc' } },
         screeningQuestions: { orderBy: { sortOrder: 'asc' } },
       },
@@ -265,13 +264,14 @@ employerJobsRoutes.patch('/:id', validate('json', PatchJobBody), async (c) => {
 });
 
 // ─── Autosave (drafts only, no diff-log, no validation cross-field refines)
-employerJobsRoutes.post('/:id/autosave', validate('json', AutosaveJobBody), async (c) => {
+employerJobsRoutes.post('/:id/autosave', requireEmployerPermission('jobs.write'), validate('json', AutosaveJobBody), async (c) => {
   const userId = c.var.userId;
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const existing = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true, status: true },
   });
   if (!existing) return err(c, 404, 'not_found');
@@ -293,12 +293,12 @@ employerJobsRoutes.post('/:id/autosave', validate('json', AutosaveJobBody), asyn
 });
 
 // ─── Publish ───────────────────────────────────────────────────────────────
-employerJobsRoutes.post('/:id/publish', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.post('/:id/publish', requireEmployerPermission('jobs.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: employerId } });
   if (!profile) return err(c, 404, 'not_found');
   if (!isVerified(profile)) return err(c, 403, 'employer_not_verified');
 
@@ -308,7 +308,7 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
     await tx.$queryRaw`SELECT id FROM employer_profiles WHERE id = ${profile.id} FOR UPDATE`;
 
     const job = await tx.jobPosting.findFirst({
-      where: { id, employerId: userId, deletedAt: null },
+      where: { id, employerId, deletedAt: null },
     });
     if (!job) return { kind: 'not_found' as const };
     if (job.status !== JobStatus.draft) return { kind: 'not_draft' as const };
@@ -321,7 +321,7 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
 
     if (Number.isFinite(limit)) {
       const activeCount = await tx.jobPosting.count({
-        where: { employerId: userId, status: JobStatus.active, deletedAt: null },
+        where: { employerId, status: JobStatus.active, deletedAt: null },
       });
       if (activeCount >= limit) return { kind: 'plan_limit' as const };
     }
@@ -338,7 +338,7 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
         smsApplyKeyword: keyword,
       },
       include: {
-        foremanContact: true,
+        foremanContact: { include: { role: true } },
         photos: { orderBy: { sortOrder: 'asc' } },
         screeningQuestions: { orderBy: { sortOrder: 'asc' } },
       },
@@ -374,12 +374,12 @@ employerJobsRoutes.post('/:id/publish', async (c) => {
 // ─── Pause / Resume renotifications ──────────────────────────────────────
 // Toggles the `renotifyPaused` flag on the posting. While paused, the
 // recordEditAndMaybeRenotify pipeline skips the SMS/push enqueue on edits.
-employerJobsRoutes.post('/:id/pause-renotify', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.post('/:id/pause-renotify', requireEmployerPermission('jobs.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
 
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true, status: true, renotifyPaused: true },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -401,12 +401,12 @@ employerJobsRoutes.post('/:id/pause-renotify', async (c) => {
   return ok(c, { renotifyPaused: true });
 });
 
-employerJobsRoutes.post('/:id/resume-renotify', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.post('/:id/resume-renotify', requireEmployerPermission('jobs.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
 
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true, renotifyPaused: true },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -426,13 +426,13 @@ employerJobsRoutes.post('/:id/resume-renotify', async (c) => {
 });
 
 // ─── Republish (re-runs auto-match SMS for an active posting) ────────────
-employerJobsRoutes.post('/:id/republish', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.post('/:id/republish', requireEmployerPermission('jobs.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true, status: true, autoMatchEnabled: true },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -460,11 +460,11 @@ employerJobsRoutes.post('/:id/republish', async (c) => {
 });
 
 // ─── Reopen (closed → active; preserves slug + keyword) ──────────────────
-employerJobsRoutes.post('/:id/reopen', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.post('/:id/reopen', requireEmployerPermission('jobs.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: employerId } });
   if (!profile) return err(c, 404, 'not_found');
   if (!isVerified(profile)) return err(c, 403, 'employer_not_verified');
 
@@ -474,14 +474,14 @@ employerJobsRoutes.post('/:id/reopen', async (c) => {
     await tx.$queryRaw`SELECT id FROM employer_profiles WHERE id = ${profile.id} FOR UPDATE`;
 
     const job = await tx.jobPosting.findFirst({
-      where: { id, employerId: userId, deletedAt: null },
+      where: { id, employerId, deletedAt: null },
     });
     if (!job) return { kind: 'not_found' as const };
     if (job.status !== JobStatus.closed) return { kind: 'not_closed' as const };
 
     if (Number.isFinite(limit)) {
       const activeCount = await tx.jobPosting.count({
-        where: { employerId: userId, status: JobStatus.active, deletedAt: null },
+        where: { employerId, status: JobStatus.active, deletedAt: null },
       });
       if (activeCount >= limit) return { kind: 'plan_limit' as const };
     }
@@ -494,7 +494,7 @@ employerJobsRoutes.post('/:id/reopen', async (c) => {
         filledAt: null,
       },
       include: {
-        foremanContact: true,
+        foremanContact: { include: { role: true } },
         photos: { orderBy: { sortOrder: 'asc' } },
         screeningQuestions: { orderBy: { sortOrder: 'asc' } },
       },
@@ -516,13 +516,13 @@ employerJobsRoutes.post('/:id/reopen', async (c) => {
 });
 
 // ─── Close + delete + translate (unchanged behavior, new shape) ──────────
-employerJobsRoutes.post('/:id/close', validate('json', CloseJobBody), async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.post('/:id/close', requireEmployerPermission('jobs.write'), validate('json', CloseJobBody), async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const existing = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
   });
   if (!existing) return err(c, 404, 'not_found');
   if (existing.status === JobStatus.closed || existing.status === JobStatus.filled) {
@@ -537,7 +537,7 @@ employerJobsRoutes.post('/:id/close', validate('json', CloseJobBody), async (c) 
       ...(body.reason === 'filled' ? { filledAt: new Date() } : {}),
     },
     include: {
-      foremanContact: true,
+      foremanContact: { include: { role: true } },
       photos: { orderBy: { sortOrder: 'asc' } },
       screeningQuestions: { orderBy: { sortOrder: 'asc' } },
     },
@@ -552,11 +552,11 @@ employerJobsRoutes.post('/:id/close', validate('json', CloseJobBody), async (c) 
   return ok(c, { job: shapeJob(updated, {}) });
 });
 
-employerJobsRoutes.delete('/:id', async (c) => {
-  const userId = c.var.userId;
+employerJobsRoutes.delete('/:id', requireEmployerPermission('jobs.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
   const existing = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
   });
   if (!existing) return err(c, 404, 'not_found');
   if (existing.status !== JobStatus.draft) {
@@ -566,7 +566,7 @@ employerJobsRoutes.delete('/:id', async (c) => {
   return ok(c, { ok: true });
 });
 
-employerJobsRoutes.post('/translate', validate('json', TranslateJobBody), async (c) => {
+employerJobsRoutes.post('/translate', requireEmployerPermission('jobs.write'), validate('json', TranslateJobBody), async (c) => {
   const body = c.var.body;
   const result = await translate({
     text: body.text,

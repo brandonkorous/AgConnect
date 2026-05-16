@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { ScreeningQuestionInput } from '@agconn/schemas';
 import { JobEditEventKind } from '@agconn/db';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import { requireAuth, requireActiveEmployer, requireEmployerPermission, requireTenant, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 
 const ReplaceBody = z
@@ -18,14 +18,14 @@ const ReplaceBody = z
 
 export const employerJobScreeningRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerJobScreeningRoutes.use('*', requireAuth('employer'));
-employerJobScreeningRoutes.use('*', requireRole('employer'));
+employerJobScreeningRoutes.use('*', requireActiveEmployer);
 employerJobScreeningRoutes.use('*', requireTenant);
 
-employerJobScreeningRoutes.get('/:id/screening-questions', async (c) => {
+employerJobScreeningRoutes.get('/:id/screening-questions', requireEmployerPermission('jobs.read'), async (c) => {
   const id = c.req.param('id');
-  const userId = c.var.userId;
+  const employerId = c.var.employerId!;
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -39,15 +39,17 @@ employerJobScreeningRoutes.get('/:id/screening-questions', async (c) => {
 
 employerJobScreeningRoutes.put(
   '/:id/screening-questions',
+  requireEmployerPermission('jobs.write'),
   validate('json', ReplaceBody),
   async (c) => {
     const id = c.req.param('id');
     const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const body = c.var.body;
 
     const job = await c.var.db.jobPosting.findFirst({
-      where: { id, employerId: userId, deletedAt: null },
+      where: { id, employerId, deletedAt: null },
       select: { id: true },
     });
     if (!job) return err(c, 404, 'not_found');

@@ -46,8 +46,9 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
         transport: boolean;
         createdAt: Date;
         employer: {
-            employerProfile: { legalName: string; dbaName?: string | null } | null;
-            email: string | null;
+            legalName: string;
+            dbaName: string | null;
+            contactEmail: string | null;
         } | null;
     }>;
 
@@ -87,7 +88,11 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
                     ...(q.startBefore ? { startDate: { lte: new Date(q.startBefore) } } : {}),
                     ...(q.startAfter ? { startDate: { gte: new Date(q.startAfter) } } : {}),
                 },
-                include: { employer: { include: { employerProfile: true } } },
+                include: {
+                    employer: {
+                        select: { legalName: true, dbaName: true, contactEmail: true },
+                    },
+                },
             });
             // Preserve FTS rank ordering returned from the raw query.
             const order = new Map(ids.map((r, i) => [r.id, i]));
@@ -125,7 +130,9 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
             orderBy,
             take: limit + 1,
             include: {
-                employer: { include: { employerProfile: true } },
+                employer: {
+                    select: { legalName: true, dbaName: true, contactEmail: true },
+                },
             },
         });
     }
@@ -197,7 +204,11 @@ jobsRoutes.get('/recommended', async (c) => {
         },
         orderBy: [{ createdAt: 'desc' }],
         take: 30,
-        include: { employer: { include: { employerProfile: true } } },
+        include: {
+            employer: {
+                select: { legalName: true, dbaName: true, contactEmail: true },
+            },
+        },
     });
 
     const ranked = rows
@@ -220,7 +231,11 @@ jobsRoutes.get('/:slug', async (c) => {
     const slug = c.req.param('slug');
     const job = await c.var.db.jobPosting.findFirst({
         where: { seoSlug: slug, deletedAt: null },
-        include: { employer: { include: { employerProfile: true } } },
+        include: {
+            employer: {
+                select: { legalName: true, dbaName: true, contactEmail: true },
+            },
+        },
     });
     if (!job) return err(c, 404, 'not_found');
     if (job.status !== JobStatus.active) return err(c, 410, 'job_gone');
@@ -374,8 +389,9 @@ function shapeJobCard(j: {
     transport: boolean;
     createdAt: Date;
     employer: {
-        employerProfile: { legalName: string; dbaName?: string | null } | null;
-        email: string | null;
+        legalName: string;
+        dbaName: string | null;
+        contactEmail: string | null;
     } | null;
 }) {
     // Worker-facing routes only return active jobs, which always have a slug
@@ -394,10 +410,10 @@ function shapeJobCard(j: {
         startDate: j.startDate.toISOString().slice(0, 10),
         endDate: j.endDate ? j.endDate.toISOString().slice(0, 10) : null,
         employerName:
-            j.employer?.employerProfile?.dbaName ??
-            j.employer?.employerProfile?.legalName ??
+            j.employer?.dbaName ??
+            j.employer?.legalName ??
             'AGCONN employer',
-        employerVerified: Boolean(j.employer?.employerProfile),
+        employerVerified: Boolean(j.employer),
         skills: j.skills,
         housing: j.housing,
         transport: j.transport,

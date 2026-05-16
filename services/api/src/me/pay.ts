@@ -35,7 +35,7 @@ mePayRoutes.get('/', async (c) => {
         include: {
             period: {
                 include: {
-                    employer: { include: { employerProfile: true } },
+                    employer: { select: { dbaName: true, legalName: true } },
                 },
             },
         },
@@ -50,8 +50,8 @@ mePayRoutes.get('/', async (c) => {
             .slice(0, 10)}`,
         payDate: l.period.payDate.toISOString().slice(0, 10),
         employer:
-            l.period.employer?.employerProfile?.dbaName ??
-            l.period.employer?.employerProfile?.legalName ??
+            l.period.employer?.dbaName ??
+            l.period.employer?.legalName ??
             'AGCONN employer',
         hours: Number(l.hours.toString()),
         overtimeHours: Number(l.overtimeHours.toString()),

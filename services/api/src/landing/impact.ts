@@ -73,7 +73,7 @@ impactRoutes.get('/', async (c) => {
       where: {
         status: JobStatus.active,
         deletedAt: null,
-        employer: { employerProfile: { flcVerifiedAt: { not: null } } },
+        employer: { flcVerifiedAt: { not: null } },
       },
     }),
   ]);

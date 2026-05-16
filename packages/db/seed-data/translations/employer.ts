@@ -5461,4 +5461,167 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.preview.county_kings": { en: "Kings County", es: "Condado de Kings" },
     "jobs.form_v2.preview.county_madera": { en: "Madera County", es: "Condado de Madera" },
     "jobs.form_v2.preview.county_tulare": { en: "Tulare County", es: "Condado de Tulare" },
+
+    // ─────────────────────────── Team / membership RBAC
+    "shell.nav.team": {
+        en: "Team",
+        es: "Equipo",
+    },
+    "shell.switcher.label": {
+        en: "Employer",
+        es: "Empleador",
+    },
+    "shell.switcher.aria": {
+        en: "Switch active employer",
+        es: "Cambiar de empleador activo",
+    },
+
+    "roles.owner": { en: "Owner", es: "Propietario" },
+    "roles.manager": { en: "Manager", es: "Gerente" },
+    "roles.hiring": { en: "Hiring", es: "Contratación" },
+    "roles.job_poster": { en: "Job poster", es: "Publicador de empleos" },
+    "roles.compliance": { en: "Compliance", es: "Cumplimiento" },
+    "roles.reporting": { en: "Reporting", es: "Reportes" },
+    "roles.billing": { en: "Billing", es: "Facturación" },
+    "roles.foreman": { en: "Foreman", es: "Mayordomo" },
+
+    "team.eyebrow": {
+        en: "Account & access",
+        es: "Cuenta y acceso",
+    },
+    "team.title": { en: "Team", es: "Equipo" },
+    "team.title_a": { en: "Your", es: "Tu" },
+    "team.title_b": { en: "team.", es: "equipo." },
+    "team.subtitle": {
+        en: "Invite the people who run hiring, compliance, payroll, and crews. Each person gets only the access their role needs. Phone-only contacts stay on the roster without a login.",
+        es: "Invita a las personas que manejan contratación, cumplimiento, nómina y cuadrillas. Cada persona recibe solo el acceso que su rol necesita. Los contactos solo por teléfono permanecen en la lista sin inicio de sesión.",
+    },
+    "team.count": {
+        en: "{count, plural, one {# person} other {# people}}",
+        es: "{count, plural, one {# persona} other {# personas}}",
+    },
+    "team.empty": {
+        en: "No one on the roster yet. Add your first teammate or contact.",
+        es: "Aún no hay nadie en la lista. Agrega a tu primer compañero o contacto.",
+    },
+    "team.col.member": { en: "Member", es: "Miembro" },
+    "team.col.role": { en: "Role", es: "Rol" },
+    "team.col.status": { en: "Status", es: "Estado" },
+    "team.col.actions": { en: "Actions", es: "Acciones" },
+    "team.status.active": { en: "Active", es: "Activo" },
+    "team.status.invited": { en: "Invited", es: "Invitado" },
+    "team.status.sms_only": { en: "SMS only", es: "Solo SMS" },
+    "team.action.add": { en: "Add member", es: "Agregar miembro" },
+    "team.action.save": { en: "Save", es: "Guardar" },
+    "team.action.cancel": { en: "Cancel", es: "Cancelar" },
+    "team.action.edit": { en: "Edit", es: "Editar" },
+    "team.action.remove": { en: "Remove", es: "Quitar" },
+    "team.action.resend": { en: "Resend invite", es: "Reenviar invitación" },
+    "team.action.invite": { en: "Send invite", es: "Enviar invitación" },
+    "team.action.make_owner": { en: "Make owner", es: "Hacer propietario" },
+    "team.action.menu": { en: "Member actions", es: "Acciones del miembro" },
+    "team.dialog.add_title": { en: "Add a team member", es: "Agregar un miembro" },
+    "team.dialog.edit_title": { en: "Edit member", es: "Editar miembro" },
+    "team.dialog.subtitle": {
+        en: "A contact with an email can be invited to sign in. Phone-only contacts stay on the roster without platform access.",
+        es: "Un contacto con correo puede ser invitado a iniciar sesión. Los contactos solo por teléfono permanecen en la lista sin acceso a la plataforma.",
+    },
+    "team.field.name": { en: "Full name", es: "Nombre completo" },
+    "team.field.phone": { en: "Phone", es: "Teléfono" },
+    "team.field.phone_hint": {
+        en: "Used for SMS coordination.",
+        es: "Se usa para coordinación por SMS.",
+    },
+    "team.field.email": { en: "Email", es: "Correo electrónico" },
+    "team.field.email_hint": {
+        en: "Required to invite this person to sign in.",
+        es: "Requerido para invitar a esta persona a iniciar sesión.",
+    },
+    "team.field.role": { en: "Role", es: "Rol" },
+    "team.field.languages": { en: "Languages", es: "Idiomas" },
+    "team.field.invite_label": {
+        en: "Send a platform invitation",
+        es: "Enviar una invitación a la plataforma",
+    },
+    "team.field.invite_hint": {
+        en: "Emails a secure sign-in link. They keep any existing worker account.",
+        es: "Envía un enlace seguro de inicio de sesión. Conservan cualquier cuenta de trabajador existente.",
+    },
+    "team.lang.en": { en: "English", es: "Inglés" },
+    "team.lang.es": { en: "Spanish", es: "Español" },
+    "team.confirm.remove_title": { en: "Remove member?", es: "¿Quitar miembro?" },
+    "team.confirm.remove_body": {
+        en: "{name} will lose access to this employer. SMS history is kept.",
+        es: "{name} perderá el acceso a este empleador. El historial de SMS se conserva.",
+    },
+    "team.confirm.transfer_title": {
+        en: "Transfer ownership?",
+        es: "¿Transferir propiedad?",
+    },
+    "team.confirm.transfer_body": {
+        en: "{name} becomes the owner with full access. You become a manager. Only an owner or platform admin can transfer ownership again.",
+        es: "{name} se convierte en propietario con acceso completo. Tú pasas a ser gerente. Solo un propietario o administrador de la plataforma puede transferir la propiedad de nuevo.",
+    },
+    "team.toast.added": { en: "Member added.", es: "Miembro agregado." },
+    "team.toast.saved": { en: "Changes saved.", es: "Cambios guardados." },
+    "team.toast.invited": { en: "Invitation sent.", es: "Invitación enviada." },
+    "team.toast.removed": { en: "Member removed.", es: "Miembro eliminado." },
+    "team.toast.transferred": {
+        en: "Ownership transferred.",
+        es: "Propiedad transferida.",
+    },
+    "team.error.generic": {
+        en: "Something went wrong. Please try again.",
+        es: "Algo salió mal. Inténtalo de nuevo.",
+    },
+
+    "accept_invite.title": { en: "Accept invitation", es: "Aceptar invitación" },
+    "accept_invite.heading": {
+        en: "Join your team",
+        es: "Únete a tu equipo",
+    },
+    "accept_invite.intro": {
+        en: "You were invited to an employer account on AGCONN. Accepting links it to the account you are signed in with — your existing worker profile, if any, stays exactly as it is.",
+        es: "Te invitaron a una cuenta de empleador en AGCONN. Al aceptar se vincula a la cuenta con la que iniciaste sesión — tu perfil de trabajador existente, si lo hay, se mantiene igual.",
+    },
+    "accept_invite.no_token": {
+        en: "This invitation link is incomplete. Ask your employer to resend it.",
+        es: "Este enlace de invitación está incompleto. Pide a tu empleador que lo reenvíe.",
+    },
+    "accept_invite.accept": {
+        en: "Accept invitation",
+        es: "Aceptar invitación",
+    },
+    "accept_invite.go_to_dashboard": {
+        en: "Go to dashboard",
+        es: "Ir al panel",
+    },
+    "accept_invite.success_title": {
+        en: "You are in.",
+        es: "Ya estás dentro.",
+    },
+    "accept_invite.success_body": {
+        en: "You joined {employer} as {role}.",
+        es: "Te uniste a {employer} como {role}.",
+    },
+    "accept_invite.error.generic": {
+        en: "We could not accept this invitation. Please try again.",
+        es: "No pudimos aceptar esta invitación. Inténtalo de nuevo.",
+    },
+    "accept_invite.error.invalid_invite": {
+        en: "This invitation is not valid. Ask your employer to resend it.",
+        es: "Esta invitación no es válida. Pide a tu empleador que la reenvíe.",
+    },
+    "accept_invite.error.already_accepted": {
+        en: "This invitation was already accepted.",
+        es: "Esta invitación ya fue aceptada.",
+    },
+    "accept_invite.error.invite_expired": {
+        en: "This invitation has expired. Ask your employer to resend it.",
+        es: "Esta invitación expiró. Pide a tu empleador que la reenvíe.",
+    },
+    "accept_invite.error.invite_bound_elsewhere": {
+        en: "This invitation belongs to a different account. Sign in with the invited email.",
+        es: "Esta invitación pertenece a otra cuenta. Inicia sesión con el correo invitado.",
+    },
 };

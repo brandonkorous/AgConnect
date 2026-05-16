@@ -7,7 +7,8 @@ import { ok } from '@agconn/api-client/server';
 import { AppStatus } from '@agconn/db';
 import {
   requireAuth,
-  requireRole,
+  requireActiveEmployer,
+  requireEmployerPermission,
   requireTenant,
   type AuthVars,
 } from '../../middleware/authContext.js';
@@ -15,11 +16,11 @@ import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerHiresRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerHiresRoutes.use('*', requireAuth('employer'));
-employerHiresRoutes.use('*', requireRole('employer'));
+employerHiresRoutes.use('*', requireActiveEmployer);
 employerHiresRoutes.use('*', requireTenant);
 
-employerHiresRoutes.get('/', async (c) => {
-  const userId = c.var.userId;
+employerHiresRoutes.get('/', requireEmployerPermission('applicants.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
 
   const apps = await c.var.db.application.findMany({
@@ -27,7 +28,7 @@ employerHiresRoutes.get('/', async (c) => {
       tenantId,
       status: AppStatus.hired,
       deletedAt: null,
-      job: { employerId: userId, deletedAt: null },
+      job: { employerId, deletedAt: null },
     },
     orderBy: [{ updatedAt: 'desc' }],
     include: {

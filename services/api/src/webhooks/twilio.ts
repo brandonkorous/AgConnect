@@ -274,7 +274,9 @@ async function handleJobApply(args: {
 
     const job = await pools.webhooks.jobPosting.findFirst({
         where: { id: keyword.entityId, deletedAt: null, status: 'active' },
-        include: { employer: { include: { employerProfile: true } } },
+        include: {
+            employer: { select: { legalName: true, dbaName: true } },
+        },
     });
     if (!job) return;
 
@@ -320,8 +322,8 @@ async function handleJobApply(args: {
     });
 
     const employer =
-        job.employer.employerProfile?.dbaName ??
-        job.employer.employerProfile?.legalName ??
+        job.employer.dbaName ??
+        job.employer.legalName ??
         'AGCONN employer';
     await enqueueSms({
         tenantId: job.tenantId,

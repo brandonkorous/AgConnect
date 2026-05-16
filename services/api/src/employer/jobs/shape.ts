@@ -68,7 +68,7 @@ type ContactRow = {
   id: string;
   name: string;
   phone: string;
-  role: string;
+  role: { key: string };
   languages: string[];
   sortOrder: number;
 };
@@ -152,7 +152,7 @@ export function shapeJob(j: JobRowFull, counts: Record<string, number>) {
           id: j.foremanContact.id,
           name: j.foremanContact.name,
           phone: j.foremanContact.phone,
-          role: j.foremanContact.role,
+          role: j.foremanContact.role.key,
           languages: j.foremanContact.languages as ('en' | 'es')[],
           sortOrder: j.foremanContact.sortOrder,
         }

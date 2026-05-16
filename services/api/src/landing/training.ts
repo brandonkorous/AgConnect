@@ -54,7 +54,17 @@ publicTrainingRoutes.get('/:slug', async (c) => {
   const slug = c.req.param('slug');
   const program = await c.var.db.trainingProgram.findFirst({
     where: { seoSlug: slug, deletedAt: null },
-    include: { org: { include: { employerProfile: true } } },
+    include: {
+      org: {
+        select: {
+          employerContacts: {
+            where: { deletedAt: null },
+            take: 1,
+            select: { employer: { select: { legalName: true } } },
+          },
+        },
+      },
+    },
   });
   if (!program) return err(c, 404, 'not_found');
   if (program.status === ProgramStatus.draft || program.status === ProgramStatus.canceled) {
@@ -68,7 +78,8 @@ publicTrainingRoutes.get('/:slug', async (c) => {
     locationName: program.locationName,
     locationAddress: program.locationAddress,
     sessionTimes: program.sessionTimes,
-    orgName: program.org?.employerProfile?.legalName ?? 'Training organization',
+    orgName:
+      program.org?.employerContacts[0]?.employer.legalName ?? 'Training organization',
     spotsLeft: Math.max(0, program.capacity - program.enrolledCount),
   });
 });

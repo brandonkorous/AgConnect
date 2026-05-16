@@ -22,7 +22,7 @@ meMessagesRoutes.get('/', async (c) => {
         include: {
             conversation: {
                 include: {
-                    employer: { include: { employerProfile: true } },
+                    employer: { select: { dbaName: true, legalName: true } },
                     messages: { take: 1, orderBy: { createdAt: 'desc' } },
                 },
             },
@@ -46,8 +46,8 @@ meMessagesRoutes.get('/', async (c) => {
                 unreadCount: p.unreadCount,
                 lastMessageAt: p.conversation.lastMessageAt?.toISOString() ?? null,
                 employer:
-                    p.conversation.employer?.employerProfile?.dbaName ??
-                    p.conversation.employer?.employerProfile?.legalName ??
+                    p.conversation.employer?.dbaName ??
+                    p.conversation.employer?.legalName ??
                     'AGCONN employer',
                 lastMessage: last
                     ? {
@@ -74,7 +74,7 @@ meMessagesRoutes.get('/:id', async (c) => {
 
     const conv = await c.var.db.conversation.findFirst({
         where: { id, deletedAt: null },
-        include: { employer: { include: { employerProfile: true } } },
+        include: { employer: { select: { dbaName: true, legalName: true } } },
     });
     if (!conv) return err(c, 404, 'not_found');
 
@@ -96,8 +96,8 @@ meMessagesRoutes.get('/:id', async (c) => {
             title: conv.title,
             channel: conv.channel,
             employer:
-                conv.employer?.employerProfile?.dbaName ??
-                conv.employer?.employerProfile?.legalName ??
+                conv.employer?.dbaName ??
+                conv.employer?.legalName ??
                 'AGCONN employer',
             pinnedShiftId: conv.pinnedShiftId,
         },

@@ -8,7 +8,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { SideDrawer } from '@/components/shell/SideDrawer';
-import { EmployerSidebar } from '@/components/employer/EmployerSidebar';
+import {
+    EmployerSidebar,
+    type SwitcherEmployer,
+} from '@/components/employer/EmployerSidebar';
 
 type Props = {
     locale: string;
@@ -18,6 +21,10 @@ type Props = {
     jobsCount?: number;
     complianceCount?: number;
     messagesCount?: number;
+    permissions?: string[];
+    scope?: string | null;
+    employers?: SwitcherEmployer[];
+    activeEmployerId?: string | null;
 };
 
 export function EmployerMobileShell({
@@ -28,6 +35,10 @@ export function EmployerMobileShell({
     jobsCount,
     complianceCount,
     messagesCount,
+    permissions,
+    scope,
+    employers,
+    activeEmployerId,
 }: Props) {
     const t = useTranslations('shell.mobile');
     const [open, setOpen] = useState(false);
@@ -72,6 +83,10 @@ export function EmployerMobileShell({
                         jobsCount={jobsCount}
                         complianceCount={complianceCount}
                         messagesCount={messagesCount}
+                        permissions={permissions}
+                        scope={scope}
+                        employers={employers}
+                        activeEmployerId={activeEmployerId}
                     />
                 </SideDrawer>
             </div>

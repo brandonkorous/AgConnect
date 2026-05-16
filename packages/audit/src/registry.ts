@@ -468,6 +468,46 @@ export const auditRegistry = {
     retentionDays: 1460,
     metadata: ['conversationId', 'channel'],
   },
+  'employer.member.created': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: ['roleKey', 'invited'],
+  },
+  'employer.member.updated': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: [],
+  },
+  'employer.member.deleted': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: [],
+  },
+  'employer.member.invited': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: [],
+  },
+  'employer.member.owner_transferred': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: [],
+  },
+  'employer.member.invite_accepted': {
+    resourceType: 'employer_contact',
+    retentionDays: 1460,
+    metadata: ['roleKey'],
+  },
+  'admin.role.updated': {
+    resourceType: 'role',
+    retentionDays: 1460,
+    metadata: ['key', 'tenantScope'],
+  },
+  'admin.role.deleted': {
+    resourceType: 'role',
+    retentionDays: 1460,
+    metadata: ['key'],
+  },
 } as const satisfies Record<string, RegistryEntry>;
 
 export type AuditAction = keyof typeof auditRegistry;

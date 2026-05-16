@@ -13,14 +13,12 @@ featuredJobsRoutes.get('/', async (c) => {
     where: {
       status: JobStatus.active,
       deletedAt: null,
-      employer: {
-        employerProfile: { flcVerifiedAt: { not: null } },
-      },
+      employer: { flcVerifiedAt: { not: null } },
     },
     orderBy: [{ wageMax: 'desc' }, { publishedAt: 'desc' }],
     take: TAKE,
     include: {
-      employer: { include: { employerProfile: true } },
+      employer: { select: { legalName: true, dbaName: true } },
     },
   });
 
@@ -34,7 +32,7 @@ featuredJobsRoutes.get('/', async (c) => {
     wageMax: Number(r.wageMax),
     wageUnit: r.wageUnit,
     startDate: r.startDate.toISOString().slice(0, 10),
-    employerName: r.employer.employerProfile?.dbaName ?? r.employer.employerProfile?.legalName ?? '',
+    employerName: r.employer.dbaName ?? r.employer.legalName ?? '',
     employerVerified: true as const,
     skills: r.skills,
     publishedAt: r.publishedAt?.toISOString() ?? null,

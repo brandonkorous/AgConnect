@@ -66,7 +66,7 @@ export type PatchEmployerBody = z.infer<typeof PatchEmployerBody>;
 
 export const EmployerProfileSchema = z.object({
   id: z.string().uuid(),
-  userId: z.string(),
+  ownerContactId: z.string().uuid().nullable(),
   tenantId: z.string().uuid(),
   legalName: z.string(),
   dbaName: z.string().nullable(),

@@ -18,7 +18,7 @@ export function LockedCard({ title, description, cta, hint, className }: LockedC
     return (
         <div
             className={[
-                'mx-auto max-w-md rounded-2xl border border-base-300 bg-base-100 p-8 text-center',
+                'mx-auto rounded-2xl border border-base-300 bg-base-100 p-8 text-center',
                 className ?? '',
             ].join(' ')}
         >

@@ -7,7 +7,13 @@ import {
   planFeatures,
   priceIdFor,
 } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import {
+  requireAuth,
+  requireActiveEmployer,
+  requireEmployerPermission,
+  requireTenant,
+  type AuthVars,
+} from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 import { isVerified } from '../shared.js';
 import { getStripe, webUrl } from './stripe.js';
@@ -21,12 +27,11 @@ import { resolveCheckoutCohort } from './founder-slots.js';
 
 export const employerBillingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerBillingRoutes.use('*', requireAuth('employer'));
-employerBillingRoutes.use('*', requireRole('employer'));
+employerBillingRoutes.use('*', requireActiveEmployer);
 employerBillingRoutes.use('*', requireTenant);
 
-employerBillingRoutes.get('/', async (c) => {
-  const userId = c.var.userId;
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+employerBillingRoutes.get('/', requireEmployerPermission('billing.manage'), async (c) => {
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: c.var.employerId! } });
   if (!profile) return err(c, 404, 'not_found');
 
   const features = planFeatures(profile.plan);
@@ -52,9 +57,8 @@ employerBillingRoutes.get('/', async (c) => {
   });
 });
 
-employerBillingRoutes.get('/history', async (c) => {
-  const userId = c.var.userId;
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+employerBillingRoutes.get('/history', requireEmployerPermission('billing.manage'), async (c) => {
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: c.var.employerId! } });
   if (!profile) return err(c, 404, 'not_found');
 
   const events = await c.var.db.billingEvent.findMany({
@@ -73,14 +77,13 @@ employerBillingRoutes.get('/history', async (c) => {
   });
 });
 
-employerBillingRoutes.post('/checkout', validate('json', CheckoutBody), async (c) => {
-  const userId = c.var.userId;
+employerBillingRoutes.post('/checkout', requireEmployerPermission('billing.manage'), validate('json', CheckoutBody), async (c) => {
   const body = c.var.body;
 
   const stripe = getStripe();
   if (!stripe) return err(c, 503, 'stripe_unavailable', 'stripe_not_configured');
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: c.var.employerId! } });
   if (!profile) return err(c, 404, 'not_found');
   if (!isVerified(profile)) return err(c, 403, 'not_verified');
   if (profile.stripeSubId) return err(c, 409, 'conflict', 'already_subscribed');
@@ -122,13 +125,12 @@ employerBillingRoutes.post('/checkout', validate('json', CheckoutBody), async (c
   return ok(c, { url: session.url });
 });
 
-employerBillingRoutes.post('/portal', validate('json', PortalBody), async (c) => {
-  const userId = c.var.userId;
+employerBillingRoutes.post('/portal', requireEmployerPermission('billing.manage'), validate('json', PortalBody), async (c) => {
   const body = c.var.body;
   const stripe = getStripe();
   if (!stripe) return err(c, 503, 'stripe_unavailable', 'stripe_not_configured');
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: c.var.employerId! } });
   if (!profile?.stripeCustomer) return err(c, 404, 'not_found', 'no_customer');
 
   const locale = body.locale === 'es' ? 'es' : 'en';

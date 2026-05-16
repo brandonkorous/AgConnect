@@ -4,6 +4,13 @@ export type ApiClientOptions = {
   baseUrl: string;
   getLocale: () => 'en' | 'es';
   getSession?: () => string | null | Promise<string | null>;
+  // Extra headers injected on every request (e.g. the active-employer
+  // selector for multi-employer members). Resolved per request, before
+  // per-call `options.headers`, which still win on collision.
+  getHeaders?: () =>
+    | Record<string, string>
+    | undefined
+    | Promise<Record<string, string> | undefined>;
   onUnhandledError?: (err: ApiErr['error']) => void;
 };
 
@@ -78,11 +85,13 @@ export const createApiClient = (opts: ApiClientOptions): ApiClient => {
 
     try {
       const session = await opts.getSession?.();
+      const extraHeaders = (await opts.getHeaders?.()) ?? {};
       const isFormData =
         typeof FormData !== 'undefined' && options.body instanceof FormData;
       const baseHeaders: Record<string, string> = {
         'accept-language': opts.getLocale(),
         ...(session ? { authorization: `Bearer ${session}` } : {}),
+        ...extraHeaders,
         ...options.headers,
       };
       // For multipart uploads, let the browser set Content-Type with the boundary.

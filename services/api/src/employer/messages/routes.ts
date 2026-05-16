@@ -4,7 +4,8 @@ import { CreateConversationBody, SendMessageBody, ConversationListQuery } from '
 import { enqueueSms } from '@agconn/sms';
 import {
     requireAuth,
-    requireRole,
+    requireActiveEmployer,
+    requireEmployerPermission,
     requireTenant,
     type AuthVars,
 } from '../../middleware/authContext.js';
@@ -12,16 +13,17 @@ import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerMessagesRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerMessagesRoutes.use('*', requireAuth('employer'));
-employerMessagesRoutes.use('*', requireRole('employer'));
+employerMessagesRoutes.use('*', requireActiveEmployer);
 employerMessagesRoutes.use('*', requireTenant);
 
-employerMessagesRoutes.get('/', validate('query', ConversationListQuery), async (c) => {
+employerMessagesRoutes.get('/', requireEmployerPermission('messaging.use'), validate('query', ConversationListQuery), async (c) => {
     const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const q = c.var.body;
 
     const convs = await c.var.db.conversation.findMany({
-        where: { tenantId, employerId: userId, deletedAt: null },
+        where: { tenantId, employerId, deletedAt: null },
         orderBy: { lastMessageAt: 'desc' },
         take: 100,
         include: {
@@ -88,8 +90,9 @@ function countByFolder(items: { category: string }[]): {
     return counts;
 }
 
-employerMessagesRoutes.post('/', validate('json', CreateConversationBody), async (c) => {
+employerMessagesRoutes.post('/', requireEmployerPermission('messaging.use'), validate('json', CreateConversationBody), async (c) => {
     const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const body = c.var.body;
 
@@ -97,7 +100,7 @@ employerMessagesRoutes.post('/', validate('json', CreateConversationBody), async
         const co = await tx.conversation.create({
             data: {
                 tenantId,
-                employerId: userId,
+                employerId,
                 title: body.title,
                 isGroup: body.isGroup,
                 channel: body.channel,
@@ -138,13 +141,13 @@ employerMessagesRoutes.post('/', validate('json', CreateConversationBody), async
     });
 });
 
-employerMessagesRoutes.get('/contacts', async (c) => {
-    const userId = c.var.userId;
+employerMessagesRoutes.get('/contacts', requireEmployerPermission('messaging.use'), async (c) => {
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const q = (c.req.query('q') ?? '').trim().toLowerCase();
 
     const applications = await c.var.db.application.findMany({
-        where: { tenantId, job: { employerId: userId } },
+        where: { tenantId, job: { employerId } },
         select: {
             status: true,
             worker: {
@@ -164,7 +167,7 @@ employerMessagesRoutes.get('/contacts', async (c) => {
     });
 
     const crewMembers = await c.var.db.crewMember.findMany({
-        where: { tenantId, leftAt: null, crew: { employerId: userId, deletedAt: null } },
+        where: { tenantId, leftAt: null, crew: { employerId, deletedAt: null } },
         select: {
             role: true,
             worker: {
@@ -261,13 +264,14 @@ employerMessagesRoutes.get('/contacts', async (c) => {
     return ok(c, { contacts: filtered.slice(0, 200) });
 });
 
-employerMessagesRoutes.get('/:id/messages', async (c) => {
+employerMessagesRoutes.get('/:id/messages', requireEmployerPermission('messaging.use'), async (c) => {
     const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const id = c.req.param('id');
 
     const co = await c.var.db.conversation.findFirst({
-        where: { id, tenantId, employerId: userId, deletedAt: null },
+        where: { id, tenantId, employerId, deletedAt: null },
     });
     if (!co) return err(c, 404, 'not_found');
 
@@ -310,14 +314,15 @@ employerMessagesRoutes.get('/:id/messages', async (c) => {
     });
 });
 
-employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), async (c) => {
+employerMessagesRoutes.post('/:id/messages', requireEmployerPermission('messaging.use'), validate('json', SendMessageBody), async (c) => {
     const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const id = c.req.param('id');
     const body = c.var.body;
 
     const co = await c.var.db.conversation.findFirst({
-        where: { id, tenantId, employerId: userId, deletedAt: null },
+        where: { id, tenantId, employerId, deletedAt: null },
     });
     if (!co) return err(c, 404, 'not_found');
 
@@ -345,7 +350,7 @@ employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), 
     }
 
     const employer = await c.var.db.employerProfile.findUnique({
-        where: { userId },
+        where: { id: employerId },
         select: { dbaName: true, legalName: true },
     });
     const employerLabel = employer?.dbaName ?? employer?.legalName ?? 'AGCONN';
@@ -428,14 +433,14 @@ employerMessagesRoutes.post('/:id/messages', validate('json', SendMessageBody), 
 });
 
 // Per-recipient delivery state for a broadcast message.
-employerMessagesRoutes.get('/:id/messages/:messageId/deliveries', async (c) => {
-    const userId = c.var.userId;
+employerMessagesRoutes.get('/:id/messages/:messageId/deliveries', requireEmployerPermission('messaging.use'), async (c) => {
+    const employerId = c.var.employerId!;
     const tenantId = c.var.tenantId!;
     const id = c.req.param('id');
     const messageId = c.req.param('messageId');
 
     const co = await c.var.db.conversation.findFirst({
-        where: { id, tenantId, employerId: userId, deletedAt: null },
+        where: { id, tenantId, employerId, deletedAt: null },
     });
     if (!co) return err(c, 404, 'not_found');
 

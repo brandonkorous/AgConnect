@@ -343,6 +343,7 @@ model Tenant {
   emailLogs                   EmailLog[]
   auditEvents                 AuditEvent[]
   users                       User[]
+  roles                       Role[]
   employerProfiles            EmployerProfile[]
   authEvents                  AuthEvent[]
   smsLogs                     SmsLog[]
@@ -508,27 +509,21 @@ model User {
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   tenant                     Tenant?                   @relation(fields: [tenantId], references: [id])
-  employerProfile            EmployerProfile?
+  employerContacts           EmployerContact[]
   workerProfile              WorkerProfile?
   applications               Application[]
   savedSearches              SavedSearch[]
   enrollments                Enrollment[]
   trainingPrograms           TrainingProgram[]         @relation("TrainingProgramOrg")
-  jobPostings                JobPosting[]              @relation("JobPostingEmployer")
   jobPostingsEdited          JobPosting[]              @relation("JobPostingLastEditor")
   jobEditEvents              JobEditEvent[]
   jobPhotosUploaded          JobPhoto[]
   workerInvitations          WorkerInvitation[]        @relation("WorkerInvitationWorker")
-  crewsOwned                 Crew[]                    @relation("CrewEmployer")
   crewsLed                   Crew[]                    @relation("CrewForeman")
   crewMemberships            CrewMember[]
-  shiftsOwned                Shift[]                   @relation("ShiftEmployer")
   shiftAssignments           ShiftAssignment[]
-  payrollOwned               PayrollPeriod[]           @relation("PayrollEmployer")
   payrollApproved            PayrollPeriod[]           @relation("PayrollApprover")
   payrollLines               PayrollLine[]
-  complianceItems            ComplianceItem[]          @relation("ComplianceEmployer")
-  conversationsOwned         Conversation[]            @relation("ConversationEmployer")
   conversationParticipations ConversationParticipant[]
   messagesSent               Message[]
 
@@ -538,12 +533,18 @@ model User {
   @@map("users")
 }
 
-// One per Clerk Organization that maps to an employer (vs tenant orgs).
-// FLC verification, plan tier, and Stripe subscription state live here.
+// One employer account. Membership + ownership live on employer_contacts:
+// the row with role.key = 'owner' (and owner_contact_id pointing at it) is
+// the account owner, reassignable by the owner or a platform admin. A tenant
+// can host many employer profiles. clerkOrgId is legacy/inert (Clerk orgs are
+// not used; tenant + employer resolve relationally).
 // See docs/20-employer/01-flc-verification/02-data-model.md and 05-subscription-billing/02-data-model.md.
 model EmployerProfile {
   id                      String            @id @default(uuid()) @db.Uuid
-  userId                  String            @unique @map("user_id")
+  // Reassignable owner pointer (FK -> employer_contacts). Nullable only to
+  // break the employer_profiles <-> employer_contacts FK creation cycle; the
+  // app invariant is exactly one non-deleted owner contact per profile.
+  ownerContactId          String?           @unique @map("owner_contact_id") @db.Uuid
   tenantId                String            @map("tenant_id") @db.Uuid
   clerkOrgId              String?           @unique @map("clerk_org_id")
   legalName               String            @map("legal_name")
@@ -592,14 +593,20 @@ model EmployerProfile {
   updatedAt               DateTime          @updatedAt @map("updated_at")
   deletedAt               DateTime?         @map("deleted_at")
 
-  user                     User                      @relation(fields: [userId], references: [id])
   tenant                   Tenant                    @relation(fields: [tenantId], references: [id])
+  ownerContact             EmployerContact?          @relation("EmployerOwner", fields: [ownerContactId], references: [id])
   verificationLogs         VerificationLog[]
   workerInvitations        WorkerInvitation[]
   workerSearchLogs         WorkerSearchLog[]
   billingEvents            BillingEvent[]
   complianceScoreSnapshots ComplianceScoreSnapshot[]
-  contacts                 EmployerContact[]
+  contacts                 EmployerContact[]         @relation("EmployerRoster")
+  jobPostings              JobPosting[]              @relation("JobPostingEmployer")
+  crews                    Crew[]                    @relation("CrewEmployer")
+  shifts                   Shift[]                   @relation("ShiftEmployer")
+  payrollPeriods           PayrollPeriod[]           @relation("PayrollEmployer")
+  complianceItems          ComplianceItem[]          @relation("ComplianceEmployer")
+  conversations            Conversation[]            @relation("ConversationEmployer")
 
   @@index([tenantId])
   @@index([flcVerifiedAt])
@@ -862,7 +869,7 @@ model ResumeParseJob {
 model JobPosting {
   id             String    @id @default(uuid()) @db.Uuid
   tenantId       String    @map("tenant_id") @db.Uuid
-  employerId     String    @map("employer_id")
+  employerId     String    @map("employer_id") @db.Uuid
   titleEn        String    @map("title_en")
   titleEs        String    @map("title_es")
   descriptionEn  String    @map("description_en")
@@ -921,7 +928,7 @@ model JobPosting {
   autosavedAt           DateTime?     @map("autosaved_at")
 
   tenant             Tenant                 @relation(fields: [tenantId], references: [id])
-  employer           User                   @relation("JobPostingEmployer", fields: [employerId], references: [id])
+  employer           EmployerProfile        @relation("JobPostingEmployer", fields: [employerId], references: [id])
   lastEditedBy       User?                  @relation("JobPostingLastEditor", fields: [lastEditedById], references: [id])
   crop               Crop?                  @relation(fields: [cropId], references: [id])
   roleType           RoleType?              @relation(fields: [roleTypeId], references: [id])
@@ -1111,7 +1118,7 @@ model Enrollment {
 model Crew {
   id                  String    @id @default(uuid()) @db.Uuid
   tenantId            String    @map("tenant_id") @db.Uuid
-  employerId          String    @map("employer_id")
+  employerId          String    @map("employer_id") @db.Uuid
   foremanUserId       String?   @map("foreman_user_id")
   jobId               String?   @map("job_id") @db.Uuid
   name                String
@@ -1131,8 +1138,8 @@ model Crew {
   deletedAt           DateTime? @map("deleted_at")
 
   tenant   Tenant       @relation(fields: [tenantId], references: [id])
-  employer User         @relation("CrewEmployer", fields: [employerId], references: [id])
-  foreman  User?        @relation("CrewForeman", fields: [foremanUserId], references: [id])
+  employer EmployerProfile @relation("CrewEmployer", fields: [employerId], references: [id])
+  foreman  User?           @relation("CrewForeman", fields: [foremanUserId], references: [id])
   members  CrewMember[]
   shifts   Shift[]
 
@@ -1166,7 +1173,7 @@ model CrewMember {
 model Shift {
   id            String      @id @default(uuid()) @db.Uuid
   tenantId      String      @map("tenant_id") @db.Uuid
-  employerId    String      @map("employer_id")
+  employerId    String      @map("employer_id") @db.Uuid
   crewId        String?     @map("crew_id") @db.Uuid
   jobId         String?     @map("job_id") @db.Uuid
   shiftDate     DateTime    @map("shift_date") @db.Date
@@ -1183,7 +1190,7 @@ model Shift {
   updatedAt     DateTime    @updatedAt @map("updated_at")
 
   tenant      Tenant            @relation(fields: [tenantId], references: [id])
-  employer    User              @relation("ShiftEmployer", fields: [employerId], references: [id])
+  employer    EmployerProfile   @relation("ShiftEmployer", fields: [employerId], references: [id])
   crew        Crew?             @relation(fields: [crewId], references: [id])
   assignments ShiftAssignment[]
 
@@ -1224,7 +1231,7 @@ model ShiftAssignment {
 model PayrollPeriod {
   id           String              @id @default(uuid()) @db.Uuid
   tenantId     String              @map("tenant_id") @db.Uuid
-  employerId   String              @map("employer_id")
+  employerId   String              @map("employer_id") @db.Uuid
   startDate    DateTime            @map("start_date") @db.Date
   endDate      DateTime            @map("end_date") @db.Date
   payDate      DateTime            @map("pay_date") @db.Date
@@ -1236,8 +1243,8 @@ model PayrollPeriod {
   updatedAt    DateTime            @updatedAt @map("updated_at")
 
   tenant     Tenant        @relation(fields: [tenantId], references: [id])
-  employer   User          @relation("PayrollEmployer", fields: [employerId], references: [id])
-  approvedBy User?         @relation("PayrollApprover", fields: [approvedById], references: [id])
+  employer   EmployerProfile @relation("PayrollEmployer", fields: [employerId], references: [id])
+  approvedBy User?           @relation("PayrollApprover", fields: [approvedById], references: [id])
   lines      PayrollLine[]
 
   @@index([tenantId])
@@ -1306,7 +1313,7 @@ model AewrRate {
 model ComplianceItem {
   id                  String               @id @default(uuid()) @db.Uuid
   tenantId            String               @map("tenant_id") @db.Uuid
-  employerId          String               @map("employer_id")
+  employerId          String               @map("employer_id") @db.Uuid
   category            String // 'documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', custom
   itemKey             String               @map("item_key")
   label               String
@@ -1323,7 +1330,7 @@ model ComplianceItem {
   updatedAt           DateTime             @updatedAt @map("updated_at")
 
   tenant   Tenant @relation(fields: [tenantId], references: [id])
-  employer User   @relation("ComplianceEmployer", fields: [employerId], references: [id])
+  employer EmployerProfile @relation("ComplianceEmployer", fields: [employerId], references: [id])
 
   @@unique([employerId, category, itemKey])
   @@index([tenantId])
@@ -1377,7 +1384,7 @@ model ComplianceScoreSnapshot {
 model Conversation {
   id            String         @id @default(uuid()) @db.Uuid
   tenantId      String         @map("tenant_id") @db.Uuid
-  employerId    String         @map("employer_id")
+  employerId    String         @map("employer_id") @db.Uuid
   title         String
   isGroup       Boolean        @default(false) @map("is_group")
   channel       MessageChannel @default(app)
@@ -1388,7 +1395,7 @@ model Conversation {
   deletedAt     DateTime?      @map("deleted_at")
 
   tenant       Tenant                    @relation(fields: [tenantId], references: [id])
-  employer     User                      @relation("ConversationEmployer", fields: [employerId], references: [id])
+  employer     EmployerProfile           @relation("ConversationEmployer", fields: [employerId], references: [id])
   participants ConversationParticipant[]
   messages     Message[]
 
@@ -1564,25 +1571,70 @@ model FeatureFlag {
   @@map("feature_flags")
 }
 
-model EmployerContact {
-  id         String    @id @default(uuid()) @db.Uuid
-  tenantId   String    @map("tenant_id") @db.Uuid
-  employerId String    @map("employer_id") @db.Uuid
-  name       String
-  phone      String
-  role       String    @default("foreman")
-  languages  String[]  @default(["en", "es"])
-  sortOrder  Int       @default(0) @map("sort_order")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
-  deletedAt  DateTime? @map("deleted_at")
+// Platform-managed role catalog: named permission bundles assigned to
+// employer_contacts memberships. tenantId NULL = global (the only mode used
+// today); a non-null tenantId is reserved for future per-tenant overrides.
+// scopeQualifier = 'self_crew' restricts crews/shifts/payroll to crews the
+// member leads (foreman). Human labels resolve via translation_keys, not
+// stored columns. See docs/00-foundation/02-auth/02-data-model.md.
+model Role {
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String?   @map("tenant_id") @db.Uuid
+  key            String
+  permissions    String[]  @default([])
+  scopeQualifier String?   @map("scope_qualifier")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
 
-  tenant      Tenant          @relation(fields: [tenantId], references: [id])
-  employer    EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  jobPostings JobPosting[]
+  tenant           Tenant?           @relation(fields: [tenantId], references: [id])
+  employerContacts EmployerContact[]
+
+  // Uniqueness per (tenantId, key) enforced by partial indexes in the
+  // migration so the global slot (tenant_id IS NULL) and any future
+  // tenant override each get one row per key.
+  @@index([tenantId, key])
+  @@map("roles")
+}
+
+// Employer roster: foreman/dispatch contacts AND platform members.
+// userId set => a platform member with dashboard access scoped by role;
+// userId null => an SMS-only contact (still valid). The owner is the row
+// whose role.key = 'owner' (mirrored by EmployerProfile.ownerContactId).
+model EmployerContact {
+  id                 String    @id @default(uuid()) @db.Uuid
+  tenantId           String    @map("tenant_id") @db.Uuid
+  employerId         String    @map("employer_id") @db.Uuid
+  userId             String?   @map("user_id")
+  email              String?
+  name               String
+  phone              String
+  roleId             String    @map("role_id") @db.Uuid
+  languages          String[]  @default(["en", "es"])
+  sortOrder          Int       @default(0) @map("sort_order")
+  invitedAt          DateTime? @map("invited_at")
+  acceptedAt         DateTime? @map("accepted_at")
+  inviteTokenHash    String?   @map("invite_token_hash")
+  inviteExpiresAt    DateTime? @map("invite_expires_at")
+  invitedByContactId String?   @map("invited_by_contact_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  tenant        Tenant            @relation(fields: [tenantId], references: [id])
+  employer      EmployerProfile   @relation("EmployerRoster", fields: [employerId], references: [id], onDelete: Cascade)
+  user          User?             @relation(fields: [userId], references: [id])
+  role          Role              @relation(fields: [roleId], references: [id])
+  invitedBy     EmployerContact?  @relation("ContactInviter", fields: [invitedByContactId], references: [id])
+  invitees      EmployerContact[] @relation("ContactInviter")
+  ownedEmployer EmployerProfile?  @relation("EmployerOwner")
+  jobPostings   JobPosting[]
 
   @@index([tenantId])
   @@index([employerId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([inviteTokenHash])
   @@map("employer_contacts")
 }
 

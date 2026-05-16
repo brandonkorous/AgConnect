@@ -4,14 +4,14 @@
 
 import { Hono } from 'hono';
 import { ok } from '@agconn/api-client/server';
-import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext.js';
+import { requireAuth, requireActiveEmployer, requireEmployerPermission, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerLookupsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerLookupsRoutes.use('*', requireAuth('employer'));
-employerLookupsRoutes.use('*', requireRole('employer'));
+employerLookupsRoutes.use('*', requireActiveEmployer);
 
-employerLookupsRoutes.get('/crops', async (c) => {
+employerLookupsRoutes.get('/crops', requireEmployerPermission('jobs.read'), async (c) => {
   const rows = await c.var.db.crop.findMany({
     where: { active: true },
     orderBy: { sortOrder: 'asc' },
@@ -20,7 +20,7 @@ employerLookupsRoutes.get('/crops', async (c) => {
   return ok(c, { crops: rows.map(stripTimestamps) });
 });
 
-employerLookupsRoutes.get('/role-types', async (c) => {
+employerLookupsRoutes.get('/role-types', requireEmployerPermission('jobs.read'), async (c) => {
   const rows = await c.var.db.roleType.findMany({
     where: { active: true },
     orderBy: { sortOrder: 'asc' },
@@ -29,7 +29,7 @@ employerLookupsRoutes.get('/role-types', async (c) => {
   return ok(c, { roleTypes: rows.map(stripTimestamps) });
 });
 
-employerLookupsRoutes.get('/skills', async (c) => {
+employerLookupsRoutes.get('/skills', requireEmployerPermission('jobs.read'), async (c) => {
   const rows = await c.var.db.skillTag.findMany({
     where: { active: true },
     orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }],

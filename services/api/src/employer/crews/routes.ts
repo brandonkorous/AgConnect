@@ -9,7 +9,8 @@ import {
 } from '@agconn/schemas';
 import {
   requireAuth,
-  requireRole,
+  requireActiveEmployer,
+  requireEmployerPermission,
   requireTenant,
   type AuthVars,
 } from '../../middleware/authContext.js';
@@ -18,18 +19,23 @@ import { shapeCrew, shapeMember } from './shape.js';
 
 export const employerCrewsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerCrewsRoutes.use('*', requireAuth('crews'));
-employerCrewsRoutes.use('*', requireRole('employer'));
+employerCrewsRoutes.use('*', requireActiveEmployer);
 employerCrewsRoutes.use('*', requireTenant);
 
-employerCrewsRoutes.get('/', async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.get('/', requireEmployerPermission('crews.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const locale = (c.req.header('accept-language') ?? '').toLowerCase().startsWith('es')
     ? 'es'
     : 'en';
 
   const crews = await c.var.db.crew.findMany({
-    where: { employerId: userId, tenantId, deletedAt: null },
+    where: {
+      employerId,
+      tenantId,
+      deletedAt: null,
+      foremanUserId: c.var.employerScope === 'self_crew' ? c.var.userId : undefined,
+    },
     orderBy: [{ createdAt: 'asc' }],
     include: {
       _count: { select: { members: true } },
@@ -55,20 +61,20 @@ employerCrewsRoutes.get('/', async (c) => {
   });
 });
 
-employerCrewsRoutes.post('/', validate('json', CreateCrewBody), async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.post('/', requireEmployerPermission('crews.manage'), validate('json', CreateCrewBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const body = c.var.body;
 
   if (body.foremanUserId) {
-    const ok2 = await isActiveHire(c.var.db as unknown as Tx, userId, body.foremanUserId);
+    const ok2 = await isActiveHire(c.var.db as unknown as Tx, employerId, body.foremanUserId);
     if (!ok2) return err(c, 422, 'worker_not_active_hire');
   }
 
   const created = await c.var.db.crew.create({
     data: {
       tenantId,
-      employerId: userId,
+      employerId,
       foremanUserId: body.foremanUserId ?? null,
       jobId: body.jobId ?? null,
       name: body.name,
@@ -106,8 +112,8 @@ employerCrewsRoutes.post('/', validate('json', CreateCrewBody), async (c) => {
   return ok(c, { crew: shapeCrew(created, { memberCount: body.foremanUserId ? 1 : 0, activeMemberCount: body.foremanUserId ? 1 : 0 }) });
 });
 
-employerCrewsRoutes.get('/:id', async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.get('/:id', requireEmployerPermission('crews.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
@@ -116,7 +122,13 @@ employerCrewsRoutes.get('/:id', async (c) => {
     : 'en';
 
   const crew = await c.var.db.crew.findFirst({
-    where: { id, employerId: userId, tenantId, deletedAt: null },
+    where: {
+      id,
+      employerId,
+      tenantId,
+      deletedAt: null,
+      foremanUserId: c.var.employerScope === 'self_crew' ? c.var.userId : undefined,
+    },
     include: {
       members: {
         where: { leftAt: null },
@@ -146,14 +158,14 @@ employerCrewsRoutes.get('/:id', async (c) => {
   });
 });
 
-employerCrewsRoutes.patch('/:id', validate('json', PatchCrewBody), async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.patch('/:id', requireEmployerPermission('crews.manage'), validate('json', PatchCrewBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const existing = await c.var.db.crew.findFirst({
-    where: { id, employerId: userId, tenantId, deletedAt: null },
+    where: { id, employerId, tenantId, deletedAt: null },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -208,13 +220,13 @@ employerCrewsRoutes.patch('/:id', validate('json', PatchCrewBody), async (c) => 
   });
 });
 
-employerCrewsRoutes.delete('/:id', async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.delete('/:id', requireEmployerPermission('crews.manage'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const existing = await c.var.db.crew.findFirst({
-    where: { id, employerId: userId, tenantId, deletedAt: null },
+    where: { id, employerId, tenantId, deletedAt: null },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -232,18 +244,18 @@ employerCrewsRoutes.delete('/:id', async (c) => {
   return ok(c, { ok: true });
 });
 
-employerCrewsRoutes.post('/:id/members', validate('json', AddCrewMemberBody), async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.post('/:id/members', requireEmployerPermission('crews.manage'), validate('json', AddCrewMemberBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const crew = await c.var.db.crew.findFirst({
-    where: { id, employerId: userId, tenantId, deletedAt: null },
+    where: { id, employerId, tenantId, deletedAt: null },
   });
   if (!crew) return err(c, 404, 'not_found');
 
-  const okHire = await isActiveHire(c.var.db as unknown as Tx, userId, body.workerUserId);
+  const okHire = await isActiveHire(c.var.db as unknown as Tx, employerId, body.workerUserId);
   if (!okHire) return err(c, 422, 'worker_not_active_hire');
 
   const existing = await c.var.db.crewMember.findFirst({
@@ -280,14 +292,14 @@ employerCrewsRoutes.post('/:id/members', validate('json', AddCrewMemberBody), as
   });
 });
 
-employerCrewsRoutes.delete('/:id/members/:userId', async (c) => {
-  const employerUserId = c.var.userId;
+employerCrewsRoutes.delete('/:id/members/:userId', requireEmployerPermission('crews.manage'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const memberUserId = c.req.param('userId');
 
   const crew = await c.var.db.crew.findFirst({
-    where: { id, employerId: employerUserId, tenantId, deletedAt: null },
+    where: { id, employerId, tenantId, deletedAt: null },
   });
   if (!crew) return err(c, 404, 'not_found');
 
@@ -314,18 +326,18 @@ employerCrewsRoutes.delete('/:id/members/:userId', async (c) => {
   return ok(c, { ok: true });
 });
 
-employerCrewsRoutes.post('/:id/foreman', validate('json', SetForemanBody), async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.post('/:id/foreman', requireEmployerPermission('crews.manage'), validate('json', SetForemanBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const crew = await c.var.db.crew.findFirst({
-    where: { id, employerId: userId, tenantId, deletedAt: null },
+    where: { id, employerId, tenantId, deletedAt: null },
   });
   if (!crew) return err(c, 404, 'not_found');
 
-  const okHire = await isActiveHire(c.var.db as unknown as Tx, userId, body.workerUserId);
+  const okHire = await isActiveHire(c.var.db as unknown as Tx, employerId, body.workerUserId);
   if (!okHire) return err(c, 422, 'worker_not_active_hire');
 
   await c.var.db.$transaction(async (tx) => {
@@ -388,13 +400,19 @@ employerCrewsRoutes.post('/:id/foreman', validate('json', SetForemanBody), async
 // Right-rail insights: 14-day yield series + recent activity + skill coverage.
 // All three are real reads (no fabricated data); empty results are returned as
 // empty arrays for new crews with no shifts or audit history.
-employerCrewsRoutes.get('/:id/insights', async (c) => {
-  const userId = c.var.userId;
+employerCrewsRoutes.get('/:id/insights', requireEmployerPermission('crews.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const crew = await c.var.db.crew.findFirst({
-    where: { id, employerId: userId, tenantId, deletedAt: null },
+    where: {
+      id,
+      employerId,
+      tenantId,
+      deletedAt: null,
+      foremanUserId: c.var.employerScope === 'self_crew' ? c.var.userId : undefined,
+    },
     include: {
       members: {
         where: { leftAt: null },
@@ -480,12 +498,12 @@ employerCrewsRoutes.get('/:id/insights', async (c) => {
   });
 });
 
-async function isActiveHire(db: Tx, employerUserId: string, workerUserId: string): Promise<boolean> {
+async function isActiveHire(db: Tx, employerId: string, workerUserId: string): Promise<boolean> {
   const hired = await db.application.findFirst({
     where: {
       workerId: workerUserId,
       status: AppStatus.hired,
-      job: { employerId: employerUserId, deletedAt: null },
+      job: { employerId, deletedAt: null },
     },
     select: { id: true },
   });

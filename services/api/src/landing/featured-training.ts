@@ -17,7 +17,18 @@ featuredTrainingRoutes.get('/', async (c) => {
     },
     orderBy: [{ startDate: 'asc' }],
     take: TAKE,
-    include: { org: { include: { employerProfile: true } } },
+    include: {
+      org: {
+        select: {
+          email: true,
+          employerContacts: {
+            where: { deletedAt: null },
+            take: 1,
+            select: { employer: { select: { legalName: true } } },
+          },
+        },
+      },
+    },
   });
 
   const programs = rows.map((r) => ({
@@ -32,7 +43,10 @@ featuredTrainingRoutes.get('/', async (c) => {
     capacity: r.capacity,
     enrolledCount: r.enrolledCount,
     spotsLeft: Math.max(0, r.capacity - r.enrolledCount),
-    orgName: r.org.employerProfile?.legalName ?? r.org.email ?? 'Training organization',
+    orgName:
+      r.org.employerContacts[0]?.employer.legalName ??
+      r.org.email ??
+      'Training organization',
     locationName: r.locationName,
   }));
 

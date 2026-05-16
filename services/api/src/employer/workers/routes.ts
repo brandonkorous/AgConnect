@@ -7,7 +7,13 @@ import {
   canUseFeature,
 } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import {
+  requireAuth,
+  requireActiveEmployer,
+  requireEmployerPermission,
+  requireTenant,
+  type AuthVars,
+} from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 
 // audit-required:exempt — worker_search_log is itself the audit record for
@@ -22,15 +28,19 @@ import type { AuditCtxVars } from '../../middleware/audit.js';
 
 export const employerWorkersRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerWorkersRoutes.use('*', requireAuth('employer'));
-employerWorkersRoutes.use('*', requireRole('employer'));
+employerWorkersRoutes.use('*', requireActiveEmployer);
 employerWorkersRoutes.use('*', requireTenant);
 
-employerWorkersRoutes.get('/', validate('query', WorkerSearchQuery), async (c) => {
-  const userId = c.var.userId;
+employerWorkersRoutes.get(
+  '/',
+  requireEmployerPermission('worker_search.use'),
+  validate('query', WorkerSearchQuery),
+  async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const q = c.var.body;
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: employerId } });
   if (!profile) return err(c, 404, 'not_found');
   if (!canUseFeature(profile.plan, 'workerSearch')) {
     return err(c, 402, 'plan_required_pro');
@@ -62,7 +72,7 @@ employerWorkersRoutes.get('/', validate('query', WorkerSearchQuery), async (c) =
             workerId: { in: workerIds },
             status: AppStatus.hired,
             deletedAt: null,
-            job: { employerId: userId },
+            job: { employerId },
           },
           select: { workerId: true },
         })
@@ -83,7 +93,7 @@ employerWorkersRoutes.get('/', validate('query', WorkerSearchQuery), async (c) =
             workerId: { in: workerIds },
             deletedAt: null,
             status: { not: AppStatus.withdrawn },
-            job: { employerId: userId },
+            job: { employerId },
           },
           select: { workerId: true },
         })
@@ -127,14 +137,17 @@ employerWorkersRoutes.get('/', validate('query', WorkerSearchQuery), async (c) =
     }),
     nextCursor,
   });
-});
+  },
+);
 
-employerWorkersRoutes.get('/:id', async (c) => {
-  const userId = c.var.userId;
-  const tenantId = c.var.tenantId!;
+employerWorkersRoutes.get(
+  '/:id',
+  requireEmployerPermission('worker_search.use'),
+  async (c) => {
+  const employerId = c.var.employerId!;
   const id = c.req.param('id');
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: employerId } });
   if (!profile) return err(c, 404, 'not_found');
   if (!canUseFeature(profile.plan, 'workerSearch')) {
     return err(c, 402, 'plan_required_pro');
@@ -146,7 +159,7 @@ employerWorkersRoutes.get('/:id', async (c) => {
   });
   if (!worker) return err(c, 404, 'not_found');
 
-  const relationship = await resolveRelationship(c.var.db, profile.id, userId, id);
+  const relationship = await resolveRelationship(c.var.db, profile.id, id);
 
   return ok(c, {
     worker: {
@@ -156,22 +169,27 @@ employerWorkersRoutes.get('/:id', async (c) => {
       languages: extractLanguages(worker.resume),
     },
   });
-});
+  },
+);
 
-employerWorkersRoutes.post('/:id/invite', validate('json', InviteWorkerBody), async (c) => {
-  const userId = c.var.userId;
+employerWorkersRoutes.post(
+  '/:id/invite',
+  requireEmployerPermission('worker_search.use'),
+  validate('json', InviteWorkerBody),
+  async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const workerId = c.req.param('id');
   const body = c.var.body;
 
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: employerId } });
   if (!profile) return err(c, 404, 'not_found');
   if (!canUseFeature(profile.plan, 'workerSearch')) {
     return err(c, 402, 'plan_required_pro');
   }
 
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id: body.jobId, employerId: userId, deletedAt: null },
+    where: { id: body.jobId, employerId, deletedAt: null },
   });
   if (!job) return err(c, 404, 'not_found');
   if (job.status !== JobStatus.active) {
@@ -231,16 +249,17 @@ employerWorkersRoutes.post('/:id/invite', validate('json', InviteWorkerBody), as
     if (code === 'P2002') return err(c, 409, 'conflict', 'already_invited');
     throw e;
   }
-});
+  },
+);
 
 export const employerInvitationsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerInvitationsRoutes.use('*', requireAuth('employer'));
-employerInvitationsRoutes.use('*', requireRole('employer'));
+employerInvitationsRoutes.use('*', requireActiveEmployer);
 employerInvitationsRoutes.use('*', requireTenant);
 
-employerInvitationsRoutes.get('/', async (c) => {
-  const userId = c.var.userId;
-  const profile = await c.var.db.employerProfile.findUnique({ where: { userId } });
+employerInvitationsRoutes.get('/', requireEmployerPermission('worker_search.use'), async (c) => {
+  const employerId = c.var.employerId!;
+  const profile = await c.var.db.employerProfile.findUnique({ where: { id: employerId } });
   if (!profile) return err(c, 404, 'not_found');
 
   const rows = await c.var.db.workerInvitation.findMany({
@@ -268,7 +287,6 @@ employerInvitationsRoutes.get('/', async (c) => {
 async function resolveRelationship(
   db: Tx,
   employerProfileId: string,
-  employerUserId: string,
   workerId: string,
 ): Promise<'hired' | 'invited' | 'applied' | undefined> {
   const [hire, invite, apply] = await Promise.all([
@@ -277,7 +295,7 @@ async function resolveRelationship(
         workerId,
         status: AppStatus.hired,
         deletedAt: null,
-        job: { employerId: employerUserId },
+        job: { employerId: employerProfileId },
       },
       select: { id: true },
     }),
@@ -290,7 +308,7 @@ async function resolveRelationship(
         workerId,
         deletedAt: null,
         status: { not: AppStatus.withdrawn },
-        job: { employerId: employerUserId },
+        job: { employerId: employerProfileId },
       },
       select: { id: true },
     }),

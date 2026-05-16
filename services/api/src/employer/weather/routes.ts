@@ -6,7 +6,8 @@ import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import {
     requireAuth,
-    requireRole,
+    requireActiveEmployer,
+    requireEmployerPermission,
     requireTenant,
     type AuthVars,
 } from '../../middleware/authContext.js';
@@ -16,7 +17,7 @@ export const employerWeatherRoutes = new Hono<{
     Variables: AuthVars & AuditCtxVars;
 }>();
 employerWeatherRoutes.use('*', requireAuth('employer'));
-employerWeatherRoutes.use('*', requireRole('employer'));
+employerWeatherRoutes.use('*', requireActiveEmployer);
 employerWeatherRoutes.use('*', requireTenant);
 
 const NWS_USER_AGENT = 'AGCONN (agconn.com, ops@agconn.com)';
@@ -26,7 +27,7 @@ const cache = new Map<
     { highTempF: number | null; condition: string | null; expires: number }
 >();
 
-employerWeatherRoutes.get('/forecast', async (c) => {
+employerWeatherRoutes.get('/forecast', requireEmployerPermission('jobs.read'), async (c) => {
     const lat = Number(c.req.query('lat'));
     const lng = Number(c.req.query('lng'));
     const date = c.req.query('date') ?? '';

@@ -6,7 +6,7 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { PhotoReorderBody } from '@agconn/schemas';
-import { requireAuth, requireRole, requireTenant, type AuthVars } from '../../middleware/authContext.js';
+import { requireAuth, requireActiveEmployer, requireEmployerPermission, requireTenant, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   uploadJobPhoto,
@@ -19,14 +19,14 @@ const MAX_BYTES = 10 * 1024 * 1024;
 
 export const employerJobPhotosRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerJobPhotosRoutes.use('*', requireAuth('employer'));
-employerJobPhotosRoutes.use('*', requireRole('employer'));
+employerJobPhotosRoutes.use('*', requireActiveEmployer);
 employerJobPhotosRoutes.use('*', requireTenant);
 
-employerJobPhotosRoutes.get('/:id/photos', async (c) => {
+employerJobPhotosRoutes.get('/:id/photos', requireEmployerPermission('jobs.read'), async (c) => {
   const id = c.req.param('id');
-  const userId = c.var.userId;
+  const employerId = c.var.employerId!;
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -38,13 +38,14 @@ employerJobPhotosRoutes.get('/:id/photos', async (c) => {
   return ok(c, { photos: photos.map(toPhotoView) });
 });
 
-employerJobPhotosRoutes.post('/:id/photos', async (c) => {
+employerJobPhotosRoutes.post('/:id/photos', requireEmployerPermission('jobs.write'), async (c) => {
   const id = c.req.param('id');
   const userId = c.var.userId;
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
 
   const job = await c.var.db.jobPosting.findFirst({
-    where: { id, employerId: userId, deletedAt: null },
+    where: { id, employerId, deletedAt: null },
     select: { id: true, tenantId: true },
   });
   if (!job) return err(c, 404, 'not_found');
@@ -97,14 +98,15 @@ employerJobPhotosRoutes.post('/:id/photos', async (c) => {
 
 employerJobPhotosRoutes.put(
   '/:id/photos/order',
+  requireEmployerPermission('jobs.write'),
   validate('json', PhotoReorderBody),
   async (c) => {
     const id = c.req.param('id');
-    const userId = c.var.userId;
+    const employerId = c.var.employerId!;
     const body = c.var.body;
 
     const job = await c.var.db.jobPosting.findFirst({
-      where: { id, employerId: userId, deletedAt: null },
+      where: { id, employerId, deletedAt: null },
       select: { id: true },
     });
     if (!job) return err(c, 404, 'not_found');
@@ -130,13 +132,13 @@ employerJobPhotosRoutes.put(
   },
 );
 
-employerJobPhotosRoutes.delete('/:id/photos/:photoId', async (c) => {
+employerJobPhotosRoutes.delete('/:id/photos/:photoId', requireEmployerPermission('jobs.write'), async (c) => {
   const id = c.req.param('id');
   const photoId = c.req.param('photoId');
-  const userId = c.var.userId;
+  const employerId = c.var.employerId!;
 
   const photo = await c.var.db.jobPhoto.findFirst({
-    where: { id: photoId, jobId: id, job: { employerId: userId, deletedAt: null } },
+    where: { id: photoId, jobId: id, job: { employerId, deletedAt: null } },
   });
   if (!photo) return err(c, 404, 'not_found');
 

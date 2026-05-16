@@ -51,12 +51,12 @@ const DEFAULT_COMPLIANCE_ITEMS: DefaultItem[] = [
 export async function seedDefaultComplianceItems(
     tx: Tx,
     tenantId: string,
-    employerUserId: string,
+    employerId: string,
 ): Promise<void> {
     await tx.complianceItem.createMany({
         data: DEFAULT_COMPLIANCE_ITEMS.map((item) => ({
             tenantId,
-            employerId: employerUserId,
+            employerId: employerId,
             category: item.category,
             itemKey: item.itemKey,
             label: item.label,
@@ -70,7 +70,7 @@ export async function seedDefaultComplianceItems(
 export async function seedInitialPayrollPeriod(
     tx: Tx,
     tenantId: string,
-    employerUserId: string,
+    employerId: string,
 ): Promise<void> {
     // Build a Mon–Sun pay period covering the current week, with pay date the
     // following Friday (matches "runs Friday" copy in the design).
@@ -85,14 +85,14 @@ export async function seedInitialPayrollPeriod(
     pay.setUTCDate(end.getUTCDate() + 5); // Friday after Sunday end
 
     const existing = await tx.payrollPeriod.findFirst({
-        where: { tenantId, employerId: employerUserId, startDate: start },
+        where: { tenantId, employerId: employerId, startDate: start },
     });
     if (existing) return;
 
     await tx.payrollPeriod.create({
         data: {
             tenantId,
-            employerId: employerUserId,
+            employerId: employerId,
             startDate: start,
             endDate: end,
             payDate: pay,

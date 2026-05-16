@@ -8,7 +8,8 @@ import {
 import { CreateComplianceItemBody, PatchComplianceItemBody } from '@agconn/schemas';
 import {
   requireAuth,
-  requireRole,
+  requireActiveEmployer,
+  requireEmployerPermission,
   requireTenant,
   type AuthVars,
 } from '../../middleware/authContext.js';
@@ -25,23 +26,23 @@ const MAX_EVIDENCE_BYTES = 25 * 1024 * 1024;
 
 export const employerComplianceRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerComplianceRoutes.use('*', requireAuth('employer'));
-employerComplianceRoutes.use('*', requireRole('employer'));
+employerComplianceRoutes.use('*', requireActiveEmployer);
 employerComplianceRoutes.use('*', requireTenant);
 
-employerComplianceRoutes.get('/items', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.get('/items', requireEmployerPermission('compliance.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const locale = pickLocaleFromHeader(c.req.header('accept-language'));
 
   const profile = await c.var.db.employerProfile.findUnique({
-    where: { userId },
+    where: { id: employerId },
     select: { id: true, participatesInH2a: true },
   });
 
   const items = await c.var.db.complianceItem.findMany({
     where: {
       tenantId,
-      employerId: userId,
+      employerId,
       ...(profile?.participatesInH2a ? {} : { category: { not: 'h2a' } }),
     },
     orderBy: [{ category: 'asc' }, { itemKey: 'asc' }],
@@ -108,12 +109,12 @@ employerComplianceRoutes.get('/items', async (c) => {
   return ok(c, { categories, actions });
 });
 
-employerComplianceRoutes.get('/summary', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.get('/summary', requireEmployerPermission('compliance.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
 
   const profile = await c.var.db.employerProfile.findUnique({
-    where: { userId },
+    where: { id: employerId },
     select: {
       id: true,
       participatesInH2a: true,
@@ -126,7 +127,7 @@ employerComplianceRoutes.get('/summary', async (c) => {
   const items = await c.var.db.complianceItem.findMany({
     where: {
       tenantId,
-      employerId: userId,
+      employerId,
       ...(profile.participatesInH2a ? {} : { category: { not: 'h2a' } }),
     },
     select: { status: true, category: true },
@@ -178,18 +179,18 @@ const complianceCsvColumns: CsvColumn<ComplianceCsvRow>[] = [
   { header: 'evidence', value: (r) => r.evidence },
 ];
 
-employerComplianceRoutes.get('/export.csv', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.get('/export.csv', requireEmployerPermission('compliance.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const profile = await c.var.db.employerProfile.findUnique({
-    where: { userId },
+    where: { id: employerId },
     select: { participatesInH2a: true },
   });
 
   const items = await c.var.db.complianceItem.findMany({
     where: {
       tenantId,
-      employerId: userId,
+      employerId,
       ...(profile?.participatesInH2a ? {} : { category: { not: 'h2a' } }),
     },
     orderBy: [{ category: 'asc' }, { itemKey: 'asc' }],
@@ -220,15 +221,15 @@ employerComplianceRoutes.get('/export.csv', async (c) => {
   return csvResponse(c, `compliance-${new Date().toISOString().slice(0, 10)}.csv`, csv);
 });
 
-employerComplianceRoutes.post('/items', validate('json', CreateComplianceItemBody), async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.post('/items', requireEmployerPermission('compliance.write'), validate('json', CreateComplianceItemBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const body = c.var.body;
 
   const created = await c.var.db.complianceItem.create({
     data: {
       tenantId,
-      employerId: userId,
+      employerId,
       category: body.category,
       itemKey: body.itemKey,
       label: body.label,
@@ -255,14 +256,14 @@ employerComplianceRoutes.post('/items', validate('json', CreateComplianceItemBod
   return ok(c, { item: shapeItem(created) });
 });
 
-employerComplianceRoutes.patch('/items/:id', validate('json', PatchComplianceItemBody), async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.patch('/items/:id', requireEmployerPermission('compliance.write'), validate('json', PatchComplianceItemBody), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
   const body = c.var.body;
 
   const existing = await c.var.db.complianceItem.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -299,13 +300,13 @@ employerComplianceRoutes.patch('/items/:id', validate('json', PatchComplianceIte
   return ok(c, { item: shapeItem(updated) });
 });
 
-employerComplianceRoutes.delete('/items/:id', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.delete('/items/:id', requireEmployerPermission('compliance.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const existing = await c.var.db.complianceItem.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -323,13 +324,13 @@ employerComplianceRoutes.delete('/items/:id', async (c) => {
   return ok(c, { ok: true });
 });
 
-employerComplianceRoutes.post('/items/:id/evidence', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.post('/items/:id/evidence', requireEmployerPermission('compliance.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const existing = await c.var.db.complianceItem.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!existing) return err(c, 404, 'not_found');
 
@@ -380,13 +381,13 @@ employerComplianceRoutes.post('/items/:id/evidence', async (c) => {
   return ok(c, { item: shapeItem(updated) });
 });
 
-employerComplianceRoutes.delete('/items/:id/evidence', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.delete('/items/:id/evidence', requireEmployerPermission('compliance.write'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const existing = await c.var.db.complianceItem.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
   });
   if (!existing) return err(c, 404, 'not_found');
   if (!existing.evidenceStorageKey) return err(c, 404, 'no_evidence');
@@ -414,13 +415,13 @@ employerComplianceRoutes.delete('/items/:id/evidence', async (c) => {
 
 // Issues a 60-second signed Supabase URL and 302-redirects to it. Browsers
 // follow the redirect, so users see a normal "click to view" link.
-employerComplianceRoutes.get('/items/:id/evidence', async (c) => {
-  const userId = c.var.userId;
+employerComplianceRoutes.get('/items/:id/evidence', requireEmployerPermission('compliance.read'), async (c) => {
+  const employerId = c.var.employerId!;
   const tenantId = c.var.tenantId!;
   const id = c.req.param('id');
 
   const existing = await c.var.db.complianceItem.findFirst({
-    where: { id, tenantId, employerId: userId },
+    where: { id, tenantId, employerId },
     select: { evidenceStorageKey: true },
   });
   if (!existing?.evidenceStorageKey) return err(c, 404, 'not_found');

@@ -231,6 +231,44 @@ const COPY: Record<EmployerEmailTemplate, Record<Locale, EmployerEmailCopy>> = {
             signoff: '— El equipo de AGCONN',
         },
     },
+    'employer.member_invite': {
+        en: {
+            subject: '{inviterName} invited you to {employerName} on AGCONN',
+            preheader: 'Accept to join the {employerName} team.',
+            heading: "You've been invited to {employerName}",
+            intro:
+                '{inviterName} added you to {employerName} on AGCONN as {roleLabel}. Accept the invitation to sign in and get started.',
+            body: [
+                'This invitation expires in 14 days. If you did not expect it, you can ignore this email.',
+            ],
+            cta: {
+                label: 'Accept invitation',
+                pathByLocale: {
+                    en: '/en/employer/accept-invite?token={token}',
+                    es: '/es/employer/accept-invite?token={token}',
+                },
+            },
+            signoff: '— The AGCONN team',
+        },
+        es: {
+            subject: '{inviterName} te invitó a {employerName} en AGCONN',
+            preheader: 'Acepta para unirte al equipo de {employerName}.',
+            heading: 'Te invitaron a {employerName}',
+            intro:
+                '{inviterName} te agregó a {employerName} en AGCONN como {roleLabel}. Acepta la invitación para iniciar sesión y comenzar.',
+            body: [
+                'Esta invitación vence en 14 días. Si no la esperabas, puedes ignorar este correo.',
+            ],
+            cta: {
+                label: 'Aceptar invitación',
+                pathByLocale: {
+                    en: '/en/employer/accept-invite?token={token}',
+                    es: '/es/employer/accept-invite?token={token}',
+                },
+            },
+            signoff: '— El equipo de AGCONN',
+        },
+    },
 };
 
 export function getEmployerCopy(
@@ -245,7 +283,15 @@ export function getEmployerCopy(
         heading: fmt(raw.heading, vars),
         intro: fmt(raw.intro, vars),
         body: raw.body.map((b) => fmt(b, vars)),
-        cta: raw.cta,
+        cta: raw.cta
+            ? {
+                  label: fmt(raw.cta.label, vars),
+                  pathByLocale: {
+                      en: fmt(raw.cta.pathByLocale.en, vars),
+                      es: fmt(raw.cta.pathByLocale.es, vars),
+                  },
+              }
+            : undefined,
         signoff: raw.signoff,
     };
 }
