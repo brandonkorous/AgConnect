@@ -1,0 +1,89 @@
+# KEDA scale-to-zero for the bursty workers. Each ScaledObject drives its
+# Deployment 0→N off pg-boss queue depth so the spot worker pool can idle at
+# zero nodes instead of pinning two e2-small nodes 24/7 for work that is
+# event-driven, not constant.
+#
+# Scaler: KEDA's postgresql scaler runs a COUNT over pgboss.job (pg-boss v12
+# parent table, partitioned by queue `name`; the WHERE name= predicate prunes
+# to one partition). We count created+retry+active so a pod stays up while a
+# job is mid-flight, and combine with cooldownPeriod so a freshly-drained pod
+# isn't torn down before the next poll. KEDA needs read access to the same
+# Postgres the workers use; it reuses the DATABASE_URL already projected into
+# the agconn-env secret by the deploy workflow.
+#
+# Requires the KEDA CRDs (installed by Terraform cluster-bootstrap, before the
+# first deploy — see infra/terraform/cluster-bootstrap.tf).
+
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: pgboss-pg-auth
+  namespace: agconn
+spec:
+  secretTargetRef:
+    - parameter: connection
+      name: agconn-env
+      key: DATABASE_URL
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: resume-parser
+  namespace: agconn
+spec:
+  scaleTargetRef:
+    name: resume-parser
+  minReplicaCount: 0
+  maxReplicaCount: 3
+  pollingInterval: 20
+  cooldownPeriod: 180
+  triggers:
+    - type: postgresql
+      metadata:
+        query: "SELECT count(*) FROM pgboss.job WHERE name = 'resume.parse' AND state IN ('created','retry','active')"
+        targetQueryValue: "1"
+        activationTargetQueryValue: "0"
+      authenticationRef:
+        name: pgboss-pg-auth
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: cert-generator
+  namespace: agconn
+spec:
+  scaleTargetRef:
+    name: cert-generator
+  minReplicaCount: 0
+  maxReplicaCount: 2
+  pollingInterval: 20
+  cooldownPeriod: 180
+  triggers:
+    - type: postgresql
+      metadata:
+        query: "SELECT count(*) FROM pgboss.job WHERE name = 'enrollment.completed' AND state IN ('created','retry','active')"
+        targetQueryValue: "1"
+        activationTargetQueryValue: "0"
+      authenticationRef:
+        name: pgboss-pg-auth
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: flc-verifier
+  namespace: agconn
+spec:
+  scaleTargetRef:
+    name: flc-verifier
+  minReplicaCount: 0
+  maxReplicaCount: 2
+  pollingInterval: 20
+  cooldownPeriod: 180
+  triggers:
+    - type: postgresql
+      metadata:
+        query: "SELECT count(*) FROM pgboss.job WHERE name = 'flc.verify' AND state IN ('created','retry','active')"
+        targetQueryValue: "1"
+        activationTargetQueryValue: "0"
+      authenticationRef:
+        name: pgboss-pg-auth

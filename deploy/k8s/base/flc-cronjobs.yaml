@@ -1,0 +1,100 @@
+# FLC cron ticks, split out of the old always-on flc-verifier deployment so
+# that deployment can scale to zero (see keda-scaledobjects.yaml). Same image
+# as flc-verifier; the command selects a one-shot entrypoint.
+#
+#   flc-sweep     — scans FLC employers due for re-check, enqueues flc.verify
+#                    jobs (which wake the KEDA-scaled flc-verifier consumer)
+#   flc-mspa-sync — downloads + ingests the data.gov MSPA dataset
+#
+# Times are UTC, preserving the previous in-process schedule (sweep 04:00,
+# mspa-sync 04:30 — 30 min apart so they don't contend on the DB, and well
+# before the 02:00–03:00 audit window of the following night).
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: flc-sweep
+  namespace: agconn
+spec:
+  schedule: "0 4 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 7
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 1200
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: flc-sweep
+        spec:
+          serviceAccountName: agconn
+          nodeSelector: { pool: worker }
+          tolerations:
+            - key: cloud.google.com/gke-spot
+              value: "true"
+              effect: NoSchedule
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: worker
+              image: us-west1-docker.pkg.dev/agconn/containers/flc-verifier:latest
+              command: ["node", "services/flc-verifier/dist/sweep-main.js"]
+              envFrom:
+                - configMapRef: { name: agconn-config }
+                - secretRef: { name: agconn-env }
+              resources:
+                requests: { cpu: 25m, memory: 192Mi }
+                limits: { cpu: 500m, memory: 512Mi }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: flc-mspa-sync
+  namespace: agconn
+spec:
+  schedule: "30 4 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 7
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: flc-mspa-sync
+        spec:
+          serviceAccountName: agconn
+          nodeSelector: { pool: worker }
+          tolerations:
+            - key: cloud.google.com/gke-spot
+              value: "true"
+              effect: NoSchedule
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile: { type: RuntimeDefault }
+          containers:
+            - name: worker
+              image: us-west1-docker.pkg.dev/agconn/containers/flc-verifier:latest
+              command: ["node", "services/flc-verifier/dist/mspa-sync-main.js"]
+              envFrom:
+                - configMapRef: { name: agconn-config }
+                - secretRef: { name: agconn-env }
+              # MSPA ingest holds ~12k rows in memory while parsing — the 768Mi
+              # ceiling the old always-on deployment carried, now scoped to the
+              # one job that actually needs it.
+              resources:
+                requests: { cpu: 50m, memory: 256Mi }
+                limits: { cpu: 1000m, memory: 768Mi }

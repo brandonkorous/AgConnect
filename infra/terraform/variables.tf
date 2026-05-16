@@ -35,9 +35,9 @@ variable "app_node_max_count" {
 }
 
 variable "worker_node_max_count" {
-  description = "Autoscaler maximum spot nodes in the worker pool. Min is always 0 (scale-to-zero when no workers are pending)."
+  description = "Autoscaler maximum spot nodes in the worker pool. Min is always 0 (scale-to-zero when no workers are pending). 3 gives burst headroom for a résumé/cert/sweep pileup on top of the always-on sms/email/scheduler residents — one e2-small (~1.42Gi allocatable) can't hold all of that plus KEDA-scaled bursts at once."
   type        = number
-  default     = 2
+  default     = 3
 }
 
 variable "domain" {
@@ -72,4 +72,10 @@ variable "cert_manager_version" {
   description = "cert-manager version. https://github.com/cert-manager/cert-manager/releases"
   type        = string
   default     = "v1.16.2"
+}
+
+variable "keda_version" {
+  description = "KEDA version. Drives scale-to-zero for the bursty workers (resume-parser, cert-generator, flc-verify) via the pg-boss postgresql scaler. https://github.com/kedacore/keda/releases"
+  type        = string
+  default     = "v2.16.1"
 }

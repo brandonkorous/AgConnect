@@ -6,19 +6,39 @@ runs Prisma migrations as a one-shot Job, then rolls out web + api +
 email-worker + sms-worker. Audit retention + verifier are CronJobs.
 
 The first deploy requires one-time GCP infra (via Terraform) and cluster
-bootstrap (nginx-ingress + cert-manager). After that, every push to `main`
-deploys.
+bootstrap (nginx-ingress + cert-manager + KEDA). After that, every push to
+`main` deploys.
 
 ## Topology
 
+Three node pools (provisioned by [`infra/terraform/cluster.tf`](../infra/terraform/cluster.tf)):
+
+- **system** — 1× e2-small, untainted. Cluster controllers: nginx-ingress, cert-manager, metrics-server, KEDA.
+- **app** — e2-medium, autoscaled 1–4, label+taint `pool=app`. web, api, admin, db-migrate.
+- **worker** — e2-small **spot**, autoscaled **0–2**, label `pool=worker` (+ GKE spot taint). Async workers + cronjobs. Idles at zero when there's no work.
+
 ```
-agconn.com / www.agconn.com  →  Cloudflare  →  nginx-ingress  →  Service web  →  Deployment web    (Next.js)
-api.agconn.com               →  Cloudflare  →  nginx-ingress  →  Service api  →  Deployment api    (Hono)
-                                                                                Deployment email-worker (pg-boss consumer)
-                                                                                Deployment sms-worker   (pg-boss consumer)
-                                                                                CronJob audit-retention (02:00 UTC)
-                                                                                CronJob audit-verifier  (03:00 UTC)
+agconn.com / www.agconn.com  →  Cloudflare  →  nginx-ingress  →  Service web  →  Deployment web    (Next.js, app pool)
+api.agconn.com               →  Cloudflare  →  nginx-ingress  →  Service api  →  Deployment api    (Hono, app pool)
+
+worker pool (spot, scale-to-zero):
+  Deployment email-worker   (pg-boss consumer, always-on)
+  Deployment sms-worker     (pg-boss consumer, always-on)
+  Deployment scheduler      (pg-boss producer,  always-on)
+  Deployment resume-parser  (KEDA → 0 on empty resume.parse)
+  Deployment cert-generator (KEDA → 0 on empty enrollment.completed)
+  Deployment flc-verifier   (KEDA → 0 on empty flc.verify)
+  CronJob audit-retention   (02:00 UTC)
+  CronJob audit-verifier    (03:00 UTC)
+  CronJob flc-sweep         (04:00 UTC — enqueues flc.verify, wakes flc-verifier via KEDA)
+  CronJob flc-mspa-sync     (04:30 UTC — ingests data.gov MSPA dataset)
 ```
+
+The three KEDA-scaled workers cost nothing while idle: the spot pool drops to
+0 nodes when `email`/`sms`/`scheduler` are the only residents and those fit
+alongside, or scales out only when a queue has backlog. The two `flc-*`
+CronJobs replace the in-process pg-boss cron that used to pin flc-verifier
+always-on.
 
 Postgres is Supabase. Migrations and audit HMAC roles live under
 `packages/db/prisma/migrations`.
@@ -31,7 +51,7 @@ See [`infra/terraform/README.md`](../infra/terraform/README.md). After
 `terraform apply` you'll have:
 
 - GCP project `agconn`
-- GKE zonal cluster `agconn-prod` in `us-west1-a` (e2-medium, 1–3 node autoscaler)
+- GKE zonal cluster `agconn-prod` in `us-west1-a` (three pools: system 1× e2-small, app e2-medium 1–4, worker e2-small spot 0–2 — see Topology)
 - Static external IP for the ingress LB
 - Workload Identity Federation binding GitHub Actions OIDC → `agconn-deploy@…`
 - Cloudflare A records for `agconn.com`, `www.agconn.com`, `api.agconn.com`
@@ -67,11 +87,20 @@ before the first deploy:
 
 ### 3. Cluster controllers (Terraform-managed)
 
-`terraform apply` from step 1 installs nginx-ingress, cert-manager, and the
-`cloudflare-api-token` Secret automatically — see
+`terraform apply` from step 1 installs nginx-ingress, cert-manager, **KEDA**,
+and the `cloudflare-api-token` Secret automatically — see
 [`infra/terraform/cluster-bootstrap.tf`](../infra/terraform/cluster-bootstrap.tf).
 Versions are pinned via `var.ingress_nginx_version` / `var.cert_manager_version`
-and reapply when bumped. No manual `kubectl` or `helm` commands needed.
+/ `var.keda_version` and reapply when bumped. No manual `kubectl` or `helm`
+commands needed.
+
+KEDA is a hard prerequisite for the first deploy: the bursty workers ship
+`ScaledObject`s ([`k8s/base/keda-scaledobjects.yaml`](k8s/base/keda-scaledobjects.yaml))
+and `kubectl apply -k` fails if the KEDA CRDs aren't present. Step 1 (Terraform)
+runs before step 3 / first deploy, so this holds. The scaler reads `pgboss.job`;
+until some pg-boss instance has run once and created the `pgboss` schema, KEDA
+logs a benign "relation does not exist" and holds the workers at zero — it
+self-corrects as soon as the always-on sms/email workers boot.
 
 ### 4. Replace one placeholder in manifests
 

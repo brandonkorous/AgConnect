@@ -5,7 +5,8 @@ metadata:
   namespace: agconn
   labels: { app.kubernetes.io/name: resume-parser, app.kubernetes.io/part-of: agconn }
 spec:
-  replicas: 1
+  # No replicas: KEDA's ScaledObject (deploy/k8s/base/keda-scaledobjects.yaml)
+  # owns the replica count and idles this at 0 when resume.parse is empty.
   selector: { matchLabels: { app.kubernetes.io/name: resume-parser } }
   template:
     metadata:

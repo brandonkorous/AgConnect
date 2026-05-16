@@ -83,6 +83,32 @@ resource "null_resource" "cert_manager" {
   depends_on = [null_resource.kubectl_credentials]
 }
 
+# ---- KEDA (scale-to-zero for bursty workers) ----
+# Upstream all-in-one manifest installs the KEDA CRDs (ScaledObject,
+# TriggerAuthentication, …) + operator + metrics-apiserver in the `keda`
+# namespace. The bursty workers (resume-parser, cert-generator, flc-verify)
+# carry ScaledObjects in deploy/k8s/base/keda-scaledobjects.yaml that scale
+# them 0→N off pg-boss queue depth, so the spot worker pool can idle at zero
+# instead of pinning two e2-small nodes 24/7.
+#
+# Ordering: KEDA CRDs MUST exist before the deploy workflow runs
+# `kubectl apply -k` (which includes the ScaledObjects). This Terraform is
+# one-time bootstrap and runs before the first deploy, same prerequisite
+# status as nginx-ingress and cert-manager. Idempotent; re-running with the
+# same version is a no-op.
+
+resource "null_resource" "keda" {
+  triggers = {
+    version = var.keda_version
+  }
+
+  provisioner "local-exec" {
+    command = "kubectl apply --server-side -f https://github.com/kedacore/keda/releases/download/${self.triggers.version}/keda-${trimprefix(self.triggers.version, "v")}.yaml"
+  }
+
+  depends_on = [null_resource.kubectl_credentials]
+}
+
 # ---- Cloudflare API token Secret for cert-manager DNS01 ----
 # Same token value as the GH Actions CLOUDFLARE_API_TOKEN secret. Lives in the
 # cert-manager namespace because the ClusterIssuer in deploy/k8s/base/ingress.yaml

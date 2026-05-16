@@ -1,31 +1,22 @@
 import { PgBoss } from 'pg-boss';
-import {
-  FLC_VERIFY_QUEUE,
-  FLC_SWEEP_QUEUE,
-  FLC_MSPA_SYNC_QUEUE,
-  type FlcVerifyJob,
-} from '@agconn/flc-verify';
+import { FLC_VERIFY_QUEUE, type FlcVerifyJob } from '@agconn/flc-verify';
 import { handleVerifyJob } from './handler.js';
-import { runFlcSweep } from './sweep.js';
-import { runMspaSync } from './mspa-sync.js';
 
-// Single long-running worker that owns three queues:
+// Scale-to-zero consumer for the per-employer FLC verification queue.
 //
-//   - flc.verify      (per-employer, fan-in from signup + sweep + admin)
-//   - flc.sweep       (cron, enqueues flc.verify for due employers)
-//   - flc.mspa.sync   (cron, downloads + ingests data.gov MSPA dataset)
+// This process owns ONLY flc.verify (fan-in from signup + admin re-check +
+// the nightly sweep). It carries no in-process cron: the two cron ticks that
+// used to live here — flc.sweep and flc.mspa.sync — are now native Kubernetes
+// CronJobs (deploy/k8s/base/flc-cronjobs.yaml) invoking sweep-main.ts /
+// mspa-sync-main.ts. That split is what lets KEDA idle this deployment at
+// zero replicas: with no self-scheduled clock, the only reason to run is a
+// pending flc.verify job, which the KEDA pg-boss scaler detects.
 //
-// All three live in one process because they share the same pg-boss
-// instance and operational profile (small, network-bound, low-CPU).
-// Splitting them into separate deployments would only add complexity.
+// Lifecycle: producers persist jobs to pgboss.job whether or not a consumer
+// is up. KEDA scales 0→N on backlog; this boots, drains, idles; KEDA scales
+// back to 0 after cooldown. SIGTERM (scale-down) drains in-flight work first.
 
 const ENV_KEYS_REQUIRED = ['DATABASE_URL'] as const;
-
-// Cron schedules. Sweep first (4 AM UTC = 8 PM PT previous day), MSPA sync
-// 30 minutes later. Both run before the audit-cronjobs sweep at 02:00–03:00
-// of the *following* night to avoid DB contention.
-const SWEEP_CRON = '0 4 * * *';
-const MSPA_SYNC_CRON = '30 4 * * *';
 
 function assertEnv(): void {
   const missing = ENV_KEYS_REQUIRED.filter((k) => !process.env[k]);
@@ -45,9 +36,9 @@ async function start(): Promise<void> {
   boss.on('error', (err) => console.error('[flc-verifier] pg-boss error', err));
   await boss.start();
 
+  // Idempotent — the producer side (@agconn/flc-verify) also creates this, but
+  // creating here keeps a cold first-ever boot self-sufficient.
   await boss.createQueue(FLC_VERIFY_QUEUE);
-  await boss.createQueue(FLC_SWEEP_QUEUE);
-  await boss.createQueue(FLC_MSPA_SYNC_QUEUE);
 
   await boss.work<FlcVerifyJob>(FLC_VERIFY_QUEUE, async (jobs) => {
     for (const job of jobs) {
@@ -63,22 +54,7 @@ async function start(): Promise<void> {
     }
   });
 
-  await boss.work(FLC_SWEEP_QUEUE, async () => {
-    const outcome = await runFlcSweep();
-    console.log('[flc-verifier] sweep complete', outcome);
-  });
-
-  await boss.work(FLC_MSPA_SYNC_QUEUE, async () => {
-    const outcome = await runMspaSync();
-    console.log('[flc-verifier] mspa sync complete', outcome);
-  });
-
-  await boss.schedule(FLC_SWEEP_QUEUE, SWEEP_CRON);
-  await boss.schedule(FLC_MSPA_SYNC_QUEUE, MSPA_SYNC_CRON);
-
-  console.log(
-    `[flc-verifier] running; verify=on, sweep=${SWEEP_CRON}, mspa-sync=${MSPA_SYNC_CRON}`,
-  );
+  console.log('[flc-verifier] running; verify=on (scale-to-zero consumer)');
 }
 
 async function shutdown(signal: string): Promise<void> {

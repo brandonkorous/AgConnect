@@ -17,6 +17,8 @@ resources:
   - cert-generator-deployment.yaml
   - scheduler-deployment.yaml
   - audit-cronjobs.yaml
+  - flc-cronjobs.yaml
+  - keda-scaledobjects.yaml
   - ingress.yaml
   - network-policy.yaml
 

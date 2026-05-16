@@ -5,7 +5,9 @@ metadata:
   namespace: agconn
   labels: { app.kubernetes.io/name: flc-verifier, app.kubernetes.io/part-of: agconn }
 spec:
-  replicas: 1
+  # No replicas: KEDA's ScaledObject (deploy/k8s/base/keda-scaledobjects.yaml)
+  # owns the replica count and idles this at 0 when flc.verify is empty. The
+  # two cron ticks this used to host are now flc-cronjobs.yaml.
   selector: { matchLabels: { app.kubernetes.io/name: flc-verifier } }
   template:
     metadata:
