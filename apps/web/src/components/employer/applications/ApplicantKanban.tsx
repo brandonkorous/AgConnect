@@ -15,6 +15,8 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { KanbanLane } from './KanbanLane';
 import { HireModal } from './HireModal';
 import { RejectModal } from './RejectModal';
@@ -250,8 +252,14 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
         <button
           type="button"
           onClick={() => setShowRejected((v) => !v)}
-          className="text-base-content/60 hover:text-base-content text-xs underline-offset-2 hover:underline"
+          aria-pressed={showRejected}
+          className="btn btn-ghost btn-sm border-base-300 text-base-content/80 border"
         >
+          <FontAwesomeIcon
+            icon={showRejected ? faEyeSlash : faEye}
+            aria-hidden
+            className="mr-2 h-3.5 w-3.5"
+          />
           {showRejected
             ? t('hide_rejected')
             : t('show_rejected', { count: state.rejected.length })}

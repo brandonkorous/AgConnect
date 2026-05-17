@@ -11,7 +11,7 @@ type Props = {
     applicants: ApplicantCardView[];
 };
 
-const LANE_KEYS = ['applied', 'reviewed', 'hired', 'rejected'] as const;
+const LANE_KEYS = ['applied', 'reviewed', 'hired'] as const;
 
 function swatchClass(key: (typeof LANE_KEYS)[number]): string {
     switch (key) {
@@ -21,8 +21,6 @@ function swatchClass(key: (typeof LANE_KEYS)[number]): string {
             return 'bg-info';
         case 'hired':
             return 'bg-success';
-        case 'rejected':
-            return 'bg-error/60';
     }
 }
 
