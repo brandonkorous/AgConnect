@@ -52,7 +52,22 @@ async function start(): Promise<void> {
 async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> {
     const enrollment = await prisma.enrollment.findUnique({
         where: { id: enrollmentId },
-        include: { program: { include: { org: { include: { employerProfile: true } } } }, worker: true },
+        include: {
+            program: {
+                include: {
+                    org: {
+                        select: {
+                            employerContacts: {
+                                where: { deletedAt: null },
+                                take: 1,
+                                select: { employer: { select: { legalName: true } } },
+                            },
+                        },
+                    },
+                },
+            },
+            worker: true,
+        },
     });
     if (!enrollment) {
         console.warn('[cert-generator] enrollment not found', { enrollmentId });
@@ -82,7 +97,8 @@ async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> 
         programTitleEs: enrollment.program.titleEs,
         funder: enrollment.program.funder,
         orgName:
-            enrollment.program.org?.employerProfile?.legalName ?? 'Training organization',
+            enrollment.program.org?.employerContacts[0]?.employer.legalName ??
+            'Training organization',
         completedAt: enrollment.completedAt ?? new Date(),
         certificateId,
     });

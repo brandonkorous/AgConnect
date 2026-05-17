@@ -45,7 +45,7 @@ async function handle(job: Job<AutomatchJob>): Promise<void> {
     const posting = await prisma.jobPosting.findFirst({
         where: { id: jobId, tenantId, deletedAt: null },
         include: {
-            employer: { include: { employerProfile: true } },
+            employer: true,
         },
     });
     if (!posting || !posting.autoMatchEnabled || posting.status !== 'active') {
@@ -53,10 +53,10 @@ async function handle(job: Job<AutomatchJob>): Promise<void> {
         return;
     }
 
+    // JobPosting.employer is now the EmployerProfile directly (the old
+    // User -> employerProfile hop was removed in the membership re-key).
     const employerName =
-        posting.employer.employerProfile?.dbaName ??
-        posting.employer.employerProfile?.legalName ??
-        'AGCONN employer';
+        posting.employer.dbaName ?? posting.employer.legalName ?? 'AGCONN employer';
 
     const origin: { lat: number; lng: number } | null =
         posting.siteLat != null && posting.siteLng != null

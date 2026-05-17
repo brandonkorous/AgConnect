@@ -45,7 +45,6 @@ async function tick(): Promise<void> {
       const match = await prisma.jobPosting.findFirst({
         where,
         orderBy: { publishedAt: 'desc' },
-        include: { employer: { include: { employerProfile: true } } },
       });
 
       if (!match || !match.seoSlug) continue;
