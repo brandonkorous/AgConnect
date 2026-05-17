@@ -1,33 +1,65 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
-import { useDraggable } from '@dnd-kit/core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
-import type { KanbanCardData } from './ApplicantKanban';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import type { KanbanCardData, KanbanLaneKey } from './ApplicantKanban';
 
 type Props = {
   card: KanbanCardData;
-  laneKey: string;
+  laneKey: KanbanLaneKey;
   dragDisabled: boolean;
   onTap?: () => void;
 };
 
 export function KanbanCard({ card, laneKey, dragDisabled, onTap }: Props) {
-  const { attributes, listeners, setNodeRef, isDragging, setActivatorNodeRef } =
-    useDraggable({
+  const router = useRouter();
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({
       id: card.id,
+      data: { type: 'card', laneKey },
       disabled: dragDisabled,
-      data: { card, fromLane: laneKey },
     });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  function onClick() {
+    if (isDragging) return;
+    if (
+      onTap &&
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 767px)').matches
+    ) {
+      onTap();
+      return;
+    }
+    router.push(card.href as Route);
+  }
 
   return (
     <div
       ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      role="button"
+      tabIndex={0}
+      aria-label={`${card.firstName} ${card.lastInitial}.`}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       className={[
-        'bg-base-200 border-base-300 hover:border-primary/40 rounded-lg border p-2.5 transition-colors',
-        isDragging ? 'opacity-40' : '',
+        'bg-base-200 border-base-300 hover:border-primary/40 focus-visible:border-primary rounded-lg border p-2.5 transition-colors focus-visible:outline-none',
+        dragDisabled ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing',
       ].join(' ')}
     >
       <div className="flex items-center gap-2">
@@ -42,39 +74,14 @@ export function KanbanCard({ card, laneKey, dragDisabled, onTap }: Props) {
           {(card.firstName[0] ?? '').toUpperCase()}
           {card.lastInitial.toUpperCase()}
         </div>
-        <Link
-          href={card.href as Route}
-          className="min-w-0 flex-1"
-          onClick={(e) => {
-            if (isDragging) {
-              e.preventDefault();
-              return;
-            }
-            if (onTap && typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
-              e.preventDefault();
-              onTap();
-            }
-          }}
-        >
+        <div className="min-w-0 flex-1">
           <div className="truncate text-xs font-semibold">
             {card.firstName} {card.lastInitial}.
           </div>
           {card.jobTitle && (
             <div className="text-base-content/60 truncate text-xs">{card.jobTitle}</div>
           )}
-        </Link>
-        {!dragDisabled && (
-          <button
-            ref={setActivatorNodeRef}
-            type="button"
-            aria-label="Drag"
-            className="text-base-content/40 hover:text-base-content/70 cursor-grab touch-none p-1 active:cursor-grabbing"
-            {...listeners}
-            {...attributes}
-          >
-            <FontAwesomeIcon icon={faGripVertical} className="h-3 w-3" />
-          </button>
-        )}
+        </div>
       </div>
       {card.matchLabel && (
         <div className="text-primary mt-2 font-mono text-[10px] font-bold">

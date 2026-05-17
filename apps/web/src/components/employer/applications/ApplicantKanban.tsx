@@ -5,13 +5,16 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
   DndContext,
-  type DragEndEvent,
-  type DragStartEvent,
+  DragOverlay,
+  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { KanbanLane } from './KanbanLane';
 import { HireModal } from './HireModal';
 import { RejectModal } from './RejectModal';
@@ -70,27 +73,41 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
     return out;
   });
   const [showRejected, setShowRejected] = useState(false);
-  const [activeDrag, setActiveDrag] = useState<{ id: string; from: KanbanLaneKey } | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [draggingFrom, setDraggingFrom] = useState<KanbanLaneKey | null>(null);
   const [pending, setPending] = useState<PendingModal>(null);
-  const [sheet, setSheet] = useState<{ card: KanbanCardData; fromLane: KanbanLaneKey } | null>(null);
+  const [sheet, setSheet] = useState<{ card: KanbanCardData; fromLane: KanbanLaneKey } | null>(
+    null,
+  );
   const [toast, setToast] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  function moveCard(cardId: string, from: KanbanLaneKey, to: KanbanLaneKey, newStatus: KanbanLaneKey) {
+  function findCard(id: string): { card: KanbanCardData; lane: KanbanLaneKey } | null {
+    for (const lane of ['applied', 'reviewed', 'hired', 'rejected'] as KanbanLaneKey[]) {
+      const card = state[lane].find((c) => c.id === id);
+      if (card) return { card, lane };
+    }
+    return null;
+  }
+
+  function moveCard(
+    cardId: string,
+    from: KanbanLaneKey,
+    to: KanbanLaneKey,
+    newStatus: KanbanLaneKey,
+  ) {
     setState((prev) => {
-      const fromCards = prev[from].filter((c) => c.id !== cardId);
       const moved = prev[from].find((c) => c.id === cardId);
       if (!moved) return prev;
-      const next: LaneState = {
+      return {
         ...prev,
-        [from]: fromCards,
+        [from]: prev[from].filter((c) => c.id !== cardId),
         [to]: [{ ...moved, status: newStatus }, ...prev[to]],
       };
-      return next;
     });
   }
 
@@ -106,21 +123,23 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
   }
 
   function onDragStart(e: DragStartEvent) {
-    const data = e.active.data.current;
-    if (!data) return;
-    setActiveDrag({ id: String(e.active.id), from: data.fromLane as KanbanLaneKey });
+    const id = String(e.active.id);
+    setActiveId(id);
+    setDraggingFrom((e.active.data.current?.laneKey as KanbanLaneKey) ?? null);
   }
 
   function onDragEnd(e: DragEndEvent) {
-    setActiveDrag(null);
+    setActiveId(null);
+    setDraggingFrom(null);
     const { active, over } = e;
     if (!over) return;
-    const data = active.data.current;
-    if (!data) return;
-    const fromLane = data.fromLane as KanbanLaneKey;
-    const toLane = over.id as KanbanLaneKey;
+    const fromLane = active.data.current?.laneKey as KanbanLaneKey | undefined;
+    const toLane = over.data.current?.laneKey as KanbanLaneKey | undefined;
+    if (!fromLane || !toLane) return;
     if (!isValidTransition(fromLane, toLane)) return;
-    const card = data.card as KanbanCardData;
+    const found = findCard(String(active.id));
+    if (!found) return;
+    const card = found.card;
     if (toLane === 'reviewed') {
       void silentTransitionToReviewed(card, fromLane);
     } else if (toLane === 'hired') {
@@ -165,12 +184,17 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
     ? ['applied', 'reviewed', 'hired', 'rejected']
     : ['applied', 'reviewed', 'hired'];
 
-  const draggingFrom = activeDrag?.from;
-  const dragInProgress = activeDrag !== null;
+  const dragInProgress = activeId !== null;
+  const activeCard = activeId ? findCard(activeId)?.card : null;
 
   return (
     <>
-      <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      >
         <div
           className={[
             'grid grid-cols-1 gap-4',
@@ -197,6 +221,29 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
             );
           })}
         </div>
+
+        <DragOverlay dropAnimation={null}>
+          {activeCard ? (
+            <div className="bg-base-100 border-primary rotate-2 cursor-grabbing rounded-lg border-2 p-2.5 shadow-lg">
+              <div className="flex items-center gap-2">
+                <div className="bg-base-content text-base-100 grid h-7 w-7 shrink-0 place-items-center rounded-full font-mono text-[10px] font-bold">
+                  {(activeCard.firstName[0] ?? '').toUpperCase()}
+                  {activeCard.lastInitial.toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-xs font-semibold">
+                    {activeCard.firstName} {activeCard.lastInitial}.
+                  </div>
+                  {activeCard.jobTitle && (
+                    <div className="text-base-content/60 truncate text-xs">
+                      {activeCard.jobTitle}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       <div className="mt-4 flex justify-end">

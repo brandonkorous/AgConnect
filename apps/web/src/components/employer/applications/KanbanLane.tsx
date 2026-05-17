@@ -1,6 +1,7 @@
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { KanbanCard } from './KanbanCard';
 import type { KanbanCardData, KanbanLaneKey } from './ApplicantKanban';
 
@@ -29,8 +30,7 @@ export function KanbanLane({
 }: Props) {
   const { setNodeRef, isOver } = useDroppable({
     id: laneKey,
-    data: { lane: laneKey },
-    disabled: !validTarget,
+    data: { type: 'column', laneKey },
   });
 
   const highlight = dragInProgress
@@ -55,21 +55,27 @@ export function KanbanLane({
         </div>
         <div className="badge badge-neutral badge-sm font-mono">{cards.length}</div>
       </div>
-      <div className="card-body gap-2 min-h-24">
-        {cards.length === 0 && (
-          <div className="text-base-content/50 px-1 py-2 text-center text-xs">
-            {emptyCopy}
-          </div>
-        )}
-        {cards.map((c) => (
-          <KanbanCard
-            key={c.id}
-            card={c}
-            laneKey={laneKey}
-            dragDisabled={cardsDragDisabled}
-            onTap={() => onCardTap(c)}
-          />
-        ))}
+      <div className="card-body min-h-24 gap-2">
+        <SortableContext
+          items={cards.map((c) => c.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {cards.length === 0 ? (
+            <div className="text-base-content/50 px-1 py-2 text-center text-xs">
+              {emptyCopy}
+            </div>
+          ) : (
+            cards.map((c) => (
+              <KanbanCard
+                key={c.id}
+                card={c}
+                laneKey={laneKey}
+                dragDisabled={cardsDragDisabled}
+                onTap={() => onCardTap(c)}
+              />
+            ))
+          )}
+        </SortableContext>
       </div>
     </section>
   );
