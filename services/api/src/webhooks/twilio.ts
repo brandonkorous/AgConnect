@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { validateTwilioSignature, enqueueSms } from '@agconn/sms';
 import { pools, SmsStatus, AppStatus, UserRole, Lang } from '@agconn/db';
@@ -50,6 +50,11 @@ function mapTwilioStatus(s: string | undefined): SmsStatus | null {
 }
 
 export const twilioWebhookRoutes = new Hono();
+
+// Twilio inbound SMS webhooks require a TwiML response (text/xml). An empty
+// <Response/> tells Twilio not to send any reply — actual replies go out via
+// the sms-worker queue.
+const twiml = (c: Context) => c.body('<Response/>', 200, { 'Content-Type': 'text/xml' });
 
 twilioWebhookRoutes.post('/status', async (c) => {
     const params = Object.fromEntries(new URLSearchParams(await c.req.text())) as Record<string, string>;
@@ -112,10 +117,10 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
     // 1. STOP keywords — always wins, even on a pending stub.
     if (from && STOP_KEYWORDS.has(text)) {
         await handleStop(from);
-        return ok(c, { received: true });
+        return twiml(c);
     }
 
-    if (!from) return ok(c, { received: true });
+    if (!from) return twiml(c);
 
     // 2. Pending stub awaiting confirmation — YES advances; anything else
     //    re-prompts. We look up by phone so this works whether the existing
@@ -127,7 +132,7 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
     if (existing?.smsOptInState === 'pending_confirm') {
         if (CONFIRM_KEYWORDS.has(text)) {
             await confirmOptIn(existing.id);
-            return ok(c, { received: true, optIn: 'confirmed' });
+            return twiml(c);
         }
         await enqueueSms({
             tenantId: SYSTEM_TENANT_ID,
@@ -136,7 +141,7 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
             vars: {},
             jobKey: `optin-invalid-${existing.id}-${Date.now()}`,
         });
-        return ok(c, { received: true, optIn: 'pending' });
+        return twiml(c);
     }
 
     const tokens = text.split(/\s+/);
@@ -147,7 +152,7 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
         const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
         if (optInToken) {
             await startOptIn(from, optInToken);
-            return ok(c, { received: true, optIn: 'started', keyword: optInToken });
+            return twiml(c);
         }
     }
 
@@ -162,10 +167,10 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
         if (!keyword || keyword.kind !== 'job_apply') continue;
 
         await handleJobApply({ keyword, fromPhone: from });
-        return ok(c, { received: true, keyword: token });
+        return twiml(c);
     }
 
-    return ok(c, { received: true });
+    return twiml(c);
 });
 
 async function handleStop(from: string): Promise<void> {
