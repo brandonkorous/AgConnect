@@ -291,10 +291,11 @@ async function handleJobApply(args: {
         where: { phone: fromPhone, role: 'worker', deletedAt: null },
     });
     if (!worker) {
+        console.warn('[twilio] sms-apply: unknown phone, dropped', { toPhone: fromPhone, keyword: keyword.keyword });
         await emitSystemAudit({
             action: 'system.sms.dropped',
-            resourceType: 'sms_log',
-            resourceId: '',
+            resourceType: 'sms_keyword',
+            resourceId: keyword.id,
             metadata: { template: 'sms.apply.unknown_phone', reason: 'unknown_worker', toPhone: fromPhone },
         });
         return;
