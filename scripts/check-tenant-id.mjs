@@ -76,6 +76,12 @@ const NULLABLE_TENANT_MODELS = new Set([
     // with tenantId set are per-tenant overrides. Uniqueness is enforced via
     // partial indexes in the migration (mirrors TranslationKey).
     'FeatureFlag',
+    // Employer role catalog: rows with tenantId=null are the global,
+    // platform-managed role bundles (owner/manager/.../foreman); a tenantId
+    // set is a reserved future per-tenant override (schema-ready, unused).
+    // Partial unique indexes keep (key) unique per scope. See migration
+    // 20260516120000_employer_membership_rbac.
+    'Role',
 ]);
 
 const text = readFileSync(SCHEMA, 'utf8');
