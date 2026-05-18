@@ -1,8 +1,16 @@
 import { runSmsWorker, getSmsBoss } from '@agconn/sms';
 import { startRenotifyWorker } from './renotify.js';
 import { startAutomatchWorker } from './automatch.js';
+import { startProvisionWorker } from './provision.js';
 
-const ENV_KEYS_REQUIRED = ['DATABASE_URL', 'AUDIT_HMAC_KEY', 'PUBLIC_API_URL'] as const;
+// CLERK_SECRET_KEY is required by the sms.provision consumer (identity
+// keystone) — fail fast at startup rather than on the first inbound SMS.
+const ENV_KEYS_REQUIRED = [
+  'DATABASE_URL',
+  'AUDIT_HMAC_KEY',
+  'PUBLIC_API_URL',
+  'CLERK_SECRET_KEY',
+] as const;
 
 function assertEnv(): void {
   const missing = ENV_KEYS_REQUIRED.filter((k) => !process.env[k]);
@@ -22,6 +30,7 @@ async function main(): Promise<void> {
   const boss = await getSmsBoss();
   await startRenotifyWorker(boss);
   await startAutomatchWorker(boss);
+  await startProvisionWorker(boss);
 
   const shutdown = async (signal: string) => {
     console.log(`[sms-worker] received ${signal}, stopping…`);

@@ -1,8 +1,7 @@
-import { randomBytes } from 'node:crypto';
 import { Hono, type Context } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
-import { validateTwilioSignature, enqueueSms } from '@agconn/sms';
-import { pools, SmsStatus, AppStatus, UserRole, Lang } from '@agconn/db';
+import { validateTwilioSignature, enqueueSms, enqueueProvision } from '@agconn/sms';
+import { pools, SmsStatus, AppStatus, UserRole } from '@agconn/db';
 import { emitSystemAudit } from '../middleware/audit.js';
 
 // Platform-level operations (workers, opt-in flow) live under this tenant
@@ -114,6 +113,8 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
     const text = (params.Body ?? '').trim().toUpperCase();
     const from = params.From ?? '';
 
+    console.log('[twilio] inbound', { from: from ? from.slice(-4) : 'none', text });
+
     // 1. STOP keywords — always wins, even on a pending stub.
     if (from && STOP_KEYWORDS.has(text)) {
         await handleStop(from);
@@ -128,6 +129,8 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
     const existing = await pools.webhooks.user.findFirst({
         where: { phone: from, role: UserRole.worker },
     });
+
+    console.log('[twilio] inbound user state', { exists: !!existing, state: existing?.smsOptInState ?? 'none' });
 
     if (existing?.smsOptInState === 'pending_confirm') {
         if (CONFIRM_KEYWORDS.has(text)) {
@@ -151,7 +154,15 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
     if (!existing) {
         const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
         if (optInToken) {
-            await startOptIn(from, optInToken);
+            // Identity keystone: hand off to sms.provision off the request
+            // path (Twilio fast-response). The consumer ensures a real Clerk
+            // user for this phone, upserts the User row, emits the
+            // opt_in_pending audit (with the real user id), and enqueues the
+            // confirm SMS. No sms_* id is ever minted, so the sms<->clerk
+            // merge problem cannot occur. See
+            // docs/00-foundation/13-onboarding-identity-remediation/.
+            const locale = ES_OPT_IN_KEYWORDS.has(optInToken) ? 'es' : 'en';
+            await enqueueProvision({ phone: from, locale, keyword: optInToken });
             return twiml(c);
         }
     }
@@ -190,62 +201,20 @@ async function handleStop(from: string): Promise<void> {
     });
 }
 
-async function startOptIn(from: string, keyword: string): Promise<void> {
-    // Synthetic id (sms_-prefixed) distinguishes SMS-originated stubs from
-    // Clerk-issued user_-prefixed ids. When the same phone later signs up
-    // through Clerk, the clerk webhook handler must merge the two records;
-    // see TODO in webhooks/clerk.ts. Workers that never sign up online keep
-    // operating with this id forever, which is the design goal — no signup.
-    const id = `sms_${randomBytes(8).toString('hex')}`;
-    const lang = ES_OPT_IN_KEYWORDS.has(keyword) ? Lang.es : Lang.en;
-
-    // Race: if two inbound texts land for the same phone within the same
-    // tick (network retries), upsert keeps the first stub. Either path
-    // ends in a single confirm prompt below.
-    const user = await pools.webhooks.$transaction(async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
-        const existing = await tx.user.findFirst({
-            where: { phone: from, role: UserRole.worker },
-        });
-        if (existing) return existing;
-        return tx.user.create({
-            data: {
-                id,
-                role: UserRole.worker,
-                phone: from,
-                preferredLang: lang,
-                smsOptInState: 'pending_confirm',
-            },
-        });
-    });
-
-    await emitSystemAudit({
-        action: 'system.sms.opt_in_pending',
-        resourceType: 'user',
-        resourceId: user.id,
-        metadata: { phone: from, keyword, lang: lang.toString() },
-    });
-
-    await enqueueSms({
-        tenantId: SYSTEM_TENANT_ID,
-        userId: user.id,
-        template: 'sms.optin.confirm',
-        vars: {},
-        jobKey: `optin-confirm-${user.id}`,
-    });
-}
-
 async function confirmOptIn(userId: string): Promise<void> {
     const now = new Date();
     const user = await pools.webhooks.$transaction(async (tx) => {
         await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        // INVARIANT consent != onboarded: confirming opt-in records consent
+        // (permission to message) only. `onboarded` means profile complete
+        // enough to match/hire and is set by the onboarding flow (Phase 2/3),
+        // never here. See docs/00-foundation/13-onboarding-identity-remediation/.
         return tx.user.update({
             where: { id: userId },
             data: {
                 smsOptInState: 'consented',
                 consentMethod: 'sms_double_opt_in',
                 consentedAt: now,
-                onboarded: true,
             },
         });
     });

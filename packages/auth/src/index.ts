@@ -2,6 +2,11 @@ import { UserRole } from '@agconn/db';
 
 export { UserRole };
 
+export {
+    ensureClerkUserByPhone,
+    type EnsureClerkUserResult,
+} from './clerk-provision.js';
+
 // Where each role's home lives within the locale tree. Unknown roles fall
 // back to the marketing root.
 export function homePathForRole(locale: string, role: UserRole): string {

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
+import type { Route } from 'next';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { requireRole, UserRole } from '@/lib/auth/role';
 import { FieldHeader } from '@/components/field/FieldHeader';
 import { FieldBottomNav } from '@/components/field/FieldBottomNav';
 import { SwitchToFullView } from '@/components/field/SwitchToFullView';
@@ -20,6 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function FieldLayout({ children, params }: Props) {
     const { locale } = await params;
+    // Same auth + onboarded gate as the worker app shell. /field has no
+    // onboarding child, so redirecting un-onboarded workers out cannot loop.
+    const { onboarded } = await requireRole(locale, UserRole.worker);
+    if (!onboarded) {
+        redirect(`/${locale}/worker/onboarding` as Route);
+    }
     return (
         <div className="bg-base-200 min-h-screen">
             <FieldHeader locale={locale} />

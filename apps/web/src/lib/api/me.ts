@@ -3,7 +3,7 @@ import type { UserRole } from '@agconn/auth';
 import { getServerApiClient } from './server-client';
 
 export type MeResponse = {
-  user: { id: string; role: UserRole };
+  user: { id: string; role: UserRole; onboarded: boolean };
   tenant: { id: string; slug: string; name: string } | null;
 };
 

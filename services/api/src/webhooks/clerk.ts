@@ -6,6 +6,7 @@ import { Webhook } from 'svix';
 import { ok, err } from '@agconn/api-client/server';
 import { Lang, UserRole, pools, type Tx } from '@agconn/db';
 import { webhookMiddleware, type TenantVars } from '../middleware/tenantContext.js';
+import { recordWebOtpConsent } from '../lib/consent.js';
 
 // Clerk → DB mirror. Per docs/00-foundation/02-auth/03-api.md the contract is:
 //   user.created      → upsert User
@@ -125,6 +126,18 @@ async function applyEvent(db: Tx, event: ClerkEvent): Promise<void> {
           tenantId,
         },
       });
+
+      // web_otp consent: a phone-verified worker who signed up on the web has
+      // given TCPA consent at phone verification. SMS-provisioned identities
+      // carry private_metadata.provisionedVia='sms' and are excluded — their
+      // consent is sms_double_opt_in, written by confirmOptIn on YES. The
+      // writer is guarded by consentMethod:null so this never clobbers.
+      const provisionedVia = (
+        data['private_metadata'] as { provisionedVia?: unknown } | undefined
+      )?.provisionedVia;
+      if (role === UserRole.worker && phone && provisionedVia !== 'sms') {
+        await recordWebOtpConsent(db, userId);
+      }
       return;
     }
 

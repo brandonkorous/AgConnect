@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
 import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
+import { onboardingPath } from '@/lib/onboarding-steps';
 
 type Props = {
   locale: string;
@@ -62,7 +63,7 @@ export function NameForm({
         return;
       }
       await clear();
-      router.push(`/${locale}/onboarding/county`);
+      router.push(onboardingPath(locale, 'county'));
     });
   }
 
