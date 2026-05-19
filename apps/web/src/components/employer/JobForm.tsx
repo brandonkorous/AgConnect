@@ -60,6 +60,11 @@ export function JobForm({
     const [jobId, setJobId] = useState<string | null>(initial?.id ?? null);
     const [smsKeyword, setSmsKeyword] = useState<string | null>(initial?.smsApplyKeyword ?? null);
     const [diffOpen, setDiffOpen] = useState(false);
+    // Don't surface inline field errors on a pristine form. A field's error
+    // shows only once the user has edited it, or once a save/publish was
+    // attempted. Server-returned field errors always show (post-submit).
+    const [touched, setTouched] = useState<Set<string>>(() => new Set());
+    const [attempted, setAttempted] = useState(false);
 
     const isDraft = (initial?.status ?? 'draft') === 'draft';
     const isActive = mode === 'edit' && initial?.status === 'active';
@@ -91,14 +96,28 @@ export function JobForm({
 
     const errorByPath = useMemo(() => {
         const map: Record<string, FieldError> = {};
-        for (const e of liveErrors) map[e.path] = e;
+        for (const e of liveErrors) {
+            const root = e.path.split('.')[0]!;
+            if (attempted || touched.has(e.path) || touched.has(root)) {
+                map[e.path] = e;
+            }
+        }
+        // Server-returned errors come from an actual save attempt — always show.
         for (const e of fieldErrors) map[e.path] = e;
         return map;
-    }, [liveErrors, fieldErrors]);
+    }, [liveErrors, fieldErrors, attempted, touched]);
 
-    const update = (patch: Partial<JobFormState>) => setState((s) => ({ ...s, ...patch }));
+    const update = (patch: Partial<JobFormState>) => {
+        setState((s) => ({ ...s, ...patch }));
+        setTouched((prev) => {
+            const next = new Set(prev);
+            for (const k of Object.keys(patch)) next.add(k);
+            return next;
+        });
+    };
 
     function handleFooterSave(action: SaveAction) {
+        setAttempted(true);
         if (action === 'save_notify') {
             setDiffOpen(true);
             return;

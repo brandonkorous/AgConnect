@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { pushToast } from '@agconn/ui';
 import { HireModal } from './applications/HireModal';
 import { RejectModal } from './applications/RejectModal';
 import { transitionApplication } from './applications/transitionApplication';
@@ -44,13 +45,22 @@ export function ApplicantActions({
     setBusy(false);
     if (!res.ok) {
       setError(res.message || 'Failed.');
+      pushToast({ variant: 'error', title: t('toast_error') });
       return;
     }
+    pushToast({ variant: 'success', title: t('toast_reviewed', { name: workerName }) });
     router.refresh();
   }
 
-  function onSuccess() {
+  function onHireSuccess() {
     setModal(null);
+    pushToast({ variant: 'success', title: t('toast_hired', { name: workerName }) });
+    router.refresh();
+  }
+
+  function onRejectSuccess() {
+    setModal(null);
+    pushToast({ variant: 'info', title: t('toast_rejected', { name: workerName }) });
     router.refresh();
   }
 
@@ -96,7 +106,7 @@ export function ApplicantActions({
           applicationId={applicationId}
           workerName={workerName}
           onClose={() => setModal(null)}
-          onSuccess={onSuccess}
+          onSuccess={onHireSuccess}
         />
       )}
       {modal === 'reject' && (
@@ -106,7 +116,7 @@ export function ApplicantActions({
           workerName={workerName}
           jobTitle={jobTitle}
           onClose={() => setModal(null)}
-          onSuccess={onSuccess}
+          onSuccess={onRejectSuccess}
         />
       )}
     </>

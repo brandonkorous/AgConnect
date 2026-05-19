@@ -405,6 +405,22 @@ export const employer: TranslationBundle = {
         en: "Reject",
         es: "Rechazar",
     },
+    "applicant_detail.toast_reviewed": {
+        en: "{name} marked as reviewed.",
+        es: "{name} marcado como revisado.",
+    },
+    "applicant_detail.toast_hired": {
+        en: "{name} hired — we'll text them the offer.",
+        es: "{name} contratado — le enviaremos la oferta por mensaje.",
+    },
+    "applicant_detail.toast_rejected": {
+        en: "{name} moved to not selected.",
+        es: "{name} movido a no seleccionado.",
+    },
+    "applicant_detail.toast_error": {
+        en: "Couldn't update — please try again.",
+        es: "No se pudo actualizar — inténtalo de nuevo.",
+    },
     "applicant_detail.self_reported": {
         en: "Self-reported",
         es: "Auto-reportado",
@@ -681,6 +697,10 @@ export const employer: TranslationBundle = {
         en: "Could not send message.",
         es: "No se pudo enviar el mensaje.",
     },
+    "candidates.row.toast_hired": {
+        en: "Hired — we'll text them the offer.",
+        es: "Contratado — le enviaremos la oferta por mensaje.",
+    },
     "candidates.row.hire_title": {
         en: "Hire candidate",
         es: "Contratar candidato",
@@ -760,6 +780,10 @@ export const employer: TranslationBundle = {
     "compliance.action_cta.confirm": {
         en: "Save action",
         es: "Guardar acción",
+    },
+    "compliance.action_cta.toast_saved": {
+        en: "Action saved.",
+        es: "Acción guardada.",
     },
     "compliance.action_cta.error": {
         en: "Could not save.",
@@ -956,6 +980,10 @@ export const employer: TranslationBundle = {
     "compliance.edit_item.confirm": {
         en: "Save",
         es: "Guardar",
+    },
+    "compliance.edit_item.toast_saved": {
+        en: "Changes saved.",
+        es: "Cambios guardados.",
     },
     "compliance.edit_item.cta": {
         en: "Edit item",
@@ -1264,6 +1292,14 @@ export const employer: TranslationBundle = {
         en: "compliant",
         es: "en cumplimiento",
     },
+    "compliance.headline_status_ok": {
+        en: "compliant",
+        es: "en cumplimiento",
+    },
+    "compliance.headline_status_attention": {
+        en: "needs attention",
+        es: "necesita atención",
+    },
     "compliance.new_item.cancel": {
         en: "Cancel",
         es: "Cancelar",
@@ -1299,6 +1335,10 @@ export const employer: TranslationBundle = {
     "compliance.new_item.confirm": {
         en: "Add item",
         es: "Agregar ítem",
+    },
+    "compliance.new_item.toast_saved": {
+        en: "Item added.",
+        es: "Ítem agregado.",
     },
     "compliance.new_item.cta": {
         en: "New item",
@@ -1423,6 +1463,10 @@ export const employer: TranslationBundle = {
     "crews.crew_size_short": {
         en: "crew",
         es: "cuadrilla",
+    },
+    "crews.empty_no_crews_title": {
+        en: "No crews yet",
+        es: "Aún sin cuadrillas",
     },
     "crews.empty_no_crews": {
         en: "No crews yet — create one to start scheduling.",
@@ -5330,6 +5374,7 @@ export const employer: TranslationBundle = {
     "jobs.form_v2.field_site_address_placeholder": { en: "East orchard · Block 12-A", es: "Huerto este · Bloque 12-A" },
     "jobs.form_v2.hint_site_privacy": { en: "Workers see only the county and approximate distance until they apply.", es: "El trabajador ve solo el condado y la distancia aproximada hasta que aplica." },
     "jobs.form_v2.field_county": { en: "County", es: "Condado" },
+    "jobs.form_v2.county_address_mismatch": { en: "The pinned site is in {detected} County — double-check the county selection.", es: "El sitio marcado está en el condado de {detected} — verifica el condado seleccionado." },
     "jobs.form_v2.county_fresno": { en: "Fresno County", es: "Condado de Fresno" },
     "jobs.form_v2.county_kern": { en: "Kern County", es: "Condado de Kern" },
     "jobs.form_v2.county_kings": { en: "Kings County", es: "Condado de Kings" },

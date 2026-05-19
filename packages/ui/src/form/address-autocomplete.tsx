@@ -104,7 +104,11 @@ function suggestionToAddress(props: RetrieveProps, mapboxId: string): AddressVal
   const city = ctx.place?.name ?? '';
   const stateCode = ctx.region?.region_code ?? '';
   const postalCode = ctx.postcode?.name ?? '';
-  if (!street || !city || !stateCode || !postalCode) return null;
+  // Rural ag work sites (county roads, parcels, "Avenue 9") frequently lack a
+  // Mapbox city or postal code. The pin's coordinates are the only truly
+  // required datum — gate on street + coords + state, and let city/postal be
+  // best-effort so a valid field isn't rejected as "no match".
+  if (!street || !stateCode) return null;
   return {
     streetAddress: street,
     city,

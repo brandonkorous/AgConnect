@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -7,6 +8,14 @@ import { listInbox } from '@/lib/api/employer';
 import { ApplicantActions } from '@/components/employer/ApplicantActions';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { id } = await params;
+    const apps = await listInbox();
+    const app = apps.find((a) => a.id === id);
+    if (!app) return {};
+    return { title: `${app.worker.firstName} ${app.worker.lastInitial}.` };
+}
 
 export default async function ApplicantDetailPage({ params }: Props) {
     const { locale, id } = await params;

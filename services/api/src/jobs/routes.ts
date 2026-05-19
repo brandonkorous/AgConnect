@@ -6,6 +6,7 @@ import {
     JobsQuery,
     PatchSavedSearchBody,
     SavedSearchFiltersSchema,
+    countSkillMatches,
 } from '@agconn/schemas';
 import { requireAuth, type AuthVars } from '../middleware/authContext.js';
 import type { AuditCtxVars } from '../middleware/audit.js';
@@ -214,7 +215,7 @@ jobsRoutes.get('/recommended', async (c) => {
     const ranked = rows
         .map((j) => ({
             ...j,
-            matchScore: j.skills.filter((s) => profile.skills.includes(s)).length,
+            matchScore: countSkillMatches(j.skills, profile.skills),
         }))
         .sort(
             (a, b) =>

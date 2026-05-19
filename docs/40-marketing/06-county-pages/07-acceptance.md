@@ -1,5 +1,19 @@
 # 06 — County Landing Pages: Acceptance
 
+## Endpoint: sorting / filtering / paging
+
+- [ ] `GET /v1/landing/jobs` with no params returns the **same** result set and
+      order as before this change (`recent` = `createdAt desc`, default
+      `limit` 20) — `/jobs` and `FeaturedJobs` regression-free.
+- [ ] `sort=wage_desc|wage_asc|start_soon|recent` each return correctly ordered
+      rows; `sort=garbage` → 400.
+- [ ] `county=Fresno` (any of the 5, case-insensitive) filters server-side;
+      `county=Sonoma` / unchecked value → 400, never reaches Prisma.
+- [ ] `limit` clamped to 1–50; `limit=0`/`limit=999`/`limit=abc` → 400.
+- [ ] A `cursor` minted under one `sort` replayed with a different `sort` →
+      400 `cursor_sort_mismatch` (no corrupt/duplicated page).
+- [ ] Following `nextCursor` to the 3rd page yields no overlap/gap for each sort.
+
 ## Routing & generation
 
 - [ ] `/[locale]/jobs/county/{fresno,tulare,kern,kings,madera}` resolves for

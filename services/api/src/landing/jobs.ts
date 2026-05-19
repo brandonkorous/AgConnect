@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { JobStatus, type County } from '@agconn/db';
 import { anonymousMiddleware, type AnonymousVars } from '../middleware/tenantContext.js';
+import { publicJobsQuerySchema, type PublicJobsSort } from './schemas.js';
 
 // Anonymous read-only job browse — used by SEO surfaces at /[locale]/jobs.
 // Reads are scoped by the marketplace RLS policy on `job_postings`, which
@@ -11,41 +12,49 @@ import { anonymousMiddleware, type AnonymousVars } from '../middleware/tenantCon
 export const publicJobsRoutes = new Hono<{ Variables: AnonymousVars }>();
 publicJobsRoutes.use('*', anonymousMiddleware('landing'));
 
-const PAGE_SIZE = 20;
-
 publicJobsRoutes.get('/', async (c) => {
     const url = new URL(c.req.url);
-    const county = url.searchParams.get('county') ?? undefined;
-    const cursor = url.searchParams.get('cursor') ?? undefined;
+    const parsed = publicJobsQuerySchema.safeParse({
+        county: url.searchParams.get('county') ?? undefined,
+        sort: url.searchParams.get('sort') ?? undefined,
+        limit: url.searchParams.get('limit') ?? undefined,
+        cursor: url.searchParams.get('cursor') ?? undefined,
+    });
+    if (!parsed.success) {
+        return err(c, 400, 'invalid_query');
+    }
+    const { county, sort, limit, cursor } = parsed.data;
 
-    const decoded = cursor ? decodeCursor(cursor) : null;
+    let keyset: ReturnType<typeof keysetWhere> | null = null;
+    if (cursor) {
+        const decoded = decodeCursor(cursor);
+        if (!decoded) return err(c, 400, 'invalid_cursor');
+        // A cursor is only valid for the sort it was minted under — replaying
+        // it under a different sort would walk the wrong keyset and emit a
+        // corrupt page.
+        if (decoded.sort !== sort) return err(c, 400, 'cursor_sort_mismatch');
+        keyset = keysetWhere(sort, decoded);
+    }
 
     const where = {
         status: JobStatus.active,
         deletedAt: null,
         ...(county ? { county: county as County } : {}),
-        ...(decoded
-            ? {
-                OR: [
-                    { createdAt: { lt: decoded.createdAt } },
-                    { createdAt: decoded.createdAt, id: { lt: decoded.id } },
-                ],
-            }
-            : {}),
+        ...(keyset ?? {}),
     };
 
     const rows = await c.var.db.jobPosting.findMany({
         where,
-        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-        take: PAGE_SIZE + 1,
+        orderBy: orderByFor(sort),
+        take: limit + 1,
         include: { employer: { select: { legalName: true, dbaName: true } } },
     });
 
-    const slice = rows.slice(0, PAGE_SIZE);
-    const hasMore = rows.length > PAGE_SIZE;
+    const slice = rows.slice(0, limit);
+    const hasMore = rows.length > limit;
     const last = slice[slice.length - 1];
     const nextCursor =
-        hasMore && last ? encodeCursor({ createdAt: last.createdAt, id: last.id }) : null;
+        hasMore && last ? encodeCursor(sort, last) : null;
 
     return ok(c, {
         jobs: slice.map(shapePublicJob),
@@ -133,16 +142,71 @@ function shapePublicJob(j: {
     };
 }
 
-function encodeCursor(cur: { createdAt: Date; id: string }): string {
-    return Buffer.from(`${cur.createdAt.toISOString()}|${cur.id}`).toString('base64url');
+interface CursorData {
+    sort: PublicJobsSort;
+    k: string; // sort-key value: ISO date for recent/start_soon, decimal string for wage_*
+    id: string;
 }
 
-function decodeCursor(s: string): { createdAt: Date; id: string } | null {
+function orderByFor(sort: PublicJobsSort) {
+    switch (sort) {
+        case 'wage_desc':
+            return [{ wageMin: 'desc' as const }, { id: 'desc' as const }];
+        case 'wage_asc':
+            return [{ wageMin: 'asc' as const }, { id: 'asc' as const }];
+        case 'start_soon':
+            return [{ startDate: 'asc' as const }, { id: 'asc' as const }];
+        case 'recent':
+        default:
+            return [{ createdAt: 'desc' as const }, { id: 'desc' as const }];
+    }
+}
+
+function keysetWhere(sort: PublicJobsSort, cur: CursorData) {
+    switch (sort) {
+        case 'wage_desc':
+            return { OR: [{ wageMin: { lt: cur.k } }, { wageMin: cur.k, id: { lt: cur.id } }] };
+        case 'wage_asc':
+            return { OR: [{ wageMin: { gt: cur.k } }, { wageMin: cur.k, id: { gt: cur.id } }] };
+        case 'start_soon': {
+            const d = new Date(cur.k);
+            return { OR: [{ startDate: { gt: d } }, { startDate: d, id: { gt: cur.id } }] };
+        }
+        case 'recent':
+        default: {
+            const d = new Date(cur.k);
+            return { OR: [{ createdAt: { lt: d } }, { createdAt: d, id: { lt: cur.id } }] };
+        }
+    }
+}
+
+function encodeCursor(
+    sort: PublicJobsSort,
+    row: { createdAt: Date; startDate: Date; wageMin: { toString: () => string }; id: string },
+): string {
+    const k =
+        sort === 'recent'
+            ? row.createdAt.toISOString()
+            : sort === 'start_soon'
+                ? row.startDate.toISOString()
+                : row.wageMin.toString();
+    return Buffer.from(JSON.stringify({ sort, k, id: row.id })).toString('base64url');
+}
+
+function decodeCursor(s: string): CursorData | null {
     try {
-        const decoded = Buffer.from(s, 'base64url').toString('utf8');
-        const [iso, id] = decoded.split('|');
-        if (!iso || !id) return null;
-        return { createdAt: new Date(iso), id };
+        const o = JSON.parse(Buffer.from(s, 'base64url').toString('utf8')) as Record<string, unknown>;
+        const { sort, k, id } = o;
+        if (typeof k !== 'string' || typeof id !== 'string') return null;
+        if (
+            sort !== 'recent' &&
+            sort !== 'wage_desc' &&
+            sort !== 'wage_asc' &&
+            sort !== 'start_soon'
+        ) {
+            return null;
+        }
+        return { sort, k, id };
     } catch {
         return null;
     }

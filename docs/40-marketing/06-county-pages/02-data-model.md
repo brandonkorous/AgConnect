@@ -35,7 +35,7 @@ For a given `(locale, county)` the page assembles:
 
 | field | source |
 | --- | --- |
-| `jobs[]` | jobs API, filtered to `county = COUNTY_DB_VALUE[slug]`, active only, same sort as `/jobs` (wage desc) |
+| `jobs[]` | jobs API, filtered to `county = COUNTY_DB_VALUE[slug]`, active only, ordered `createdAt desc` (endpoint's only order); cursor-paginated, capped at ≤ 60 for aggregates (see [03-api](03-api.md)) |
 | `jobCount` | length of the filtered set (capped display: "50+") |
 | `medianWageCents` | computed server-side from `jobs[]` hourly rates; null if < 3 jobs |
 | `topRoles[]` | top 3 distinct job titles by frequency in `jobs[]` (for the intro sentence) |

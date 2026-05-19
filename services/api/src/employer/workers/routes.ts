@@ -5,6 +5,7 @@ import {
   WorkerSearchQuery,
   InviteWorkerBody,
   canUseFeature,
+  countSkillMatches,
 } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
 import {
@@ -123,7 +124,7 @@ employerWorkersRoutes.get(
   return ok(c, {
     workers: slice.map((w) => {
       const matchScore = requested.length
-        ? w.skills.filter((s) => requested.includes(s)).length
+        ? countSkillMatches(requested, w.skills)
         : 0;
       const relationship: 'hired' | 'invited' | 'applied' | undefined = hired.has(w.id)
         ? 'hired'

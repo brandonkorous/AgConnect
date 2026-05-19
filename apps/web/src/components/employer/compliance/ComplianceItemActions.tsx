@@ -94,7 +94,7 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
         pushToast({ variant: 'error', title: msg });
         return;
       }
-      pushToast({ variant: 'success', title: t('confirm') });
+      pushToast({ variant: 'success', title: t('toast_saved') });
       onClose();
       router.refresh();
     } catch (err) {
@@ -223,7 +223,7 @@ export function ComplianceActionCta({ action }: { action: Action }) {
         pushToast({ variant: 'error', title: msg });
         return;
       }
-      pushToast({ variant: 'success', title: t('confirm') });
+      pushToast({ variant: 'success', title: t('toast_saved') });
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -335,7 +335,7 @@ export function EditComplianceItemButton({
         pushToast({ variant: 'error', title: msg });
         return;
       }
-      pushToast({ variant: 'success', title: t('confirm') });
+      pushToast({ variant: 'success', title: t('toast_saved') });
       setOpen(false);
       router.refresh();
     } catch (err) {
