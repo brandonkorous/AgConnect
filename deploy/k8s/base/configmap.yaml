@@ -18,3 +18,9 @@ data:
   NEXT_PUBLIC_CLERK_SIGN_UP_URL: "/en/sign-up"
   NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: "/en"
   NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: "/en"
+  # TEMPORARY pre-launch test switch — disables the 9PM-7AM PT SMS quiet-hours
+  # window so the sole tester isn't blocked mid-flow. Read by both api
+  # (enqueue-time defer) and sms-worker (pre-send check) via isQuietHours().
+  # REMOVE before real workers are on the platform — quiet-hours compliance is
+  # a TCPA/FCC legal requirement. Tracked: revert with launch.
+  SMS_QUIET_HOURS_DISABLED: "1"
