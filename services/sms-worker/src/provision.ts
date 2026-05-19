@@ -98,6 +98,19 @@ async function handle(job: Job<SmsProvisionJob>): Promise<void> {
         smsOptInState: 'pending_confirm',
       },
     });
+    // RACE FIX: ensureClerkUserByPhone's createUser fires the Clerk
+    // user.created webhook, which can upsert this row FIRST (with
+    // sms_opt_in_state=null — clerk.ts doesn't know about SMS opt-in). When
+    // that wins, the upsert above takes its update branch and never sets
+    // pending_confirm, so the worker's YES is unrecognized and the flow dies
+    // silently. COALESCE promotes a not-yet-opted-in row into pending_confirm
+    // without clobbering a real prior user (web signup / already consented).
+    // Order-independent: whichever of provision/webhook lands first, the row
+    // ends up pending_confirm and a genuine non-null state is preserved.
+    await tx.$executeRawUnsafe(
+      `UPDATE "users" SET "sms_opt_in_state" = COALESCE("sms_opt_in_state", 'pending_confirm') WHERE "id" = $1`,
+      clerkUserId,
+    );
   });
 
   await emitOptInPending(clerkUserId, { phone, keyword, locale, clerkCreated: created });
