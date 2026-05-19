@@ -127,15 +127,21 @@ async function applyEvent(db: Tx, event: ClerkEvent): Promise<void> {
         },
       });
 
-      // web_otp consent: a phone-verified worker who signed up on the web has
-      // given TCPA consent at phone verification. SMS-provisioned identities
-      // carry private_metadata.provisionedVia='sms' and are excluded — their
-      // consent is sms_double_opt_in, written by confirmOptIn on YES. The
-      // writer is guarded by consentMethod:null so this never clobbers.
+      // web_otp consent: a phone-verified worker OR employer who signed up on
+      // the web has given TCPA consent at phone verification. Employer parity
+      // is Phase 4 — employers are email-first, but one who signs up with a
+      // verified phone (EmployerSignUpForm phone mode) consents identically;
+      // it reuses the same keystone writer, no employer-specific path. SMS-
+      // provisioned identities carry private_metadata.provisionedVia='sms' and
+      // are excluded — their consent is sms_double_opt_in, written by
+      // confirmOptIn on YES. The writer is guarded by consentMethod:null so
+      // this never clobbers.
       const provisionedVia = (
         data['private_metadata'] as { provisionedVia?: unknown } | undefined
       )?.provisionedVia;
-      if (role === UserRole.worker && phone && provisionedVia !== 'sms') {
+      const consentEligibleRole =
+        role === UserRole.worker || role === UserRole.employer;
+      if (consentEligibleRole && phone && provisionedVia !== 'sms') {
         await recordWebOtpConsent(db, userId);
       }
       return;

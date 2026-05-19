@@ -56,4 +56,5 @@ move; no web consent capture (`web_otp` documented but never written); `/worker`
 - **Phase 4** ([06](06-phase-4-employer-sms.md)) last.
 
 Acceptance per phase: [07-acceptance.md](07-acceptance.md). Risks and out-of-scope:
-[08-risks-and-scope.md](08-risks-and-scope.md).
+[08-risks-and-scope.md](08-risks-and-scope.md). Cross-cutting SMS standardization
+follow-up (opt-out lint + segment budget): [09-sms-standardization.md](09-sms-standardization.md).
