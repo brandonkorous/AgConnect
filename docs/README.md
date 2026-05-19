@@ -61,6 +61,8 @@ This directory contains complete, implementation-ready specifications for every 
 - [02-faq](40-marketing/02-faq/) — standalone `/[locale]/faq` route with `FAQPage` JSON-LD
 - [03-llms-txt](40-marketing/03-llms-txt/) — `/llms.txt` AIO discoverability surface
 - [04-resources](40-marketing/04-resources/) — long-form bilingual articles under `/[locale]/resources/...` (v1 empty-state, v2 article system)
+- [05-seo-monitoring](40-marketing/05-seo-monitoring/) — SEO/CWV monitoring surface
+- [06-county-pages](40-marketing/06-county-pages/) — per-service-county bilingual SEO landing pages at `/[locale]/jobs/county/[county]`
 
 ## Project plan
 

@@ -214,8 +214,8 @@ export const smsTemplates = {
         maxSegments: 4,
     }),
     'sms.onboard.done': def({
-        en: "You're all set, {firstName}. We'll text jobs that match you in {county}. Reply JOBS anytime to see openings. Reply STOP to opt out.",
-        es: 'Listo, {firstName}. Te enviaremos trabajos para ti en {county}. Responde JOBS para ver trabajos. Responde STOP para cancelar.',
+        en: "You're all set, {firstName}. We'll text jobs in {county}. Reply JOBS anytime. For more, sign in with this number at agconn.com/worker, or use the simple view at agconn.com/field. Reply STOP to opt out.",
+        es: 'Listo, {firstName}. Te enviaremos trabajos en {county}. Responde JOBS. Para mas, entra con este numero en agconn.com/worker, o la vista simple en agconn.com/field. Responde STOP para cancelar.',
         vars: ['firstName', 'county'] as const,
         category: 'transactional',
     }),
