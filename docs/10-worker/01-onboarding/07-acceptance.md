@@ -8,6 +8,10 @@
 - [ ] Resume upload supports PDF and DOCX up to 10 MB.
 - [ ] Resume parser failure does not block onboarding — user proceeds to manual entry without losing progress.
 - [ ] On `complete`, `users.preferredLang`, `worker_profiles.county`, `skills`, and `availability` are all set.
+  - **SMS-channel deviation (Phase 3, 2026-05-18):** SMS micro-onboarding collects
+    county + name + skills only and defaults `availability` to fully-available; the
+    worker refines availability on the web. Conscious, documented deviation — see
+    `docs/00-foundation/13-onboarding-identity-remediation/05-phase-3-sms-onboarding.md`.
 - [ ] Welcome SMS arrives in user's preferred language within 5 minutes of `complete` (or after 7 AM PT if quiet hours).
 - [ ] Browser refresh at any onboarding step resumes at the correct step (server-derived `next_step`).
 - [ ] If the user closes the tab mid-flow and returns, IndexedDB-cached unsaved fields are restored.

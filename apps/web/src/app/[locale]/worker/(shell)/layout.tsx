@@ -1,3 +1,5 @@
+import type { Route } from 'next';
+import { redirect } from 'next/navigation';
 import { requireRole, UserRole } from '@/lib/auth/role';
 import { WorkerSidebar, type WorkerNavCounts } from '@/components/worker/WorkerSidebar';
 import { WorkerTopBar } from '@/components/worker/WorkerTopBar';
@@ -40,7 +42,15 @@ async function fetchWorkerNavCounts(): Promise<WorkerNavCounts> {
 
 export default async function WorkerLayout({ children, params }: Props) {
     const { locale } = await params;
-    await requireRole(locale, UserRole.worker);
+    // Auth + onboarded gate. Mirrors employer/(shell)/layout.tsx: the
+    // ungated worker/onboarding/ sibling (outside this route group) is the
+    // redirect target, so an un-onboarded worker cannot reach the app shell
+    // and the redirect cannot loop. See
+    // docs/00-foundation/13-onboarding-identity-remediation/04-phase-2-worker-web.md.
+    const { onboarded } = await requireRole(locale, UserRole.worker);
+    if (!onboarded) {
+        redirect(`/${locale}/worker/onboarding` as Route);
+    }
     const counts = await fetchWorkerNavCounts();
     return (
         <div className="flex min-h-screen items-start">

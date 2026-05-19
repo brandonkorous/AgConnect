@@ -31,7 +31,6 @@ spec:
       containers:
         - name: web
           image: us-west1-docker.pkg.dev/agconn/containers/web:latest
-          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
               name: http

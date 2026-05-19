@@ -10,6 +10,7 @@ import {
 } from '@agconn/audit';
 import { getSmsBoss, SMS_QUEUE, type SmsJob } from './queue.js';
 import { renderSms, smsTemplates, type SmsTemplateName, type TemplateVars } from './templates/index.js';
+import { segmentInfo } from './segments.js';
 import { isQuietHours } from './quiet-hours.js';
 import { classifyTwilioError, getMessagingServiceSid, getTwilioClient } from './twilio.js';
 
@@ -154,6 +155,10 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
         }
 
         const body = renderSms(template, user.preferredLang, vars as TemplateVars<T>);
+        // Real (post-expansion) segment cost — the build-time check only sees
+        // skeletons, so this is where actual UCS-2/multi-segment sends surface.
+        const seg = segmentInfo(body);
+        const segMeta = { encoding: seg.encoding, segments: seg.segments };
         const log = await db.smsLog.create({
             data: {
                 tenantId,
@@ -181,7 +186,7 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
                 action: 'system.sms.sent',
                 outcome: 'success',
                 resourceId: log.id,
-                metadata: { template, dryRun: true, toPhone: user.phone },
+                metadata: { template, dryRun: true, toPhone: user.phone, ...segMeta },
             });
             return;
         }
@@ -204,7 +209,7 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
                 action: 'system.sms.sent',
                 outcome: 'success',
                 resourceId: log.id,
-                metadata: { template, providerSid: msg.sid, toPhone: user.phone },
+                metadata: { template, providerSid: msg.sid, toPhone: user.phone, ...segMeta },
             });
         } catch (err) {
             const cls = classifyTwilioError(err);

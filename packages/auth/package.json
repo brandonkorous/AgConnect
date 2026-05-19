@@ -17,7 +17,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@agconn/db": "workspace:*"
+    "@agconn/db": "workspace:*",
+    "@agconn/schemas": "workspace:*",
+    "@clerk/backend": "^3.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

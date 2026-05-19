@@ -1,12 +1,9 @@
 'use client';
 
-export function normalizeUsPhone(input: string): string | null {
-  const digits = input.replace(/\D+/g, '');
-  if (digits.length === 10) return `+1${digits}`;
-  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
-  if (input.startsWith('+') && digits.length >= 10) return `+${digits}`;
-  return null;
-}
+// Phone normalization is now the shared canonical primitive in
+// @agconn/schemas (used by web auth, the Twilio webhook, and Clerk
+// provisioning). Re-exported here so existing call sites are unchanged.
+export { normalizeUsPhone, isUsE164 } from '@agconn/schemas';
 
 export function isEmail(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim());

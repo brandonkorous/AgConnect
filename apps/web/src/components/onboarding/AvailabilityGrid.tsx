@@ -1,8 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { onboardingPath } from '@/lib/onboarding-steps';
+import {
+  patchOnboardingAction,
+  completeOnboardingAction,
+} from '@/lib/api/onboarding-actions';
 
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 type Day = (typeof DAYS)[number];
@@ -26,6 +31,7 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
   const router = useRouter();
   const [state, setState] = useState<State>(empty);
   const [notes, setNotes] = useState('');
+  const [pending, startTransition] = useTransition();
 
   function toggle(day: Day, slot: Slot) {
     setState((s) => ({ ...s, [day]: { ...s[day], [slot]: !s[day][slot] } }));
@@ -40,20 +46,34 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
   const hasAny = Object.values(state).some((d) => d.am || d.pm);
 
   function next() {
-    if (!hasAny) return;
+    if (!hasAny || pending) return;
+    const availability = { ...state, notes: notes.trim() || undefined };
+    // Keep a local draft for resume resilience; the server PATCH below is
+    // the source of truth (this used to be localStorage-only — the bug).
     if (typeof window !== 'undefined') {
       const existing = JSON.parse(
         window.localStorage.getItem('agconn:onboarding:profile') ?? '{}',
       );
       window.localStorage.setItem(
         'agconn:onboarding:profile',
-        JSON.stringify({
-          ...existing,
-          availability: { ...state, notes: notes.trim() || undefined },
-        }),
+        JSON.stringify({ ...existing, availability }),
       );
     }
-    router.push(`/${locale}/onboarding/complete`);
+    startTransition(async () => {
+      // Persist availability server-side, then finalize. completeOnboarding
+      // 422s if any required field is missing; the un-onboarded gate (Phase
+      // 2.4) is the backstop, so on failure we re-enter at the first data
+      // step rather than show a false success page.
+      const patched = await patchOnboardingAction({ availability });
+      if (!patched.ok) {
+        router.push(onboardingPath(locale, 'profile'));
+        return;
+      }
+      const done = await completeOnboardingAction();
+      router.push(
+        onboardingPath(locale, done.ok ? 'complete' : 'profile'),
+      );
+    });
   }
 
   return (
@@ -128,7 +148,7 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
       <button
         type="button"
         onClick={next}
-        disabled={!hasAny}
+        disabled={!hasAny || pending}
         className="btn btn-primary btn-lg w-full"
       >
         {tProfile('continue')}

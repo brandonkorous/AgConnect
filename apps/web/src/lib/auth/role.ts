@@ -9,6 +9,7 @@ export { UserRole };
 export type ResolvedRole = {
     userId: string;
     role: UserRole;
+    onboarded: boolean;
 };
 
 export type RequireRoleOptions = {
@@ -33,7 +34,11 @@ export function homePathForRole(locale: string, role: UserRole): string {
 export async function resolveRole(): Promise<ResolvedRole | null> {
     const res = await fetchMe();
     if (!res.ok) return null;
-    return { userId: res.data.user.id, role: res.data.user.role };
+    return {
+        userId: res.data.user.id,
+        role: res.data.user.role,
+        onboarded: res.data.user.onboarded,
+    };
 }
 
 export async function requireRole(
@@ -42,7 +47,8 @@ export async function requireRole(
     options: RequireRoleOptions = {},
 ): Promise<ResolvedRole> {
     const signInPath = options.signInPath ?? ((l) => `/${l}/sign-in`);
-    const onboardingPath = options.onboardingPath ?? ((l) => `/${l}/onboarding`);
+    const onboardingPath =
+        options.onboardingPath ?? ((l) => `/${l}/worker/onboarding`);
     const mismatchPath = options.mismatchPath ?? homePathForRole;
 
     const res = await fetchMe();
@@ -54,5 +60,5 @@ export async function requireRole(
 
     const { user } = res.data;
     if (user.role !== expected) redirect(mismatchPath(locale, user.role) as Route);
-    return { userId: user.id, role: user.role };
+    return { userId: user.id, role: user.role, onboarded: user.onboarded };
 }

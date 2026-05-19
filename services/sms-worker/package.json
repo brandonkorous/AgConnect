@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@agconn/audit": "workspace:*",
+    "@agconn/auth": "workspace:*",
     "@agconn/db": "workspace:*",
     "@agconn/sms": "workspace:*",
     "pg-boss": "12.18.1"

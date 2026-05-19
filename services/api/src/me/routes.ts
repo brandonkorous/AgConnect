@@ -19,14 +19,24 @@ meRoutes.use('*', requireAuth('me'));
 // the post-auth router still needs the role to pick the right destination.
 meRoutes.get('/', async (c) => {
   const tenantId = c.var.tenantId;
-  const tenant = tenantId
-    ? await c.var.db.tenant.findUnique({
-        where: { id: tenantId },
-        select: { id: true, slug: true, name: true },
-      })
-    : null;
+  const [tenant, dbUser] = await Promise.all([
+    tenantId
+      ? c.var.db.tenant.findUnique({
+          where: { id: tenantId },
+          select: { id: true, slug: true, name: true },
+        })
+      : null,
+    c.var.db.user.findUnique({
+      where: { id: c.var.userId },
+      select: { onboarded: true },
+    }),
+  ]);
   return ok(c, {
-    user: { id: c.var.userId, role: c.var.userRole },
+    user: {
+      id: c.var.userId,
+      role: c.var.userRole,
+      onboarded: dbUser?.onboarded ?? false,
+    },
     tenant,
   });
 });

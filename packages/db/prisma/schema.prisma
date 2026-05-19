@@ -491,20 +491,35 @@ model User {
   phone         String?
   onboarded     Boolean  @default(false)
   // SMS A2P consent provenance for Twilio 10DLC dispute traceability.
-  //   consentMethod  — 'web_otp' (signed up at agconn.com, verified phone
-  //                    OTP) or 'sms_double_opt_in' (texted an opt-in keyword
-  //                    to the published number, replied YES to the
-  //                    confirmation prompt). NULL for non-worker roles and
-  //                    legacy users predating consent capture.
+  // INVARIANT: consent != onboarded. `consentMethod`/`consentedAt` mean
+  // "permitted to message"; `onboarded` means "profile complete enough to
+  // match/hire". The SMS opt-in flow sets consent only — onboarding sets
+  // `onboarded`. Do not couple them. See
+  // docs/00-foundation/13-onboarding-identity-remediation/.
+  //   consentMethod  — 'web_otp' (worker verified their phone during web
+  //                    sign-up — written by the consent service) or
+  //                    'sms_double_opt_in' (texted an opt-in keyword to the
+  //                    published number, replied YES). NULL for non-worker
+  //                    roles and workers with no phone / pre-consent.
   //   consentedAt    — Timestamp when the user completed the consent flow.
-  //   smsOptInState  — 'pending_confirm' (stub created from inbound keyword,
-  //                    awaiting YES) or 'consented' (confirmed). NULL for
-  //                    users that never went through the SMS opt-in flow.
+  //   smsOptInState  — 'pending_confirm' (awaiting YES) or 'consented'
+  //                    (confirmed). NULL for users that never went through
+  //                    the SMS opt-in flow. Onboarding step state, when the
+  //                    consented worker is mid SMS micro-onboarding, also
+  //                    tracks here (see Phase 3).
   // See docs/00-foundation/05-sms-pipeline/ and the Twilio A2P 10DLC campaign
   // registration.
   consentMethod String?   @map("consent_method")
   consentedAt   DateTime? @map("consented_at")
   smsOptInState String?   @map("sms_opt_in_state")
+  // SMS micro-onboarding (Phase 3): step =
+  // 'await_county'|'await_name'|'await_skills', NULL when not in / done with
+  // the flow. Draft holds partial answers ({county,firstName,lastName}) until
+  // the WorkerProfile is created at completion (it can't exist partially —
+  // firstName/lastName are non-null). See
+  // docs/00-foundation/13-onboarding-identity-remediation/05-phase-3-sms-onboarding.md.
+  smsOnboardingStep  String? @map("sms_onboarding_step")
+  smsOnboardingDraft Json?   @map("sms_onboarding_draft")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 

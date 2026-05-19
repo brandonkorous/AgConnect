@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
 import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
+import { onboardingPath } from '@/lib/onboarding-steps';
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 
@@ -29,7 +30,7 @@ export function CountyPicker({ locale }: { locale: string }) {
         return;
       }
       await clear();
-      router.push(`/${locale}/onboarding/skills`);
+      router.push(onboardingPath(locale, 'skills'));
     });
   }
 
@@ -52,7 +53,7 @@ export function CountyPicker({ locale }: { locale: string }) {
         ))}
       </div>
       <Link
-        href={`/${locale}/onboarding/waitlist`}
+        href={onboardingPath(locale, 'waitlist')}
         className="text-base-content/70 link link-hover text-sm"
       >
         {t('county.other')}

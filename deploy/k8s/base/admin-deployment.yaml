@@ -31,7 +31,6 @@ spec:
       containers:
         - name: admin
           image: us-west1-docker.pkg.dev/agconn/containers/admin:latest
-          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3100
               name: http
