@@ -8,6 +8,7 @@ import {
     NoteBody,
     SendMessageBody,
     canUseFeature,
+    countSkillMatches,
 } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
 import {
@@ -631,7 +632,7 @@ function shapeApplicationCard(a: {
     };
 }) {
     const wp = a.worker.workerProfile;
-    const skillMatches = wp ? a.job.skills.filter((s) => wp.skills.includes(s)).length : 0;
+    const skillMatches = wp ? countSkillMatches(a.job.skills, wp.skills) : 0;
     return {
         id: a.id,
         status: a.status,

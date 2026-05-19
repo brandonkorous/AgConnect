@@ -196,7 +196,10 @@ function PlanTierCard({
                 )}
                 <h3 className="font-display text-2xl font-light tracking-tight">{t(tier)}</h3>
                 <p className="text-base-content/60 mt-1 text-xs">{t(`pitch.${tier}`)}</p>
-                {!isFree && price.monthly !== null && (
+                {/* Static price only on the current paid plan (no interval toggle there).
+                    For upgradeable tiers, PlanCheckoutControls owns the price so it
+                    stays in sync with the monthly/yearly toggle. */}
+                {!isFree && isCurrent && price.monthly !== null && (
                     <p className="text-base-content mt-3 flex items-baseline gap-2">
                         <span className="font-display text-3xl font-light tracking-tight tabular-nums slashed-zero">
                             {priceMonthly}

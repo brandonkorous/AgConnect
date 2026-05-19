@@ -13,6 +13,7 @@ export * from './employer.js';
 export * from './employer-members.js';
 export * from './employer-jobs.js';
 export * from './skill-slugs.js';
+export * from './skill-match.js';
 export * from './employer-applications.js';
 export * from './employer-workers.js';
 export * from './employer-crews.js';

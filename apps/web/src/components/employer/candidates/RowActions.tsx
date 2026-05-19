@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faComments } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
+import { pushToast } from '@agconn/ui';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
 
@@ -59,6 +60,7 @@ export function CandidateRowActions({ applicationId, messageLabel, hireLabel }: 
         return;
       }
       setModal(null);
+      pushToast({ variant: 'success', title: t('toast_hired') });
       router.refresh();
     } finally {
       setBusy(false);

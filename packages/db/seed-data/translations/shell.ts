@@ -30,8 +30,8 @@ export const shell: TranslationBundle = {
         es: "Marcar la ubicación",
     },
     "address.noMatches": {
-        en: "No matches. Try fewer words, or pin it on the map.",
-        es: "Sin resultados. Prueba con menos palabras o márcalo en el mapa.",
+        en: "No match. Enter a full street address (number + street), or drop a pin on the map for a field or parcel.",
+        es: "Sin coincidencia. Escribe una dirección completa (número + calle), o coloca un alfiler en el mapa para un campo o parcela.",
     },
     "address.placeholder": {
         en: "Start typing an address",

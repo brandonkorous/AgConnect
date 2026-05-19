@@ -23,6 +23,12 @@ import {
 import { MessageComposer } from '@/components/employer/messages/MessageComposer';
 import { NewConversationButton } from '@/components/employer/messages/NewConversationButton';
 
+// Messages are real-time: a sent message or folder switch must reflect
+// immediately. Without this the route can be served from the App Router cache,
+// so router.refresh() after a send and folder/thread <Link> navigation render
+// stale threads/messages until a hard reload.
+export const dynamic = 'force-dynamic';
+
 type Props = {
     params: Promise<{ locale: string }>;
     searchParams: Promise<{ folder?: string; thread?: string }>;

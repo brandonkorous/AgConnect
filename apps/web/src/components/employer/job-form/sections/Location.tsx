@@ -16,6 +16,27 @@ import type { ErrorMap } from '../validation';
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 const CV_PROXIMITY: [number, number] = [-119.78, 36.74];
 
+// High-confidence Central Valley city → county. Only well-known incorporated
+// places for the 5 supported counties — used for a *soft* advisory, so the map
+// stays silent (no false warnings) on any city it doesn't recognize.
+const CITY_COUNTY: Record<string, (typeof COUNTIES)[number]> = {
+  fresno: 'Fresno', clovis: 'Fresno', sanger: 'Fresno', reedley: 'Fresno',
+  selma: 'Fresno', kerman: 'Fresno', coalinga: 'Fresno', mendota: 'Fresno',
+  firebaugh: 'Fresno', parlier: 'Fresno', fowler: 'Fresno', kingsburg: 'Fresno',
+  'orange cove': 'Fresno', huron: 'Fresno', 'san joaquin': 'Fresno',
+  bakersfield: 'Kern', delano: 'Kern', wasco: 'Kern', shafter: 'Kern',
+  arvin: 'Kern', mcfarland: 'Kern', taft: 'Kern', tehachapi: 'Kern', lamont: 'Kern',
+  hanford: 'Kings', lemoore: 'Kings', corcoran: 'Kings', avenal: 'Kings',
+  madera: 'Madera', chowchilla: 'Madera', oakhurst: 'Madera',
+  visalia: 'Tulare', tulare: 'Tulare', porterville: 'Tulare', dinuba: 'Tulare',
+  lindsay: 'Tulare', exeter: 'Tulare', woodlake: 'Tulare', farmersville: 'Tulare',
+};
+
+function detectCounty(city: string | undefined): (typeof COUNTIES)[number] | null {
+  if (!city) return null;
+  return CITY_COUNTY[city.trim().toLowerCase()] ?? null;
+}
+
 type Props = {
   state: JobFormState;
   update: JobFormUpdate;
@@ -56,6 +77,9 @@ export function LocationSection({ state, update, locale, errors = {} }: Props) {
   };
 
   const siteAddress = deriveAddress(state);
+  const detectedCounty = detectCounty(state.city);
+  const countyMismatch =
+    detectedCounty !== null && state.county !== '' && detectedCounty !== state.county;
 
   return (
     <SectionShell num={5} id="s-location" title={t('location_title')} subtitle={t('location_sub')}>
@@ -98,6 +122,11 @@ export function LocationSection({ state, update, locale, errors = {} }: Props) {
             ))}
           </select>
           {err('county') && <p className="label text-error">{t(`validation_reason_${err('county')!.reason}`)}</p>}
+          {!err('county') && countyMismatch && (
+            <p className="label text-warning">
+              {t('county_address_mismatch', { detected: detectedCounty! })}
+            </p>
+          )}
         </fieldset>
       </div>
 

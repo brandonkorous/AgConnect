@@ -80,7 +80,9 @@ export default async function CompliancePage({ params }: Props) {
                         {t('title')}
                     </p>
                     <h1 className="font-display mt-2 text-4xl font-semibold leading-tight tracking-tight tabular-nums slashed-zero md:text-5xl">
-                        {t('headline_suffix')}
+                        {overall >= 100 && actions.length === 0 && openItems === 0
+                            ? t('headline_status_ok')
+                            : t('headline_status_attention')}
                     </h1>
                     <div className="text-base-content/70 mt-2 text-sm">
                         {overall < 100 && actions.length === 0 && openItems > 0
