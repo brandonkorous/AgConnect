@@ -476,6 +476,9 @@ importers:
       '@agconn/audit':
         specifier: workspace:*
         version: link:../../packages/audit
+      '@agconn/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@agconn/db':
         specifier: workspace:*
         version: link:../../packages/db

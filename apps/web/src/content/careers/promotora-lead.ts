@@ -3,7 +3,7 @@ import type { CareerRole } from '../types';
 export const promotoraLead: CareerRole = {
     slug: 'promotora-lead',
     team: 'operations',
-    location: 'Fresno, CA',
+    location: 'Visalia, CA',
     employmentType: 'full_time',
     salaryRange: '$72,000 – $86,000',
     postedAt: '2026-04-18',

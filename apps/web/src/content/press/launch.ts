@@ -1,9 +1,9 @@
 import type { PressRelease } from '../types';
 
-export const launchFresno: PressRelease = {
-    slug: 'launch-fresno-2026',
+export const launchAnnouncement: PressRelease = {
+    slug: 'launch-2026',
     publishedAt: '2026-04-15',
-    location: 'Fresno, CA',
+    location: 'Visalia, CA',
     headline: {
         en: 'AGCONN launches bilingual workforce platform serving California Central Valley farmworkers and growers',
         es: 'AGCONN lanza plataforma laboral bilingüe que sirve a trabajadores agrícolas y agricultores del Valle Central de California',

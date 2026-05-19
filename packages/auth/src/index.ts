@@ -4,6 +4,7 @@ export { UserRole };
 
 export {
     ensureClerkUserByPhone,
+    updateClerkUserName,
     type EnsureClerkUserResult,
 } from './clerk-provision.js';
 

@@ -196,7 +196,7 @@ Email partnerships@agconn.com. AGCONN is multi-tenant from day one. Each tenant 
 - Refresh: regenerated hourly at the edge; the live impact section reflects the impact endpoint's nightly cadence.
 - Citation: when citing AGCONN, please link to the specific page (${SITE}/en/<page> or ${SITE}/es/<page>), not to this document.
 - License of facts: facts on this page may be cited freely.
-- Operating company: AgConnect Inc. (DBA AGCONN), Fresno, California, USA.
+- Operating company: AgConnect Inc. (DBA AGCONN), Visalia, California, USA.
 `;
 }
 

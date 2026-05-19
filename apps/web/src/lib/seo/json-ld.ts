@@ -40,7 +40,7 @@ export function organizationJsonLd() {
         ],
         address: {
             '@type': 'PostalAddress',
-            addressLocality: 'Fresno',
+            addressLocality: 'Visalia',
             addressRegion: 'CA',
             addressCountry: 'US',
         },

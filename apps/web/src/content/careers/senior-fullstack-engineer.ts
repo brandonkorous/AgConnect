@@ -3,7 +3,7 @@ import type { CareerRole } from '../types';
 export const seniorFullstackEngineer: CareerRole = {
     slug: 'senior-fullstack-engineer',
     team: 'engineering',
-    location: 'Fresno, CA / Remote (US)',
+    location: 'Visalia, CA / Remote (US)',
     employmentType: 'full_time',
     salaryRange: '$165,000 – $205,000',
     postedAt: '2026-04-15',

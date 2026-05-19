@@ -84,6 +84,7 @@ const QUIET_HOURS_BYPASS: ReadonlySet<SmsTemplateName> = new Set([
   'sms.optin.welcome',
   'sms.optin.invalid',
   'sms.onboard.invalid_county',
+  'sms.onboard.ask_county',
   'sms.onboard.ask_name',
   'sms.onboard.ask_skills',
   'sms.onboard.done',

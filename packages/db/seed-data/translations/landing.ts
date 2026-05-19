@@ -1030,8 +1030,8 @@ export const landing: TranslationBundle = {
         es: "Accessibility",
     },
     "legal.built_in": {
-        en: "Built in Fresno, CA",
-        es: "Construido en Fresno, CA",
+        en: "Built in Visalia, CA",
+        es: "Construido en Visalia, CA",
     },
     "legal.copyright": {
         en: "© 2026 AGCONN, PBC · A California Public Benefit Corp.",

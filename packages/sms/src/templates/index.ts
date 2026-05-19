@@ -167,9 +167,13 @@ export const smsTemplates = {
         category: 'compliance',
         maxSegments: 5,
     }),
+    // Sent on YES (confirmOptIn). Name is asked FIRST: it is the highest-value
+    // field for employers and survives mid-flow drop-off, so we capture a
+    // contactable identity before county/skills. County moved to its own
+    // sms.onboard.ask_county prompt (next step).
     'sms.optin.welcome': def({
-        en: "Welcome to AGCONN! You'll receive job matches in your area. Reply your county to start: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare. Or visit agconn.com.",
-        es: '¡Bienvenido a AGCONN! Recibirás trabajos en tu zona. Responde tu condado para empezar: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare. O visita agconn.com.',
+        en: "Welcome to AGCONN! Let's set you up for job matches. First, what's your name? Reply your first and last name.",
+        es: '¡Bienvenido a AGCONN! Vamos a configurarte para recibir trabajos. Primero, ¿cómo te llamas? Responde tu nombre y apellido.',
         vars: [] as const,
         category: 'transactional',
         maxSegments: 3,
@@ -180,17 +184,25 @@ export const smsTemplates = {
         vars: [] as const,
         category: 'compliance',
     }),
-    // SMS micro-onboarding (Phase 3). The county prompt reuses
-    // sms.optin.welcome (it already lists 1=Fresno..5=Tulare).
+    // SMS micro-onboarding (Phase 3). Order: name (sms.optin.welcome) ->
+    // county (sms.onboard.ask_county) -> skills (sms.onboard.ask_skills).
+    'sms.onboard.ask_county': def({
+        en: 'Thanks! Which county do you work in? Reply a number: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare.',
+        es: '¡Gracias! ¿En qué condado trabajas? Responde un número: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare.',
+        vars: [] as const,
+        category: 'transactional',
+    }),
     'sms.onboard.invalid_county': def({
         en: 'Reply a number for your county: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare.',
         es: 'Responde un número para tu condado: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare.',
         vars: [] as const,
         category: 'transactional',
     }),
+    // Re-prompt when the name reply isn't a usable first + last (one word,
+    // digits/symbols only, empty). Phrased to read correctly as a retry.
     'sms.onboard.ask_name': def({
-        en: 'Got it. What is your name? Reply with your first and last name.',
-        es: 'Listo. ¿Cómo te llamas? Responde con tu nombre y apellido.',
+        en: 'We need your full name to match you with employers. Reply your first and last name.',
+        es: 'Necesitamos tu nombre completo para conectarte con empleadores. Responde tu nombre y apellido.',
         vars: [] as const,
         category: 'transactional',
     }),

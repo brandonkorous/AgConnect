@@ -45,7 +45,7 @@ Per the Paper artboard:
 15. **FAQ** — left column copy + accordion-style Q&A on the right (8 entries from the Paper artboard).
 16. **Final CTA** — "Empieza hoy. / Start today." with two side-by-side sign-up cards (worker / employer).
 17. **Footer Main** — wordmark, four link columns (Workers / Employers / Training / Company), language toggle row, NAP.
-18. **Footer Legal** — copyright, "Built in Fresno, CA", Privacy / Terms / Accessibility (EN + ES), Sitemap, llms.txt.
+18. **Footer Legal** — copyright, "Built in Visalia, CA", Privacy / Terms / Accessibility (EN + ES), Sitemap, llms.txt.
 
 ## Goals
 

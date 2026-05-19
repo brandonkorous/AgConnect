@@ -3,7 +3,7 @@ import type { CareerRole } from '../types';
 export const workforceBoardPartnerships: CareerRole = {
     slug: 'workforce-board-partnerships-manager',
     team: 'partnerships',
-    location: 'Fresno, CA / Hybrid',
+    location: 'Visalia, CA / Hybrid',
     employmentType: 'full_time',
     salaryRange: '$95,000 – $120,000',
     postedAt: '2026-04-20',

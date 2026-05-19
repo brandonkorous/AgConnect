@@ -1,5 +1,5 @@
 import type { PressRelease } from '../types';
-import { launchFresno } from './launch-fresno';
+import { launchAnnouncement } from './launch';
 import { workforceBoardPartnership } from './workforce-board-partnership';
 import { cdfaTrainingGrant } from './cdfa-training-grant';
 import { milestone1000Workers } from './milestone-1000-workers';
@@ -10,7 +10,7 @@ const ALL: PressRelease[] = [
     milestone1000Workers,
     cdfaTrainingGrant,
     workforceBoardPartnership,
-    launchFresno,
+    launchAnnouncement,
 ];
 
 export function getAllPressReleases(): PressRelease[] {

@@ -13,6 +13,7 @@
   "dependencies": {
     "@agconn/api-client": "workspace:*",
     "@agconn/audit": "workspace:*",
+    "@agconn/auth": "workspace:*",
     "@agconn/db": "workspace:*",
     "@agconn/email": "workspace:*",
     "@agconn/flc-verify": "workspace:*",

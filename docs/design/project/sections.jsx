@@ -644,7 +644,7 @@ const Footer = () => {
           <div>
             <Logo size={24}/>
             <p style={{ fontSize: 14, color: 'var(--c-ink-2)', marginTop: 16, maxWidth: 280, lineHeight: 1.55 }}>
-              Bilingual workforce infrastructure for California agriculture. A public-benefit company headquartered in Fresno, CA.
+              Bilingual workforce infrastructure for California agriculture. A public-benefit company headquartered in Visalia, CA.
             </p>
             <div style={{ display: 'flex', gap: 8, marginTop: 18 }}>
               <LangToggle/>

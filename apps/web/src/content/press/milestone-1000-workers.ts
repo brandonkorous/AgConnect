@@ -3,7 +3,7 @@ import type { PressRelease } from '../types';
 export const milestone1000Workers: PressRelease = {
     slug: 'milestone-1000-workers',
     publishedAt: '2026-05-01',
-    location: 'Fresno, CA',
+    location: 'Visalia, CA',
     headline: {
         en: 'AGCONN surpasses 1,000 verified farmworker profiles in pre-launch pilot, with 38% holding active certifications',
         es: 'AGCONN supera los 1,000 perfiles verificados de trabajadores agrícolas en el piloto previo al lanzamiento, con el 38% con certificaciones activas',

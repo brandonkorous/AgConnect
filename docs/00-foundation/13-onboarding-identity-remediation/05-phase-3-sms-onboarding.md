@@ -27,8 +27,9 @@ minimum to be matchable, over SMS.
 
 ## 3.1 SMS onboarding state machine
 
-After `confirmOptIn` (consented), `smsOnboardingStep` is set to `await_county`. New
-`User.smsOnboardingStep` (`await_county|await_name|await_skills|null`) and
+After `confirmOptIn` (consented), `smsOnboardingStep` is set to `await_name`
+(**revised 2026-05-19**: name is collected first — see 3.2). New
+`User.smsOnboardingStep` (`await_name|await_county|await_skills|null`) and
 `User.smsOnboardingDraft` (Json: partial `{county,firstName,lastName}` held until the
 `WorkerProfile` is created at the end — the profile can't exist partially because
 `firstName`/`lastName` are non-null). Inbound routing resolves the active step
@@ -37,14 +38,26 @@ safe). STOP always wins.
 
 ## 3.2 Three bilingual prompts (static SMS registry)
 
-Order follows the existing welcome copy: **county → name → skills**.
+Order (**revised 2026-05-19**): **name → county → skills**. Name is the
+highest-value field for employers and the one most worth capturing before a
+mid-flow drop-off, so it is collected first; the welcome message itself asks
+for it (no extra message).
 
-1. **County** → reuse `sms.optin.welcome` (`1=Fresno…5=Tulare`); invalid → re-prompt
-   `sms.onboard.invalid_county`. County values from the `@agconn/db` `County` enum.
-2. **Name** → `sms.onboard.ask_name`; first token → `firstName`, rest → `lastName`
-   (falls back to first token if a single word).
+1. **Name** → `sms.optin.welcome` (now a welcome that asks first+last name);
+   invalid → re-prompt `sms.onboard.ask_name`. **Validation (revised
+   2026-05-19):** requires a usable first AND last (≥2 whitespace-separated
+   tokens, each containing a Unicode letter; lenient on accents/hyphens for
+   Spanish names; each capped at 60 chars). One token, digits/symbols-only, or
+   empty all re-prompt — there is **no** `lastName = firstName` fallback, so an
+   employer never sees a half-name or junk.
+2. **County** → `sms.onboard.ask_county` (`1=Fresno…5=Tulare`); invalid →
+   re-prompt `sms.onboard.invalid_county`. County values from the `@agconn/db`
+   `County` enum.
 3. **Skills** → `sms.onboard.ask_skills`, a numbered subset of `SKILL_SLUGS`
    (`@agconn/schemas`); reply parses digits → slugs.
+
+All three onboarding prompts (plus `ask_county`) are in `QUIET_HOURS_BYPASS` —
+they are conversational replies, not unsolicited outreach.
 
 ## 3.3 Availability — conscious channel deviation
 
@@ -58,6 +71,14 @@ source of truth, the deviation must be written down, not silent.
 On the final answer, write `WorkerProfile` (`id = user_*`) and call the same
 `service.completeOnboarding` path as Phase 2 to set `onboardedAt` + `onboarded=true`.
 The worker is now visible to `automatch`.
+
+**Clerk name sync (added 2026-05-19):** `ensureClerkUserByPhone` creates the
+Clerk user with no name, so completion also pushes `firstName`/`lastName` onto
+the Clerk user via `updateClerkUserName` (`@agconn/auth`). Post-commit and
+best-effort — a Clerk failure logs + audits (`system.sms.dropped`,
+`reason=clerk_name_sync_failed`) but never fails onboarding (`WorkerProfile` is
+the hiring source of truth; Clerk is the identity mirror — used by the admin
+directory, support tooling, and any future web login that greets by name).
 
 ## 3.5 Close the `JOBS` dead-end
 

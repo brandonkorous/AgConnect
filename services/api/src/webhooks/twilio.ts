@@ -4,6 +4,7 @@ import { validateTwilioSignature, enqueueSms, enqueueProvision } from '@agconn/s
 import { pools, SmsStatus, AppStatus, UserRole, County } from '@agconn/db';
 import { emitSystemAudit } from '../middleware/audit.js';
 import type { SkillSlug } from '@agconn/schemas';
+import { updateClerkUserName } from '@agconn/auth';
 import { completeOnboarding } from '../worker/onboarding/service.js';
 
 // SMS micro-onboarding (Phase 3). County numbering matches the welcome
@@ -48,6 +49,7 @@ async function enqueueOnboard(
     userId: string,
     template:
         | 'sms.optin.welcome'
+        | 'sms.onboard.ask_county'
         | 'sms.onboard.invalid_county'
         | 'sms.onboard.ask_name'
         | 'sms.onboard.ask_skills',
@@ -336,9 +338,10 @@ async function confirmOptIn(userId: string): Promise<void> {
                 consentMethod: 'sms_double_opt_in',
                 consentedAt: now,
                 // Enter SMS micro-onboarding. The welcome SMS enqueued below
-                // (sms.optin.welcome) already asks for county, so the first
-                // step is await_county. Phase 3.
-                smsOnboardingStep: 'await_county',
+                // (sms.optin.welcome) asks for the worker's NAME first (the
+                // highest-value field, captured before drop-off), so the
+                // first step is await_name. Phase 3: name -> county -> skills.
+                smsOnboardingStep: 'await_name',
             },
         });
     });
@@ -383,8 +386,11 @@ async function completeSmsOnboarding(
     skills: string[],
 ): Promise<void> {
     if (!draft.county || !draft.firstName || !draft.lastName) {
-        await setOnboarding(userId, 'await_county', {});
-        await enqueueOnboard(userId, 'sms.onboard.invalid_county');
+        // Safety net (each step validates, so this is a should-not-happen).
+        // Restart from the top of the flow — name first — rather than
+        // stranding the worker mid-state.
+        await setOnboarding(userId, 'await_name', {});
+        await enqueueOnboard(userId, 'sms.onboard.ask_name');
         return;
     }
     const result = await pools.webhooks.$transaction(async (tx) => {
@@ -421,6 +427,31 @@ async function completeSmsOnboarding(
             status: result.status,
         },
     });
+
+    // Sync the captured name onto the Clerk user. ensureClerkUserByPhone
+    // created it nameless; without this every SMS-onboarded worker stays
+    // nameless in Clerk (admin directory, support tooling, future web login).
+    // Best-effort and post-commit: a Clerk hiccup must not fail onboarding —
+    // WorkerProfile is the hiring source of truth, Clerk is the mirror. The
+    // userId IS the Clerk user_* id (identity keystone).
+    try {
+        await updateClerkUserName(userId, {
+            firstName: draft.firstName,
+            lastName: draft.lastName,
+        });
+    } catch (e) {
+        console.error('[twilio] clerk name sync failed (non-fatal)', {
+            userIdTail: userId.slice(-6),
+            err: e instanceof Error ? e.message : String(e),
+        });
+        await emitSystemAudit({
+            action: 'system.sms.dropped',
+            resourceType: 'user',
+            resourceId: userId,
+            metadata: { reason: 'clerk_name_sync_failed', phase: 'sms_onboarding_complete' },
+        }).catch(() => {});
+    }
+
     await enqueueSms({
         tenantId: SYSTEM_TENANT_ID,
         userId,
@@ -442,6 +473,27 @@ async function handleOnboardingStep(
     const step = user.smsOnboardingStep;
     const draft: OnboardingDraft = (user.smsOnboardingDraft as OnboardingDraft) ?? {};
 
+    if (step === 'await_name') {
+        // Require a usable first AND last name — never store a half-name or
+        // junk (an employer won't hire "Brandon Brandon" or "asdf"). One
+        // token, digits/symbols only, or empty all re-prompt; we never fall
+        // back lastName=firstName. Lenient on accents/hyphens/apostrophes
+        // (Spanish names) via the Unicode letter class.
+        const cleaned = body.trim().replace(/\s+/g, ' ');
+        const parts = cleaned ? cleaned.split(' ') : [];
+        const first = parts[0] ?? '';
+        const last = parts.slice(1).join(' ');
+        const hasLetter = (s: string): boolean => /\p{L}/u.test(s);
+        if (parts.length < 2 || !hasLetter(first) || !hasLetter(last)) {
+            await enqueueOnboard(user.id, 'sms.onboard.ask_name');
+            return;
+        }
+        draft.firstName = first.slice(0, 60);
+        draft.lastName = last.slice(0, 60);
+        await setOnboarding(user.id, 'await_county', draft);
+        await enqueueOnboard(user.id, 'sms.onboard.ask_county');
+        return;
+    }
     if (step === 'await_county') {
         const m = text.match(/^([1-5])$/);
         const idx = m
@@ -452,18 +504,6 @@ async function handleOnboardingStep(
             return;
         }
         draft.county = SMS_COUNTIES[idx];
-        await setOnboarding(user.id, 'await_name', draft);
-        await enqueueOnboard(user.id, 'sms.onboard.ask_name');
-        return;
-    }
-    if (step === 'await_name') {
-        const parts = body.split(/\s+/).filter(Boolean);
-        if (parts.length === 0) {
-            await enqueueOnboard(user.id, 'sms.onboard.ask_name');
-            return;
-        }
-        draft.firstName = parts[0];
-        draft.lastName = parts.slice(1).join(' ') || parts[0];
         await setOnboarding(user.id, 'await_skills', draft);
         await enqueueOnboard(user.id, 'sms.onboard.ask_skills');
         return;
@@ -495,8 +535,9 @@ async function sendJobsDigest(user: {
     const lang = String(user.preferredLang) === 'en' ? 'en' : 'es';
 
     if (!profile?.county) {
-        // Consented but not matchable — re-enter onboarding, never silence.
-        await setOnboarding(user.id, 'await_county', {});
+        // Consented but not matchable — re-enter onboarding from the top
+        // (welcome asks name first now), never silence.
+        await setOnboarding(user.id, 'await_name', {});
         await enqueueSms({
             tenantId: SYSTEM_TENANT_ID,
             userId: user.id,

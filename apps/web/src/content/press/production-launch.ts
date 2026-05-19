@@ -3,7 +3,7 @@ import type { PressRelease } from '../types';
 export const productionLaunch: PressRelease = {
     slug: 'production-launch-2026',
     publishedAt: '2026-05-05',
-    location: 'Fresno, CA',
+    location: 'Visalia, CA',
     headline: {
         en: 'AGCONN opens production to all California Central Valley farmworkers and growers',
         es: 'AGCONN abre la producción a todos los trabajadores agrícolas y agricultores del Valle Central de California',

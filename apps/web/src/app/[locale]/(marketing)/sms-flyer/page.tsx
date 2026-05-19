@@ -116,7 +116,7 @@ export default async function SmsFlyerPage({ params }: RouteProps) {
           />
 
           <footer className="meta mt-8 border-t border-black pt-3 text-center">
-            DOC {docId} &middot; AGCONN, Fresno, California &middot; agconn.com/en/sms-consent
+            DOC {docId} &middot; AGCONN, Visalia, California &middot; agconn.com/en/sms-consent
           </footer>
         </article>
       </div>

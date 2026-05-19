@@ -80,3 +80,23 @@ export async function ensureClerkUserByPhone(
     throw e;
   }
 }
+
+/**
+ * Push a worker's name onto their Clerk user. An SMS-provisioned identity is
+ * created by `ensureClerkUserByPhone` with NO name (Clerk has no name until a
+ * web sign-up or this call), so without this every SMS-onboarded worker is
+ * nameless in Clerk — breaking support tooling, the admin directory, and any
+ * future web login that greets them by name. Called from the SMS onboarding
+ * completion once first/last are captured and validated. Best-effort at the
+ * call site: a Clerk failure must not fail onboarding (the WorkerProfile name
+ * is the source of truth for hiring; Clerk is the identity mirror).
+ */
+export async function updateClerkUserName(
+  clerkUserId: string,
+  name: { firstName: string; lastName: string },
+): Promise<void> {
+  await client().users.updateUser(clerkUserId, {
+    firstName: name.firstName,
+    lastName: name.lastName,
+  });
+}
