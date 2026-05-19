@@ -1,8 +1,65 @@
 import { Hono, type Context } from 'hono';
 import { ok, err } from '@agconn/api-client/server';
 import { validateTwilioSignature, enqueueSms, enqueueProvision } from '@agconn/sms';
-import { pools, SmsStatus, AppStatus, UserRole } from '@agconn/db';
+import { pools, SmsStatus, AppStatus, UserRole, County } from '@agconn/db';
 import { emitSystemAudit } from '../middleware/audit.js';
+import type { SkillSlug } from '@agconn/schemas';
+import { completeOnboarding } from '../worker/onboarding/service.js';
+
+// SMS micro-onboarding (Phase 3). County numbering matches the welcome
+// template (sms.optin.welcome) and the @agconn/db County enum order. Skills
+// are a curated numbered subset of @agconn/schemas SKILL_SLUGS (canonical) —
+// not a hand-kept second list.
+const SMS_COUNTIES: readonly County[] = [
+    County.Fresno,
+    County.Kern,
+    County.Kings,
+    County.Madera,
+    County.Tulare,
+];
+// Typed against SkillSlug so this list cannot drift from the canonical
+// @agconn/schemas SKILL_SLUGS — a removed/renamed slug fails typecheck here.
+const SMS_SKILLS: readonly SkillSlug[] = [
+    'harvesting',
+    'pruning',
+    'irrigation',
+    'packing',
+    'planting',
+    'forklift',
+    'tractor_op',
+    'crew_leadership',
+];
+// Conscious SMS-channel deviation (spec 3.3): availability defaults to fully
+// available so completeOnboarding's availability check passes; the worker
+// refines it on the web. Documented in 07-acceptance amendment.
+const ALL_AVAILABLE = {
+    mon: { am: true, pm: true },
+    tue: { am: true, pm: true },
+    wed: { am: true, pm: true },
+    thu: { am: true, pm: true },
+    fri: { am: true, pm: true },
+    sat: { am: true, pm: true },
+    sun: { am: true, pm: true },
+} as const;
+
+type OnboardingDraft = { county?: County; firstName?: string; lastName?: string };
+
+async function enqueueOnboard(
+    userId: string,
+    template:
+        | 'sms.optin.welcome'
+        | 'sms.onboard.invalid_county'
+        | 'sms.onboard.ask_name'
+        | 'sms.onboard.ask_skills',
+): Promise<void> {
+    await enqueueSms({
+        tenantId: SYSTEM_TENANT_ID,
+        userId,
+        template,
+        vars: {},
+        jobKey: `onboard-${template}-${userId}-${Date.now()}`,
+    });
+}
 
 // Platform-level operations (workers, opt-in flow) live under this tenant
 // per docs/00-foundation/01-multi-tenancy. SMS log rows for opt-in must
@@ -110,7 +167,8 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
         return err(c, 401, 'unauthenticated', 'invalid Twilio signature');
     }
 
-    const text = (params.Body ?? '').trim().toUpperCase();
+    const body = (params.Body ?? '').trim();
+    const text = body.toUpperCase();
     const from = params.From ?? '';
 
     console.log('[twilio] inbound', { from: from ? from.slice(-4) : 'none', text });
@@ -147,6 +205,15 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
         return twiml(c);
     }
 
+    // 2b. SMS micro-onboarding in progress — the active step owns the reply,
+    //     resolved BEFORE keyword routing. A consented worker mid-flow who
+    //     texts anything (including JOBS) is advanced or re-prompted, never
+    //     met with silence. STOP was already handled above.
+    if (existing?.smsOnboardingStep) {
+        await handleOnboardingStep(existing, body, text);
+        return twiml(c);
+    }
+
     const tokens = text.split(/\s+/);
 
     // 3. New opt-in via published keyword. Only for unknown phones — known
@@ -167,7 +234,15 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
         }
     }
 
-    // 4. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
+    // 4. Consented, onboarded worker re-texting an opt-in keyword → a real
+    //    matched-jobs digest instead of the old silent <Response/> (the
+    //    dead-end that started this whole investigation, twilio.ts:177).
+    if (existing && tokens.some((t) => OPT_IN_KEYWORDS.has(t))) {
+        await sendJobsDigest(existing);
+        return twiml(c);
+    }
+
+    // 5. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
     //    the job's keyword is) to apply. Only for already-consented workers;
     //    handleJobApply itself drops on unknown phone.
     for (const token of tokens) {
@@ -215,6 +290,10 @@ async function confirmOptIn(userId: string): Promise<void> {
                 smsOptInState: 'consented',
                 consentMethod: 'sms_double_opt_in',
                 consentedAt: now,
+                // Enter SMS micro-onboarding. The welcome SMS enqueued below
+                // (sms.optin.welcome) already asks for county, so the first
+                // step is await_county. Phase 3.
+                smsOnboardingStep: 'await_county',
             },
         });
     });
@@ -236,6 +315,192 @@ async function confirmOptIn(userId: string): Promise<void> {
         template: 'sms.optin.welcome',
         vars: {},
         jobKey: `optin-welcome-${user.id}`,
+    });
+}
+
+async function setOnboarding(
+    userId: string,
+    step: string | null,
+    draft: OnboardingDraft,
+): Promise<void> {
+    await pools.webhooks.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        await tx.user.update({
+            where: { id: userId },
+            data: { smsOnboardingStep: step, smsOnboardingDraft: draft as object },
+        });
+    });
+}
+
+async function completeSmsOnboarding(
+    userId: string,
+    draft: OnboardingDraft,
+    skills: string[],
+): Promise<void> {
+    if (!draft.county || !draft.firstName || !draft.lastName) {
+        await setOnboarding(userId, 'await_county', {});
+        await enqueueOnboard(userId, 'sms.onboard.invalid_county');
+        return;
+    }
+    const result = await pools.webhooks.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
+        const profileData = {
+            firstName: draft.firstName as string,
+            lastName: draft.lastName as string,
+            county: draft.county as County,
+            skills,
+            availability: ALL_AVAILABLE as object,
+        };
+        await tx.workerProfile.upsert({
+            where: { id: userId },
+            create: { id: userId, ...profileData },
+            update: profileData,
+        });
+        // Reuse the Phase 2 finalize: validates the profile, sets
+        // WorkerProfile.onboardedAt + User.onboarded=true. ALL_AVAILABLE
+        // satisfies its availability check (the conscious SMS deviation).
+        const r = await completeOnboarding(tx, userId);
+        await tx.user.update({
+            where: { id: userId },
+            data: { smsOnboardingStep: null, smsOnboardingDraft: {} },
+        });
+        return r;
+    });
+    await emitSystemAudit({
+        action: 'system.sms.opt_in_confirmed',
+        resourceType: 'user',
+        resourceId: userId,
+        metadata: {
+            phase: 'sms_onboarding_complete',
+            county: String(draft.county),
+            status: result.status,
+        },
+    });
+    await enqueueSms({
+        tenantId: SYSTEM_TENANT_ID,
+        userId,
+        template: 'sms.onboard.done',
+        vars: { firstName: draft.firstName, county: String(draft.county) },
+        jobKey: `onboard-done-${userId}`,
+    });
+}
+
+async function handleOnboardingStep(
+    user: {
+        id: string;
+        smsOnboardingStep: string | null;
+        smsOnboardingDraft: unknown;
+    },
+    body: string,
+    text: string,
+): Promise<void> {
+    const step = user.smsOnboardingStep;
+    const draft: OnboardingDraft = (user.smsOnboardingDraft as OnboardingDraft) ?? {};
+
+    if (step === 'await_county') {
+        const m = text.match(/^([1-5])$/);
+        const idx = m
+            ? Number(m[1]) - 1
+            : SMS_COUNTIES.findIndex((c) => String(c).toUpperCase() === text);
+        if (idx < 0) {
+            await enqueueOnboard(user.id, 'sms.onboard.invalid_county');
+            return;
+        }
+        draft.county = SMS_COUNTIES[idx];
+        await setOnboarding(user.id, 'await_name', draft);
+        await enqueueOnboard(user.id, 'sms.onboard.ask_name');
+        return;
+    }
+    if (step === 'await_name') {
+        const parts = body.split(/\s+/).filter(Boolean);
+        if (parts.length === 0) {
+            await enqueueOnboard(user.id, 'sms.onboard.ask_name');
+            return;
+        }
+        draft.firstName = parts[0];
+        draft.lastName = parts.slice(1).join(' ') || parts[0];
+        await setOnboarding(user.id, 'await_skills', draft);
+        await enqueueOnboard(user.id, 'sms.onboard.ask_skills');
+        return;
+    }
+    if (step === 'await_skills') {
+        const picked = Array.from(
+            new Set((text.match(/[1-8]/g) ?? []).map(Number)),
+        ).filter((n) => n >= 1 && n <= SMS_SKILLS.length);
+        if (picked.length === 0) {
+            await enqueueOnboard(user.id, 'sms.onboard.ask_skills');
+            return;
+        }
+        const skills = picked.map((n) => SMS_SKILLS[n - 1] as string);
+        await completeSmsOnboarding(user.id, draft, skills);
+        return;
+    }
+    // Unknown step — clear so the worker isn't stuck.
+    await setOnboarding(user.id, null, {});
+}
+
+async function sendJobsDigest(user: {
+    id: string;
+    preferredLang: unknown;
+}): Promise<void> {
+    const profile = await pools.webhooks.workerProfile.findUnique({
+        where: { id: user.id },
+        select: { county: true },
+    });
+    const lang = String(user.preferredLang) === 'en' ? 'en' : 'es';
+
+    if (!profile?.county) {
+        // Consented but not matchable — re-enter onboarding, never silence.
+        await setOnboarding(user.id, 'await_county', {});
+        await enqueueSms({
+            tenantId: SYSTEM_TENANT_ID,
+            userId: user.id,
+            template: 'sms.optin.welcome',
+            vars: {},
+            jobKey: `onboard-welcome-${user.id}-${Date.now()}`,
+        });
+        return;
+    }
+
+    const jobs = await pools.webhooks.jobPosting.findMany({
+        where: { county: profile.county, status: 'active', deletedAt: null },
+        orderBy: { publishedAt: 'desc' },
+        take: 3,
+        select: {
+            id: true,
+            titleEn: true,
+            titleEs: true,
+            wageMin: true,
+            wageMax: true,
+            smsApplyKeyword: true,
+        },
+    });
+
+    if (jobs.length === 0) {
+        await enqueueSms({
+            tenantId: SYSTEM_TENANT_ID,
+            userId: user.id,
+            template: 'sms.jobs.none',
+            vars: { county: String(profile.county) },
+            jobKey: `jobs-none-${user.id}-${Date.now()}`,
+        });
+        return;
+    }
+
+    const list = jobs
+        .map((j) => {
+            const title = lang === 'en' ? j.titleEn : j.titleEs;
+            const code = j.smsApplyKeyword ?? `JOB-${j.id.slice(0, 4)}`;
+            return `${title} $${Number(j.wageMin)}-${Number(j.wageMax)}/hr — ${code}`;
+        })
+        .join('\n');
+
+    await enqueueSms({
+        tenantId: SYSTEM_TENANT_ID,
+        userId: user.id,
+        template: 'sms.jobs.digest',
+        vars: { list },
+        jobKey: `jobs-digest-${user.id}-${Date.now()}`,
     });
 }
 

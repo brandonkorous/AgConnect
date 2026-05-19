@@ -512,6 +512,14 @@ model User {
   consentMethod String?   @map("consent_method")
   consentedAt   DateTime? @map("consented_at")
   smsOptInState String?   @map("sms_opt_in_state")
+  // SMS micro-onboarding (Phase 3): step =
+  // 'await_county'|'await_name'|'await_skills', NULL when not in / done with
+  // the flow. Draft holds partial answers ({county,firstName,lastName}) until
+  // the WorkerProfile is created at completion (it can't exist partially —
+  // firstName/lastName are non-null). See
+  // docs/00-foundation/13-onboarding-identity-remediation/05-phase-3-sms-onboarding.md.
+  smsOnboardingStep  String? @map("sms_onboarding_step")
+  smsOnboardingDraft Json?   @map("sms_onboarding_draft")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 

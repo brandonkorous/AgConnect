@@ -134,6 +134,38 @@ export const smsTemplates = {
         es: 'AGCONN: Necesitamos un SI para empezar a enviarte trabajos. Responde SI para confirmar o STOP para cancelar.',
         vars: [] as const,
     }),
+    // SMS micro-onboarding (Phase 3). The county prompt reuses
+    // sms.optin.welcome (it already lists 1=Fresno..5=Tulare).
+    'sms.onboard.invalid_county': def({
+        en: 'Reply a number for your county: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare.',
+        es: 'Responde un número para tu condado: 1=Fresno 2=Kern 3=Kings 4=Madera 5=Tulare.',
+        vars: [] as const,
+    }),
+    'sms.onboard.ask_name': def({
+        en: 'Got it. What is your name? Reply with your first and last name.',
+        es: 'Listo. ¿Cómo te llamas? Responde con tu nombre y apellido.',
+        vars: [] as const,
+    }),
+    'sms.onboard.ask_skills': def({
+        en: 'Last step. Reply the numbers for your work (e.g. 1 3 6): 1=Harvest 2=Pruning 3=Irrigation 4=Packing 5=Planting 6=Forklift 7=Tractor 8=Crew lead.',
+        es: 'Último paso. Responde los números de tu trabajo (ej. 1 3 6): 1=Cosecha 2=Poda 3=Riego 4=Empaque 5=Siembra 6=Montacargas 7=Tractor 8=Líder de cuadrilla.',
+        vars: [] as const,
+    }),
+    'sms.onboard.done': def({
+        en: "You're all set, {firstName}. We'll text jobs that match you in {county}. Reply JOBS anytime to see openings. Reply STOP to opt out.",
+        es: 'Listo, {firstName}. Te enviaremos trabajos para ti en {county}. Responde JOBS para ver trabajos. Responde STOP para cancelar.',
+        vars: ['firstName', 'county'] as const,
+    }),
+    'sms.jobs.digest': def({
+        en: 'Jobs for you:\n{list}\nReply the code to apply.',
+        es: 'Trabajos para ti:\n{list}\nResponde el código para aplicar.',
+        vars: ['list'] as const,
+    }),
+    'sms.jobs.none': def({
+        en: "No open jobs in {county} right now. We'll text you when one matches. Reply STOP to opt out.",
+        es: 'No hay trabajos en {county} ahora. Te avisaremos cuando haya uno. Responde STOP para cancelar.',
+        vars: ['county'] as const,
+    }),
 } as const;
 
 export type SmsTemplateName = keyof typeof smsTemplates;
