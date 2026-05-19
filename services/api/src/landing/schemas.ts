@@ -1,4 +1,39 @@
 import { z } from 'zod';
+import { countyFromSlug } from '@agconn/schemas';
+
+export const publicJobsSortEnum = z.enum([
+  'recent',
+  'wage_desc',
+  'wage_asc',
+  'start_soon',
+]);
+export type PublicJobsSort = z.infer<typeof publicJobsSortEnum>;
+
+// Validates the public job-browse query. Defaults reproduce the pre-existing
+// behaviour (recent = createdAt desc, page size 20) so /jobs and FeaturedJobs
+// are unaffected. `county` is normalized via the shared registry, never an
+// unchecked cast.
+export const publicJobsQuerySchema = z
+  .object({
+    county: z
+      .string()
+      .optional()
+      .transform((v, ctx) => {
+        if (v == null || v === '') return undefined;
+        const c = countyFromSlug(v);
+        if (!c) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid_county' });
+          return z.NEVER;
+        }
+        return c;
+      }),
+    sort: publicJobsSortEnum.default('recent'),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+    cursor: z.string().min(1).max(400).optional(),
+  })
+  .strict();
+
+export type PublicJobsQuery = z.infer<typeof publicJobsQuerySchema>;
 
 export const waitlistRequestSchema = z
   .object({

@@ -11,6 +11,7 @@ import {
     faMobileScreen,
     faComments,
 } from '@fortawesome/free-solid-svg-icons';
+import { ThemeToggle } from '@/components/primitives/ThemeToggle';
 
 export function WorkerTopBar() {
     const t = useTranslations('worker.dashboard.topbar');
@@ -83,6 +84,8 @@ export function WorkerTopBar() {
                 <FontAwesomeIcon icon={faComments} className="h-3.5 w-3.5" />
                 {t('help')}
             </Link>
+
+            <ThemeToggle ariaLabel={t('theme_toggle_aria')} />
         </div>
     );
 }

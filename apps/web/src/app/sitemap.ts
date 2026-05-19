@@ -5,6 +5,7 @@ import { fetchTrainingSitemap } from '@/lib/api/public-training';
 import { getAllResources, RESOURCE_CATEGORIES } from '@/content/resources';
 import { getAllPressReleases } from '@/content/press';
 import { getAllCareerRoles } from '@/content/careers';
+import { SERVICE_COUNTIES } from '@agconn/schemas';
 import { getSiteUrl } from '@/lib/seo/metadata';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -60,6 +61,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
   ]);
+
+  const countyEntries: MetadataRoute.Sitemap = SERVICE_COUNTIES.flatMap((c) =>
+    routing.locales.map((locale) => ({
+      url: `${base}/${locale}/jobs/county/${c}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+      alternates: { languages: langsFor(`/jobs/county/${c}`) },
+    })),
+  );
 
   const [jobs, programs] = await Promise.all([
     fetchJobsSitemap().catch(() => []),
@@ -127,6 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...homeEntries,
     ...browseEntries,
+    ...countyEntries,
     ...jobEntries,
     ...programEntries,
     ...resourceEntries,

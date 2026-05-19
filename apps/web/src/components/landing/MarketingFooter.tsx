@@ -81,9 +81,12 @@ export function MarketingFooter() {
                             <ul className="flex flex-wrap gap-1.5">
                                 {counties.map((c) => (
                                     <li key={c}>
-                                        <span className="badge badge-outline border-secondary text-neutral-content/70">
+                                        <a
+                                            href={`/${locale}/jobs/county/${c}`}
+                                            className="badge badge-outline border-secondary text-neutral-content/70 hover:text-accent hover:border-accent no-underline"
+                                        >
                                             {t(`counties.${c}`)}
-                                        </span>
+                                        </a>
                                     </li>
                                 ))}
                             </ul>

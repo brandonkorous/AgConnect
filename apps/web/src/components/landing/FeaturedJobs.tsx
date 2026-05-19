@@ -42,14 +42,13 @@ export async function FeaturedJobs() {
                 <div className="flex flex-wrap items-center gap-2">
                     <div className="join flex-wrap" role="group" aria-label={t('filter.label')}>
                         {counties.map((c, i) => (
-                            <button
+                            <a
                                 key={c}
-                                type="button"
-                                aria-pressed={i === 0}
-                                className={`btn join-item ${i === 0 ? 'btn-primary' : 'btn-outline btn-secondary'}`}
+                                href={c === 'all' ? `/${locale}/jobs` : `/${locale}/jobs/county/${c}`}
+                                className={`btn join-item no-underline ${i === 0 ? 'btn-primary' : 'btn-outline btn-secondary'}`}
                             >
                                 {t(`filter.${c}`)}
-                            </button>
+                            </a>
                         ))}
                     </div>
                     <span className="text-secondary ml-auto font-sans text-sm">{t('sort')}</span>

@@ -1609,4 +1609,303 @@ export const landing: TranslationBundle = {
         en: "Sending…",
         es: "Enviando…",
     },
+
+    // ========================================================================
+    // /[locale]/jobs/county/[county] — per-service-county SEO landing pages.
+    // {count} {median} {topRole} are filled at render; ES is authored, not a
+    // translation of EN.
+    // ========================================================================
+    "county.nav.all": { en: "All counties", es: "Todos los condados" },
+    "county.nav.siblings_label": { en: "Other counties", es: "Otros condados" },
+    "county.breadcrumb.jobs": { en: "Jobs", es: "Trabajos" },
+
+    // --- Fresno ---
+    "county.fresno.h1": {
+        en: "Seasonal farm jobs in Fresno County",
+        es: "Trabajo agrícola de temporada en el Condado de Fresno",
+    },
+    "county.fresno.meta_title": {
+        en: "Seasonal Farm Jobs in Fresno County, CA | AGCONN",
+        es: "Trabajo agrícola de temporada en el Condado de Fresno, CA | AGCONN",
+    },
+    "county.fresno.meta_description": {
+        en: "Verified seasonal farm jobs in Fresno County — table grapes, raisins, almonds, garlic, and tree fruit. Wages and hours listed in English and Spanish.",
+        es: "Trabajo agrícola de temporada verificado en el Condado de Fresno — uva de mesa, pasas, almendra, ajo y fruta de árbol. Salarios y horas en español e inglés.",
+    },
+    "county.fresno.intro_template": {
+        en: "There are {count} verified seasonal farm jobs in Fresno County right now, with a median wage of {median}. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Fresno ahora mismo, con un salario mediano de {median}. La mayoría son puestos de {topRole}.",
+    },
+    "county.fresno.intro_template_no_median": {
+        en: "There are {count} verified seasonal farm jobs in Fresno County right now. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Fresno ahora mismo. La mayoría son puestos de {topRole}.",
+    },
+    "county.fresno.intro_empty": {
+        en: "No open postings in Fresno County today. New jobs are posted through the season — check back, or see jobs in nearby counties.",
+        es: "Hoy no hay publicaciones abiertas en el Condado de Fresno. Se publican trabajos nuevos durante la temporada — vuelve a revisar o mira los condados cercanos.",
+    },
+    "county.fresno.context_crops": {
+        en: "Fresno County grows table grapes, raisins, almonds, garlic, tomatoes, and tree fruit such as peaches, plums, and nectarines.",
+        es: "El Condado de Fresno produce uva de mesa, pasas, almendra, ajo, tomate y fruta de árbol como durazno, ciruela y nectarina.",
+    },
+    "county.fresno.context_seasons": {
+        en: "Stone fruit runs May through August, garlic in June and July, and the table grape and raisin harvest from August into October.",
+        es: "La fruta de hueso va de mayo a agosto, el ajo en junio y julio, y la cosecha de uva de mesa y pasa de agosto a octubre.",
+    },
+    "county.fresno.faq.q1": {
+        en: "What seasonal farm jobs are available in Fresno County?",
+        es: "¿Qué trabajos agrícolas de temporada hay en el Condado de Fresno?",
+    },
+    "county.fresno.faq.a1": {
+        en: "Most postings are for table grape and raisin harvest, almond work, garlic, and tree fruit. Every employer on AGCONN is verified by name before a job goes public.",
+        es: "La mayoría de las publicaciones son para la cosecha de uva de mesa y pasa, almendra, ajo y fruta de árbol. Cada empleador en AGCONN se verifica por nombre antes de publicar.",
+    },
+    "county.fresno.faq.q2": {
+        en: "When is the busiest hiring season in Fresno County?",
+        es: "¿Cuándo es la temporada de mayor contratación en el Condado de Fresno?",
+    },
+    "county.fresno.faq.a2": {
+        en: "Hiring peaks from August through October during the grape and raisin harvest, with steady tree fruit work from late spring.",
+        es: "La contratación llega a su punto máximo de agosto a octubre durante la cosecha de uva y pasa, con trabajo constante de fruta de árbol desde fines de primavera.",
+    },
+    "county.fresno.faq.q3": {
+        en: "Are wages and hours shown before I apply?",
+        es: "¿Se muestran el salario y las horas antes de postular?",
+    },
+    "county.fresno.faq.a3": {
+        en: "Yes. Every posting lists the wage, hours, county, and start date in English and Spanish before you apply.",
+        es: "Sí. Cada publicación indica el salario, las horas, el condado y la fecha de inicio en español e inglés antes de postular.",
+    },
+
+    // --- Kern ---
+    "county.kern.h1": {
+        en: "Seasonal farm jobs in Kern County",
+        es: "Trabajo agrícola de temporada en el Condado de Kern",
+    },
+    "county.kern.meta_title": {
+        en: "Seasonal Farm Jobs in Kern County, CA | AGCONN",
+        es: "Trabajo agrícola de temporada en el Condado de Kern, CA | AGCONN",
+    },
+    "county.kern.meta_description": {
+        en: "Verified seasonal farm jobs in Kern County — early table grapes, citrus, almonds, pistachios, carrots, and cherries. Wages and hours in English and Spanish.",
+        es: "Trabajo agrícola de temporada verificado en el Condado de Kern — uva de mesa temprana, cítricos, almendra, pistacho, zanahoria y cereza. Salarios y horas en español e inglés.",
+    },
+    "county.kern.intro_template": {
+        en: "There are {count} verified seasonal farm jobs in Kern County right now, with a median wage of {median}. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Kern ahora mismo, con un salario mediano de {median}. La mayoría son puestos de {topRole}.",
+    },
+    "county.kern.intro_template_no_median": {
+        en: "There are {count} verified seasonal farm jobs in Kern County right now. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Kern ahora mismo. La mayoría son puestos de {topRole}.",
+    },
+    "county.kern.intro_empty": {
+        en: "No open postings in Kern County today. New jobs are posted through the season — check back, or see jobs in nearby counties.",
+        es: "Hoy no hay publicaciones abiertas en el Condado de Kern. Se publican trabajos nuevos durante la temporada — vuelve a revisar o mira los condados cercanos.",
+    },
+    "county.kern.context_crops": {
+        en: "Kern County grows the state's earliest table grapes, citrus, almonds, pistachios, carrots, potatoes, cherries, and blueberries.",
+        es: "El Condado de Kern produce la uva de mesa más temprana del estado, además de cítricos, almendra, pistacho, zanahoria, papa, cereza y arándano.",
+    },
+    "county.kern.context_seasons": {
+        en: "Cherries and blueberries come in spring, the table grape harvest starts in July — the earliest in California — and citrus runs through winter.",
+        es: "La cereza y el arándano llegan en primavera, la cosecha de uva de mesa empieza en julio — la más temprana de California — y los cítricos siguen en invierno.",
+    },
+    "county.kern.faq.q1": {
+        en: "What seasonal farm jobs are available in Kern County?",
+        es: "¿Qué trabajos agrícolas de temporada hay en el Condado de Kern?",
+    },
+    "county.kern.faq.a1": {
+        en: "Most postings are for table grape harvest, citrus, almonds and pistachios, and spring cherries. Every employer on AGCONN is verified by name before a job goes public.",
+        es: "La mayoría de las publicaciones son para cosecha de uva de mesa, cítricos, almendra y pistacho, y cereza de primavera. Cada empleador en AGCONN se verifica por nombre antes de publicar.",
+    },
+    "county.kern.faq.q2": {
+        en: "When is the busiest hiring season in Kern County?",
+        es: "¿Cuándo es la temporada de mayor contratación en el Condado de Kern?",
+    },
+    "county.kern.faq.a2": {
+        en: "Hiring picks up in May for cherries and runs heavy from July through October during the grape harvest.",
+        es: "La contratación aumenta en mayo por la cereza y se mantiene fuerte de julio a octubre durante la cosecha de uva.",
+    },
+    "county.kern.faq.q3": {
+        en: "Are wages and hours shown before I apply?",
+        es: "¿Se muestran el salario y las horas antes de postular?",
+    },
+    "county.kern.faq.a3": {
+        en: "Yes. Every posting lists the wage, hours, county, and start date in English and Spanish before you apply.",
+        es: "Sí. Cada publicación indica el salario, las horas, el condado y la fecha de inicio en español e inglés antes de postular.",
+    },
+
+    // --- Kings ---
+    "county.kings.h1": {
+        en: "Seasonal farm jobs in Kings County",
+        es: "Trabajo agrícola de temporada en el Condado de Kings",
+    },
+    "county.kings.meta_title": {
+        en: "Seasonal Farm Jobs in Kings County, CA | AGCONN",
+        es: "Trabajo agrícola de temporada en el Condado de Kings, CA | AGCONN",
+    },
+    "county.kings.meta_description": {
+        en: "Verified seasonal farm jobs in Kings County — processing tomatoes, almonds, pistachios, garlic, cotton, and dairy forage. Wages and hours in English and Spanish.",
+        es: "Trabajo agrícola de temporada verificado en el Condado de Kings — tomate para proceso, almendra, pistacho, ajo, algodón y forraje lechero. Salarios y horas en español e inglés.",
+    },
+    "county.kings.intro_template": {
+        en: "There are {count} verified seasonal farm jobs in Kings County right now, with a median wage of {median}. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Kings ahora mismo, con un salario mediano de {median}. La mayoría son puestos de {topRole}.",
+    },
+    "county.kings.intro_template_no_median": {
+        en: "There are {count} verified seasonal farm jobs in Kings County right now. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Kings ahora mismo. La mayoría son puestos de {topRole}.",
+    },
+    "county.kings.intro_empty": {
+        en: "No open postings in Kings County today. New jobs are posted through the season — check back, or see jobs in nearby counties.",
+        es: "Hoy no hay publicaciones abiertas en el Condado de Kings. Se publican trabajos nuevos durante la temporada — vuelve a revisar o mira los condados cercanos.",
+    },
+    "county.kings.context_crops": {
+        en: "Kings County grows processing tomatoes, almonds, pistachios, garlic, cotton, and forage crops for its dairies.",
+        es: "El Condado de Kings produce tomate para proceso, almendra, pistacho, ajo, algodón y cultivos de forraje para sus lecherías.",
+    },
+    "county.kings.context_seasons": {
+        en: "Garlic comes in June and July, the processing tomato harvest runs July through September, and almonds are shaken from August into September.",
+        es: "El ajo llega en junio y julio, la cosecha de tomate para proceso va de julio a septiembre, y la almendra se cosecha de agosto a septiembre.",
+    },
+    "county.kings.faq.q1": {
+        en: "What seasonal farm jobs are available in Kings County?",
+        es: "¿Qué trabajos agrícolas de temporada hay en el Condado de Kings?",
+    },
+    "county.kings.faq.a1": {
+        en: "Most postings are for processing tomato harvest, garlic, almonds, and pistachios. Every employer on AGCONN is verified by name before a job goes public.",
+        es: "La mayoría de las publicaciones son para cosecha de tomate para proceso, ajo, almendra y pistacho. Cada empleador en AGCONN se verifica por nombre antes de publicar.",
+    },
+    "county.kings.faq.q2": {
+        en: "When is the busiest hiring season in Kings County?",
+        es: "¿Cuándo es la temporada de mayor contratación en el Condado de Kings?",
+    },
+    "county.kings.faq.a2": {
+        en: "Hiring peaks from July through September during the tomato and almond harvests.",
+        es: "La contratación llega a su punto máximo de julio a septiembre durante la cosecha de tomate y almendra.",
+    },
+    "county.kings.faq.q3": {
+        en: "Are wages and hours shown before I apply?",
+        es: "¿Se muestran el salario y las horas antes de postular?",
+    },
+    "county.kings.faq.a3": {
+        en: "Yes. Every posting lists the wage, hours, county, and start date in English and Spanish before you apply.",
+        es: "Sí. Cada publicación indica el salario, las horas, el condado y la fecha de inicio en español e inglés antes de postular.",
+    },
+
+    // --- Madera ---
+    "county.madera.h1": {
+        en: "Seasonal farm jobs in Madera County",
+        es: "Trabajo agrícola de temporada en el Condado de Madera",
+    },
+    "county.madera.meta_title": {
+        en: "Seasonal Farm Jobs in Madera County, CA | AGCONN",
+        es: "Trabajo agrícola de temporada en el Condado de Madera, CA | AGCONN",
+    },
+    "county.madera.meta_description": {
+        en: "Verified seasonal farm jobs in Madera County — almonds, pistachios, wine and raisin grapes, and figs. Wages and hours in English and Spanish.",
+        es: "Trabajo agrícola de temporada verificado en el Condado de Madera — almendra, pistacho, uva para vino y pasa, e higo. Salarios y horas en español e inglés.",
+    },
+    "county.madera.intro_template": {
+        en: "There are {count} verified seasonal farm jobs in Madera County right now, with a median wage of {median}. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Madera ahora mismo, con un salario mediano de {median}. La mayoría son puestos de {topRole}.",
+    },
+    "county.madera.intro_template_no_median": {
+        en: "There are {count} verified seasonal farm jobs in Madera County right now. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Madera ahora mismo. La mayoría son puestos de {topRole}.",
+    },
+    "county.madera.intro_empty": {
+        en: "No open postings in Madera County today. New jobs are posted through the season — check back, or see jobs in nearby counties.",
+        es: "Hoy no hay publicaciones abiertas en el Condado de Madera. Se publican trabajos nuevos durante la temporada — vuelve a revisar o mira los condados cercanos.",
+    },
+    "county.madera.context_crops": {
+        en: "Madera County grows almonds, pistachios, wine and raisin grapes, figs, and sweet potatoes.",
+        es: "El Condado de Madera produce almendra, pistacho, uva para vino y pasa, higo y camote.",
+    },
+    "county.madera.context_seasons": {
+        en: "Figs come in mid-summer, the grape harvest runs August into September, and almonds are shaken from August through October.",
+        es: "El higo llega a mediados del verano, la cosecha de uva va de agosto a septiembre, y la almendra se cosecha de agosto a octubre.",
+    },
+    "county.madera.faq.q1": {
+        en: "What seasonal farm jobs are available in Madera County?",
+        es: "¿Qué trabajos agrícolas de temporada hay en el Condado de Madera?",
+    },
+    "county.madera.faq.a1": {
+        en: "Most postings are for almond and pistachio work, grape harvest, and figs. Every employer on AGCONN is verified by name before a job goes public.",
+        es: "La mayoría de las publicaciones son para trabajo de almendra y pistacho, cosecha de uva e higo. Cada empleador en AGCONN se verifica por nombre antes de publicar.",
+    },
+    "county.madera.faq.q2": {
+        en: "When is the busiest hiring season in Madera County?",
+        es: "¿Cuándo es la temporada de mayor contratación en el Condado de Madera?",
+    },
+    "county.madera.faq.a2": {
+        en: "Hiring peaks from August through October during the grape and almond harvests.",
+        es: "La contratación llega a su punto máximo de agosto a octubre durante la cosecha de uva y almendra.",
+    },
+    "county.madera.faq.q3": {
+        en: "Are wages and hours shown before I apply?",
+        es: "¿Se muestran el salario y las horas antes de postular?",
+    },
+    "county.madera.faq.a3": {
+        en: "Yes. Every posting lists the wage, hours, county, and start date in English and Spanish before you apply.",
+        es: "Sí. Cada publicación indica el salario, las horas, el condado y la fecha de inicio en español e inglés antes de postular.",
+    },
+
+    // --- Tulare ---
+    "county.tulare.h1": {
+        en: "Seasonal farm jobs in Tulare County",
+        es: "Trabajo agrícola de temporada en el Condado de Tulare",
+    },
+    "county.tulare.meta_title": {
+        en: "Seasonal Farm Jobs in Tulare County, CA | AGCONN",
+        es: "Trabajo agrícola de temporada en el Condado de Tulare, CA | AGCONN",
+    },
+    "county.tulare.meta_description": {
+        en: "Verified seasonal farm jobs in Tulare County — navel and Valencia oranges, table grapes, stone fruit, olives, and dairy. Wages and hours in English and Spanish.",
+        es: "Trabajo agrícola de temporada verificado en el Condado de Tulare — naranja navel y Valencia, uva de mesa, fruta de hueso, oliva y lechería. Salarios y horas en español e inglés.",
+    },
+    "county.tulare.intro_template": {
+        en: "There are {count} verified seasonal farm jobs in Tulare County right now, with a median wage of {median}. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Tulare ahora mismo, con un salario mediano de {median}. La mayoría son puestos de {topRole}.",
+    },
+    "county.tulare.intro_template_no_median": {
+        en: "There are {count} verified seasonal farm jobs in Tulare County right now. Most are {topRole} positions.",
+        es: "Hay {count} trabajos agrícolas de temporada verificados en el Condado de Tulare ahora mismo. La mayoría son puestos de {topRole}.",
+    },
+    "county.tulare.intro_empty": {
+        en: "No open postings in Tulare County today. New jobs are posted through the season — check back, or see jobs in nearby counties.",
+        es: "Hoy no hay publicaciones abiertas en el Condado de Tulare. Se publican trabajos nuevos durante la temporada — vuelve a revisar o mira los condados cercanos.",
+    },
+    "county.tulare.context_crops": {
+        en: "Tulare County grows navel and Valencia oranges, table grapes, stone fruit, olives, blueberries, and forage for its dairies.",
+        es: "El Condado de Tulare produce naranja navel y Valencia, uva de mesa, fruta de hueso, oliva, arándano y forraje para sus lecherías.",
+    },
+    "county.tulare.context_seasons": {
+        en: "Navel oranges run November through May, Valencia oranges through summer, and table grapes and stone fruit from midsummer into fall.",
+        es: "La naranja navel va de noviembre a mayo, la Valencia durante el verano, y la uva de mesa y la fruta de hueso de mediados de verano al otoño.",
+    },
+    "county.tulare.faq.q1": {
+        en: "What seasonal farm jobs are available in Tulare County?",
+        es: "¿Qué trabajos agrícolas de temporada hay en el Condado de Tulare?",
+    },
+    "county.tulare.faq.a1": {
+        en: "Most postings are for citrus harvest, table grapes, stone fruit, and olives. Every employer on AGCONN is verified by name before a job goes public.",
+        es: "La mayoría de las publicaciones son para cosecha de cítricos, uva de mesa, fruta de hueso y oliva. Cada empleador en AGCONN se verifica por nombre antes de publicar.",
+    },
+    "county.tulare.faq.q2": {
+        en: "When is the busiest hiring season in Tulare County?",
+        es: "¿Cuándo es la temporada de mayor contratación en el Condado de Tulare?",
+    },
+    "county.tulare.faq.a2": {
+        en: "Citrus provides work much of the year; hiring is heaviest from late fall through spring for the navel orange harvest.",
+        es: "Los cítricos dan trabajo gran parte del año; la contratación es más fuerte de fines de otoño a primavera por la cosecha de naranja navel.",
+    },
+    "county.tulare.faq.q3": {
+        en: "Are wages and hours shown before I apply?",
+        es: "¿Se muestran el salario y las horas antes de postular?",
+    },
+    "county.tulare.faq.a3": {
+        en: "Yes. Every posting lists the wage, hours, county, and start date in English and Spanish before you apply.",
+        es: "Sí. Cada publicación indica el salario, las horas, el condado y la fecha de inicio en español e inglés antes de postular.",
+    },
 };

@@ -45,6 +45,11 @@ Tulare) is **not** special-cased here; it is one service county among five. See
 
 ## In scope
 
+- **Hardening `GET /v1/landing/jobs` sorting, filtering, and paging** as a
+  defined deliverable: Zod-validated `county` (enum, no unchecked cast),
+  `sort` (`recent`/`wage_desc`/`wage_asc`/`start_soon`), sort-aware keyset
+  `cursor`, `limit` (1–50). Backwards compatible — defaults reproduce today's
+  behaviour so `/jobs` and `FeaturedJobs` are unaffected. See [03-api](03-api.md).
 - 10 static county landing pages, EN + ES, full parity.
 - `generateMetadata` (title, description, canonical, hreflang) per county.
 - County-scoped `ItemList` + `FAQPage` JSON-LD via the [09-seo-aio](../../00-foundation/09-seo-aio/) helpers.

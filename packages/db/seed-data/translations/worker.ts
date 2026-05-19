@@ -757,6 +757,10 @@ export const worker: TranslationBundle = {
         en: "SMS apply: ON",
         es: "Aplicar por SMS: ACTIVO",
     },
+    "dashboard.topbar.theme_toggle_aria": {
+        en: "Toggle dark mode",
+        es: "Cambiar modo oscuro",
+    },
     "dashboard.training.enroll": {
         en: "Enroll free",
         es: "Inscribirse gratis",
