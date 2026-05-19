@@ -196,3 +196,23 @@ const port = Number(process.env.PORT ?? 3001);
 serve({ fetch: app.fetch, port }, (info) => {
     console.log(`api listening on http://localhost:${info.port}`);
 });
+
+// Pre-warm pg-boss so the FIRST inbound Twilio SMS that triggers
+// sms.provision (an unknown phone texting JOBS — the identity keystone) does
+// not pay a cold boss boot (schema migration + queue create) inside Twilio's
+// ~15s webhook window, which surfaced as error 11200. Non-blocking and
+// best-effort: a failure here is logged and the webhook's own bestEffort
+// guard still keeps it responsive; the boss lazily boots on first use as
+// before. See docs/00-foundation/13-onboarding-identity-remediation/.
+void (async () => {
+    try {
+        const { getSmsBoss, SMS_PROVISION_QUEUE } = await import('@agconn/sms');
+        const boss = await getSmsBoss();
+        await boss.createQueue(SMS_PROVISION_QUEUE);
+        console.log('[api] pg-boss pre-warmed (sms.send + sms.provision queues ready)');
+    } catch (e) {
+        console.error('[api] pg-boss pre-warm failed (non-fatal, will lazy-boot)', {
+            err: e instanceof Error ? e.message : String(e),
+        });
+    }
+})();

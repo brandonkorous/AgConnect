@@ -66,6 +66,31 @@ async function enqueueOnboard(
 // reference a real tenant; the system tenant is the right home for them.
 const SYSTEM_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
+// The inbound webhook's contract with Twilio is a fast TwiML response. A
+// pg-boss enqueue (or a cold boss boot on the first provision) must never
+// turn into a non-2xx or a >15s response — Twilio surfaces error 11200 and
+// the queued work never runs. So every inbound side effect is best-effort:
+// on failure we log + audit and the caller still returns <Response/>.
+// Provisioning and opt-in are idempotent (singleton keys / step state), so a
+// re-text recovers cleanly. Mirrors the "catch keeps the API responsive"
+// pattern every other pg-boss producer uses.
+async function bestEffort(label: string, fn: () => Promise<unknown>): Promise<void> {
+    try {
+        await fn();
+    } catch (e) {
+        console.error('[twilio] inbound side-effect failed (non-fatal)', {
+            label,
+            err: e instanceof Error ? e.message : String(e),
+        });
+        await emitSystemAudit({
+            action: 'system.sms.dropped',
+            resourceType: 'sms_inbound',
+            resourceId: label,
+            metadata: { reason: 'inbound_side_effect_failed', label },
+        }).catch(() => {});
+    }
+}
+
 // Twilio webhook contracts:
 //   /v1/webhooks/twilio/status   — message status callback. Body is form-encoded;
 //                                  query string (?logId=...) carries our row id.
@@ -173,90 +198,110 @@ twilioWebhookRoutes.post('/inbound', async (c) => {
 
     console.log('[twilio] inbound', { from: from ? from.slice(-4) : 'none', text });
 
-    // 1. STOP keywords — always wins, even on a pending stub.
-    if (from && STOP_KEYWORDS.has(text)) {
-        await handleStop(from);
-        return twiml(c);
-    }
+    // Outer safety net: past signature validation, Twilio must ALWAYS get a
+    // 200 TwiML response (never a 5xx / >15s — that is error 11200, and it
+    // also makes Twilio retry-storm). Routing decisions stay below; any
+    // unexpected throw (DB read, cold pg-boss boot) degrades to silence here
+    // rather than a failed webhook. Individual side effects are additionally
+    // wrapped in bestEffort so the failure is logged + audited with context.
+    try {
+        if (!from) return twiml(c);
 
-    if (!from) return twiml(c);
-
-    // 2. Pending stub awaiting confirmation — YES advances; anything else
-    //    re-prompts. We look up by phone so this works whether the existing
-    //    user came from web signup or a prior SMS opt-in.
-    const existing = await pools.webhooks.user.findFirst({
-        where: { phone: from, role: UserRole.worker },
-    });
-
-    console.log('[twilio] inbound user state', { exists: !!existing, state: existing?.smsOptInState ?? 'none' });
-
-    if (existing?.smsOptInState === 'pending_confirm') {
-        if (CONFIRM_KEYWORDS.has(text)) {
-            await confirmOptIn(existing.id);
+        // 1. STOP keywords — always wins, even on a pending stub.
+        if (STOP_KEYWORDS.has(text)) {
+            await bestEffort('stop', () => handleStop(from));
             return twiml(c);
         }
-        await enqueueSms({
-            tenantId: SYSTEM_TENANT_ID,
-            userId: existing.id,
-            template: 'sms.optin.invalid',
-            vars: {},
-            jobKey: `optin-invalid-${existing.id}-${Date.now()}`,
+
+        // 2. Pending stub awaiting confirmation — YES advances; anything else
+        //    re-prompts. We look up by phone so this works whether the
+        //    existing user came from web signup or a prior SMS opt-in.
+        const existing = await pools.webhooks.user.findFirst({
+            where: { phone: from, role: UserRole.worker },
+        });
+
+        console.log('[twilio] inbound user state', { exists: !!existing, state: existing?.smsOptInState ?? 'none' });
+
+        if (existing?.smsOptInState === 'pending_confirm') {
+            if (CONFIRM_KEYWORDS.has(text)) {
+                await bestEffort('confirm-optin', () => confirmOptIn(existing.id));
+                return twiml(c);
+            }
+            await bestEffort('optin-invalid', () =>
+                enqueueSms({
+                    tenantId: SYSTEM_TENANT_ID,
+                    userId: existing.id,
+                    template: 'sms.optin.invalid',
+                    vars: {},
+                    jobKey: `optin-invalid-${existing.id}-${Date.now()}`,
+                }),
+            );
+            return twiml(c);
+        }
+
+        // 2b. SMS micro-onboarding in progress — the active step owns the
+        //     reply, resolved BEFORE keyword routing. A consented worker
+        //     mid-flow who texts anything (including JOBS) is advanced or
+        //     re-prompted, never met with silence. STOP handled above.
+        if (existing?.smsOnboardingStep) {
+            await bestEffort('onboarding-step', () => handleOnboardingStep(existing, body, text));
+            return twiml(c);
+        }
+
+        const tokens = text.split(/\s+/);
+
+        // 3. New opt-in via published keyword. Only for unknown phones —
+        //    known workers texting JOBS again don't get re-onboarded.
+        if (!existing) {
+            const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
+            if (optInToken) {
+                // Identity keystone: hand off to sms.provision off the
+                // request path (Twilio fast-response). The consumer ensures a
+                // real Clerk user for this phone, upserts the User row, emits
+                // the opt_in_pending audit, and enqueues the confirm SMS. No
+                // sms_* id is ever minted, so the sms<->clerk merge problem
+                // cannot occur. bestEffort guarantees a cold pg-boss boot or
+                // enqueue failure cannot 11200 the webhook — the re-text is
+                // idempotent (singletonKey provision-<phone>). See
+                // docs/00-foundation/13-onboarding-identity-remediation/.
+                const locale = ES_OPT_IN_KEYWORDS.has(optInToken) ? 'es' : 'en';
+                await bestEffort('provision', () =>
+                    enqueueProvision({ phone: from, locale, keyword: optInToken }),
+                );
+                return twiml(c);
+            }
+        }
+
+        // 4. Consented, onboarded worker re-texting an opt-in keyword → a
+        //    real matched-jobs digest instead of the old silent <Response/>.
+        if (existing && tokens.some((t) => OPT_IN_KEYWORDS.has(t))) {
+            await bestEffort('jobs-digest', () => sendJobsDigest(existing));
+            return twiml(c);
+        }
+
+        // 5. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
+        //    the job's keyword is) to apply. Only for already-consented
+        //    workers; handleJobApply itself drops on unknown phone.
+        for (const token of tokens) {
+            if (token.length < 4 || token.length > 24) continue;
+            const keyword = await pools.webhooks.smsKeyword.findFirst({
+                where: { keyword: { equals: token, mode: 'insensitive' }, active: true },
+            });
+            if (!keyword || keyword.kind !== 'job_apply') continue;
+
+            await bestEffort('job-apply', () => handleJobApply({ keyword, fromPhone: from }));
+            return twiml(c);
+        }
+
+        return twiml(c);
+    } catch (e) {
+        // DB read or other unexpected failure — never fail the webhook.
+        console.error('[twilio] inbound handler error (degraded to silence)', {
+            from: from ? from.slice(-4) : 'none',
+            err: e instanceof Error ? e.message : String(e),
         });
         return twiml(c);
     }
-
-    // 2b. SMS micro-onboarding in progress — the active step owns the reply,
-    //     resolved BEFORE keyword routing. A consented worker mid-flow who
-    //     texts anything (including JOBS) is advanced or re-prompted, never
-    //     met with silence. STOP was already handled above.
-    if (existing?.smsOnboardingStep) {
-        await handleOnboardingStep(existing, body, text);
-        return twiml(c);
-    }
-
-    const tokens = text.split(/\s+/);
-
-    // 3. New opt-in via published keyword. Only for unknown phones — known
-    //    workers texting JOBS again don't get re-onboarded.
-    if (!existing) {
-        const optInToken = tokens.find((t) => OPT_IN_KEYWORDS.has(t));
-        if (optInToken) {
-            // Identity keystone: hand off to sms.provision off the request
-            // path (Twilio fast-response). The consumer ensures a real Clerk
-            // user for this phone, upserts the User row, emits the
-            // opt_in_pending audit (with the real user id), and enqueues the
-            // confirm SMS. No sms_* id is ever minted, so the sms<->clerk
-            // merge problem cannot occur. See
-            // docs/00-foundation/13-onboarding-identity-remediation/.
-            const locale = ES_OPT_IN_KEYWORDS.has(optInToken) ? 'es' : 'en';
-            await enqueueProvision({ phone: from, locale, keyword: optInToken });
-            return twiml(c);
-        }
-    }
-
-    // 4. Consented, onboarded worker re-texting an opt-in keyword → a real
-    //    matched-jobs digest instead of the old silent <Response/> (the
-    //    dead-end that started this whole investigation, twilio.ts:177).
-    if (existing && tokens.some((t) => OPT_IN_KEYWORDS.has(t))) {
-        await sendJobsDigest(existing);
-        return twiml(c);
-    }
-
-    // 5. SMS-apply keyword routing — workers text APPLY-ALMD (or whatever
-    //    the job's keyword is) to apply. Only for already-consented workers;
-    //    handleJobApply itself drops on unknown phone.
-    for (const token of tokens) {
-        if (token.length < 4 || token.length > 24) continue;
-        const keyword = await pools.webhooks.smsKeyword.findFirst({
-            where: { keyword: { equals: token, mode: 'insensitive' }, active: true },
-        });
-        if (!keyword || keyword.kind !== 'job_apply') continue;
-
-        await handleJobApply({ keyword, fromPhone: from });
-        return twiml(c);
-    }
-
-    return twiml(c);
 });
 
 async function handleStop(from: string): Promise<void> {
