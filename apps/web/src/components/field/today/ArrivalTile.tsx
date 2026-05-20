@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faHandSparkles,
+    faMapLocationDot,
     faCheck,
     faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
@@ -59,7 +59,7 @@ export function ArrivalTile({ assignmentId, initialArrivedAt }: Props) {
                 className="bg-primary text-primary-content active:bg-primary/90 disabled:bg-primary/70 flex h-[72px] w-full items-center justify-center gap-3 rounded-2xl text-lg font-bold transition-colors disabled:cursor-progress"
             >
                 <FontAwesomeIcon
-                    icon={pending ? faSpinner : faHandSparkles}
+                    icon={pending ? faSpinner : faMapLocationDot}
                     className={['h-5 w-5', pending ? 'animate-spin' : ''].join(' ')}
                     aria-hidden
                 />

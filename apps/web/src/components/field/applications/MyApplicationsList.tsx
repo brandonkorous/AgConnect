@@ -24,6 +24,16 @@ type WithdrawState =
     | { kind: 'done'; id: string }
     | { kind: 'error'; id: string; message: string };
 
+type FilterKey = 'active' | 'hired' | 'past' | 'all';
+
+const WITHDRAWABLE: ReadonlySet<ApplicationListItem['status']> = new Set(['applied', 'reviewed']);
+
+function bucketFor(status: ApplicationListItem['status']): FilterKey {
+    if (status === 'applied' || status === 'reviewed') return 'active';
+    if (status === 'hired') return 'hired';
+    return 'past'; // rejected, withdrawn
+}
+
 export function MyApplicationsList({ locale, applications }: Props) {
     const t = useTranslations('worker.field.applications');
     const formatter = useFormatter();
@@ -31,10 +41,30 @@ export function MyApplicationsList({ locale, applications }: Props) {
     const [withdrawnIds, setWithdrawnIds] = useState<Set<string>>(new Set());
     const [state, setState] = useState<WithdrawState>({ kind: 'idle' });
     const [, startTransition] = useTransition();
+    // Default the filter to whichever bucket is non-empty in priority order:
+    // active first (most common landing case), then hired, then past, then all.
+    const defaultFilter: FilterKey = (() => {
+        if (applications.some((a) => bucketFor(a.status) === 'active')) return 'active';
+        if (applications.some((a) => bucketFor(a.status) === 'hired')) return 'hired';
+        if (applications.some((a) => bucketFor(a.status) === 'past')) return 'past';
+        return 'active';
+    })();
+    const [filter, setFilter] = useState<FilterKey>(defaultFilter);
 
-    const visible = applications.filter((a) => !withdrawnIds.has(a.id));
     const localized = (a: ApplicationListItem) =>
         (locale === 'es' ? a.job.titleEs : a.job.titleEn) || a.job.titleEn;
+
+    // Apply withdraw side-effect first, then partition for the filter chips so
+    // counts reflect a freshly-withdrawn row vanishing from "active" the
+    // instant the server action succeeds.
+    const live = applications.filter((a) => !withdrawnIds.has(a.id));
+    const counts: Record<FilterKey, number> = {
+        active: live.filter((a) => bucketFor(a.status) === 'active').length,
+        hired: live.filter((a) => bucketFor(a.status) === 'hired').length,
+        past: live.filter((a) => bucketFor(a.status) === 'past').length,
+        all: live.length,
+    };
+    const visible = filter === 'all' ? live : live.filter((a) => bucketFor(a.status) === filter);
 
     function statusLabel(s: ApplicationListItem['status']): string {
         return t(`status.${s}`);
@@ -68,62 +98,120 @@ export function MyApplicationsList({ locale, applications }: Props) {
         });
     }
 
-    if (visible.length === 0) {
-        return (
-            <div className="bg-base-100 border-base-300 rounded-2xl border px-5 py-6 text-center">
-                <h1 className="text-base-content text-xl font-semibold">{t('empty.title')}</h1>
-                <p className="text-base-content/65 mx-auto mt-1.5 max-w-xs text-sm">
-                    {t('empty.body')}
-                </p>
-            </div>
-        );
-    }
-
     const isPending = state.kind === 'pending';
     const isDone = state.kind === 'done';
     const errorForSelected =
         selected && state.kind === 'error' && state.id === selected.id ? state.message : null;
 
+    const filters: { key: FilterKey; label: string }[] = [
+        { key: 'active', label: t('filter_active') },
+        { key: 'hired', label: t('filter_hired') },
+        { key: 'past', label: t('filter_past') },
+    ];
+
     return (
         <>
-            <ul className="space-y-2">
-                {visible.map((app) => (
-                    <li key={app.id}>
-                        <button
-                            type="button"
-                            onClick={() => setSelected(app)}
-                            className="bg-base-100 border-base-300 active:bg-base-200 flex w-full items-start gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors"
-                        >
-                            <div className="min-w-0 flex-1">
-                                <p className="text-base-content text-base font-semibold leading-tight">
-                                    {localized(app)}
-                                </p>
-                                <p className="text-base-content/65 mt-0.5 truncate text-xs">
-                                    {app.job.employerName}
-                                </p>
-                                <div className="mt-2 flex items-center gap-2 text-xs">
-                                    <span
-                                        className={[
-                                            'rounded-full px-2 py-0.5 font-mono text-[10px] uppercase font-bold',
-                                            statusTone(app.status),
-                                        ].join(' ')}
-                                    >
-                                        {statusLabel(app.status)}
-                                    </span>
-                                    <span className="text-base-content/55 tabular-nums slashed-zero">
-                                        {formatter.relativeTime(new Date(app.appliedAt))}
-                                    </span>
-                                </div>
-                            </div>
-                            <FontAwesomeIcon
-                                icon={faChevronRight}
-                                className="text-base-content/40 mt-2 h-3.5 w-3.5"
-                                aria-hidden
-                            />
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            {live.length > 0 && (
+                <div
+                    role="tablist"
+                    aria-label={t('title')}
+                    className="bg-base-100 border-base-300 flex w-full overflow-hidden rounded-full border p-0.5"
+                >
+                    {filters.map((f) => {
+                        const active = filter === f.key;
+                        const count = counts[f.key];
+                        return (
+                            <button
+                                key={f.key}
+                                type="button"
+                                role="tab"
+                                aria-selected={active}
+                                onClick={() => setFilter(f.key)}
+                                className={[
+                                    'flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-colors',
+                                    active
+                                        ? 'bg-primary text-primary-content'
+                                        : 'text-base-content/70 hover:text-base-content',
+                                ].join(' ')}
+                            >
+                                {f.label}
+                                <span
+                                    className={[
+                                        'rounded-full px-1.5 py-px text-[10px] font-mono tabular-nums slashed-zero',
+                                        active
+                                            ? 'bg-primary-content/20 text-primary-content'
+                                            : 'bg-base-200 text-base-content/60',
+                                    ].join(' ')}
+                                >
+                                    {count}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
+            {visible.length === 0 ? (
+                <div className="bg-base-100 border-base-300 rounded-2xl border px-5 py-6 text-center">
+                    <h1 className="text-base-content text-xl font-semibold">{t('empty.title')}</h1>
+                    <p className="text-base-content/65 mx-auto mt-1.5 max-w-xs text-sm">
+                        {t('empty.body')}
+                    </p>
+                </div>
+            ) : (
+                <ul className="space-y-2">
+                    {visible.map((app) => {
+                        const canWithdraw = WITHDRAWABLE.has(app.status);
+                        const Row = canWithdraw ? 'button' : 'div';
+                        return (
+                            <li key={app.id}>
+                                <Row
+                                    {...(canWithdraw
+                                        ? {
+                                              type: 'button' as const,
+                                              onClick: () => setSelected(app),
+                                              className:
+                                                  'bg-base-100 border-base-300 active:bg-base-200 flex w-full items-start gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors',
+                                          }
+                                        : {
+                                              className:
+                                                  'bg-base-100 border-base-300 flex w-full items-start gap-3 rounded-2xl border px-4 py-3.5 text-left',
+                                          })}
+                                >
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-base-content text-base font-semibold leading-tight">
+                                            {localized(app)}
+                                        </p>
+                                        <p className="text-base-content/65 mt-0.5 truncate text-xs">
+                                            {app.job.employerName}
+                                        </p>
+                                        <div className="mt-2 flex items-center gap-2 text-xs">
+                                            <span
+                                                className={[
+                                                    'rounded-full px-2 py-0.5 font-mono text-[10px] uppercase font-bold',
+                                                    statusTone(app.status),
+                                                ].join(' ')}
+                                            >
+                                                {statusLabel(app.status)}
+                                            </span>
+                                            <span className="text-base-content/55 tabular-nums slashed-zero">
+                                                {formatter.relativeTime(new Date(app.appliedAt))}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {canWithdraw && (
+                                        <FontAwesomeIcon
+                                            icon={faChevronRight}
+                                            className="text-base-content/40 mt-2 h-3.5 w-3.5"
+                                            aria-hidden
+                                        />
+                                    )}
+                                </Row>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
 
             {selected && (
                 <div

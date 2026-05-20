@@ -9,7 +9,9 @@ type Props = {
 export default async function FieldApplicationsPage({ params }: Props) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'worker.field.applications' });
-    const { applications } = await fetchApplications('active');
+    // Fetch every application; the list component partitions by status into
+    // Active / Hired / Past tabs so a hired worker can still see the job.
+    const { applications } = await fetchApplications('all');
 
     return (
         <div className="space-y-4">

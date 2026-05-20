@@ -10,6 +10,8 @@ import {
     faPaperPlane,
     faSpinner,
     faCircleCheck,
+    faHouse,
+    faVanShuttle,
 } from '@fortawesome/free-solid-svg-icons';
 import { applyToJobAction } from '@/lib/api/applications-actions';
 import type { RecommendedJob } from '@/lib/api/jobs';
@@ -36,9 +38,22 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
 
     const localized = (j: RecommendedJob) => (locale === 'es' ? j.titleEs : j.titleEn) || j.titleEn;
 
+    // Many California Central Valley cities share their county name (Fresno,
+    // Madera, Tulare, Kings). Rendering "Fresno, Fresno" reads like a UI bug,
+    // so collapse to the single value when they match (case-insensitive).
+    const fmtLocation = (j: { city: string | null; county: string }): string => {
+        if (!j.city) return j.county;
+        if (j.city.trim().toLowerCase() === j.county.trim().toLowerCase()) return j.county;
+        return `${j.city}, ${j.county}`;
+    };
+
     function fmtWage(j: RecommendedJob): string {
-        const min = j.wageMin / 100;
-        const max = j.wageMax / 100;
+        // wage_{min,max} are Decimal(8,2) dollars in the DB and projected as
+        // dollars by the API (see services/api/src/employer/jobs/shape.ts and
+        // every other consumer: WorkerJobCard, ApplicationsPanel, MatchedJobs).
+        // Do NOT divide by 100 here.
+        const min = j.wageMin;
+        const max = j.wageMax;
         const unit = t(`wage_unit.${j.wageUnit}`, { defaultValue: j.wageUnit });
         const money = (n: number) =>
             formatter.number(n, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
@@ -107,8 +122,32 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
                                             className="h-3 w-3"
                                             aria-hidden
                                         />
-                                        {[job.city, job.county].filter(Boolean).join(', ')}
+                                        {fmtLocation(job)}
                                     </p>
+                                    {(job.housing || job.transport) && (
+                                        <p className="text-primary/85 mt-1.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide">
+                                            {job.housing && (
+                                                <span className="inline-flex items-center gap-1">
+                                                    <FontAwesomeIcon
+                                                        icon={faHouse}
+                                                        className="h-2.5 w-2.5"
+                                                        aria-hidden
+                                                    />
+                                                    {t('benefit.housing')}
+                                                </span>
+                                            )}
+                                            {job.transport && (
+                                                <span className="inline-flex items-center gap-1">
+                                                    <FontAwesomeIcon
+                                                        icon={faVanShuttle}
+                                                        className="h-2.5 w-2.5"
+                                                        aria-hidden
+                                                    />
+                                                    {t('benefit.transport')}
+                                                </span>
+                                            )}
+                                        </p>
+                                    )}
                                 </div>
                                 {applied ? (
                                     <span className="text-success mt-1 inline-flex items-center gap-1 text-xs font-semibold">
@@ -176,7 +215,7 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
                                     {t('detail.location')}
                                 </dt>
                                 <dd className="text-base-content/85 mt-0.5">
-                                    {[selected.city, selected.county].filter(Boolean).join(', ')}
+                                    {fmtLocation(selected)}
                                 </dd>
                             </div>
                             <div>
@@ -199,6 +238,23 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
                                 </dd>
                             </div>
                         </dl>
+
+                        {(selected.housing || selected.transport) && (
+                            <ul className="border-base-300 flex flex-wrap gap-2 border-b px-5 py-3">
+                                {selected.housing && (
+                                    <li className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold">
+                                        <FontAwesomeIcon icon={faHouse} className="h-3 w-3" aria-hidden />
+                                        {t('benefit.housing')}
+                                    </li>
+                                )}
+                                {selected.transport && (
+                                    <li className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold">
+                                        <FontAwesomeIcon icon={faVanShuttle} className="h-3 w-3" aria-hidden />
+                                        {t('benefit.transport')}
+                                    </li>
+                                )}
+                            </ul>
+                        )}
 
                         <div className="px-5 py-4">
                             <p className="text-base-content/65 mb-3 text-sm leading-relaxed">

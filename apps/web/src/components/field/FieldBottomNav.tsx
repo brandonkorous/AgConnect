@@ -48,7 +48,13 @@ export function FieldBottomNav({ locale }: Props) {
                     const href = `${base}${tab.path}`;
                     const isActive =
                         tab.path === ''
-                            ? pathname === href || pathname === `${href}/`
+                            ? // /field, /field/, and /field/shifts/* all belong to the Today
+                              // tab — Field Mode treats shifts as the Today surface's deep
+                              // history. Other tabs match their own prefix.
+                              pathname === href ||
+                              pathname === `${href}/` ||
+                              pathname === `${base}/shifts` ||
+                              pathname.startsWith(`${base}/shifts/`)
                             : pathname === href || pathname.startsWith(`${href}/`);
                     return (
                         <li key={tab.key} className="flex-1">

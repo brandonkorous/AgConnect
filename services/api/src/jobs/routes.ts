@@ -1,6 +1,13 @@
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { County, JobStatus, PrismaNamespace as Prisma, type Tx } from '@agconn/db';
+import {
+    AppStatus,
+    County,
+    JobStatus,
+    PrismaNamespace as Prisma,
+    ShiftAssignmentStatus,
+    type Tx,
+} from '@agconn/db';
 import {
     CreateSavedSearchBody,
     JobsQuery,
@@ -197,11 +204,53 @@ jobsRoutes.get('/recommended', async (c) => {
     const profile = await c.var.db.workerProfile.findUnique({ where: { id: c.var.userId } });
     if (!profile?.county) return ok(c, { jobs: [] });
 
+    // Don't recommend a job the worker is already in the pipeline for.
+    // `applied|reviewed|hired` mean an open or won application — withdrawn /
+    // rejected are not excluded so a worker can re-apply later. For shift
+    // assignments, `assigned|confirmed|completed` mean the worker is on the
+    // job; `declined|no_show` are not excluded (they never actually worked it).
+    const [appliedRows, assignedRows] = await Promise.all([
+        c.var.db.application.findMany({
+            where: {
+                workerId: c.var.userId,
+                deletedAt: null,
+                status: {
+                    in: [AppStatus.applied, AppStatus.reviewed, AppStatus.hired],
+                },
+            },
+            select: { jobId: true },
+        }),
+        c.var.db.shiftAssignment.findMany({
+            where: {
+                workerUserId: c.var.userId,
+                status: {
+                    in: [
+                        ShiftAssignmentStatus.assigned,
+                        ShiftAssignmentStatus.confirmed,
+                        ShiftAssignmentStatus.completed,
+                    ],
+                },
+                shift: { jobId: { not: null } },
+            },
+            select: { shift: { select: { jobId: true } } },
+        }),
+    ]);
+
+    const excludedJobIds = Array.from(
+        new Set<string>([
+            ...appliedRows.map((r) => r.jobId),
+            ...assignedRows
+                .map((r) => r.shift.jobId)
+                .filter((id): id is string => Boolean(id)),
+        ]),
+    );
+
     const rows = await c.var.db.jobPosting.findMany({
         where: {
             status: JobStatus.active,
             deletedAt: null,
             county: profile.county,
+            ...(excludedJobIds.length > 0 ? { id: { notIn: excludedJobIds } } : {}),
         },
         orderBy: [{ createdAt: 'desc' }],
         take: 30,

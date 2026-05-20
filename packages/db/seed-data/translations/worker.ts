@@ -3225,6 +3225,26 @@ export const worker: TranslationBundle = {
         en: "ES",
         es: "ES",
     },
+    "field.header.theme_aria": {
+        en: "Toggle light or dark theme",
+        es: "Cambiar tema claro u oscuro",
+    },
+    "field.header.account_aria": {
+        en: "Account menu",
+        es: "Menú de cuenta",
+    },
+    "field.header.signed_in_as": {
+        en: "Signed in as",
+        es: "Sesión iniciada como",
+    },
+    "field.header.profile": {
+        en: "Profile",
+        es: "Perfil",
+    },
+    "field.header.sign_out": {
+        en: "Sign out",
+        es: "Cerrar sesión",
+    },
     "field.bottom_nav.aria": {
         en: "Field Mode navigation",
         es: "Navegación del Modo de campo",
@@ -3238,8 +3258,8 @@ export const worker: TranslationBundle = {
         es: "Aplicar",
     },
     "field.bottom_nav.applications": {
-        en: "Mine",
-        es: "Mías",
+        en: "Jobs",
+        es: "Trabajos",
     },
     "field.bottom_nav.messages": {
         en: "Messages",
@@ -3341,6 +3361,62 @@ export const worker: TranslationBundle = {
         en: "See all shifts",
         es: "Ver todos los turnos",
     },
+    "field.today.empty.see_shift_details": {
+        en: "See shift details",
+        es: "Ver detalles del turno",
+    },
+    "field.shifts.title": {
+        en: "Your shifts",
+        es: "Tus turnos",
+    },
+    "field.shifts.subtitle": {
+        en: "Upcoming and recent work.",
+        es: "Próximos y recientes.",
+    },
+    "field.shifts.empty.title": {
+        en: "No shifts scheduled",
+        es: "No hay turnos programados",
+    },
+    "field.shifts.empty.body": {
+        en: "When an employer assigns you a shift, you'll see it here.",
+        es: "Cuando un empleador te asigne un turno, lo verás aquí.",
+    },
+    "field.shifts.section_today": {
+        en: "Today",
+        es: "Hoy",
+    },
+    "field.shifts.section_upcoming": {
+        en: "Upcoming",
+        es: "Próximos",
+    },
+    "field.shifts.section_past": {
+        en: "Past",
+        es: "Pasados",
+    },
+    "field.shifts.meta_title": {
+        en: "Your shifts — AGCONN",
+        es: "Tus turnos — AGCONN",
+    },
+    "field.shifts.status.assigned": {
+        en: "Assigned",
+        es: "Asignado",
+    },
+    "field.shifts.status.confirmed": {
+        en: "Confirmed",
+        es: "Confirmado",
+    },
+    "field.shifts.status.declined": {
+        en: "Declined",
+        es: "Rechazado",
+    },
+    "field.shifts.status.no_show": {
+        en: "No-show",
+        es: "No se presentó",
+    },
+    "field.shifts.status.completed": {
+        en: "Completed",
+        es: "Completado",
+    },
     "field.apply.title": {
         en: "Apply to a job",
         es: "Aplicar a un trabajo",
@@ -3409,6 +3485,14 @@ export const worker: TranslationBundle = {
         en: "Employer",
         es: "Empleador",
     },
+    "field.apply.benefit.housing": {
+        en: "Housing provided",
+        es: "Vivienda incluida",
+    },
+    "field.apply.benefit.transport": {
+        en: "Transport provided",
+        es: "Transporte incluido",
+    },
     "field.apply.wage_unit.hour": {
         en: "hr",
         es: "h",
@@ -3430,8 +3514,28 @@ export const worker: TranslationBundle = {
         es: "Mis solicitudes",
     },
     "field.applications.subtitle": {
-        en: "Open applications you can withdraw.",
-        es: "Solicitudes abiertas que puedes retirar.",
+        en: "Every job you've applied to.",
+        es: "Cada trabajo al que has aplicado.",
+    },
+    "field.applications.filter_active": {
+        en: "Active",
+        es: "Activas",
+    },
+    "field.applications.filter_hired": {
+        en: "Hired",
+        es: "Contratado",
+    },
+    "field.applications.filter_past": {
+        en: "Past",
+        es: "Pasadas",
+    },
+    "field.applications.filter_all": {
+        en: "All",
+        es: "Todas",
+    },
+    "field.applications.no_withdraw_hint": {
+        en: "This one's final — no action needed.",
+        es: "Esta ya está cerrada — no hay acción que tomar.",
     },
     "field.applications.empty.title": {
         en: "No open applications",

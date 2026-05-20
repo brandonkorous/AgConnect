@@ -1226,7 +1226,7 @@ model ShiftAssignment {
   hoursWorked    Decimal?              @map("hours_worked") @db.Decimal(5, 2)
   piecesCount    Int?                  @map("pieces_count")
   pieceRateCents Int?                  @map("piece_rate_cents")
-  arrivedAt      DateTime?             @map("arrived_at")
+  arrivedAt      DateTime?             @map("arrived_at") @db.Timestamptz(3)
   createdAt      DateTime              @default(now()) @map("created_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
 
