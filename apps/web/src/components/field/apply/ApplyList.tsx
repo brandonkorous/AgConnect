@@ -223,7 +223,9 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
                                     {t('detail.starts')}
                                 </dt>
                                 <dd className="text-base-content/85 mt-0.5 tabular-nums slashed-zero">
-                                    {formatter.dateTime(new Date(selected.startDate), {
+                                    {/* Anchor at noon so the Pacific formatter doesn't slip
+                                        a bare YYYY-MM-DD (UTC-midnight) into the previous day. */}
+                                    {formatter.dateTime(new Date(`${selected.startDate}T12:00:00`), {
                                         month: 'short',
                                         day: 'numeric',
                                     })}

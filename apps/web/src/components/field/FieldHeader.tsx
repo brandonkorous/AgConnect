@@ -179,6 +179,13 @@ function AccountButton({ locale, labels }: { locale: string; labels: AccountLabe
     const email = user.primaryEmailAddress?.emailAddress ?? null;
     const phone = user.primaryPhoneNumber?.phoneNumber ?? null;
     const identifier = email ?? phone ?? '';
+    // SMS-onboarded workers have firstName/lastName synced to Clerk via
+    // `updateClerkUserName` during `completeSmsOnboarding`, so prefer the name
+    // for the primary identity line. The contact identifier (phone or email)
+    // appears underneath as the disambiguator. Falls through to identifier
+    // alone for the corner case where a user signs in without a name set.
+    const fullName = (user.fullName ?? '').trim() ||
+        [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
     const initials = computeInitials(
         user.firstName ?? undefined,
         user.lastName ?? undefined,
@@ -205,12 +212,27 @@ function AccountButton({ locale, labels }: { locale: string; labels: AccountLabe
                     className="bg-base-100 border-base-300 absolute right-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-2xl border shadow-lg"
                 >
                     <div className="border-base-300 border-b px-4 py-3">
-                        <div className="text-base-content/60 font-mono text-[10px] font-medium uppercase tracking-wider">
-                            {labels.signedInAs}
-                        </div>
-                        <div className="text-base-content mt-1 truncate text-sm font-semibold">
-                            {identifier}
-                        </div>
+                        {fullName ? (
+                            <>
+                                <div className="text-base-content truncate text-sm font-semibold">
+                                    {fullName}
+                                </div>
+                                {identifier && (
+                                    <div className="text-base-content/55 mt-0.5 truncate text-xs tabular-nums slashed-zero">
+                                        {identifier}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <div className="text-base-content/60 font-mono text-[10px] font-medium uppercase tracking-wider">
+                                    {labels.signedInAs}
+                                </div>
+                                <div className="text-base-content mt-1 truncate text-sm font-semibold">
+                                    {identifier}
+                                </div>
+                            </>
+                        )}
                     </div>
                     <ul className="flex flex-col py-1">
                         <li>

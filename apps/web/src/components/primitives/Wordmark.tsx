@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 type Props = {
     size?: 'sm' | 'md' | 'lg';
     tone?: 'ink' | 'bone' | 'moss';
@@ -19,6 +21,7 @@ export function Wordmark({ size = 'md', tone = 'ink' }: Props) {
     return (
         <span className={`inline-flex items-center gap-2 ${toneClass[tone]}`}>
             {/* <SunMark size={size} /> */}
+            <FontAwesomeIcon icon="sun" className={`w-${size === 'sm' ? 4 : size === 'md' ? 5 : 6} text-accent`} aria-hidden />
             <span className={`font-serif font-semibold tracking-tight ${sizeClass[size]}`}>
                 AG<span className={`${toneClass[tone]}/50`}>CONN</span>
             </span>

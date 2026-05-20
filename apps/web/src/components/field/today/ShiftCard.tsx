@@ -22,14 +22,24 @@ function buildMapsHref(row: ShiftRow): string {
 }
 
 function formatTimeRange(start: string, end: string | null, formatter: ReturnType<typeof useFormatter>): string {
+    // `start_time`/`end_time` are clock-time strings ('HH:MM') with no date or
+    // timezone attached — they mean "this clock on the worker's farm." Going
+    // through `new Date(); setHours()` interprets them in the runtime's local
+    // TZ and then the next-intl formatter (now pinned to America/Los_Angeles)
+    // shifts them again, which produces a -7h/-8h skew on UTC runtimes.
+    // Anchor the value at UTC and tell the formatter to read it in UTC so no
+    // conversion happens in either direction — the clock numbers round-trip.
     const fmt = (hhmm: string) => {
         const parts = hhmm.split(':');
         const h = parts[0] ? parseInt(parts[0], 10) : NaN;
         const m = parts[1] ? parseInt(parts[1], 10) : NaN;
         if (Number.isNaN(h) || Number.isNaN(m)) return hhmm;
-        const d = new Date();
-        d.setHours(h, m, 0, 0);
-        return formatter.dateTime(d, { hour: 'numeric', minute: '2-digit' });
+        const d = new Date(Date.UTC(2000, 0, 1, h, m));
+        return formatter.dateTime(d, {
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'UTC',
+        });
     };
     return end ? `${fmt(start)} – ${fmt(end)}` : fmt(start);
 }

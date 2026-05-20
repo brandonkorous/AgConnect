@@ -35,13 +35,22 @@ export function FieldShiftsList({ locale, buckets }: Props) {
         );
     }
 
-    const localized = (row: ShiftRow): string => {
-        const title =
+    // Title prefers a real job title, then crew name, then the employer as last
+    // resort. We also return whether the title came from the job title so the
+    // subtitle can avoid printing the crew name twice when it was promoted.
+    function rowLabels(row: ShiftRow): { title: string; subtitle: string } {
+        const jobTitle =
             (locale === 'es' ? row.shift.jobTitleEs : row.shift.jobTitleEn) ??
             row.shift.jobTitleEn ??
-            row.shift.jobTitleEs;
-        return title || row.shift.crewName || row.shift.employer;
-    };
+            row.shift.jobTitleEs ??
+            null;
+        const titleFromJob = !!jobTitle;
+        const title = jobTitle || row.shift.crewName || row.shift.employer;
+        const subParts: string[] = [];
+        if (titleFromJob && row.shift.crewName) subParts.push(row.shift.crewName);
+        if (title !== row.shift.employer) subParts.push(row.shift.employer);
+        return { title, subtitle: subParts.join(' · ') };
+    }
 
     function statusTone(s: ShiftRow['status']): string {
         switch (s) {
@@ -80,61 +89,78 @@ export function FieldShiftsList({ locale, buckets }: Props) {
     }
 
     function fmtTime(hhmm: string): string {
+        // See ShiftCard.formatTimeRange — `start_time` is a clock-time string,
+        // not an instant; anchor to UTC + format in UTC to keep the numbers.
         const parts = hhmm.split(':');
         const h = parts[0] ? parseInt(parts[0], 10) : NaN;
         const m = parts[1] ? parseInt(parts[1], 10) : NaN;
         if (Number.isNaN(h) || Number.isNaN(m)) return hhmm;
-        const d = new Date();
-        d.setHours(h, m, 0, 0);
-        return formatter.dateTime(d, { hour: 'numeric', minute: '2-digit' });
+        const d = new Date(Date.UTC(2000, 0, 1, h, m));
+        return formatter.dateTime(d, {
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'UTC',
+        });
     }
 
     return (
         <div className="space-y-5">
             {buckets.today.length > 0 && (
                 <Section title={t('section_today')}>
-                    {buckets.today.map((row) => (
-                        <ShiftLine
-                            key={row.id}
-                            row={row}
-                            title={localized(row)}
-                            statusLabel={statusLabel(row.status)}
-                            statusToneClass={statusTone(row.status)}
-                            dateLabel={fmtDate(row.shift.date, 'today')}
-                            timeLabel={fmtTime(row.shift.startTime)}
-                        />
-                    ))}
+                    {buckets.today.map((row) => {
+                        const { title, subtitle } = rowLabels(row);
+                        return (
+                            <ShiftLine
+                                key={row.id}
+                                row={row}
+                                title={title}
+                                subtitle={subtitle}
+                                statusLabel={statusLabel(row.status)}
+                                statusToneClass={statusTone(row.status)}
+                                dateLabel={fmtDate(row.shift.date, 'today')}
+                                timeLabel={fmtTime(row.shift.startTime)}
+                            />
+                        );
+                    })}
                 </Section>
             )}
             {buckets.upcoming.length > 0 && (
                 <Section title={t('section_upcoming')}>
-                    {buckets.upcoming.map((row) => (
-                        <ShiftLine
-                            key={row.id}
-                            row={row}
-                            title={localized(row)}
-                            statusLabel={statusLabel(row.status)}
-                            statusToneClass={statusTone(row.status)}
-                            dateLabel={fmtDate(row.shift.date, 'upcoming')}
-                            timeLabel={fmtTime(row.shift.startTime)}
-                        />
-                    ))}
+                    {buckets.upcoming.map((row) => {
+                        const { title, subtitle } = rowLabels(row);
+                        return (
+                            <ShiftLine
+                                key={row.id}
+                                row={row}
+                                title={title}
+                                subtitle={subtitle}
+                                statusLabel={statusLabel(row.status)}
+                                statusToneClass={statusTone(row.status)}
+                                dateLabel={fmtDate(row.shift.date, 'upcoming')}
+                                timeLabel={fmtTime(row.shift.startTime)}
+                            />
+                        );
+                    })}
                 </Section>
             )}
             {buckets.past.length > 0 && (
                 <Section title={t('section_past')}>
-                    {buckets.past.map((row) => (
-                        <ShiftLine
-                            key={row.id}
-                            row={row}
-                            title={localized(row)}
-                            statusLabel={statusLabel(row.status)}
-                            statusToneClass={statusTone(row.status)}
-                            dateLabel={fmtDate(row.shift.date, 'past')}
-                            timeLabel={fmtTime(row.shift.startTime)}
-                            dim
-                        />
-                    ))}
+                    {buckets.past.map((row) => {
+                        const { title, subtitle } = rowLabels(row);
+                        return (
+                            <ShiftLine
+                                key={row.id}
+                                row={row}
+                                title={title}
+                                subtitle={subtitle}
+                                statusLabel={statusLabel(row.status)}
+                                statusToneClass={statusTone(row.status)}
+                                dateLabel={fmtDate(row.shift.date, 'past')}
+                                timeLabel={fmtTime(row.shift.startTime)}
+                                dim
+                            />
+                        );
+                    })}
                 </Section>
             )}
         </div>
@@ -155,6 +181,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 type LineProps = {
     row: ShiftRow;
     title: string;
+    subtitle: string;
     dateLabel: string;
     timeLabel: string;
     statusLabel: string;
@@ -162,7 +189,7 @@ type LineProps = {
     dim?: boolean;
 };
 
-function ShiftLine({ row, title, dateLabel, timeLabel, statusLabel, statusToneClass, dim }: LineProps) {
+function ShiftLine({ row, title, subtitle, dateLabel, timeLabel, statusLabel, statusToneClass, dim }: LineProps) {
     return (
         <li
             className={[
@@ -174,9 +201,11 @@ function ShiftLine({ row, title, dateLabel, timeLabel, statusLabel, statusToneCl
                 <p className="text-base-content text-base font-semibold leading-tight">
                     {title}
                 </p>
-                <p className="text-base-content/65 mt-0.5 truncate text-xs">
-                    {row.shift.crewName ? `${row.shift.crewName} · ${row.shift.employer}` : row.shift.employer}
-                </p>
+                {subtitle && (
+                    <p className="text-base-content/65 mt-0.5 truncate text-xs">
+                        {subtitle}
+                    </p>
+                )}
                 <p className="text-base-content/55 mt-1.5 flex items-center gap-1 text-xs">
                     <FontAwesomeIcon icon={faLocationDot} className="h-3 w-3" aria-hidden />
                     <span className="truncate">{row.shift.locationLabel}</span>
