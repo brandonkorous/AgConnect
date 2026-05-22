@@ -413,6 +413,11 @@ export const auditRegistry = {
     retentionDays: 1460,
     metadata: ['shiftId', 'assignmentId', 'fields'],
   },
+  'employer.shift_series.created': {
+    resourceType: 'shift_series',
+    retentionDays: 1460,
+    metadata: ['seriesId', 'crewId', 'rangeStart', 'rangeEnd', 'shiftCount'],
+  },
   'employer.payroll.period.created': {
     resourceType: 'payroll_period',
     retentionDays: 2555,

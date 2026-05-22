@@ -15,7 +15,6 @@ import { PreviewRail } from './PreviewRail';
 import { EditShiftHeader } from './EditShiftHeader';
 import { EditShiftFooter } from './EditShiftFooter';
 import {
-    repeatDatesForDraft,
     SECTION_IDS,
     type EditShiftPageProps,
 } from './types';
@@ -50,8 +49,6 @@ export function EditShiftPage({
         [crews, draft.crewId],
     );
     const crewName = activeCrew?.name ?? null;
-    const crewSize = activeCrew?.memberCount ?? counts.assignedCount;
-    const repeatDates = repeatDatesForDraft(draft.shiftDate, draft.repeatDow);
     const isCancelled = draft.status === 'cancelled';
     const openCount = Math.max(0, counts.assignedCount - counts.confirmedCount);
 
@@ -135,7 +132,7 @@ export function EditShiftPage({
                         onChange={(v) => updateDraft({ crewId: v })}
                         locale={locale}
                     />
-                    <DateTimeSection draft={draft} onChange={updateDraft} crewSize={crewSize} />
+                    <DateTimeSection draft={draft} onChange={updateDraft} />
                     <LocationSection draft={draft} onChange={updateDraft} />
                     <LogisticsSection draft={draft} onChange={updateDraft} />
                     <SafetySection draft={draft} onChange={updateDraft} locale={locale} />
@@ -150,7 +147,6 @@ export function EditShiftPage({
                     <EditShiftFooter
                         locale={locale}
                         shiftDate={draft.shiftDate}
-                        repeatCount={repeatDates.length}
                         busy={busy}
                         onSaveQuiet={() => save(false)}
                         onSaveNotify={() => save(true)}

@@ -359,6 +359,7 @@ model Tenant {
   crews                       Crew[]
   crewMembers                 CrewMember[]
   shifts                      Shift[]
+  shiftSeries                 ShiftSeries[]
   shiftAssignments            ShiftAssignment[]
   payrollPeriods              PayrollPeriod[]
   payrollLines                PayrollLine[]
@@ -619,6 +620,7 @@ model EmployerProfile {
   jobPostings              JobPosting[]              @relation("JobPostingEmployer")
   crews                    Crew[]                    @relation("CrewEmployer")
   shifts                   Shift[]                   @relation("ShiftEmployer")
+  shiftSeries              ShiftSeries[]             @relation("ShiftSeriesEmployer")
   payrollPeriods           PayrollPeriod[]           @relation("PayrollEmployer")
   complianceItems          ComplianceItem[]          @relation("ComplianceEmployer")
   conversations            Conversation[]            @relation("ConversationEmployer")
@@ -1157,6 +1159,7 @@ model Crew {
   foreman  User?           @relation("CrewForeman", fields: [foremanUserId], references: [id])
   members  CrewMember[]
   shifts   Shift[]
+  shiftSeries ShiftSeries[]
 
   @@index([tenantId])
   @@index([employerId])
@@ -1183,6 +1186,34 @@ model CrewMember {
   @@map("crew_members")
 }
 
+// ShiftSeries = the schedule definition for a run of recurring shifts: a date
+// range plus a weekday mask. Each materialized shift stays an independent,
+// editable row linked by shifts.series_id (NULL = true one-off). The series
+// never holds a master copy of shift attributes.
+// See docs/20-employer/06-crews-shifts/02-data-model.md.
+model ShiftSeries {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  employerId  String    @map("employer_id") @db.Uuid
+  crewId      String?   @map("crew_id") @db.Uuid
+  rangeStart  DateTime  @map("range_start") @db.Date
+  rangeEnd    DateTime  @map("range_end") @db.Date
+  weekdayMask Boolean[] @map("weekday_mask") // 7 elements, index 0 = Monday
+  shiftCount  Int       @map("shift_count")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  employer EmployerProfile @relation("ShiftSeriesEmployer", fields: [employerId], references: [id])
+  crew     Crew?           @relation(fields: [crewId], references: [id])
+  shifts   Shift[]
+
+  @@index([tenantId])
+  @@index([employerId])
+  @@map("shift_series")
+}
+
 // Shift = single dated work block tied to a crew (or ad-hoc when crew is null).
 // See docs/20-employer/06-crews-shifts/02-data-model.md.
 model Shift {
@@ -1190,6 +1221,7 @@ model Shift {
   tenantId      String      @map("tenant_id") @db.Uuid
   employerId    String      @map("employer_id") @db.Uuid
   crewId        String?     @map("crew_id") @db.Uuid
+  seriesId      String?     @map("series_id") @db.Uuid
   jobId         String?     @map("job_id") @db.Uuid
   shiftDate     DateTime    @map("shift_date") @db.Date
   startTime     String      @map("start_time") // 'HH:MM' local
@@ -1207,11 +1239,13 @@ model Shift {
   tenant      Tenant            @relation(fields: [tenantId], references: [id])
   employer    EmployerProfile   @relation("ShiftEmployer", fields: [employerId], references: [id])
   crew        Crew?             @relation(fields: [crewId], references: [id])
+  series      ShiftSeries?      @relation(fields: [seriesId], references: [id], onDelete: SetNull)
   assignments ShiftAssignment[]
 
   @@index([tenantId])
   @@index([employerId, shiftDate])
   @@index([crewId, shiftDate])
+  @@index([seriesId])
   @@index([status])
   @@index([shiftType])
   @@map("shifts")

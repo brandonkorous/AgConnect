@@ -1594,13 +1594,53 @@ export const employer: TranslationBundle = {
         en: "Ready to create",
         es: "Listo para crear",
     },
-    "crews.new_shift.save_bar_single": {
-        en: "Saves one shift on the schedule.",
-        es: "Guarda un solo turno en el horario.",
+    "crews.new_shift.save_bar_series": {
+        en: "{count, plural, one {Saves 1 shift to the schedule.} other {Saves # shifts to the schedule.}}",
+        es: "{count, plural, one {Guarda 1 turno en el horario.} other {Guarda # turnos en el horario.}}",
     },
-    "crews.new_shift.save_bar_repeat": {
-        en: "{count, plural, one {Saves this shift + 1 repeat day} other {Saves this shift + # repeat days}}",
-        es: "{count, plural, one {Guarda este turno + 1 día repetido} other {Guarda este turno + # días repetidos}}",
+    "crews.new_shift.series.title": {
+        en: "Schedule",
+        es: "Programación",
+    },
+    "crews.new_shift.series.sub": {
+        en: "Pick a date range and the weekdays this shift runs.",
+        es: "Elige un rango de fechas y los días de la semana en que ocurre este turno.",
+    },
+    "crews.new_shift.series.range_start_label": {
+        en: "Start date",
+        es: "Fecha de inicio",
+    },
+    "crews.new_shift.series.range_end_label": {
+        en: "End date",
+        es: "Fecha de fin",
+    },
+    "crews.new_shift.series.weekdays_label": {
+        en: "Weekdays",
+        es: "Días de la semana",
+    },
+    "crews.new_shift.series.weekdays_help": {
+        en: "A shift is created on each selected weekday within the date range.",
+        es: "Se crea un turno en cada día seleccionado dentro del rango de fechas.",
+    },
+    "crews.new_shift.series.count_preview": {
+        en: "{count, plural, one {Creates 1 shift} other {Creates # shifts}}",
+        es: "{count, plural, one {Crea 1 turno} other {Crea # turnos}}",
+    },
+    "crews.new_shift.series.count_none": {
+        en: "No shifts fall in this date range. Adjust the dates or weekdays.",
+        es: "Ningún turno cae en este rango de fechas. Ajusta las fechas o los días.",
+    },
+    "crews.new_shift.series.count_too_many": {
+        en: "This date range is too long. Shorten it to 90 days or fewer.",
+        es: "Este rango de fechas es demasiado largo. Acórtalo a 90 días o menos.",
+    },
+    "crews.new_shift.series.error_range_invalid": {
+        en: "The end date must be on or after the start date.",
+        es: "La fecha de fin debe ser igual o posterior a la fecha de inicio.",
+    },
+    "crews.new_shift.series.error_no_weekdays": {
+        en: "Select at least one weekday.",
+        es: "Selecciona al menos un día de la semana.",
     },
     "crews.new_shift.footer_cancel": { en: "Cancel", es: "Cancelar" },
     "crews.new_shift.footer_create": {
@@ -1624,8 +1664,8 @@ export const employer: TranslationBundle = {
         es: "Faltan algunos datos.",
     },
     "crews.new_shift.save_bar_help_incomplete": {
-        en: "Set the date, start time, end time, and a location to continue.",
-        es: "Define la fecha, hora de inicio, hora de fin y una ubicación para continuar.",
+        en: "Set the date range, weekdays, start time, end time, and a location to continue.",
+        es: "Define el rango de fechas, los días, la hora de inicio, la hora de fin y una ubicación para continuar.",
     },
     "crews.new_shift.workers_placeholder.title": {
         en: "Workers on this shift",
@@ -2254,10 +2294,6 @@ export const employer: TranslationBundle = {
         en: "Saving updates this shift only.",
         es: "Al guardar se actualiza solo este turno.",
     },
-    "crews.edit_shift.save_bar_repeat": {
-        en: "{count, plural, one {Saves this shift + 1 repeat day} other {Saves this shift + # repeat days}}",
-        es: "{count, plural, one {Guarda este turno + 1 día repetido} other {Guarda este turno + # días repetidos}}",
-    },
     "crews.edit_shift.footer_cancel": { en: "Cancel", es: "Cancelar" },
     "crews.edit_shift.footer_save_quiet": {
         en: "Save · don't notify",
@@ -2354,15 +2390,6 @@ export const employer: TranslationBundle = {
     "crews.edit_shift.date_time.status.in_progress": { en: "In progress", es: "En curso" },
     "crews.edit_shift.date_time.status.completed": { en: "Completed", es: "Completado" },
     "crews.edit_shift.date_time.status.cancelled": { en: "Cancelled", es: "Cancelado" },
-    "crews.edit_shift.date_time.repeat_label": { en: "Repeat days", es: "Repetir días" },
-    "crews.edit_shift.date_time.repeat_help": {
-        en: "Toggling extra days creates sibling shifts in the same week. The shift's own day stays selected.",
-        es: "Al activar más días se crean turnos hermanos en la misma semana. El día del propio turno permanece seleccionado.",
-    },
-    "crews.edit_shift.date_time.repeat_base_help": {
-        en: "This shift's day",
-        es: "Día de este turno",
-    },
     "crews.edit_shift.date_time.dow.Mon": { en: "Mon", es: "Lun" },
     "crews.edit_shift.date_time.dow.Tue": { en: "Tue", es: "Mar" },
     "crews.edit_shift.date_time.dow.Wed": { en: "Wed", es: "Mié" },
@@ -2371,11 +2398,6 @@ export const employer: TranslationBundle = {
     "crews.edit_shift.date_time.dow.Sat": { en: "Sat", es: "Sáb" },
     "crews.edit_shift.date_time.dow.Sun": { en: "Sun", es: "Dom" },
     "crews.edit_shift.date_time.stat.hours_per_day": { en: "Hours / day", es: "Horas / día" },
-    "crews.edit_shift.date_time.stat.active_days": { en: "Active days", es: "Días activos" },
-    "crews.edit_shift.date_time.stat.total_hours": {
-        en: "Total crew hours",
-        es: "Horas totales",
-    },
     "crews.edit_shift.location_section.title": { en: "Location", es: "Ubicación" },
     "crews.edit_shift.location_section.sub": {
         en: "Workers see this in their shift card. The map link is sent over SMS.",

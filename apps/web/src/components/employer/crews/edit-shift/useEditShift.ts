@@ -7,8 +7,6 @@ import { useTranslations } from 'next-intl';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import {
-    dowOfDate,
-    repeatDatesForDraft,
     type EditShiftPageProps,
     type ShiftDraft,
 } from './types';
@@ -29,7 +27,6 @@ export function useEditShift({ locale, shift }: Args) {
         confirmedCount: shift.confirmedCount,
     });
 
-    const baseDow = dowOfDate(shift.shiftDate);
     const [draft, setDraft] = useState<ShiftDraft>({
         crewId: shift.crewId,
         shiftDate: shift.shiftDate,
@@ -42,10 +39,6 @@ export function useEditShift({ locale, shift }: Args) {
         locationLng: shift.locationLng,
         notes: shift.notes ?? '',
         metadata: { ...shift.metadata },
-        repeatDow: {
-            Mon: false, Tue: false, Wed: false, Thu: false, Fri: false, Sat: false, Sun: false,
-            [baseDow]: true,
-        },
     });
 
     const updateDraft = useCallback((patch: Partial<ShiftDraft>) => {
@@ -60,7 +53,6 @@ export function useEditShift({ locale, shift }: Args) {
     async function save(notifyCrew: boolean) {
         setError(null);
         setBusy(true);
-        const repeatDates = repeatDatesForDraft(draft.shiftDate, draft.repeatDow);
         const body = {
             crewId: draft.crewId,
             shiftDate: draft.shiftDate,
@@ -74,7 +66,6 @@ export function useEditShift({ locale, shift }: Args) {
             notes: draft.notes.trim() || null,
             metadata: draft.metadata,
             notifyCrew,
-            ...(repeatDates.length > 0 ? { repeatDates } : {}),
         };
         try {
             const client = getApiClient(locale === 'es' ? 'es' : 'en');

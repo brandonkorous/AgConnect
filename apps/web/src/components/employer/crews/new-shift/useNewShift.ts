@@ -6,13 +6,19 @@ import { useTranslations } from 'next-intl';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import {
-  dowOfDate,
-  repeatDatesForDraft,
-  type ShiftDraft,
-} from '../edit-shift/types';
+  countSeriesDates,
+  daySpanDays,
+  mondayIndexOf,
+  seriesDates,
+  type NewShiftDraft,
+} from './types';
+
+const SERIES_MAX_DAYS = 90;
 
 export type FieldErrors = {
-  shiftDate?: string;
+  rangeStart?: string;
+  rangeEnd?: string;
+  weekdayMask?: string;
   startTime?: string;
   endTime?: string;
   locationLabel?: string;
@@ -39,10 +45,13 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const initialDate = defaultDate || TODAY_ISO();
-  const baseDow = dowOfDate(initialDate);
-  const [draft, setDraft] = useState<ShiftDraft>({
+  const initialMask = Array.from({ length: 7 }, (_, i) => i === mondayIndexOf(initialDate));
+  const [draft, setDraft] = useState<NewShiftDraft>({
     crewId: defaultCrewId ?? null,
     shiftDate: initialDate,
+    rangeStart: initialDate,
+    rangeEnd: initialDate,
+    weekdayMask: initialMask,
     startTime: '06:00',
     endTime: '14:00',
     status: 'scheduled',
@@ -52,16 +61,6 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
     locationLng: null,
     notes: '',
     metadata: {},
-    repeatDow: {
-      Mon: false,
-      Tue: false,
-      Wed: false,
-      Thu: false,
-      Fri: false,
-      Sat: false,
-      Sun: false,
-      [baseDow]: true,
-    },
   });
 
   const [touched, setTouched] = useState<Set<string>>(() => new Set());
@@ -76,7 +75,7 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
   }, []);
 
   const updateDraft = useCallback(
-    (patch: Partial<ShiftDraft>) => {
+    (patch: Partial<NewShiftDraft>) => {
       setDraft((d) => ({ ...d, ...patch }));
       for (const k of Object.keys(patch)) markTouched(k);
       setFieldErrors((prev) => {
@@ -93,9 +92,25 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
 
   const validate = useCallback((): FieldErrors => {
     const errs: FieldErrors = {};
-    if (!draft.shiftDate) errs.shiftDate = t('error_field_required');
+    if (!draft.rangeStart) errs.rangeStart = t('error_field_required');
+    if (!draft.rangeEnd) errs.rangeEnd = t('error_field_required');
     if (!draft.startTime) errs.startTime = t('error_field_required');
     if (!draft.endTime) errs.endTime = t('error_field_required');
+
+    if (draft.rangeStart && draft.rangeEnd) {
+      if (draft.rangeEnd < draft.rangeStart) {
+        errs.rangeEnd = t('series.error_range_invalid');
+      } else if (daySpanDays(draft.rangeStart, draft.rangeEnd) > SERIES_MAX_DAYS) {
+        errs.rangeEnd = t('series.count_too_many');
+      } else if (!draft.weekdayMask.some(Boolean)) {
+        errs.weekdayMask = t('series.error_no_weekdays');
+      } else if (
+        countSeriesDates(draft.rangeStart, draft.rangeEnd, draft.weekdayMask) === 0
+      ) {
+        errs.weekdayMask = t('series.count_none');
+      }
+    }
+
     if (
       !draft.locationLabel ||
       draft.locationLat == null ||
@@ -104,9 +119,14 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
       errs.locationLabel = t('error_no_location');
     }
     return errs;
-  }, [draft.shiftDate, draft.startTime, draft.endTime, draft.locationLabel, draft.locationLat, draft.locationLng, t]);
+  }, [draft, t]);
 
   const isComplete = useMemo(() => Object.keys(validate()).length === 0, [validate]);
+
+  const shiftCount = useMemo(
+    () => countSeriesDates(draft.rangeStart, draft.rangeEnd, draft.weekdayMask),
+    [draft.rangeStart, draft.rangeEnd, draft.weekdayMask],
+  );
 
   async function save() {
     setError(null);
@@ -114,23 +134,15 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
     setFieldErrors(errs);
     if (Object.keys(errs).length > 0) {
       const firstField = Object.keys(errs)[0];
-      const anchor =
-        firstField === 'locationLabel'
-          ? 'loc'
-          : firstField === 'shiftDate' || firstField === 'startTime' || firstField === 'endTime'
-            ? 'date'
-            : null;
-      if (anchor) {
-        const el = document.getElementById(anchor);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      const anchor = firstField === 'locationLabel' ? 'loc' : 'date';
+      const el = document.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     setBusy(true);
-    const repeatDates = repeatDatesForDraft(draft.shiftDate, draft.repeatDow);
-    const body = {
+    const dates = seriesDates(draft.rangeStart, draft.rangeEnd, draft.weekdayMask);
+    const shared = {
       crewId: draft.crewId,
-      shiftDate: draft.shiftDate,
       startTime: draft.startTime,
       endTime: draft.endTime || undefined,
       shiftType: draft.shiftType,
@@ -139,15 +151,20 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
       locationLng: draft.locationLng,
       notes: draft.notes.trim() || undefined,
       metadata: draft.metadata,
-      ...(repeatDates.length > 0 ? { repeatDates } : {}),
     };
+    const single = dates.length === 1;
+    const path = single ? '/v1/employer/shifts' : '/v1/employer/shifts/series';
+    const body = single
+      ? { ...shared, shiftDate: dates[0] }
+      : {
+          ...shared,
+          rangeStart: draft.rangeStart,
+          rangeEnd: draft.rangeEnd,
+          weekdayMask: draft.weekdayMask,
+        };
     try {
       const client = getApiClient(locale === 'es' ? 'es' : 'en');
-      const res = await client.post<{ shift: { id: string } }>(
-        '/v1/employer/shifts',
-        body,
-        { handleErrorInline: true },
-      );
+      const res = await client.post(path, body, { handleErrorInline: true });
       if (!isOk(res)) {
         if (res.error.fields) {
           const next: FieldErrors = {};
@@ -160,7 +177,7 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
         setError(res.error.message || t('error_save'));
         return;
       }
-      router.push(`/${locale}/employer/crews?week=${draft.shiftDate}`);
+      router.push(`/${locale}/employer/crews?week=${draft.rangeStart}`);
     } finally {
       setBusy(false);
     }
@@ -173,6 +190,7 @@ export function useNewShift({ locale, defaultCrewId, defaultDate }: Args) {
     error,
     fieldErrors,
     isComplete,
+    shiftCount,
     touched,
     save,
   };

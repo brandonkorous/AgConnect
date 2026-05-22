@@ -11,6 +11,7 @@ import { enqueueSms } from '@agconn/sms';
 import {
   ShiftQuery,
   CreateShiftBody,
+  CreateShiftSeriesBody,
   PatchShiftBody,
   DuplicateShiftBody,
   AssignWorkerBody,
@@ -24,7 +25,8 @@ import {
   type AuthVars,
 } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
-import { shapeShift } from './shape.js';
+import { shapeShift, shapeShiftSeries } from './shape.js';
+import { expandSeriesDates } from './series.js';
 
 export const employerShiftsRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 employerShiftsRoutes.use('*', requireAuth('crews'));
@@ -184,16 +186,9 @@ employerShiftsRoutes.post('/', requireEmployerPermission('crews.manage'), valida
       metadata: (body.metadata ?? {}) as object,
       notes: body.notes ?? null,
     };
-    const dates = [body.shiftDate, ...(body.repeatDates ?? [])].filter(
-      (d, i, arr) => arr.indexOf(d) === i,
-    );
-    const created = [] as Array<Awaited<ReturnType<typeof tx.shift.create>>>;
-    for (const d of dates) {
-      const shift = await tx.shift.create({
-        data: { ...baseData, shiftDate: new Date(d) },
-      });
-      created.push(shift);
-    }
+    const shift = await tx.shift.create({
+      data: { ...baseData, shiftDate: new Date(body.shiftDate) },
+    });
 
     if (body.assignWorkerUserIds && body.assignWorkerUserIds.length > 0) {
       const checked = await Promise.all(
@@ -203,15 +198,13 @@ employerShiftsRoutes.post('/', requireEmployerPermission('crews.manage'), valida
         }),
       );
       const valid = checked.filter((x): x is string => Boolean(x));
-      for (const shift of created) {
-        for (const wId of valid) {
-          await tx.shiftAssignment.create({
-            data: { tenantId, shiftId: shift.id, workerUserId: wId },
-          });
-        }
+      for (const wId of valid) {
+        await tx.shiftAssignment.create({
+          data: { tenantId, shiftId: shift.id, workerUserId: wId },
+        });
       }
     }
-    return created[0]!;
+    return shift;
   });
 
   await c.var.audit.log({
@@ -238,6 +231,100 @@ employerShiftsRoutes.post('/', requireEmployerPermission('crews.manage'), valida
     }),
   });
 });
+
+// Create a shift series: one shift_series row plus one materialized shift per
+// matching weekday between rangeStart and rangeEnd. The web create page only
+// calls this when the range resolves to more than one date; a single date goes
+// through POST / as a plain one-off shift.
+employerShiftsRoutes.post(
+  '/series',
+  requireEmployerPermission('crews.manage'),
+  validate('json', CreateShiftSeriesBody),
+  async (c) => {
+    const employerId = c.var.employerId!;
+    const tenantId = c.var.tenantId!;
+    const body = c.var.body;
+
+    if (body.crewId) {
+      const crew = await c.var.db.crew.findFirst({
+        where: { id: body.crewId, employerId, tenantId, deletedAt: null },
+      });
+      if (!crew) return err(c, 422, 'crew_not_found');
+    }
+
+    const dates = expandSeriesDates(body.rangeStart, body.rangeEnd, body.weekdayMask);
+    if (dates.length === 0) return err(c, 422, 'series_no_matching_dates');
+
+    const series = await c.var.db.$transaction(async (tx) => {
+      const series = await tx.shiftSeries.create({
+        data: {
+          tenantId,
+          employerId,
+          crewId: body.crewId ?? null,
+          rangeStart: new Date(`${body.rangeStart}T00:00:00.000Z`),
+          rangeEnd: new Date(`${body.rangeEnd}T00:00:00.000Z`),
+          weekdayMask: body.weekdayMask,
+          shiftCount: dates.length,
+        },
+      });
+
+      const baseData = {
+        tenantId,
+        employerId,
+        seriesId: series.id,
+        crewId: body.crewId ?? null,
+        jobId: body.jobId ?? null,
+        startTime: body.startTime,
+        endTime: body.endTime ?? null,
+        locationLabel: body.locationLabel,
+        locationLat: body.locationLat ?? null,
+        locationLng: body.locationLng ?? null,
+        shiftType: (body.shiftType ?? 'work') as ShiftType,
+        metadata: (body.metadata ?? {}) as object,
+        notes: body.notes ?? null,
+      };
+      const created = [] as Array<Awaited<ReturnType<typeof tx.shift.create>>>;
+      for (const d of dates) {
+        const shift = await tx.shift.create({
+          data: { ...baseData, shiftDate: new Date(`${d}T00:00:00.000Z`) },
+        });
+        created.push(shift);
+      }
+
+      if (body.assignWorkerUserIds && body.assignWorkerUserIds.length > 0) {
+        const checked = await Promise.all(
+          body.assignWorkerUserIds.map(async (wId) => {
+            const okHire = await isActiveHire(tx, employerId, wId);
+            return okHire ? wId : null;
+          }),
+        );
+        const valid = checked.filter((x): x is string => Boolean(x));
+        for (const shift of created) {
+          for (const wId of valid) {
+            await tx.shiftAssignment.create({
+              data: { tenantId, shiftId: shift.id, workerUserId: wId },
+            });
+          }
+        }
+      }
+      return series;
+    });
+
+    await c.var.audit.log({
+      action: 'employer.shift_series.created',
+      resourceId: series.id,
+      metadata: {
+        seriesId: series.id,
+        crewId: series.crewId ?? '',
+        rangeStart: body.rangeStart,
+        rangeEnd: body.rangeEnd,
+        shiftCount: dates.length,
+      },
+    });
+
+    return ok(c, { series: shapeShiftSeries(series), shiftCount: dates.length });
+  },
+);
 
 employerShiftsRoutes.get('/:id', requireEmployerPermission('crews.read'), async (c) => {
   const employerId = c.var.employerId!;
@@ -323,41 +410,6 @@ employerShiftsRoutes.patch('/:id', requireEmployerPermission('crews.manage'), va
       },
     },
   });
-
-  // Optional sibling-shift expansion: spawn new shifts on each repeatDate
-  // mirroring the just-saved values. Skip dates that already exist for this
-  // crew at the same start time.
-  if (body.repeatDates && body.repeatDates.length > 0) {
-    for (const d of body.repeatDates) {
-      const exists = await c.var.db.shift.findFirst({
-        where: {
-          employerId,
-          tenantId,
-          crewId: updated.crewId,
-          shiftDate: new Date(d),
-          startTime: updated.startTime,
-        },
-      });
-      if (exists) continue;
-      await c.var.db.shift.create({
-        data: {
-          tenantId,
-          employerId,
-          crewId: updated.crewId,
-          jobId: updated.jobId,
-          shiftDate: new Date(d),
-          startTime: updated.startTime,
-          endTime: updated.endTime,
-          locationLabel: updated.locationLabel,
-          locationLat: updated.locationLat,
-          locationLng: updated.locationLng,
-          shiftType: updated.shiftType,
-          metadata: updated.metadata as object,
-          notes: updated.notes,
-        },
-      });
-    }
-  }
 
   if (body.status === ShiftStatus.cancelled) {
     await c.var.audit.log({

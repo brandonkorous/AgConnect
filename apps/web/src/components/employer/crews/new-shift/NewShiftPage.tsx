@@ -5,16 +5,16 @@ import { useTranslations } from 'next-intl';
 import { SectionNav } from '../edit-shift/SectionNav';
 import { ShiftTypeSection } from '../edit-shift/ShiftTypeSection';
 import { CrewPickerSection } from '../edit-shift/CrewPickerSection';
-import { DateTimeSection } from '../edit-shift/DateTimeSection';
 import { LocationSection } from '../edit-shift/LocationSection';
 import { LogisticsSection } from '../edit-shift/LogisticsSection';
 import { SafetySection } from '../edit-shift/SafetySection';
 import { NotificationsSection } from '../edit-shift/NotificationsSection';
 import { PreviewRail } from '../edit-shift/PreviewRail';
-import { repeatDatesForDraft, SECTION_IDS } from '../edit-shift/types';
+import { SECTION_IDS } from '../edit-shift/types';
 import type { CrewView } from '@/lib/api/employer-ops';
 import { NewShiftHeader } from './NewShiftHeader';
 import { NewShiftFooter } from './NewShiftFooter';
+import { SeriesDateSection } from './SeriesDateSection';
 import { WorkersPlaceholder } from './WorkersPlaceholder';
 import { useNewShift } from './useNewShift';
 
@@ -35,6 +35,7 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
         error,
         fieldErrors,
         isComplete,
+        shiftCount,
         touched,
         save,
     } = useNewShift({ locale, defaultCrewId, defaultDate });
@@ -44,8 +45,6 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
         [crews, draft.crewId],
     );
     const crewName = activeCrew?.name ?? null;
-    const crewSize = activeCrew?.memberCount ?? 0;
-    const repeatDates = repeatDatesForDraft(draft.shiftDate, draft.repeatDow);
 
     return (
         <div className=" px-5 pb-16 pt-8">
@@ -93,12 +92,13 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
                         onChange={(v) => updateDraft({ crewId: v })}
                         locale={locale}
                     />
-                    <DateTimeSection
+                    <SeriesDateSection
                         draft={draft}
                         onChange={updateDraft}
-                        crewSize={crewSize}
                         errors={{
-                            shiftDate: fieldErrors.shiftDate ?? null,
+                            rangeStart: fieldErrors.rangeStart ?? null,
+                            rangeEnd: fieldErrors.rangeEnd ?? null,
+                            weekdayMask: fieldErrors.weekdayMask ?? null,
                             startTime: fieldErrors.startTime ?? null,
                             endTime: fieldErrors.endTime ?? null,
                         }}
@@ -115,9 +115,9 @@ export function NewShiftPage({ locale, crews, defaultCrewId, defaultDate }: Prop
 
                     <NewShiftFooter
                         locale={locale}
-                        shiftDate={draft.shiftDate}
+                        shiftDate={draft.rangeStart}
                         isComplete={isComplete}
-                        repeatCount={repeatDates.length}
+                        shiftCount={shiftCount}
                         busy={busy}
                         onCreate={save}
                     />

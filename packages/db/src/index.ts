@@ -96,6 +96,7 @@ export type {
     Crew,
     CrewMember,
     Shift,
+    ShiftSeries,
     ShiftAssignment,
     PayrollPeriod,
     PayrollLine,

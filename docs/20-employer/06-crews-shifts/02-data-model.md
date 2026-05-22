@@ -28,6 +28,30 @@ All tables tenant‑scoped (`tenant_id` NOT NULL) with the standard RLS template
 | left_at | tstz NULL | when null = active |
 | UNIQUE(crew_id, worker_user_id, joined_at) | | a worker can re-join after leaving |
 
+## `shift_series`
+
+The schedule definition for a run of recurring shifts. A series owns only the
+date range + weekday mask + provenance — never a master copy of shift attributes.
+Each shift it generates is an independent, editable row.
+
+| col | type | notes |
+|-----|------|-------|
+| id | uuid PK | |
+| tenant_id | uuid NN | FK tenants |
+| employer_id | uuid NN | FK employer_profiles |
+| crew_id | uuid NULL | FK crews; null = ad-hoc |
+| range_start | date NN | first day the series may generate |
+| range_end | date NN | last day; CHECK `range_end >= range_start` |
+| weekday_mask | boolean[] NN | 7 elements, index 0 = Monday .. 6 = Sunday |
+| shift_count | integer NN default 0 | denormalized count of materialized shifts |
+| created_at / updated_at | tstz | |
+| deleted_at | tstz NULL | soft delete |
+
+A series spans at most 90 days (`range_end - range_start <= 90`), enforced by the
+API. A 90-day span yields at most 91 dated shifts, so no separate count cap is
+needed. RLS mirrors the `shifts` policy set (admin / service / self-employer); no
+worker policy — workers never read a series directly.
+
 ## `shifts`
 
 | col | type | notes |
@@ -36,6 +60,7 @@ All tables tenant‑scoped (`tenant_id` NOT NULL) with the standard RLS template
 | tenant_id | uuid NN | |
 | employer_id | uuid NN | FK users |
 | crew_id | uuid NULL | FK crews; null = ad-hoc |
+| series_id | uuid NULL | FK shift_series ON DELETE SET NULL; null = one-off shift |
 | job_id | uuid NULL | FK job_postings; for piece-rate lookup |
 | shift_date | date NN | local CA date |
 | start_time | time NN | 06:00 |
@@ -75,5 +100,7 @@ Only `confirmed` and `completed` count for the 3/4 guarantee. `no_show` counts a
 
 - `shifts (employer_id, shift_date)` — schedule grid
 - `shifts (crew_id, shift_date)` — crew‑scoped lookup
+- `shifts (series_id)` — series → member shifts
+- `shift_series (tenant_id)` / `shift_series (employer_id)` — RLS + employer lookup
 - `shift_assignments (worker_user_id, shift_id)` — worker calendar
 - `crew_members (crew_id)` partial WHERE `left_at IS NULL` — active roster

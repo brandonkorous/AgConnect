@@ -9,7 +9,7 @@ type Props = {
   locale: string;
   shiftDate: string;
   isComplete: boolean;
-  repeatCount: number;
+  shiftCount: number;
   busy: boolean;
   onCreate: () => void;
 };
@@ -18,7 +18,7 @@ export function NewShiftFooter({
   locale,
   shiftDate,
   isComplete,
-  repeatCount,
+  shiftCount,
   busy,
   onCreate,
 }: Props) {
@@ -42,9 +42,7 @@ export function NewShiftFooter({
           <div className="text-base-content/55 text-xs">
             {!isComplete
               ? t('save_bar_help_incomplete')
-              : repeatCount > 0
-                ? t('save_bar_repeat', { count: repeatCount })
-                : t('save_bar_single')}
+              : t('save_bar_series', { count: shiftCount })}
           </div>
         </div>
       </div>

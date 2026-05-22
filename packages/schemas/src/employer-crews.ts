@@ -168,9 +168,6 @@ export const CreateShiftBody = z
     shiftType: ShiftTypeEnum.default('work'),
     metadata: ShiftMetadata.optional(),
     notes: z.string().max(NOTE_MAX).optional(),
-    // When set, materialize sibling shifts on each requested ISO date that
-    // shares the same crew/time/location/etc. Useful for "repeat days" UX.
-    repeatDates: z.array(z.string().date()).max(31).optional(),
     assignWorkerUserIds: z.array(z.string().min(1)).max(50).optional(),
   })
   .strict()
@@ -179,6 +176,59 @@ export const CreateShiftBody = z
     path: ['endTime'],
   });
 export type CreateShiftBody = z.infer<typeof CreateShiftBody>;
+
+// Maximum span of a shift series, in days between range endpoints. A 90-day
+// span produces at most 91 dated shifts, so no separate count cap is needed.
+export const SERIES_MAX_DAYS = 90;
+
+function daySpan(startIso: string, endIso: string): number {
+  const start = Date.parse(`${startIso}T00:00:00Z`);
+  const end = Date.parse(`${endIso}T00:00:00Z`);
+  return Math.round((end - start) / 86_400_000);
+}
+
+// Weekday mask: exactly 7 booleans, index 0 = Monday .. 6 = Sunday.
+export const WeekdayMask = z.array(z.boolean()).length(7);
+export type WeekdayMask = z.infer<typeof WeekdayMask>;
+
+// Body for POST /v1/employer/shifts/series — creates one shift_series and
+// materializes a shift on every weekday in the mask between rangeStart and
+// rangeEnd (inclusive). The series holds only the schedule definition.
+export const CreateShiftSeriesBody = z
+  .object({
+    crewId: z.string().uuid().nullable().optional(),
+    jobId: z.string().uuid().nullable().optional(),
+    rangeStart: z.string().date(),
+    rangeEnd: z.string().date(),
+    weekdayMask: WeekdayMask,
+    startTime: z.string().regex(TIME),
+    endTime: z.string().regex(TIME).optional(),
+    locationLabel: z.string().min(1).max(120),
+    locationLat: z.number().gte(-90).lte(90).optional(),
+    locationLng: z.number().gte(-180).lte(180).optional(),
+    shiftType: ShiftTypeEnum.default('work'),
+    metadata: ShiftMetadata.optional(),
+    notes: z.string().max(NOTE_MAX).optional(),
+    assignWorkerUserIds: z.array(z.string().min(1)).max(50).optional(),
+  })
+  .strict()
+  .refine((b) => !b.endTime || b.endTime > b.startTime, {
+    message: 'end_before_start',
+    path: ['endTime'],
+  })
+  .refine((b) => b.rangeEnd >= b.rangeStart, {
+    message: 'range_end_before_start',
+    path: ['rangeEnd'],
+  })
+  .refine((b) => b.weekdayMask.some(Boolean), {
+    message: 'no_weekdays_selected',
+    path: ['weekdayMask'],
+  })
+  .refine((b) => daySpan(b.rangeStart, b.rangeEnd) <= SERIES_MAX_DAYS, {
+    message: 'series_range_too_long',
+    path: ['rangeEnd'],
+  });
+export type CreateShiftSeriesBody = z.infer<typeof CreateShiftSeriesBody>;
 
 export const PatchShiftBody = z
   .object({
@@ -197,9 +247,6 @@ export const PatchShiftBody = z
     // changes. False (or omitted) saves silently — the editor surfaces both
     // explicit save buttons.
     notifyCrew: z.boolean().optional(),
-    // Optional sibling-shift expansion on save: dates here will spawn new
-    // shifts that mirror the current one (same crew/time/location/type).
-    repeatDates: z.array(z.string().date()).max(31).optional(),
   })
   .strict();
 export type PatchShiftBody = z.infer<typeof PatchShiftBody>;
@@ -316,6 +363,7 @@ export const ShiftSchema = z.object({
   employerId: z.string(),
   crewId: z.string().uuid().nullable(),
   crewName: z.string().nullable(),
+  seriesId: z.string().uuid().nullable(),
   jobId: z.string().uuid().nullable(),
   shiftDate: z.string(),
   startTime: z.string(),
@@ -332,6 +380,22 @@ export const ShiftSchema = z.object({
   capacity: z.number().int().nonnegative().nullable(),
 });
 export type ShiftView = z.infer<typeof ShiftSchema>;
+
+// Response shape for a shift_series — the schedule definition only. The
+// materialized shifts are fetched separately via the shift list endpoints.
+export const ShiftSeriesSchema = z.object({
+  id: z.string().uuid(),
+  tenantId: z.string().uuid(),
+  employerId: z.string(),
+  crewId: z.string().uuid().nullable(),
+  rangeStart: z.string(),
+  rangeEnd: z.string(),
+  weekdayMask: z.array(z.boolean()).length(7),
+  shiftCount: z.number().int().nonnegative(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type ShiftSeriesView = z.infer<typeof ShiftSeriesSchema>;
 
 export const ActiveHireSchema = z.object({
   workerUserId: z.string(),

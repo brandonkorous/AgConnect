@@ -14,6 +14,7 @@
 // Env is supplied by tsx --env-file; see the run command in the file header.
 
 const { prisma, AppStatus } = await import('@agconn/db');
+const { hasPermission } = await import('@agconn/schemas');
 const { Hono } = await import('hono');
 const { createMiddleware } = await import('hono/factory');
 const { employerCrewsRoutes } = await import('../src/employer/crews/routes.js');
@@ -35,19 +36,67 @@ function assert(label: string, cond: unknown, detail?: string): void {
   }
 }
 
-async function findOrCreateEmployer(): Promise<{ userId: string; tenantId: string }> {
-  // Reuse any verified employer in the dev DB.
-  const profile = await prisma.employerProfile.findFirst({
-    where: { flcVerifiedAt: { not: null } },
-    include: { user: true },
+// Post-RBAC, an employer is an `employer_profiles` row and access is granted
+// through an accepted `employer_contacts` membership that links a platform User
+// to that profile via a permissioned Role. The validation needs all three:
+// the user id (for the mocked Clerk session), the employer profile id (the
+// `employer_id` FK on crews/shifts/jobs), and the tenant id.
+async function findOrCreateEmployer(): Promise<{
+  userId: string;
+  employerId: string;
+  tenantId: string;
+}> {
+  const contacts = await prisma.employerContact.findMany({
+    where: {
+      acceptedAt: { not: null },
+      deletedAt: null,
+      userId: { not: null },
+      employer: { deletedAt: null },
+    },
+    select: {
+      userId: true,
+      employerId: true,
+      employer: { select: { tenantId: true } },
+      role: { select: { permissions: true } },
+    },
+    orderBy: { createdAt: 'asc' },
   });
-  if (profile) {
-    if (!profile.user.tenantId) throw new Error('employer has no tenantId');
-    return { userId: profile.userId, tenantId: profile.user.tenantId };
-  }
-  throw new Error(
-    'no verified employer in dev DB — flip one verified (e.g. via packages/db/scripts/flip-korous-verified.ts) and retry',
+  const eligible = contacts.filter(
+    (c): c is typeof c & { userId: string } =>
+      Boolean(c.userId) &&
+      Boolean(c.role) &&
+      hasPermission(c.role!.permissions, 'crews.read') &&
+      hasPermission(c.role!.permissions, 'crews.manage') &&
+      hasPermission(c.role!.permissions, 'crews.record'),
   );
+  if (eligible.length === 0) {
+    throw new Error(
+      'no accepted employer contact with crews permissions in the dev DB — ' +
+        'onboard an employer and accept an owner contact, then retry',
+    );
+  }
+  // Prefer an employer that already has applications — the flow needs a
+  // hireable worker for the crew foreman and shift assignments.
+  for (const contact of eligible) {
+    const appCount = await prisma.application.count({
+      where: { deletedAt: null, job: { employerId: contact.employerId, deletedAt: null } },
+    });
+    if (appCount > 0) {
+      return {
+        userId: contact.userId,
+        employerId: contact.employerId,
+        tenantId: contact.employer.tenantId,
+      };
+    }
+  }
+  // None have applications: fall back to the first eligible employer and let
+  // findOrCreateActiveHire surface the seed instruction.
+  const first = eligible[0]!;
+  return {
+    userId: first.userId,
+    employerId: first.employerId,
+    tenantId: first.employer.tenantId,
+  };
 }
 
 type HireFixture = {
@@ -58,7 +107,7 @@ type HireFixture = {
 };
 
 async function findOrCreateActiveHire(
-  employerUserId: string,
+  employerId: string,
   _tenantId: string,
 ): Promise<HireFixture> {
   // Prefer an existing hired application.
@@ -66,7 +115,7 @@ async function findOrCreateActiveHire(
     where: {
       status: AppStatus.hired,
       deletedAt: null,
-      job: { employerId: employerUserId, deletedAt: null },
+      job: { employerId, deletedAt: null },
     },
     select: { id: true, workerId: true, jobId: true, status: true },
   });
@@ -84,7 +133,7 @@ async function findOrCreateActiveHire(
   const candidate = await prisma.application.findFirst({
     where: {
       deletedAt: null,
-      job: { employerId: employerUserId, deletedAt: null },
+      job: { employerId, deletedAt: null },
     },
     select: { id: true, workerId: true, jobId: true, status: true },
   });
@@ -127,10 +176,10 @@ async function restoreHire(fix: HireFixture): Promise<void> {
 async function main(): Promise<void> {
   console.log(`\n[${TAG}] starting crews/shifts flow validation\n`);
 
-  const { userId, tenantId } = await findOrCreateEmployer();
-  console.log(`  employer: ${userId}  tenant: ${tenantId}`);
+  const { userId, employerId, tenantId } = await findOrCreateEmployer();
+  console.log(`  user: ${userId}  employer: ${employerId}  tenant: ${tenantId}`);
 
-  const hire = await findOrCreateActiveHire(userId, tenantId);
+  const hire = await findOrCreateActiveHire(employerId, tenantId);
   const { workerUserId, jobId } = hire;
   console.log(`  active hire: ${workerUserId}  job: ${jobId}`);
 
@@ -156,16 +205,19 @@ async function main(): Promise<void> {
     path: string,
     body?: unknown,
   ): Promise<{ status: number; body: { ok: boolean; data?: unknown; error?: { code: string } } }> {
-    const init: RequestInit = {
-      method,
-      headers: body ? { 'content-type': 'application/json' } : {},
-    };
+    const headers: Record<string, string> = { 'X-Employer-Id': employerId };
+    if (body) headers['content-type'] = 'application/json';
+    const init: RequestInit = { method, headers };
     if (body) init.body = JSON.stringify(body);
     const res = await app.request(`http://x${path}`, init);
     return { status: res.status, body: await res.json() };
   }
 
-  const tracked = { crewIds: [] as string[], shiftIds: [] as string[] };
+  const tracked = {
+    crewIds: [] as string[],
+    shiftIds: [] as string[],
+    seriesIds: [] as string[],
+  };
 
   // 1. GET /v1/employer/hires
   {
@@ -183,12 +235,12 @@ async function main(): Promise<void> {
   {
     const { status, body } = await call('POST', '/v1/employer/crews', {
       name: `${TAG} crew`,
-      color: 'primary',
+      color: 'grape',
       foremanUserId: workerUserId,
       jobId,
       notes: 'seeded by validate-crews-flow',
     });
-    assert('POST /crews returns 200', status === 200, `got ${status}`);
+    assert('POST /crews returns 200', status === 200, `got ${status} ${JSON.stringify(body)}`);
     const crew = (body.data as { crew: { id: string; foremanUserId: string; memberCount: number } })
       .crew;
     assert('POST /crews returns id', Boolean(crew?.id));
@@ -230,13 +282,13 @@ async function main(): Promise<void> {
     const newName = `${TAG} crew · renamed`;
     const { status, body } = await call('PATCH', `/v1/employer/crews/${crewId}`, {
       name: newName,
-      color: 'accent',
+      color: 'almond',
     });
     assert('PATCH /crews/:id returns 200', status === 200);
     const crew = (body.data as { crew: { name: string; color: string; memberCount: number; foremanName: string | null } })
       .crew;
     assert('PATCH /crews/:id name persisted', crew.name === newName);
-    assert('PATCH /crews/:id color persisted', crew.color === 'accent');
+    assert('PATCH /crews/:id color persisted', crew.color === 'almond');
     assert('PATCH /crews/:id memberCount stays correct (no longer 0)', crew.memberCount === 1);
     assert('PATCH /crews/:id still threads foremanName', !!crew.foremanName);
   }
@@ -413,33 +465,48 @@ async function main(): Promise<void> {
     );
   }
 
-  // 13b. PATCH with repeatDates spawns sibling shifts for the same crew/time.
+  // 13b. POST /v1/employer/shifts/series — materialize a shift per matching
+  // weekday across a date range, all linked to one shift_series row.
   {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
-    const sib1 = new Date(today.getTime() + 86400000).toISOString().slice(0, 10);
-    const sib2 = new Date(today.getTime() + 2 * 86400000).toISOString().slice(0, 10);
+    const rangeStart = new Date(today.getTime() + 86400000).toISOString().slice(0, 10);
+    const rangeEnd = new Date(today.getTime() + 14 * 86400000).toISOString().slice(0, 10);
+    // Monday-indexed mask: Mon, Wed, Fri.
+    const weekdayMask = [true, false, true, false, true, false, false];
     const before = await prisma.shift.count({
-      where: { employerId: userId, crewId, startTime: '07:00' },
+      where: { employerId, crewId, startTime: '05:30' },
     });
-    const { status } = await call('PATCH', `/v1/employer/shifts/${shiftId}`, {
-      repeatDates: [sib1, sib2],
+    const { status, body } = await call('POST', '/v1/employer/shifts/series', {
+      crewId,
+      rangeStart,
+      rangeEnd,
+      weekdayMask,
+      startTime: '05:30',
+      endTime: '13:30',
+      locationLabel: `${TAG} Series Block`,
     });
-    assert('PATCH /shifts/:id with repeatDates returns 200', status === 200);
+    assert('POST /shifts/series returns 200', status === 200);
+    const result = body.data as { series: { id: string }; shiftCount: number };
+    assert('POST /shifts/series reports a shiftCount', result.shiftCount > 0);
     const after = await prisma.shift.count({
-      where: { employerId: userId, crewId, startTime: '07:00' },
+      where: { employerId, crewId, startTime: '05:30' },
     });
     assert(
-      'PATCH /shifts/:id repeatDates spawns 2 sibling shifts',
-      after === before + 2,
-      `before=${before} after=${after}`,
+      'POST /shifts/series materializes one shift per matching date',
+      after === before + result.shiftCount,
+      `before=${before} after=${after} count=${result.shiftCount}`,
     );
-    // Track for cleanup
-    const siblings = await prisma.shift.findMany({
-      where: { employerId: userId, crewId, startTime: '07:00', id: { not: shiftId } },
+    const seriesShifts = await prisma.shift.findMany({
+      where: { seriesId: result.series.id },
       select: { id: true },
     });
-    for (const s of siblings) tracked.shiftIds.push(s.id);
+    assert(
+      'Series shifts all link back to the series',
+      seriesShifts.length === result.shiftCount,
+    );
+    tracked.seriesIds.push(result.series.id);
+    for (const s of seriesShifts) tracked.shiftIds.push(s.id);
   }
 
   // 13c. POST /v1/employer/shifts/:id/duplicate — copy to a new date
@@ -525,6 +592,9 @@ async function main(): Promise<void> {
   for (const sid of tracked.shiftIds) {
     await prisma.shiftAssignment.deleteMany({ where: { shiftId: sid } });
     await prisma.shift.delete({ where: { id: sid } }).catch(() => undefined);
+  }
+  for (const seriesId of tracked.seriesIds) {
+    await prisma.shiftSeries.delete({ where: { id: seriesId } }).catch(() => undefined);
   }
   for (const cid of tracked.crewIds) {
     await prisma.crewMember.deleteMany({ where: { crewId: cid } });

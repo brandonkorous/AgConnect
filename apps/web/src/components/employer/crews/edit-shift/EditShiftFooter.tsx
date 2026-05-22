@@ -9,7 +9,6 @@ import { formatBreadcrumbDate } from './EditShiftHeader';
 type Props = {
     locale: string;
     shiftDate: string;
-    repeatCount: number;
     busy: boolean;
     onSaveQuiet: () => void;
     onSaveNotify: () => void;
@@ -18,7 +17,6 @@ type Props = {
 export function EditShiftFooter({
     locale,
     shiftDate,
-    repeatCount,
     busy,
     onSaveQuiet,
     onSaveNotify,
@@ -36,9 +34,7 @@ export function EditShiftFooter({
                         {t('save_bar_complete', { date: formatBreadcrumbDate(shiftDate, locale) })}
                     </div>
                     <div className="text-base-content/55 text-xs">
-                        {repeatCount > 0
-                            ? t('save_bar_repeat', { count: repeatCount })
-                            : t('save_bar_single')}
+                        {t('save_bar_single')}
                     </div>
                 </div>
             </div>
