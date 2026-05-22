@@ -1,4 +1,6 @@
+import { faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 
 type Props = {
     size?: 'sm' | 'md' | 'lg';
@@ -21,10 +23,7 @@ export function Wordmark({ size = 'md', tone = 'ink' }: Props) {
     return (
         <span className={`inline-flex items-center gap-2 ${toneClass[tone]}`}>
             {/* <SunMark size={size} /> */}
-            <FontAwesomeIcon icon="sun" className={`w-${size === 'sm' ? 4 : size === 'md' ? 5 : 6} text-accent`} aria-hidden />
-            <span className={`font-serif font-semibold tracking-tight ${sizeClass[size]}`}>
-                AG<span className={`${toneClass[tone]}/50`}>CONN</span>
-            </span>
+            <Image src="/icons/logo-96.png" alt="AGCONN Logo" width={150} height={size === 'sm' ? 18 : size === 'md' ? 24 : 32} aria-hidden />
         </span>
     );
 }
