@@ -106,7 +106,7 @@ Exhaustive interaction sweep of every `/[locale]/employer/**` page in **EN and E
 - Loaded edit on Crew A · Almonds.
 - Clicked checkboxes in **Required skills** (Forklift certified, Bilingual EN/ES) — right-rail "REQUIRED" count updated 0 → 2 in real time. ✓
 - Scrolled to Pay defaults (Base wage, Piece rate, Foreman premium inputs) — visible.
-- Scrolled to Communication (Group chat / Daily SMS digest / WhatsApp foreman channel / Voice call broadcast toggles) — visible.
+- Scrolled to Communication (Group chat / Daily SMS digest / Voice call broadcast toggles) — visible. (WhatsApp foreman channel toggle removed with the WhatsApp deferral.)
 - Clicked top-right `Disband` → inline confirm strip ("Archive Crew A · Almonds? Members stay hired but the crew is removed from the schedule.") with `Keep crew` / `Archive` buttons.
 - Clicked `Archive` → `DELETE /v1/employer/crews/{id}` returned 200.
 
@@ -145,7 +145,7 @@ Exhaustive interaction sweep of every `/[locale]/employer/**` page in **EN and E
 
 ### Findings
 - **[medium] Both modals show "Loading workers…" indefinitely** because there are no workers yet. The progress copy never resolves to "No workers in your roster yet — invite from the Crews page" or similar. Replace with a real empty state.
-- **[low] Channel picker on `Start a thread` is `In-app` only** — no SMS / WhatsApp options exposed despite the page subtitle saying "SMS, WhatsApp & in-app". Either add the options or fix the subtitle.
+- **[resolved] Channel picker on `Start a thread`** — In-app + SMS are now exposed; subtitle updated to "SMS + in-app · …" (WhatsApp option deferred with the channel).
 - **[arch] Modal markup is hand-rolled (`<div className="modal modal-open">` + custom card)** instead of daisyUI's `<dialog className="modal">` element. Use the native `<dialog>`-based daisyUI pattern for ARIA and keyboard handling.
 
 ---
@@ -427,7 +427,7 @@ No new findings beyond pass-01 (active-state derivation is `startsWith` so subro
 
 ### /es/employer/messages — clean
 
-Page renders fully in ES (`Buzón`, `Mensajes · 0 sin leer`, `SMS, WhatsApp y en-app · traducción automática EN ⇄ ES`, `Nuevo hilo`, `Nuevo broadcast`, sidebar folders, `Plantillas`, `Carpeta vacía.`, `No hay hilo seleccionado.`). No new findings.
+Page renders fully in ES (`Buzón`, `Mensajes · 0 sin leer`, `SMS + en-app · traducción automática EN ⇄ ES`, `Nuevo hilo`, `Nuevo broadcast`, sidebar folders, `Plantillas`, `Carpeta vacía.`, `No hay hilo seleccionado.`). No new findings.
 
 ### /es/employer/billing — clean
 

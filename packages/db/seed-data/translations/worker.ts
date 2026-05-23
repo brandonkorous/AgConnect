@@ -605,10 +605,6 @@ export const worker: TranslationBundle = {
         en: "SMS",
         es: "SMS",
     },
-    "dashboard.messages.channels.whatsapp": {
-        en: "WhatsApp",
-        es: "WhatsApp",
-    },
     "dashboard.messages.new_count": {
         en: "{count} NEW",
         es: "{count} NUEVOS",
@@ -1137,10 +1133,6 @@ export const worker: TranslationBundle = {
         en: "Employer hasn't posted details yet — apply and they'll reach out with more.",
         es: "El empleador aún no ha publicado detalles — postula y te contactarán con más información.",
     },
-    "job_detail.share_body": {
-        en: "{title} – ${wageMin}-${wageMax}/{wageUnit}",
-        es: "{title} – ${wageMin}-${wageMax}/{wageUnit}",
-    },
     "job_detail.share_body_with_county": {
         en: "{title} – ${wageMin}-${wageMax}/{wageUnit} in {county}",
         es: "{title} – ${wageMin}-${wageMax}/{wageUnit} en {county}",
@@ -1489,10 +1481,6 @@ export const worker: TranslationBundle = {
         en: "SMS",
         es: "SMS",
     },
-    "messages.channels.whatsapp": {
-        en: "WhatsApp",
-        es: "WhatsApp",
-    },
     "messages.cta_mark_read": {
         en: "Mark all read",
         es: "Marcar todo leído",
@@ -1562,8 +1550,8 @@ export const worker: TranslationBundle = {
         es: "Pregunta",
     },
     "messages.sub": {
-        en: "One inbox for SMS, WhatsApp, and in-app messages from employers, foremen, and AGCONN.",
-        es: "Una sola bandeja para SMS, WhatsApp y mensajes en la app de empleadores, capataces y AGCONN.",
+        en: "One inbox for SMS and in-app messages from employers, foremen, and AGCONN.",
+        es: "Una sola bandeja para SMS y mensajes en la app de empleadores, capataces y AGCONN.",
     },
     "messages.thread.attach": {
         en: "Attach",

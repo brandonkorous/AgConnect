@@ -7,7 +7,7 @@ import type { AuditCtxVars } from '../middleware/audit.js';
 
 // Worker-facing inbox + thread view. Only conversations the worker is a
 // participant in are returned. Sending is mirrored to SMS when the
-// conversation channel is sms/whatsapp; otherwise the message stays in-app.
+// conversation channel is sms; otherwise the message stays in-app.
 
 export const meMessagesRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 meMessagesRoutes.use('*', requireAuth('me'));

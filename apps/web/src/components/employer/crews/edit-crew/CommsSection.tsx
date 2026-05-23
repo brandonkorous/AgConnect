@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import {
   faComments,
   faMobileScreen,
-  faGlobe,
   faPhone,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +19,6 @@ type Props = {
 const ICONS: Record<CommsKey, IconDefinition> = {
   groupChat: faComments,
   smsDigest: faMobileScreen,
-  whatsappForeman: faGlobe,
   voiceBroadcast: faPhone,
 };
 

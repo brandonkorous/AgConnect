@@ -2057,14 +2057,6 @@ export const employer: TranslationBundle = {
         en: "Tomorrow's shift sent at 6 PM.",
         es: "El turno de mañana se envía a las 6 PM.",
     },
-    "crews.edit_crew.comms.name.whatsappForeman": {
-        en: "WhatsApp foreman channel",
-        es: "Canal de WhatsApp para capataz",
-    },
-    "crews.edit_crew.comms.help.whatsappForeman": {
-        en: "Foreman manages outside the app.",
-        es: "El capataz lo maneja fuera de la app.",
-    },
     "crews.edit_crew.comms.name.voiceBroadcast": { en: "Voice call broadcast", es: "Difusión por llamada" },
     "crews.edit_crew.comms.help.voiceBroadcast": {
         en: "Recorded message for emergencies.",
@@ -2593,14 +2585,6 @@ export const employer: TranslationBundle = {
     "crews.edit_shift.notify.channel.smsEveningBefore.help": {
         en: "6 PM the day before the shift",
         es: "6 PM el día antes del turno",
-    },
-    "crews.edit_shift.notify.channel.whatsappMorning.title": {
-        en: "WhatsApp · morning of",
-        es: "WhatsApp · la mañana del turno",
-    },
-    "crews.edit_shift.notify.channel.whatsappMorning.help": {
-        en: "Sends the map link 90 minutes before start",
-        es: "Envía el mapa 90 minutos antes del inicio",
     },
     "crews.edit_shift.notify.channel.foremanRollCall.title": {
         en: "Foreman roll call",
@@ -3782,10 +3766,6 @@ export const employer: TranslationBundle = {
         en: "SMS",
         es: "SMS",
     },
-    "messages.channel.whatsapp": {
-        en: "WA",
-        es: "WA",
-    },
     "messages.composer.channel_app": {
         en: "App",
         es: "App",
@@ -3793,10 +3773,6 @@ export const employer: TranslationBundle = {
     "messages.composer.channel_sms": {
         en: "SMS · all {n}",
         es: "SMS · todos {n}",
-    },
-    "messages.composer.channel_whatsapp": {
-        en: "WhatsApp · foreman only",
-        es: "WhatsApp · solo capataz",
     },
     "messages.composer.error": {
         en: "Could not send.",
@@ -3897,10 +3873,6 @@ export const employer: TranslationBundle = {
     "messages.new_conversation.channel.sms": {
         en: "SMS",
         es: "SMS",
-    },
-    "messages.new_conversation.channel.whatsapp": {
-        en: "WhatsApp",
-        es: "WhatsApp",
     },
     "messages.new_conversation.confirm": {
         en: "Create",
@@ -4027,8 +3999,8 @@ export const employer: TranslationBundle = {
         es: "Buscar mensajes…",
     },
     "messages.summary": {
-        en: "SMS + in-app · automatic translation EN ⇄ ES (WhatsApp coming soon)",
-        es: "SMS + en-app · traducción automática EN ⇄ ES (WhatsApp próximamente)",
+        en: "SMS + in-app · automatic translation EN ⇄ ES",
+        es: "SMS + en-app · traducción automática EN ⇄ ES",
     },
     "messages.template_bodies.heat": {
         en: "Heat advisory: 102°F forecast. Lunch at 11:30, plus 10-min shade breaks at 9 AM and 1 PM.",

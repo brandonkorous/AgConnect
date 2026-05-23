@@ -3,7 +3,6 @@ import { getTranslations } from 'next-intl/server';
 import { fetchMyMessageThreads } from '@/lib/api/me';
 
 const CHANNEL_LABEL: Record<string, string> = {
-  whatsapp: 'WhatsApp',
   sms: 'SMS',
   app: 'In-app',
 };

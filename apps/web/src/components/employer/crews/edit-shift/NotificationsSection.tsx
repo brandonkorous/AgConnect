@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPhone,
-  faComments,
   faClipboardCheck,
   faGlobe,
 } from '@fortawesome/free-solid-svg-icons';
@@ -14,11 +13,10 @@ import { SectionCard } from './SectionCard';
 import type { ShiftDraft } from './types';
 
 const CHANNELS: Array<{
-  key: 'smsEveningBefore' | 'whatsappMorning' | 'foremanRollCall';
+  key: 'smsEveningBefore' | 'foremanRollCall';
   icon: IconDefinition;
 }> = [
   { key: 'smsEveningBefore', icon: faPhone },
-  { key: 'whatsappMorning', icon: faComments },
   { key: 'foremanRollCall', icon: faClipboardCheck },
 ];
 
@@ -40,7 +38,7 @@ export function NotificationsSection({ draft, onChange }: Props) {
 
   return (
     <SectionCard id="notify" title={t('title')} sub={t('sub')}>
-      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
         {CHANNELS.map((ch) => (
           <CheckboxCard
             key={ch.key}

@@ -98,7 +98,7 @@ The founder-slots count query runs as the public landing role — it returns onl
 | Auto-match + renotify campaigns | — | ✓ | ✓ |
 | Crew & shift scheduling | — | ✓ | ✓ |
 | Crew SMS confirms / no-show tracking | — | ✓ | ✓ |
-| Broadcast SMS / WhatsApp / in-app | — | ✓ | ✓ |
+| Broadcast SMS / in-app | — | ✓ | ✓ |
 | Compliance checklist (H-2A / MSPA / DOL) | — | ✓ | ✓ |
 | Audit log retention | 90 days | 7 years | 7 years |
 | WIOA exports (CSV + XLSX) | — | ✓ | ✓ |

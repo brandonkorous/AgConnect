@@ -49,12 +49,7 @@ export function ThreadList({ threads, activeId, locale }: Props) {
                     .map((w) => w[0])
                     .join('')
                     .toUpperCase();
-                const channelLabel =
-                    th.channel === 'whatsapp'
-                        ? 'WhatsApp'
-                        : th.channel === 'sms'
-                            ? 'SMS'
-                            : 'In-app';
+                const channelLabel = th.channel === 'sms' ? 'SMS' : 'In-app';
                 const when = th.lastMessageAt
                     ? formatRelative(new Date(th.lastMessageAt), locale)
                     : '';

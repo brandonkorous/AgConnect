@@ -87,7 +87,6 @@ export const CREW_SKILLS: CrewSkill[] = [
 export const COMMS_KEYS = [
   'groupChat',
   'smsDigest',
-  'whatsappForeman',
   'voiceBroadcast',
 ] as const;
 export type CommsKey = (typeof COMMS_KEYS)[number];

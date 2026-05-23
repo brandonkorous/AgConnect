@@ -72,7 +72,7 @@ shareTextEn: 'I earned a certificate in {programTitle} via AGCONN. View it: {sha
 shareTextEs: 'Obtuve un certificado en {programTitle} con AGCONN. Velo aquí: {shareUrl}',
 ```
 
-Used by the share menu to populate WhatsApp / SMS bodies.
+Used by the share menu to populate SMS bodies. (WhatsApp share body deferred with the channel.)
 
 ## GET /verify/:certificateId (Phase 2)
 

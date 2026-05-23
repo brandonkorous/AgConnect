@@ -1870,7 +1870,7 @@ export const marketing: TranslationBundle = {
     "pricing_page.compare.row.in_app_inbox.seed": { en: "✓", es: "✓" },
     "pricing_page.compare.row.in_app_inbox.field": { en: "✓", es: "✓" },
     "pricing_page.compare.row.in_app_inbox.farm": { en: "✓", es: "✓" },
-    "pricing_page.compare.row.broadcast.label": { en: "Broadcast SMS + in-app (WhatsApp coming soon)", es: "Difusión SMS + interna (WhatsApp próximamente)" },
+    "pricing_page.compare.row.broadcast.label": { en: "Broadcast SMS + in-app", es: "Difusión SMS + interna" },
     "pricing_page.compare.row.broadcast.seed": { en: "—", es: "—" },
     "pricing_page.compare.row.broadcast.field": { en: "✓", es: "✓" },
     "pricing_page.compare.row.broadcast.farm": { en: "✓", es: "✓" },

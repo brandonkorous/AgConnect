@@ -196,21 +196,6 @@ export default async function JobDetailPage({ params }: Props) {
                                 <FontAwesomeIcon icon={faShareNodes} className="h-3 w-3" />
                                 SMS
                             </a>
-                            <a
-                                href={`https://wa.me/?text=${encodeURIComponent(
-                                    t('share_body', {
-                                        title,
-                                        wageMin: job.wageMin,
-                                        wageMax: job.wageMax,
-                                        wageUnit: job.wageUnit,
-                                    }),
-                                )}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3.5 py-2 text-[12px] font-semibold"
-                            >
-                                WhatsApp
-                            </a>
                         </div>
                     </div>
                 </div>

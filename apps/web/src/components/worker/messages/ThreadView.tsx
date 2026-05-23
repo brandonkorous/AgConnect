@@ -69,12 +69,7 @@ export function ThreadView({ detail, locale }: Props) {
         .join('')
         .toUpperCase();
 
-    const channelLabel =
-        detail.conversation.channel === 'whatsapp'
-            ? 'WhatsApp'
-            : detail.conversation.channel === 'sms'
-                ? 'SMS'
-                : 'In-app';
+    const channelLabel = detail.conversation.channel === 'sms' ? 'SMS' : 'In-app';
 
     return (
         <div className="flex flex-col grow-8 min-w-0">

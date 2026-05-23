@@ -33,7 +33,7 @@ function applyFilters(
     if (folder === 'employers') out = out.filter((th) => !th.employer.toLowerCase().includes('agconn'));
     else if (folder === 'agconn') out = out.filter((th) => th.employer.toLowerCase().includes('agconn'));
     else if (folder === 'foremen') out = out;
-    if (channel === 'sms' || channel === 'whatsapp' || channel === 'app') {
+    if (channel === 'sms' || channel === 'app') {
         out = out.filter((th) => th.channel === channel);
     }
     return out;

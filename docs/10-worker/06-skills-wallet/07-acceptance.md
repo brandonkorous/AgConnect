@@ -33,7 +33,7 @@
 ### E2E
 
 1. Open wallet → tap cert → preview loads → tap Download → PDF downloads.
-2. Open wallet → tap Share → share menu opens → tap WhatsApp → opens with prefilled text.
+2. Open wallet → tap Share → share menu opens → tap SMS → opens with prefilled text. (WhatsApp share deferred with the channel.)
 3. Switch language → wallet text updates; cert title remains EN+ES on PDF (intentional).
 
 ## Definition of done

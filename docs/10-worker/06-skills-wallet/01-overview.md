@@ -8,7 +8,7 @@ A worker-owned collection of all certifications they've earned through AGCONN. C
 
 1. Open `/wallet` → see all earned certs.
 2. Tap a cert → preview, download PDF, share link.
-3. Share via WhatsApp, SMS, copy link, or attach to a job application (Phase 2 — currently certs visible to employers via profile).
+3. Share via SMS, copy link, or attach to a job application (Phase 2 — currently certs visible to employers via profile). (WhatsApp share deferred with the channel.)
 
 ## Scope
 
@@ -16,7 +16,7 @@ In scope:
 
 - List all certs (from completed enrollments + manually added)
 - Download cert PDF
-- Share via system share sheet / WhatsApp / SMS / copy link
+- Share via system share sheet / SMS / copy link (WhatsApp deferred with the channel)
 - Public verification page (`/verify/:certId`) — Phase 2 (URL exists, MVP returns "Coming soon")
 - Filter / search wallet (post-MVP)
 

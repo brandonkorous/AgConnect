@@ -122,7 +122,7 @@ function NewConversationModal({ variant, onClose }: { variant: Variant; onClose:
             channel:
                 variant === 'broadcast'
                     ? 'broadcast'
-                    : (String(f.get('channel') ?? 'app') as 'app' | 'sms' | 'whatsapp'),
+                    : (String(f.get('channel') ?? 'app') as 'app' | 'sms'),
             participantUserIds: Array.from(selected),
         };
 
@@ -168,7 +168,6 @@ function NewConversationModal({ variant, onClose }: { variant: Variant; onClose:
                         <select name="channel" className="select w-full" defaultValue="app">
                             <option value="app">{t('channel.app')}</option>
                             <option value="sms">{t('channel.sms')}</option>
-                            <option value="whatsapp">{t('channel.whatsapp')}</option>
                         </select>
                     </fieldset>
                 )}

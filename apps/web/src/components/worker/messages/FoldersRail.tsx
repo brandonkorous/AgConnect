@@ -12,7 +12,6 @@ import {
 
 const CHANNEL_DOT: Record<string, string> = {
     sms: 'oklch(50% 0.09 120)',
-    whatsapp: '#22c55e',
     app: 'oklch(83% 0.13 88)',
 };
 
@@ -34,9 +33,8 @@ export function FoldersRail({ counts, locale: _locale, folder, channel }: Props)
         { key: 'foremen', label: t('foremen'), icon: faShieldHalved },
         { key: 'agconn', label: t('agconn'), icon: faLeaf },
     ];
-    const channels: { key: 'sms' | 'whatsapp' | 'app'; label: string }[] = [
+    const channels: { key: 'sms' | 'app'; label: string }[] = [
         { key: 'sms', label: tChan('sms') },
-        { key: 'whatsapp', label: tChan('whatsapp') },
         { key: 'app', label: tChan('in_app') },
     ];
 

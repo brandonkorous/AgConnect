@@ -125,8 +125,8 @@ export const auth: TranslationBundle = {
         es: "Verificación de licencia FLC + carpeta de cumplimiento Cal/OSHA, lista para auditoría",
     },
     "pitch.employer.proof.p2": {
-        en: "Worker search, broadcasts, SMS + in-app messaging (WhatsApp coming soon)",
-        es: "Búsqueda de trabajadores, transmisiones, mensajería SMS + en-app (WhatsApp próximamente)",
+        en: "Worker search, broadcasts, SMS + in-app messaging",
+        es: "Búsqueda de trabajadores, transmisiones, mensajería SMS + en-app",
     },
     "pitch.employer.proof.p3": {
         en: "Auto payroll calc with AB 1513 piece-rate breaks + AEWR for H-2A",

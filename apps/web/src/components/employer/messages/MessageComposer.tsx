@@ -8,7 +8,7 @@ import { faPaperPlane, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 
-type Channel = 'app' | 'sms' | 'whatsapp';
+type Channel = 'app' | 'sms';
 type Mode = 'thread' | 'broadcast';
 
 type Props = {
@@ -106,11 +106,6 @@ export function MessageComposer({
                             label={t('channel_sms', { n: smsCount })}
                             active={channel === 'sms'}
                             onClick={() => setChannel('sms')}
-                        />
-                        <ChannelChip
-                            label={t('channel_whatsapp')}
-                            active={channel === 'whatsapp'}
-                            onClick={() => setChannel('whatsapp')}
                         />
                     </>
                 ) : (

@@ -30,14 +30,12 @@ employerMessagesRoutes.get('/', requireEmployerPermission('messaging.use'), vali
             messages: { take: 1, orderBy: { createdAt: 'desc' } },
             participants: {
                 where: { leftAt: null },
-                include: { user: { select: { id: true, phone: true } } },
             },
         },
     });
 
     const shaped = convs.map((co) => {
         const myParticipant = co.participants.find((p) => p.userId === userId);
-        const others = co.participants.filter((p) => p.userId !== userId);
         const category = classifyConversation(co.channel, co.isGroup);
         return {
             id: co.id,
@@ -49,7 +47,7 @@ employerMessagesRoutes.get('/', requireEmployerPermission('messaging.use'), vali
             unreadCount: myParticipant?.unreadCount ?? 0,
             preview: co.messages[0]?.body.slice(0, 200) ?? '',
             category,
-            foremanPhone: co.channel === 'whatsapp' && others[0]?.user.phone ? others[0].user.phone : null,
+            foremanPhone: null,
             participantCount: co.participants.length,
         };
     });
@@ -69,7 +67,6 @@ function classifyConversation(
 ): 'candidates' | 'crew' | 'foremen' | 'broadcasts' {
     if (channel === 'broadcast') return 'broadcasts';
     if (isGroup) return 'crew';
-    if (channel === 'whatsapp') return 'foremen';
     return 'candidates';
 }
 

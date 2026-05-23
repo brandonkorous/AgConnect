@@ -496,7 +496,7 @@ Note: business name appears as "Korous Family Farms LLC" here (legal name) vs "K
 ### Smoke
 - [x] Loads, no console errors
 ### Functional
-- [x] H1 "Messages · 0 unread" + tagline "SMS, WhatsApp & in-app · automatic translation EN ⇄ ES"
+- [x] H1 "Messages · 0 unread" + tagline "SMS + in-app · automatic translation EN ⇄ ES"
 - [x] 5 folder tabs as real query-param links: All conversations / Candidates / Active crew / Foremen / Broadcasts
 - [x] "Search messages…" input (functionality untested with no data)
 - [x] Empty state: "Folder empty." / "No thread selected." renders

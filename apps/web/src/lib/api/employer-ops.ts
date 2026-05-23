@@ -18,7 +18,6 @@ export type CrewSkill = 'forklift' | 'cdl' | 'wps' | 'bilingual' | 'lead' | 'irr
 export type CrewCommsChannels = {
   groupChat?: boolean;
   smsDigest?: boolean;
-  whatsappForeman?: boolean;
   voiceBroadcast?: boolean;
 };
 
@@ -93,7 +92,6 @@ export type ShiftMetadata = {
   };
   notifications?: {
     smsEveningBefore?: boolean;
-    whatsappMorning?: boolean;
     foremanRollCall?: boolean;
   };
   heatAdvisoryAutoApply?: boolean;

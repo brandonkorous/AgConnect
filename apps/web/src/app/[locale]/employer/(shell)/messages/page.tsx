@@ -290,8 +290,8 @@ function Conversation({
             </div>
         );
     }
-    const initialChannel: 'app' | 'sms' | 'whatsapp' =
-        thread.channel === 'broadcast' ? 'app' : thread.channel;
+    const initialChannel: 'app' | 'sms' =
+        thread.channel === 'sms' ? 'sms' : 'app';
     return (
         <div className="flex flex-col grow-8">
             <div className="border-base-300 flex items-center gap-3 border-b px-5 py-3.5">
@@ -403,9 +403,9 @@ function channelClass(c: 'app' | 'sms' | 'whatsapp' | 'broadcast'): string {
             return 'bg-primary/15 text-primary';
         case 'sms':
             return 'bg-warning/15 text-warning';
-        case 'whatsapp':
-            return 'bg-success/15 text-success';
         case 'broadcast':
             return 'bg-accent text-accent-content';
+        default:
+            return 'bg-primary/15 text-primary';
     }
 }

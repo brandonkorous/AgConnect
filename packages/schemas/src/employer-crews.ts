@@ -26,7 +26,6 @@ export const CrewCommsChannels = z
   .object({
     groupChat: z.boolean().optional(),
     smsDigest: z.boolean().optional(),
-    whatsappForeman: z.boolean().optional(),
     voiceBroadcast: z.boolean().optional(),
   })
   .strict();
@@ -68,7 +67,6 @@ export const ShiftMetadata = z
     notifications: z
       .object({
         smsEveningBefore: z.boolean().optional(),
-        whatsappMorning: z.boolean().optional(),
         foremanRollCall: z.boolean().optional(),
       })
       .strict()
