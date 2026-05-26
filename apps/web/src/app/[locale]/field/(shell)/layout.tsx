@@ -23,11 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function FieldLayout({ children, params }: Props) {
     const { locale } = await params;
-    // Same auth + onboarded gate as the worker app shell. /field has no
-    // onboarding child, so redirecting un-onboarded workers out cannot loop.
+    // Auth + onboarded gate. The /field/onboarding sibling lives OUTSIDE this
+    // (shell) route group so un-onboarded workers don't bounce through here.
+    // See docs/10-worker/99-field-mode.md § Invariants.
     const { onboarded } = await requireRole(locale, UserRole.worker);
     if (!onboarded) {
-        redirect(`/${locale}/worker/onboarding` as Route);
+        redirect(`/${locale}/field/onboarding` as Route);
     }
     return (
         <div className="bg-base-200 min-h-screen">

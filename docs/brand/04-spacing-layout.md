@@ -65,9 +65,23 @@ What `container mx-auto` resolves to (Tailwind 4 default behavior, paired with o
 
 > **Inferred:** Tailwind 4's default `container` caps at 1536px (2xl) — wider than the 1280px content cap the original Tierra artboard called for. We accept the 1376px content width on ≥1536px viewports because it remains within Tierra's grid rhythm and avoids customizing the `container` utility per project. Long-form prose inside the container should still cap at `max-w-prose` (~65ch) — the container shell is page width, not reading width.
 
-## One responsive codebase — not a separate mobile site
+## Three shells, two layout strategies
 
-AGCONN is **one fully responsive codebase**, not two. There is no `m.agconn.com`, no `mobile/` directory, no separate mobile-only deploy. Every public surface uses the responsive type scale ([brand/03-typography.md](03-typography.md)), this spacing scale, and Tailwind's breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`) to render correctly across mobile (≥360px), tablet (≥640px), desktop (≥1024px), and wide (≥1440px).
+AGCONN ships **three application shells**, each with a deliberate layout strategy. This is the layout invariant — every page belongs to exactly one shell and inherits its strategy. Pages do not improvise.
+
+| Shell | Route prefix | Strategy | For |
+|---|---|---|---|
+| **Worker** | `/[locale]/worker/*` | Fully responsive, fully featured | Workers doing planning-time work (browsing jobs, reviewing pay, managing training) on phone, tablet, or laptop. Renders correctly from 360px → wide. |
+| **Employer** | `/[locale]/employer/*` | Fully responsive, fully featured | FLCs, growers, packing-house ops managing the company side. Same responsive treatment as worker. |
+| **Field** | `/[locale]/field/*` | **Mobile-first, simplified** | A worker on the job, on the bus, on a county road — one hand free, sun, gloves, spotty signal. Renders for thumb-reach narrow viewports; explicitly does not adapt to desktop. |
+
+**Marketing surfaces (`/[locale]/(marketing)/*`, landing, FAQ, etc.) follow the Worker/Employer strategy** — one responsive codebase. There is no `m.agconn.com`, no `mobile/` directory, no separate mobile deploy.
+
+**Field is the exception by design, not by accident.** It is not a degraded responsive view; it is a different product surface — fewer entry points, larger tap targets (≥60px), one-column always, high-contrast for bright-sun visibility, ES-first when phone locale is ES, service-worker-cached to load on one bar of signal. See [docs/10-worker/99-field-mode.md](../10-worker/99-field-mode.md) for the full Field spec.
+
+**Routing between Worker and Field for the same user** — post-auth UA-sniffs and lands a worker in the shell that matches their device, with an explicit "switch view" toggle in the user menu so users can override. The choice is sticky per session. Workers, employers, and admins never see each other's shells; routing between them is role-based, not viewport-based.
+
+Every Worker, Employer, and marketing surface uses the responsive type scale ([brand/03-typography.md](03-typography.md)), this spacing scale, and Tailwind's breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`) to render correctly across mobile (≥360px), tablet (≥640px), desktop (≥1024px), and wide (≥1440px). Field uses the mobile end of the same scale and stops there.
 
 **Reading width vs. page width — they're different.** The "max-width 760px content" callouts that appear in some feature `04-ui.md` files (e.g., FAQ, article body) are **line-length caps for prose**, NOT page-width caps. Pages always use the canonical `container` shell above; narrow reading columns nest inside that bleed via `max-w-prose`, `max-w-2xl`, etc. on a child element — never on the page wrapper itself.
 
@@ -91,7 +105,7 @@ AGCONN is **one fully responsive codebase**, not two. There is no `m.agconn.com`
 
 Sticky chrome (consent banner, install prompt, offline banner) uses the same shell — the outer fixed-position wrapper handles the dock, the inner `container mx-auto px-5 md:px-8 lg:px-20` handles content alignment so the chrome aligns vertically with the page content above it.
 
-**Worker Field Mode is the one exception, and it's not a marketing concern.** A separate one-handed in-field worker UX is on the roadmap (deferred per [project_field_mode.md](../../C:/Users/brand/.claude/projects/g--code--wizeworks-AGCONN/memory/project_field_mode.md) — surfaces as authenticated `/[locale]/worker/field` once observed, not a parallel marketing site). Public marketing pages stay as one responsive codebase.
+Field shell is the one route prefix where this rule inverts — see the "Three shells, two layout strategies" section above. Public marketing pages stay as one responsive codebase.
 
 ## Grid
 

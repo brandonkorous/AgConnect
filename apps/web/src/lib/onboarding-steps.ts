@@ -1,10 +1,9 @@
 import type { Route } from 'next';
 
-// Single source of truth for worker onboarding step routes. The flow moved
-// from /[locale]/onboarding/* to /[locale]/worker/onboarding/*; routing every
-// step link through this helper prevents the per-component path drift that
-// 404'd the entire flow after the move. See
-// docs/00-foundation/13-onboarding-identity-remediation/04-phase-2-worker-web.md.
+// Single source of truth for worker onboarding step routes. The mobile-first
+// canonical worker onboarding lives under /[locale]/field/onboarding/* — see
+// docs/10-worker/99-field-mode.md. Routing every step link through this helper
+// prevents per-component path drift across the 9-step flow.
 
 export const ONBOARDING_STEPS = [
   'welcome',
@@ -21,5 +20,5 @@ export const ONBOARDING_STEPS = [
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 export function onboardingPath(locale: string, step: OnboardingStep): Route {
-  return `/${locale}/worker/onboarding/${step}` as Route;
+  return `/${locale}/field/onboarding/${step}` as Route;
 }

@@ -42,14 +42,13 @@ async function fetchWorkerNavCounts(): Promise<WorkerNavCounts> {
 
 export default async function WorkerLayout({ children, params }: Props) {
     const { locale } = await params;
-    // Auth + onboarded gate. Mirrors employer/(shell)/layout.tsx: the
-    // ungated worker/onboarding/ sibling (outside this route group) is the
-    // redirect target, so an un-onboarded worker cannot reach the app shell
-    // and the redirect cannot loop. See
-    // docs/00-foundation/13-onboarding-identity-remediation/04-phase-2-worker-web.md.
+    // Auth + onboarded gate. Un-onboarded workers go to the mobile-first
+    // /field/onboarding flow (PR 1). PR 2 will UA-sniff here and offer a
+    // desktop /worker/onboarding alternative. See docs/10-worker/99-field-mode.md
+    // and docs/00-foundation/13-onboarding-identity-remediation/04-phase-2-worker-web.md.
     const { onboarded } = await requireRole(locale, UserRole.worker);
     if (!onboarded) {
-        redirect(`/${locale}/worker/onboarding` as Route);
+        redirect(`/${locale}/field/onboarding` as Route);
     }
     const counts = await fetchWorkerNavCounts();
     return (

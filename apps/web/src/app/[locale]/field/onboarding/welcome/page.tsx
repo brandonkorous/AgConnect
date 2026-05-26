@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { StepShell } from '@/components/onboarding/StepShell';
 import { LangChoice } from '@/components/onboarding/LangChoice';
+import { onboardingPath } from '@/lib/onboarding-steps';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -16,7 +17,7 @@ export default async function WelcomePage({ params }: Props) {
       locale={locale}
     >
       <p className="text-base-content/70 mb-6">{t('welcome.choose_lang')}</p>
-      <LangChoice locale={locale} nextHref={`/${locale}/sign-in`} />
+      <LangChoice locale={locale} nextHref={onboardingPath(locale, 'language')} />
     </StepShell>
   );
 }

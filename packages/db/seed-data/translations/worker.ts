@@ -1597,6 +1597,18 @@ export const worker: TranslationBundle = {
         en: "Your",
         es: "Tus",
     },
+    "onboarding.account_chip.aria_label": {
+        en: "Account menu",
+        es: "Menú de cuenta",
+    },
+    "onboarding.account_chip.sign_out": {
+        en: "Sign out",
+        es: "Cerrar sesión",
+    },
+    "onboarding.account_chip.signed_in_as": {
+        en: "Signed in as",
+        es: "Sesión iniciada como",
+    },
     "onboarding.availability.am": {
         en: "Morning",
         es: "Mañana",

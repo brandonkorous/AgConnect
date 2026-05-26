@@ -48,7 +48,7 @@ export async function requireRole(
 ): Promise<ResolvedRole> {
     const signInPath = options.signInPath ?? ((l) => `/${l}/sign-in`);
     const onboardingPath =
-        options.onboardingPath ?? ((l) => `/${l}/worker/onboarding`);
+        options.onboardingPath ?? ((l) => `/${l}/field/onboarding`);
     const mismatchPath = options.mismatchPath ?? homePathForRole;
 
     const res = await fetchMe();

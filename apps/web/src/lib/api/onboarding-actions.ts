@@ -34,7 +34,7 @@ export async function patchOnboardingAction(
       fields: res.error.fields,
     };
   }
-  revalidatePath('/[locale]/worker/onboarding', 'layout');
+  revalidatePath('/[locale]/field/onboarding', 'layout');
   return { ok: true, data: { next_step: res.data.next_step } };
 }
 
