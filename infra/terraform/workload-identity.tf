@@ -16,7 +16,7 @@ resource "google_iam_workload_identity_pool_provider" "github_actions" {
     "attribute.ref"        = "assertion.ref"
   }
 
-  attribute_condition = "assertion.repository == \"${var.github_repository}\""
+attribute_condition = "assertion.repository in [\"${var.github_repository}\", \"KieraKorous/cropautonomy-platform\"]"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
