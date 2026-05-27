@@ -1609,6 +1609,14 @@ export const worker: TranslationBundle = {
         en: "Signed in as",
         es: "Sesión iniciada como",
     },
+    "onboarding.account_chip.switch_to_field": {
+        en: "Use field view",
+        es: "Usar vista de campo",
+    },
+    "onboarding.account_chip.switch_to_worker": {
+        en: "Use full view",
+        es: "Usar vista completa",
+    },
     "onboarding.availability.am": {
         en: "Morning",
         es: "Mañana",
@@ -1792,6 +1800,34 @@ export const worker: TranslationBundle = {
     "onboarding.phone.label": {
         en: "Mobile phone number",
         es: "Número de teléfono móvil",
+    },
+    "onboarding.pitch.badge": {
+        en: "Grant-aligned",
+        es: "Alineado con subvenciones",
+    },
+    "onboarding.pitch.eyebrow": {
+        en: "Worker onboarding",
+        es: "Registro de trabajador",
+    },
+    "onboarding.pitch.footer_note": {
+        en: "Verified farm work",
+        es: "Trabajo agrícola verificado",
+    },
+    "onboarding.pitch.lead": {
+        en: "A few minutes to get you on the board.",
+        es: "Unos minutos para tenerte en la lista.",
+    },
+    "onboarding.pitch.proof.p1": {
+        en: "Your information stays with you — we don't sell it.",
+        es: "Tu información se queda contigo — no la vendemos.",
+    },
+    "onboarding.pitch.proof.p2": {
+        en: "Pick the counties and crops you work; we match employers nearby.",
+        es: "Elige los condados y cultivos que trabajas; conectamos con empleadores cercanos.",
+    },
+    "onboarding.pitch.proof.p3": {
+        en: "Bilingual end-to-end — English and Spanish, at the same time.",
+        es: "Bilingüe de principio a fin — inglés y español, al mismo tiempo.",
     },
     "onboarding.profile.add": {
         en: "Add",

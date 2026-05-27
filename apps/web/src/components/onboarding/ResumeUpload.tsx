@@ -16,6 +16,7 @@ import {
   startResumeReuploadAction,
 } from '@/lib/api/resume-actions';
 import { onboardingPath } from '@/lib/onboarding-steps';
+import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
 type Props = { locale: string; redirectTo?: string };
 
@@ -30,11 +31,12 @@ const POLL_MAX_ATTEMPTS = 20;
 export function ResumeUpload({ locale, redirectTo }: Props) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
+  const shell = useOnboardingShell();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState<'pick' | 'parsing' | 'failed'>('pick');
   const [, startTransition] = useTransition();
-  const fallbackTo = redirectTo ?? onboardingPath(locale, 'profile');
+  const fallbackTo = redirectTo ?? onboardingPath(locale, 'profile', shell);
 
   function pick(e: React.ChangeEvent<HTMLInputElement>) {
     setError(null);

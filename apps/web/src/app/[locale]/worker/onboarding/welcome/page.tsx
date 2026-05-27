@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { StepShell } from '@/components/onboarding/StepShell';
+import { OnboardingSplitShell } from '@/components/onboarding/OnboardingSplitShell';
 import { LangChoice } from '@/components/onboarding/LangChoice';
 import { onboardingPath } from '@/lib/onboarding-steps';
 
@@ -10,14 +10,14 @@ export default async function WelcomePage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'worker.onboarding' });
 
   return (
-    <StepShell
+    <OnboardingSplitShell
       step={1}
       total={8}
       title={t('welcome.tagline')}
+      subtitle={t('welcome.choose_lang')}
       locale={locale}
     >
-      <p className="text-base-content/70 mb-6">{t('welcome.choose_lang')}</p>
-      <LangChoice locale={locale} nextHref={onboardingPath(locale, 'language', 'field')} />
-    </StepShell>
+      <LangChoice locale={locale} nextHref={onboardingPath(locale, 'language', 'worker')} />
+    </OnboardingSplitShell>
   );
 }

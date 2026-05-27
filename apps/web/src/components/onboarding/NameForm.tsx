@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
 import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
 import { onboardingPath } from '@/lib/onboarding-steps';
+import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
 type Props = {
   locale: string;
@@ -24,6 +25,7 @@ export function NameForm({
 }: Props) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
+  const shell = useOnboardingShell();
   const { value, setValue, loaded, clear } = useOnboardingDraft<Draft>(
     'profile',
     { first: initialFirst, last: initialLast, email: initialEmail },
@@ -64,7 +66,7 @@ export function NameForm({
         return;
       }
       await clear();
-      router.push(onboardingPath(locale, 'county'));
+      router.push(onboardingPath(locale, 'county', shell));
     });
   }
 

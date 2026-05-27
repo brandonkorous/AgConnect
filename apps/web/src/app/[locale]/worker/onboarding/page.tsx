@@ -5,5 +5,5 @@ type Props = { params: Promise<{ locale: string }> };
 
 export default async function OnboardingIndex({ params }: Props) {
   const { locale } = await params;
-  redirect(onboardingPath(locale, 'welcome', 'field'));
+  redirect(onboardingPath(locale, 'welcome', 'worker'));
 }

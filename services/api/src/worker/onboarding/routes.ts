@@ -23,6 +23,41 @@ export const onboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>
 onboardingRoutes.use('*', requireAuth('worker'));
 onboardingRoutes.use('*', requireRole('worker'));
 
+// Merged onboarding draft — SMS partial state + any existing WorkerProfile
+// values. Web wizard reads this on initial render to prefill fields that the
+// worker already gave us via SMS, so they don't re-enter every answer.
+onboardingRoutes.get('/draft', async (c) => {
+  const userId = c.var.userId;
+  const [user, profile] = await Promise.all([
+    c.var.db.user.findUnique({
+      where: { id: userId },
+      select: { smsOnboardingDraft: true },
+    }),
+    c.var.db.workerProfile.findUnique({
+      where: { id: userId },
+      select: {
+        firstName: true,
+        lastName: true,
+        county: true,
+        skills: true,
+        availability: true,
+      },
+    }),
+  ]);
+  const smsDraft = (user?.smsOnboardingDraft ?? {}) as {
+    firstName?: string;
+    lastName?: string;
+    county?: string;
+  };
+  return ok(c, {
+    firstName: profile?.firstName || smsDraft.firstName || null,
+    lastName: profile?.lastName || smsDraft.lastName || null,
+    county: profile?.county || smsDraft.county || null,
+    skills: profile?.skills && profile.skills.length > 0 ? profile.skills : null,
+    availability: profile?.availability ?? null,
+  });
+});
+
 onboardingRoutes.post('/start', async (c) => {
   const userId = c.var.userId;
 

@@ -35,6 +35,8 @@ export function StepShell({ step, total, title, subtitle, children, locale }: Pr
                                 ariaLabel: tChip('aria_label'),
                                 signedInAs: tChip('signed_in_as'),
                                 signOut: tChip('sign_out'),
+                                switchToField: tChip('switch_to_field'),
+                                switchToWorker: tChip('switch_to_worker'),
                             }}
                         />
                     </div>

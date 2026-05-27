@@ -7,15 +7,19 @@ import Link from 'next/link';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
 import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
 import { onboardingPath } from '@/lib/onboarding-steps';
+import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
 const COUNTIES = ['Fresno', 'Kern', 'Kings', 'Madera', 'Tulare'] as const;
 
-export function CountyPicker({ locale }: { locale: string }) {
+type Props = { locale: string; initialCounty?: string | null };
+
+export function CountyPicker({ locale, initialCounty = null }: Props) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
+  const shell = useOnboardingShell();
   const { value, setValue, clear } = useOnboardingDraft<{ county: string | null }>(
     'county',
-    { county: null },
+    { county: initialCounty },
   );
   const [submitting, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +35,7 @@ export function CountyPicker({ locale }: { locale: string }) {
         return;
       }
       await clear();
-      router.push(onboardingPath(locale, 'skills'));
+      router.push(onboardingPath(locale, 'skills', shell));
     });
   }
 
@@ -54,7 +58,7 @@ export function CountyPicker({ locale }: { locale: string }) {
         ))}
       </div>
       <Link
-        href={onboardingPath(locale, 'waitlist')}
+        href={onboardingPath(locale, 'waitlist', shell)}
         className="text-base-content/70 link link-hover text-sm"
       >
         {t('county.other')}

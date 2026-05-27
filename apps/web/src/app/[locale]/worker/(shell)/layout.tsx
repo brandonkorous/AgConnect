@@ -42,13 +42,16 @@ async function fetchWorkerNavCounts(): Promise<WorkerNavCounts> {
 
 export default async function WorkerLayout({ children, params }: Props) {
     const { locale } = await params;
-    // Auth + onboarded gate. Un-onboarded workers go to the mobile-first
-    // /field/onboarding flow (PR 1). PR 2 will UA-sniff here and offer a
-    // desktop /worker/onboarding alternative. See docs/10-worker/99-field-mode.md
-    // and docs/00-foundation/13-onboarding-identity-remediation/04-phase-2-worker-web.md.
-    const { onboarded } = await requireRole(locale, UserRole.worker);
+    // Auth + onboarded gate. Un-onboarded workers in the worker shell get the
+    // desktop split-shell onboarding; the /field/(shell) sibling sends its
+    // un-onboarded workers to /field/onboarding instead. Post-auth UA-sniffs
+    // to choose which shell a worker lands in initially. See
+    // docs/10-worker/99-field-mode.md.
+    const { onboarded } = await requireRole(locale, UserRole.worker, {
+        onboardingPath: (l) => `/${l}/worker/onboarding`,
+    });
     if (!onboarded) {
-        redirect(`/${locale}/field/onboarding` as Route);
+        redirect(`/${locale}/worker/onboarding` as Route);
     }
     const counts = await fetchWorkerNavCounts();
     return (

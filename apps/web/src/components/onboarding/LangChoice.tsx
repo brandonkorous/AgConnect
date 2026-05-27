@@ -14,6 +14,7 @@ export function LangChoice({ locale, nextHref }: Props) {
 
   function pick(target: 'en' | 'es') {
     startTransition(() => {
+      // Rewrite the locale segment; preserve the shell ('field' or 'worker').
       const otherSegment = nextHref.replace(/^\/[a-z]{2}/, `/${target}`);
       router.push(otherSegment as Route);
     });

@@ -3,6 +3,7 @@ import type { Route } from 'next';
 import { auth } from '@clerk/nextjs/server';
 import { isOk } from '@agconn/api-client';
 import { getServerApiClient } from '@/lib/api/server-client';
+import { shellFromUA } from '@/lib/shell-from-ua';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +29,17 @@ export default async function PostAuthPage({ params }: Props) {
       // does (legacy data), drop them onto the worker dashboard rather than
       // a removed /admin route.
       redirect(`/${locale}/worker/dashboard`);
-    case 'worker':
+    case 'worker': {
+      // UA-sniff: mobile workers land in the mobile-first /field shell;
+      // desktop workers land in the responsive /worker shell. Each shell's
+      // layout owns its own un-onboarded redirect (to /<shell>/onboarding).
+      // Workers can flip later via "Switch view" in the user menu.
+      const shell = await shellFromUA();
+      if (shell === 'field') {
+        redirect(`/${locale}/field` as Route);
+      }
       redirect(`/${locale}/worker/dashboard`);
+    }
     default:
       redirect(`/${locale}/worker/dashboard`);
   }

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
 import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
 import { onboardingPath } from '@/lib/onboarding-steps';
+import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
 const DEFAULT_SKILLS = [
   'harvesting',
@@ -27,6 +28,7 @@ type Props = { locale: string };
 export function SkillsPicker({ locale }: Props) {
   const t = useTranslations('worker.onboarding');
   const router = useRouter();
+  const shell = useOnboardingShell();
   const { value, setValue, clear } = useOnboardingDraft<{ skills: string[] }>(
     'skills',
     { skills: [] },
@@ -63,7 +65,7 @@ export function SkillsPicker({ locale }: Props) {
         return;
       }
       await clear();
-      router.push(onboardingPath(locale, 'availability'));
+      router.push(onboardingPath(locale, 'availability', shell));
     });
   }
 

@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { onboardingPath } from '@/lib/onboarding-steps';
+import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 import {
   patchOnboardingAction,
   completeOnboardingAction,
@@ -29,6 +30,7 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
   const t = useTranslations('worker.onboarding.availability');
   const tProfile = useTranslations('worker.onboarding.profile');
   const router = useRouter();
+  const shell = useOnboardingShell();
   const [state, setState] = useState<State>(empty);
   const [notes, setNotes] = useState('');
   const [pending, startTransition] = useTransition();
@@ -66,12 +68,12 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
       // step rather than show a false success page.
       const patched = await patchOnboardingAction({ availability });
       if (!patched.ok) {
-        router.push(onboardingPath(locale, 'profile'));
+        router.push(onboardingPath(locale, 'profile', shell));
         return;
       }
       const done = await completeOnboardingAction();
       router.push(
-        onboardingPath(locale, done.ok ? 'complete' : 'profile'),
+        onboardingPath(locale, done.ok ? 'complete' : 'profile', shell),
       );
     });
   }

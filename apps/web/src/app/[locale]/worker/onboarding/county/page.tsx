@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { StepShell } from '@/components/onboarding/StepShell';
+import { OnboardingSplitShell } from '@/components/onboarding/OnboardingSplitShell';
 import { CountyPicker } from '@/components/onboarding/CountyPicker';
 import { fetchOnboardingDraft } from '@/lib/api/onboarding';
 
@@ -10,7 +10,7 @@ export default async function CountyPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'worker.onboarding' });
   const draft = await fetchOnboardingDraft();
   return (
-    <StepShell
+    <OnboardingSplitShell
       step={4}
       total={8}
       title={t('county.title')}
@@ -18,6 +18,6 @@ export default async function CountyPage({ params }: Props) {
       locale={locale}
     >
       <CountyPicker locale={locale} initialCounty={draft.county} />
-    </StepShell>
+    </OnboardingSplitShell>
   );
 }

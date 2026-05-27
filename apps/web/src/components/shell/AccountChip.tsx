@@ -1,9 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import type { Route } from 'next';
+import { usePathname } from 'next/navigation';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+    faRightFromBracket,
+    faArrowsLeftRight,
+} from '@fortawesome/free-solid-svg-icons';
 import { computeInitials } from './UserMenu';
 
 type Props = {
@@ -12,12 +18,29 @@ type Props = {
         ariaLabel: string;
         signedInAs: string;
         signOut: string;
+        switchToField?: string;
+        switchToWorker?: string;
     };
 };
+
+function computeSwitchHref(pathname: string): {
+    href: string;
+    target: 'field' | 'worker';
+} | null {
+    if (/^\/[a-z]{2}\/field\//.test(pathname)) {
+        return { href: pathname.replace('/field/', '/worker/'), target: 'worker' };
+    }
+    if (/^\/[a-z]{2}\/worker\//.test(pathname)) {
+        return { href: pathname.replace('/worker/', '/field/'), target: 'field' };
+    }
+    return null;
+}
 
 export function AccountChip({ locale, labels }: Props) {
     const { isLoaded, isSignedIn, user } = useUser();
     const { signOut } = useClerk();
+    const pathname = usePathname() ?? '';
+    const switchEntry = computeSwitchHref(pathname);
     const [open, setOpen] = useState(false);
     const rootRef = useRef<HTMLDivElement>(null);
 
@@ -85,6 +108,24 @@ export function AccountChip({ locale, labels }: Props) {
                             {identifier}
                         </div>
                     </div>
+                    {switchEntry &&
+                        ((switchEntry.target === 'field' && labels.switchToField) ||
+                            (switchEntry.target === 'worker' && labels.switchToWorker)) && (
+                            <Link
+                                href={switchEntry.href as Route}
+                                onClick={() => setOpen(false)}
+                                role="menuitem"
+                                className="border-base-300 hover:bg-base-200 text-base-content/80 hover:text-base-content flex w-full items-center gap-2.5 border-b px-4 py-2.5 text-sm no-underline"
+                            >
+                                <FontAwesomeIcon
+                                    icon={faArrowsLeftRight}
+                                    className="text-base-content/50 h-3.5 w-3.5"
+                                />
+                                {switchEntry.target === 'field'
+                                    ? labels.switchToField
+                                    : labels.switchToWorker}
+                            </Link>
+                        )}
                     <button
                         type="button"
                         role="menuitem"

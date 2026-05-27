@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { StepShell } from '@/components/onboarding/StepShell';
+import { OnboardingSplitShell } from '@/components/onboarding/OnboardingSplitShell';
 import { NameForm } from '@/components/onboarding/NameForm';
 import { fetchOnboardingDraft } from '@/lib/api/onboarding';
 
@@ -10,7 +10,7 @@ export default async function ProfileReviewPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'worker.onboarding' });
   const draft = await fetchOnboardingDraft();
   return (
-    <StepShell
+    <OnboardingSplitShell
       step={3}
       total={8}
       title={t('profile.title')}
@@ -22,6 +22,6 @@ export default async function ProfileReviewPage({ params }: Props) {
         initialFirst={draft.firstName ?? ''}
         initialLast={draft.lastName ?? ''}
       />
-    </StepShell>
+    </OnboardingSplitShell>
   );
 }
