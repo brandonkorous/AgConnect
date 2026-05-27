@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faCopy, faXmark } from '@fortawesome/free-solid-svg-icons';
-import type { CrewView } from '@/lib/api/employer-ops';
+import type { CrewView } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
     locale: string;

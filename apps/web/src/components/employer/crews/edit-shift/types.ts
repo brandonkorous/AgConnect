@@ -5,7 +5,7 @@ import type {
   ShiftMetadata,
   CrewView,
   ActiveHireView,
-} from '@/lib/api/employer-ops';
+} from '@/lib/api/hooks/employer-ops';
 
 // Shape held by the Edit Shift form while the user is editing a single shift.
 // Mirrors the PATCH body the API accepts; assignments + worker actions are

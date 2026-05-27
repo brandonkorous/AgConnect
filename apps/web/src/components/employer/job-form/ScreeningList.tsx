@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useTranslations } from 'next-intl';
-import type { JobScreeningQuestionView } from '@/lib/api/employer';
+import type { JobScreeningQuestionView } from '@/lib/api/hooks/employer';
 
 type Props = {
     questions: JobScreeningQuestionView[];

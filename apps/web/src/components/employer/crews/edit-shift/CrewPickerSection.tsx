@@ -5,7 +5,7 @@ import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import type { CrewColor, CrewView } from '@/lib/api/employer-ops';
+import type { CrewColor, CrewView } from '@/lib/api/hooks/employer-ops';
 import { RadioCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 

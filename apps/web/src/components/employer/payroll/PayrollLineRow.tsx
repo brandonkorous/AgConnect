@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faFileLines } from '@fortawesome/free-solid-svg-icons';
@@ -35,7 +35,7 @@ export function PayrollLineRow({ periodId, line, border, locked, approved }: Pro
     const t = useTranslations('employer.payroll');
     const tEdit = useTranslations('employer.payroll.edit_line');
     const locale = useLocale();
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [editing, setEditing] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export function PayrollLineRow({ periodId, line, border, locked, approved }: Pro
                 setError(res.error.message || tEdit('error_approve'));
                 return;
             }
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } finally {
             setBusy(false);
         }
@@ -97,7 +97,7 @@ export function PayrollLineRow({ periodId, line, border, locked, approved }: Pro
                 return;
             }
             setEditing(false);
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } finally {
             setBusy(false);
         }

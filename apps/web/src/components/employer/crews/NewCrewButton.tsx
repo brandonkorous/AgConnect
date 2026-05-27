@@ -1,6 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import type { Route } from 'next';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,9 +10,9 @@ type Props = {
   variant?: 'primary' | 'ghost' | 'cta';
 };
 
-export async function NewCrewButton({ variant = 'ghost' }: Props) {
-  const t = await getTranslations('employer.crews');
-  const locale = await getLocale();
+export function NewCrewButton({ variant = 'ghost' }: Props) {
+  const t = useTranslations('employer.crews');
+  const locale = useLocale();
 
   const className =
     variant === 'primary'

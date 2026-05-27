@@ -8,7 +8,7 @@ import type {
   CrewSkill,
   CrewCommsChannels,
   ActiveHireView,
-} from '@/lib/api/employer-ops';
+} from '@/lib/api/hooks/employer-ops';
 
 // Form draft. Mirrors the PATCH body — bag-of-fields the editor mutates as
 // the user works through the section rail. Member roster mutations are

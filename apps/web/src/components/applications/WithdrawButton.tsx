@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { withdrawApplicationAction } from '@/lib/api/applications-actions';
+import { useWithdrawApplicationMutation } from '@/lib/api/hooks/mutations/applications';
 
 type Props = { applicationId: string; locale: string };
 
@@ -13,22 +13,20 @@ export function WithdrawButton({ applicationId, locale }: Props) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const withdrawMut = useWithdrawApplicationMutation();
+  const pending = withdrawMut.isPending;
 
-  function withdraw() {
+  async function withdraw() {
     setError(null);
-    startTransition(async () => {
-      const res = await withdrawApplicationAction(applicationId);
-      if (res.ok) {
-        router.push(`/${locale}/worker/applications`);
-        router.refresh();
-      } else if (res.code === 'validation_failed') {
-        setError(tErr('cannot_withdraw'));
-      } else {
-        setError(t('withdraw'));
-      }
-      setConfirming(false);
-    });
+    const res = await withdrawMut.mutateAsync(applicationId);
+    if (res.ok) {
+      router.push(`/${locale}/worker/applications`);
+    } else if (res.code === 'validation_failed') {
+      setError(tErr('cannot_withdraw'));
+    } else {
+      setError(t('withdraw'));
+    }
+    setConfirming(false);
   }
 
   if (!confirming) {

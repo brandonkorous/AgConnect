@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,11 +14,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Pill } from '@/components/worker/primitives/Pill';
 import {
-    createSavedSearchAction,
-    deleteSavedSearchAction,
-    patchSavedSearchAction,
-} from '@/lib/api/saved-searches-actions';
-import type { SavedSearch } from '@/lib/api/saved-searches';
+    useCreateSavedSearchMutation,
+    useDeleteSavedSearchMutation,
+    usePatchSavedSearchMutation,
+} from '@/lib/api/hooks/mutations/saved-searches';
+import type { SavedSearch } from '@/lib/api/hooks/saved-searches';
 
 type Props = { locale: string; initial: SavedSearch[] };
 
@@ -27,30 +26,21 @@ export function SavedSearchesClient({ locale, initial }: Props) {
     const t = useTranslations('worker.saved_searches');
     const [items, setItems] = useState(initial);
     const [adding, setAdding] = useState(false);
-    const [pending, startTransition] = useTransition();
-    const router = useRouter();
-
-    function refresh() {
-        router.refresh();
-    }
+    const patchMut = usePatchSavedSearchMutation();
+    const deleteMut = useDeleteSavedSearchMutation();
+    const pending = patchMut.isPending || deleteMut.isPending;
 
     function toggleAlerts(s: SavedSearch) {
         const next = items.map((it) =>
             it.id === s.id ? { ...it, alertActive: !it.alertActive } : it,
         );
         setItems(next);
-        startTransition(async () => {
-            await patchSavedSearchAction(s.id, { alertActive: !s.alertActive });
-            refresh();
-        });
+        patchMut.mutate({ id: s.id, patch: { alertActive: !s.alertActive } });
     }
 
     function remove(s: SavedSearch) {
         setItems((prev) => prev.filter((it) => it.id !== s.id));
-        startTransition(async () => {
-            await deleteSavedSearchAction(s.id);
-            refresh();
-        });
+        deleteMut.mutate(s.id);
     }
 
     if (items.length === 0 && !adding) {
@@ -154,7 +144,6 @@ export function SavedSearchesClient({ locale, initial }: Props) {
                     onCreated={(s) => {
                         setItems((prev) => [s, ...prev]);
                         setAdding(false);
-                        refresh();
                     }}
                 />
             ) : (
@@ -189,47 +178,46 @@ function AddForm({
     const [skills, setSkills] = useState('');
     const [channel, setChannel] = useState<SavedSearch['alertChannel']>('sms');
     const [error, setError] = useState<string | null>(null);
-    const [pending, startTransition] = useTransition();
+    const createMut = useCreateSavedSearchMutation();
+    const pending = createMut.isPending;
 
-    function submit() {
+    async function submit() {
         setError(null);
-        startTransition(async () => {
-            const skillsList = skills
-                .split(',')
-                .map((s) => s.trim())
-                .filter(Boolean);
-            let startBefore: string | undefined;
-            if (thisWeek) {
-                const d = new Date();
-                d.setUTCDate(d.getUTCDate() + 7);
-                startBefore = d.toISOString().slice(0, 10);
-            }
-            const res = await createSavedSearchAction({
-                name: name.trim() || null,
-                filters: {
-                    ...(county ? { county: [county] } : {}),
-                    ...(wageMin ? { wageMin: Number(wageMin) } : {}),
-                    ...(skillsList.length ? { skills: skillsList } : {}),
-                    ...(housing ? { housing: true } : {}),
-                    ...(transport ? { transport: true } : {}),
-                    ...(noExperience ? { noExperience: true } : {}),
-                    ...(startBefore ? { startBefore } : {}),
-                },
-                alertChannel: channel,
-                alertActive: channel !== 'none',
-            });
-            if (!res.ok) {
-                if (res.code === 'validation_failed' && /phone/.test(res.message)) {
-                    setError(t('error_phone'));
-                } else if (res.code === 'validation_failed') {
-                    setError(t('error_validation'));
-                } else {
-                    setError(t('error'));
-                }
-                return;
-            }
-            onCreated(res.data);
+        const skillsList = skills
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
+        let startBefore: string | undefined;
+        if (thisWeek) {
+            const d = new Date();
+            d.setUTCDate(d.getUTCDate() + 7);
+            startBefore = d.toISOString().slice(0, 10);
+        }
+        const res = await createMut.mutateAsync({
+            name: name.trim() || null,
+            filters: {
+                ...(county ? { county: [county] } : {}),
+                ...(wageMin ? { wageMin: Number(wageMin) } : {}),
+                ...(skillsList.length ? { skills: skillsList } : {}),
+                ...(housing ? { housing: true } : {}),
+                ...(transport ? { transport: true } : {}),
+                ...(noExperience ? { noExperience: true } : {}),
+                ...(startBefore ? { startBefore } : {}),
+            },
+            alertChannel: channel,
+            alertActive: channel !== 'none',
         });
+        if (!res.ok) {
+            if (res.code === 'validation_failed' && /phone/.test(res.message)) {
+                setError(t('error_phone'));
+            } else if (res.code === 'validation_failed') {
+                setError(t('error_validation'));
+            } else {
+                setError(t('error'));
+            }
+            return;
+        }
+        onCreated(res.data);
     }
 
     function setChannelAndClear(c: SavedSearch['alertChannel']) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
@@ -12,9 +12,9 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import {
-  pollResumeStatusAction,
-  startResumeReuploadAction,
-} from '@/lib/api/resume-actions';
+  useStartResumeReuploadMutation,
+  useResumeStatusQuery,
+} from '@/lib/api/hooks/mutations/resume';
 import { onboardingPath } from '@/lib/onboarding-steps';
 import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
@@ -26,7 +26,6 @@ const ACCEPTED = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 const POLL_INTERVAL_MS = 1500;
-const POLL_MAX_ATTEMPTS = 20;
 
 export function ResumeUpload({ locale, redirectTo }: Props) {
   const t = useTranslations('worker.onboarding');
@@ -35,8 +34,30 @@ export function ResumeUpload({ locale, redirectTo }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState<'pick' | 'parsing' | 'failed'>('pick');
-  const [, startTransition] = useTransition();
+  const startMut = useStartResumeReuploadMutation();
   const fallbackTo = redirectTo ?? onboardingPath(locale, 'profile', shell);
+
+  const statusQuery = useResumeStatusQuery({
+    enabled: phase === 'parsing',
+    intervalMs: POLL_INTERVAL_MS,
+  });
+
+  useEffect(() => {
+    if (phase !== 'parsing') return;
+    const d = statusQuery.data;
+    if (!d) return;
+    if (!d.ok) {
+      setError(t('error.generic'));
+      setPhase('failed');
+      return;
+    }
+    if (d.status === 'parsed') {
+      router.push(fallbackTo as Route);
+    } else if (d.status === 'failed') {
+      setPhase('failed');
+      window.setTimeout(() => router.push(fallbackTo as Route), 1200);
+    }
+  }, [statusQuery.data, phase, router, fallbackTo, t]);
 
   function pick(e: React.ChangeEvent<HTMLInputElement>) {
     setError(null);
@@ -53,41 +74,15 @@ export function ResumeUpload({ locale, redirectTo }: Props) {
     setFile(f);
   }
 
-  async function pollUntilDone() {
-    for (let i = 0; i < POLL_MAX_ATTEMPTS; i++) {
-      const res = await pollResumeStatusAction();
-      if (!res.ok) {
-        setError(t('error.generic'));
-        setPhase('failed');
-        return;
-      }
-      if (res.status === 'parsed') {
-        router.push(fallbackTo as Route);
-        return;
-      }
-      if (res.status === 'failed') {
-        setPhase('failed');
-        setTimeout(() => router.push(fallbackTo as Route), 1200);
-        return;
-      }
-      await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
-    }
-    router.push(fallbackTo as Route);
-  }
-
-  function upload() {
+  async function upload() {
     if (!file) return;
     setError(null);
     setPhase('parsing');
-    startTransition(async () => {
-      const res = await startResumeReuploadAction();
-      if (!res.ok) {
-        setError(t('error.generic'));
-        setPhase('pick');
-        return;
-      }
-      void pollUntilDone();
-    });
+    const res = await startMut.mutateAsync();
+    if (!res.ok) {
+      setError(t('error.generic'));
+      setPhase('pick');
+    }
   }
 
   if (phase === 'parsing') {

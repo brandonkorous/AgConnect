@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
-import type { Paystub } from '@/lib/api/me';
+import type { Paystub } from '@/lib/api/hooks/pay';
 
 const MONTH_KEYS = [
     'jan', 'feb', 'mar', 'apr', 'may', 'jun',

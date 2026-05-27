@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
-import type { SkillLookupView } from '@/lib/api/employer';
+import type { SkillLookupView } from '@/lib/api/hooks/employer';
 import { CheckboxCard } from '@/components/employer/primitives';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState, JobFormUpdate } from '../types';

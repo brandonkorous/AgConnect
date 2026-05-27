@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCreditCard } from '@fortawesome/free-solid-svg-icons';
-import type { BillingView } from '@/lib/api/employer';
+import type { BillingView } from '@/lib/api/hooks/employer';
 
 type Props = {
     locale: string;

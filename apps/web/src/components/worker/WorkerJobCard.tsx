@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { CropGlyph } from '@/components/jobs/CropGlyph';
 import { inferCrop } from '@/lib/crop';
-import type { RecommendedJob } from '@/lib/api/jobs';
+import type { RecommendedJob } from '@/lib/api/hooks/jobs';
 
 type Props = { job: RecommendedJob; locale: string };
 

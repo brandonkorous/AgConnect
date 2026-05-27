@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import {
   DndContext,
@@ -67,7 +67,7 @@ function isValidTransition(from: KanbanLaneKey, to: KanbanLaneKey): boolean {
 
 export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
   const t = useTranslations('employer.kanban');
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [state, setState] = useState<LaneState>(() => {
     const out: LaneState = { applied: [], reviewed: [], hired: [], rejected: [] };
@@ -120,7 +120,7 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
       moveCard(card.id, 'reviewed', from, from);
       setToast(res.message || t('transition_failed'));
     } else {
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     }
   }
 
@@ -156,7 +156,7 @@ export function ApplicantKanban({ locale, lanes, jobTitle }: Props) {
     const target: KanbanLaneKey = pending.kind === 'hire' ? 'hired' : 'rejected';
     moveCard(pending.card.id, pending.fromLane, target, target);
     setPending(null);
-    router.refresh();
+    void queryClient.invalidateQueries({ queryKey: ['employer'] });
   }
 
   function onCardTap(card: KanbanCardData) {

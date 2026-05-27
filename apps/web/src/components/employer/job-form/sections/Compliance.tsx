@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faMinus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import type { EmployerProfileView } from '@/lib/api/employer';
+import type { EmployerProfileView } from '@/lib/api/hooks/employer';
 import { SectionShell } from '../SectionShell';
 import type { JobFormState } from '../types';
 

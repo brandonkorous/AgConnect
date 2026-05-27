@@ -3,6 +3,7 @@
 import { useState, type MouseEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faComments } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
@@ -20,6 +21,7 @@ export function CandidateRowActions({ applicationId, messageLabel, hireLabel }: 
   const locale = useLocale();
   const t = useTranslations('employer.candidates.row');
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [modal, setModal] = useState<'hire' | 'message' | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +63,7 @@ export function CandidateRowActions({ applicationId, messageLabel, hireLabel }: 
       }
       setModal(null);
       pushToast({ variant: 'success', title: t('toast_hired') });
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } finally {
       setBusy(false);
     }

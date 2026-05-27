@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import type { ApplicantCardView } from '@/lib/api/employer';
+import type { ApplicantCardView } from '@/lib/api/hooks/employer';
 
 type Props = {
     locale: string;

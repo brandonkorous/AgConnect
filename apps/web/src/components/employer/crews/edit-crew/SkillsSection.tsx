@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { CheckboxCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 import { CREW_SKILLS, type CrewDraft } from './types';
-import type { CrewSkill, CrewSkillCoverageView } from '@/lib/api/employer-ops';
+import type { CrewSkill, CrewSkillCoverageView } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
   draft: CrewDraft;

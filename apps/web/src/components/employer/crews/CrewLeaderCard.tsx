@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
-import type { getTranslations } from 'next-intl/server';
-import type { CrewView } from '@/lib/api/employer-ops';
+import type { useTranslations } from 'next-intl';
+import type { CrewView } from '@/lib/api/hooks/employer-ops';
 import { CrewEditTrigger } from './CrewEditTrigger';
 
-type T = Awaited<ReturnType<typeof getTranslations>>;
+type T = ReturnType<typeof useTranslations>;
 
 export function CrewLeaderCard({
     cr,

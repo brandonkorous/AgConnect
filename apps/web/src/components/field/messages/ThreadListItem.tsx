@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Route } from 'next';
 import { useFormatter, useTranslations } from 'next-intl';
-import type { Thread } from '@/lib/api/me';
+import type { Thread } from '@/lib/api/hooks/messages';
 
 type Props = {
     locale: string;

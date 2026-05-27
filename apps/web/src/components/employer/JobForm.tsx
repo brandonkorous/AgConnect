@@ -8,7 +8,7 @@ import type {
     LookupView,
     SkillLookupView,
     EmployerContactView,
-} from '@/lib/api/employer';
+} from '@/lib/api/hooks/employer';
 import { fromView, type JobFormState } from './job-form/types';
 import { useAutosave } from './job-form/useAutosave';
 import { useJobFormSave } from './job-form/useJobFormSave';

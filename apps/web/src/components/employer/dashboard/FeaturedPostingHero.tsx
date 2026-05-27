@@ -10,7 +10,7 @@ import {
     faCheck,
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
-import type { EmployerJobView, ApplicantCardView } from '@/lib/api/employer';
+import type { EmployerJobView, ApplicantCardView } from '@/lib/api/hooks/employer';
 
 type Props = {
     locale: string;

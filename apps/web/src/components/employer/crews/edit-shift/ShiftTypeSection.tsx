@@ -8,7 +8,7 @@ import {
   faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import type { ShiftType } from '@/lib/api/employer-ops';
+import type { ShiftType } from '@/lib/api/hooks/employer-ops';
 import { RadioCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 

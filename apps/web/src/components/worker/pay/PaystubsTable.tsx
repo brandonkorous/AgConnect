@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Pill } from '@/components/worker/primitives/Pill';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
-import type { Paystub } from '@/lib/api/me';
+import type { Paystub } from '@/lib/api/hooks/pay';
+import { buildPaystubsCsv, downloadBlob } from '@/lib/export/client-download';
 
 const COLS = '1.4fr 1.2fr 0.7fr 0.9fr 0.9fr 0.8fr';
 
@@ -79,14 +80,14 @@ export function PaystubsTable({ rows, locale }: Props) {
                             ))}
                         </div>
                     )}
-                    <a
-                        href="/api/me/paystubs/csv"
-                        download="agconn-paystubs.csv"
-                        className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-[12px] font-semibold no-underline"
+                    <button
+                        type="button"
+                        onClick={() => downloadBlob('agconn-paystubs.csv', buildPaystubsCsv(rows), 'text/csv;charset=utf-8')}
+                        className="border-base-300 inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-[12px] font-semibold"
                     >
                         <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
                         {t('export_csv')}
-                    </a>
+                    </button>
                 </div>
             </div>
 

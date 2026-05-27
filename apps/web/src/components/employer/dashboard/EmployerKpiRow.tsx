@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import type { DashboardStats } from '@/lib/api/employer';
+import type { DashboardStats } from '@/lib/api/hooks/employer';
 
 type Tile = {
     key: 'open_positions' | 'spots_remaining' | 'applicants_week' | 'time_to_fill';

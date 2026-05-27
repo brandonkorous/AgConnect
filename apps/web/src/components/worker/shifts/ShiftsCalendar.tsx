@@ -1,7 +1,9 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 import type { Route } from 'next';
-import type { ShiftRow } from '@/lib/api/me';
+import type { ShiftRow } from '@/lib/api/hooks/shifts';
 
 const TONE: Record<string, string> = {
     confirmed: 'bg-primary/15 text-primary',
@@ -26,8 +28,8 @@ function shiftMonth(year: number, month: number, delta: number): { year: number;
     return { year: date.getUTCFullYear(), month: date.getUTCMonth() };
 }
 
-export async function ShiftsCalendar({ shifts, locale, year, month }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.shifts.calendar' });
+export function ShiftsCalendar({ shifts, locale, year, month }: Props) {
+    const t = useTranslations('worker.shifts.calendar');
     const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
     const today = new Date();

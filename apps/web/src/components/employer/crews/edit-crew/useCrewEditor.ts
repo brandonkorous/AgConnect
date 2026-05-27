@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { isOk } from '@agconn/api-client';
 import { pushToast } from '@agconn/ui';
@@ -14,7 +15,7 @@ import {
   type CrewEditorPageProps,
 } from './types';
 import { draftsEqual } from './draftsEqual';
-import type { ActiveHireView } from '@/lib/api/employer-ops';
+import type { ActiveHireView } from '@/lib/api/hooks/employer-ops';
 
 type Args = {
   locale: string;
@@ -26,6 +27,7 @@ type Args = {
 export function useCrewEditor({ locale, mode, crew, hires }: Args) {
   const t = useTranslations('employer.crews.edit_crew');
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -118,7 +120,7 @@ export function useCrewEditor({ locale, mode, crew, hires }: Args) {
           return;
         }
         setLastSavedAt(Date.now());
-        router.refresh();
+        void queryClient.invalidateQueries({ queryKey: ['employer'] });
       }
     } finally {
       setBusy(false);
@@ -169,7 +171,7 @@ export function useCrewEditor({ locale, mode, crew, hires }: Args) {
         title: t('archive_toast_title', { name: crew.name }),
       });
       router.push(`/${locale}/employer/crews`);
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } finally {
       setBusy(false);
     }

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
-import type { ActiveHireView } from '@/lib/api/employer-ops';
+import type { ActiveHireView } from '@/lib/api/hooks/employer-ops';
 import { EmptyStateCard } from '@/components/employer/primitives';
 import { SectionCard } from './SectionCard';
 import type { CrewDraft } from './types';

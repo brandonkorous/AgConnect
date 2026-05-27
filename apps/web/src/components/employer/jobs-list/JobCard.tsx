@@ -7,7 +7,7 @@ import {
     faCoins,
     faArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
-import type { EmployerJobView } from '@/lib/api/employer';
+import type { EmployerJobView } from '@/lib/api/hooks/employer';
 import { StatusBadge } from '@/components/employer/primitives';
 import { JobActionMenu } from './JobActionMenu';
 

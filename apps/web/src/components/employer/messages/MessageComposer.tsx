@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
@@ -38,7 +38,7 @@ export function MessageComposer({
     const t = useTranslations('employer.messages.composer');
     const tBody = useTranslations('employer.messages.template_bodies');
     const locale = useLocale();
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [channel, setChannel] = useState<Channel>(initialChannel);
     const [body, setBody] = useState('');
     const [busy, setBusy] = useState(false);
@@ -67,7 +67,7 @@ export function MessageComposer({
             }
             setBody('');
             setShowTemplates(false);
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } finally {
             setBusy(false);
         }

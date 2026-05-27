@@ -1,13 +1,12 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLeaf, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { sendMessageAction } from '@/lib/api/me-actions';
-import type { ThreadDetail } from '@/lib/api/me';
+import { useSendMessageMutation } from '@/lib/api/hooks/mutations/me';
+import type { ThreadDetail } from '@/lib/api/hooks/messages';
 
 type Props = { detail: ThreadDetail; locale: string };
 
@@ -38,27 +37,21 @@ function ThreadHeaderActions({
 export function ThreadView({ detail, locale }: Props) {
     const t = useTranslations('worker.messages.thread');
     const tQuick = useTranslations('worker.messages.quick');
-    const router = useRouter();
+    const sendMut = useSendMessageMutation();
+    const pending = sendMut.isPending;
     const [body, setBody] = useState('');
-    const [pending, startTransition] = useTransition();
     const inputRef = useRef<HTMLInputElement>(null);
 
-    function send() {
+    async function send() {
         const value = body.trim();
         if (!value) return;
         setBody('');
-        startTransition(async () => {
-            await sendMessageAction(detail.conversation.id, value);
-            router.refresh();
-            inputRef.current?.focus();
-        });
+        await sendMut.mutateAsync({ conversationId: detail.conversation.id, body: value });
+        inputRef.current?.focus();
     }
 
     function quick(text: string) {
-        startTransition(async () => {
-            await sendMessageAction(detail.conversation.id, text);
-            router.refresh();
-        });
+        sendMut.mutate({ conversationId: detail.conversation.id, body: text });
     }
 
     const initials = detail.conversation.employer

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,8 +13,8 @@ import {
     faHouse,
     faVanShuttle,
 } from '@fortawesome/free-solid-svg-icons';
-import { applyToJobAction } from '@/lib/api/applications-actions';
-import type { RecommendedJob } from '@/lib/api/jobs';
+import { useApplyToJobMutation } from '@/lib/api/hooks/mutations/applications';
+import type { RecommendedJob } from '@/lib/api/hooks/jobs';
 
 type Props = {
     locale: string;
@@ -34,7 +34,7 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
     const [selected, setSelected] = useState<RecommendedJob | null>(null);
     const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
     const [state, setState] = useState<ApplyState>({ kind: 'idle' });
-    const [, startTransition] = useTransition();
+    const applyMut = useApplyToJobMutation();
 
     const localized = (j: RecommendedJob) => (locale === 'es' ? j.titleEs : j.titleEn) || j.titleEn;
 
@@ -60,24 +60,22 @@ export function ApplyList({ locale, jobs, smsApply }: Props) {
         return min === max ? `${money(min)}/${unit}` : `${money(min)}–${money(max)}/${unit}`;
     }
 
-    function applyTo(job: RecommendedJob) {
+    async function applyTo(job: RecommendedJob) {
         setState({ kind: 'pending', jobId: job.id });
-        startTransition(async () => {
-            const res = await applyToJobAction(job.id);
-            if (res.ok) {
-                setAppliedIds((s) => new Set(s).add(job.id));
-                setState({ kind: 'done', jobId: job.id });
-                window.setTimeout(() => {
-                    setSelected(null);
-                    setState({ kind: 'idle' });
-                }, 1400);
-            } else if (res.code === 'conflict') {
-                setAppliedIds((s) => new Set(s).add(job.id));
-                setState({ kind: 'done', jobId: job.id });
-            } else {
-                setState({ kind: 'error', jobId: job.id, message: t('error') });
-            }
-        });
+        const res = await applyMut.mutateAsync(job.id);
+        if (res.ok) {
+            setAppliedIds((s) => new Set(s).add(job.id));
+            setState({ kind: 'done', jobId: job.id });
+            window.setTimeout(() => {
+                setSelected(null);
+                setState({ kind: 'idle' });
+            }, 1400);
+        } else if (res.code === 'conflict') {
+            setAppliedIds((s) => new Set(s).add(job.id));
+            setState({ kind: 'done', jobId: job.id });
+        } else {
+            setState({ kind: 'error', jobId: job.id, message: t('error') });
+        }
     }
 
     if (jobs.length === 0) {

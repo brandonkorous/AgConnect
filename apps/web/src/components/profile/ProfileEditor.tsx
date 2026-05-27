@@ -1,17 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
-  savePatchAction,
-  addResumeItemAction,
-  removeResumeItemAction,
+  useSaveProfilePatchMutation,
+  useAddResumeItemMutation,
+  useRemoveResumeItemMutation,
   type ProfilePatchInput,
   type ResumeSection,
-} from '@/lib/api/profile-actions';
+} from '@/lib/api/hooks/mutations/profile';
 
 type SectionItem = {
   primary: string;
@@ -54,22 +54,20 @@ export function ProfileEditor({ locale, initial }: Props) {
   const [save, setSave] = useState<SaveState>('idle');
   const pendingPatch = useRef<ProfilePatchInput>({});
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [, startTransition] = useTransition();
+  const saveMut = useSaveProfilePatchMutation();
 
-  function flush() {
+  async function flush() {
     const fields = pendingPatch.current;
     if (Object.keys(fields).length === 0) return;
     pendingPatch.current = {};
     setSave('saving');
-    startTransition(async () => {
-      const res = await savePatchAction({
-        ...fields,
-        expectedUpdatedAt: snapshot.updatedAt,
-      });
-      if (res.ok) setSave('saved');
-      else if (res.conflict) setSave('conflict');
-      else setSave(res.code === 'offline' ? 'offline' : 'error');
+    const res = await saveMut.mutateAsync({
+      ...fields,
+      expectedUpdatedAt: snapshot.updatedAt,
     });
+    if (res.ok) setSave('saved');
+    else if (res.conflict) setSave('conflict');
+    else setSave(res.code === 'offline' ? 'offline' : 'error');
   }
 
   function patch<K extends keyof ProfileSnapshot>(field: K, value: ProfileSnapshot[K]) {
@@ -360,30 +358,27 @@ function ResumeSection2({
   setSave: (s: SaveState) => void;
 }) {
   const [adding, setAdding] = useState(false);
-  const [, startTransition] = useTransition();
+  const addMut = useAddResumeItemMutation();
+  const removeMut = useRemoveResumeItemMutation();
 
-  function add(item: SectionItem) {
+  async function add(item: SectionItem) {
     const next = [...items, item];
     onLocalChange(next);
     setAdding(false);
     setSave('saving');
-    startTransition(async () => {
-      const res = await addResumeItemAction(section, item);
-      setSave(res.ok ? 'saved' : 'error');
-      if (!res.ok) onLocalChange(items);
-    });
+    const res = await addMut.mutateAsync({ section, item });
+    setSave(res.ok ? 'saved' : 'error');
+    if (!res.ok) onLocalChange(items);
   }
 
-  function remove(index: number) {
+  async function remove(index: number) {
     const previous = items;
     const next = items.filter((_, i) => i !== index);
     onLocalChange(next);
     setSave('saving');
-    startTransition(async () => {
-      const res = await removeResumeItemAction(section, index);
-      setSave(res.ok ? 'saved' : 'error');
-      if (!res.ok) onLocalChange(previous);
-    });
+    const res = await removeMut.mutateAsync({ section, index });
+    setSave(res.ok ? 'saved' : 'error');
+    if (!res.ok) onLocalChange(previous);
   }
 
   return (

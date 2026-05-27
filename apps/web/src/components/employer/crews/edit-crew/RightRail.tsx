@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 type Translator = (key: string) => string;
-import type { CrewInsightsView } from '@/lib/api/employer-ops';
+import type { CrewInsightsView } from '@/lib/api/hooks/employer-ops';
 import { DarkHeroCard } from '@/components/employer/primitives';
 import { CREW_COLORS, type CrewDraft } from './types';
 

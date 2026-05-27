@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faSeedling } from '@fortawesome/free-solid-svg-icons';
-import type { EmployerJobView } from '@/lib/api/employer';
+import type { EmployerJobView } from '@/lib/api/hooks/employer';
 
 type Props = {
     locale: string;

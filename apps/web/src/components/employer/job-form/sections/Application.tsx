@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faGlobe } from '@fortawesome/free-solid-svg-icons';
-import type { EmployerContactView } from '@/lib/api/employer';
+import type { EmployerContactView } from '@/lib/api/hooks/employer';
 import { SectionShell } from '../SectionShell';
 import { ScreeningList } from '../ScreeningList';
 import type { JobFormState, JobFormUpdate } from '../types';

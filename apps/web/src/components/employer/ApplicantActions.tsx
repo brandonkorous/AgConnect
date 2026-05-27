@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { pushToast } from '@agconn/ui';
 import { HireModal } from './applications/HireModal';
@@ -26,7 +26,11 @@ export function ApplicantActions({
   jobTitle,
 }: Props) {
   const t = useTranslations('employer.applicant_detail');
-  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  function invalidate() {
+    void queryClient.invalidateQueries({ queryKey: ['employer', 'inbox'] });
+  }
 
   const [modal, setModal] = useState<'hire' | 'reject' | null>(null);
   const [busy, setBusy] = useState(false);
@@ -49,19 +53,19 @@ export function ApplicantActions({
       return;
     }
     pushToast({ variant: 'success', title: t('toast_reviewed', { name: workerName }) });
-    router.refresh();
+    invalidate();
   }
 
   function onHireSuccess() {
     setModal(null);
     pushToast({ variant: 'success', title: t('toast_hired', { name: workerName }) });
-    router.refresh();
+    invalidate();
   }
 
   function onRejectSuccess() {
     setModal(null);
     pushToast({ variant: 'info', title: t('toast_rejected', { name: workerName }) });
-    router.refresh();
+    invalidate();
   }
 
   return (

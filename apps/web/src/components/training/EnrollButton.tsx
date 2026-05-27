@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import {
-  enrollInProgramAction,
-  unenrollFromProgramAction,
-} from '@/lib/api/training-actions';
+  useEnrollInProgramMutation,
+  useUnenrollFromProgramMutation,
+} from '@/lib/api/hooks/mutations/training';
 
 type Props = {
   programId: string;
@@ -21,31 +21,27 @@ export function EnrollButton({ programId, spotsLeft, alreadyEnrolled, locale }: 
   const tErr = useTranslations('worker.training_hub.error');
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const enrollMut = useEnrollInProgramMutation();
+  const unenrollMut = useUnenrollFromProgramMutation();
+  const pending = enrollMut.isPending || unenrollMut.isPending;
 
-  function enroll() {
+  async function enroll() {
     setError(null);
-    startTransition(async () => {
-      const res = await enrollInProgramAction(programId);
-      if (res.ok) {
-        router.refresh();
-      } else if (res.code === 'conflict') {
-        setError(tErr('already_enrolled'));
-      } else if (res.code === 'unauthenticated') {
-        router.push(`/${locale}/sign-in` as Route);
-      } else {
-        setError(t('enroll_error'));
-      }
-    });
+    const res = await enrollMut.mutateAsync(programId);
+    if (res.ok) return;
+    if (res.code === 'conflict') {
+      setError(tErr('already_enrolled'));
+    } else if (res.code === 'unauthenticated') {
+      router.push(`/${locale}/sign-in` as Route);
+    } else {
+      setError(t('enroll_error'));
+    }
   }
 
-  function unenroll() {
+  async function unenroll() {
     setError(null);
-    startTransition(async () => {
-      const res = await unenrollFromProgramAction(programId);
-      if (res.ok) router.refresh();
-      else setError(tErr('cannot_unenroll'));
-    });
+    const res = await unenrollMut.mutateAsync(programId);
+    if (!res.ok) setError(tErr('cannot_unenroll'));
   }
 
   if (alreadyEnrolled) {

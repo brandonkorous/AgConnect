@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,7 +8,7 @@ import {
     faCheck,
     faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
-import { arriveAtShiftAction } from '@/lib/api/me-actions';
+import { useArriveAtShiftMutation } from '@/lib/api/hooks/mutations/me';
 
 type Props = {
     assignmentId: string;
@@ -20,7 +20,8 @@ export function ArrivalTile({ assignmentId, initialArrivedAt }: Props) {
     const formatter = useFormatter();
     const [arrivedAt, setArrivedAt] = useState<string | null>(initialArrivedAt);
     const [error, setError] = useState<string | null>(null);
-    const [pending, startTransition] = useTransition();
+    const arriveMut = useArriveAtShiftMutation();
+    const pending = arriveMut.isPending;
 
     if (arrivedAt) {
         const at = new Date(arrivedAt);
@@ -48,13 +49,11 @@ export function ArrivalTile({ assignmentId, initialArrivedAt }: Props) {
             <button
                 type="button"
                 disabled={pending}
-                onClick={() => {
+                onClick={async () => {
                     setError(null);
-                    startTransition(async () => {
-                        const res = await arriveAtShiftAction(assignmentId);
-                        if (res.ok) setArrivedAt(res.data.arrivedAt);
-                        else setError(t('error'));
-                    });
+                    const res = await arriveMut.mutateAsync(assignmentId);
+                    if (res.ok) setArrivedAt(res.data.arrivedAt);
+                    else setError(t('error'));
                 }}
                 className="bg-primary text-primary-content active:bg-primary/90 disabled:bg-primary/70 flex h-[72px] w-full items-center justify-center gap-3 rounded-2xl text-lg font-bold transition-colors disabled:cursor-progress"
             >

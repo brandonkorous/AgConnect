@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { onboardingPath } from '@/lib/onboarding-steps';
 import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 import {
-  patchOnboardingAction,
-  completeOnboardingAction,
-} from '@/lib/api/onboarding-actions';
+  usePatchOnboardingMutation,
+  useCompleteOnboardingMutation,
+} from '@/lib/api/hooks/mutations/onboarding';
 
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 type Day = (typeof DAYS)[number];
@@ -33,7 +33,9 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
   const shell = useOnboardingShell();
   const [state, setState] = useState<State>(empty);
   const [notes, setNotes] = useState('');
-  const [pending, startTransition] = useTransition();
+  const patchMut = usePatchOnboardingMutation();
+  const completeMut = useCompleteOnboardingMutation();
+  const pending = patchMut.isPending || completeMut.isPending;
 
   function toggle(day: Day, slot: Slot) {
     setState((s) => ({ ...s, [day]: { ...s[day], [slot]: !s[day][slot] } }));
@@ -61,21 +63,21 @@ export function AvailabilityGrid({ locale }: { locale: string }) {
         JSON.stringify({ ...existing, availability }),
       );
     }
-    startTransition(async () => {
-      // Persist availability server-side, then finalize. completeOnboarding
-      // 422s if any required field is missing; the un-onboarded gate (Phase
-      // 2.4) is the backstop, so on failure we re-enter at the first data
-      // step rather than show a false success page.
-      const patched = await patchOnboardingAction({ availability });
+    // Persist availability server-side, then finalize. completeOnboarding
+    // 422s if any required field is missing; the un-onboarded gate (Phase
+    // 2.4) is the backstop, so on failure we re-enter at the first data
+    // step rather than show a false success page.
+    void (async () => {
+      const patched = await patchMut.mutateAsync({ availability });
       if (!patched.ok) {
         router.push(onboardingPath(locale, 'profile', shell));
         return;
       }
-      const done = await completeOnboardingAction();
+      const done = await completeMut.mutateAsync();
       router.push(
         onboardingPath(locale, done.ok ? 'complete' : 'profile', shell),
       );
-    });
+    })();
   }
 
   return (

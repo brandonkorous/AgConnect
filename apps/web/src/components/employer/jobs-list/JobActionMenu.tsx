@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, useTransition } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { Route } from 'next';
-import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import {
-    closeJobPostingAction,
-    discardDraftJobAction,
-    setJobRenotifyPausedAction,
-} from '@/lib/api/jobs-actions';
+    useCloseJobPostingMutation,
+    useDiscardDraftJobMutation,
+    useSetJobRenotifyPausedMutation,
+} from '@/lib/api/hooks/mutations/jobs';
 
 type Labels = {
     label: string;
@@ -40,9 +39,11 @@ type Props = {
 
 export function JobActionMenu({ jobId, locale, status, renotifyPaused, labels }: Props) {
     const [paused, setPaused] = useState(renotifyPaused);
-    const router = useRouter();
     const detailsRef = useRef<HTMLDetailsElement>(null);
-    const [pending, start] = useTransition();
+    const discardMut = useDiscardDraftJobMutation();
+    const closeMut = useCloseJobPostingMutation();
+    const pauseMut = useSetJobRenotifyPausedMutation();
+    const pending = discardMut.isPending || closeMut.isPending || pauseMut.isPending;
     const [confirm, setConfirm] = useState<null | 'discard' | 'close'>(null);
     const dialogId = useId();
 
@@ -71,31 +72,20 @@ export function JobActionMenu({ jobId, locale, status, renotifyPaused, labels }:
         setConfirm('close');
     };
 
-    const runDiscard = () => {
-        start(async () => {
-            await discardDraftJobAction(jobId);
-            setConfirm(null);
-            router.refresh();
-        });
+    const runDiscard = async () => {
+        await discardMut.mutateAsync(jobId);
+        setConfirm(null);
     };
-    const runClose = () => {
-        start(async () => {
-            await closeJobPostingAction(jobId);
-            setConfirm(null);
-            router.refresh();
-        });
+    const runClose = async () => {
+        await closeMut.mutateAsync(jobId);
+        setConfirm(null);
     };
 
-    const onTogglePause = () => {
+    const onTogglePause = async () => {
         closeMenu();
         const next = !paused;
-        start(async () => {
-            const res = await setJobRenotifyPausedAction(jobId, next);
-            if (res.ok) {
-                setPaused(res.data.renotifyPaused);
-                router.refresh();
-            }
-        });
+        const res = await pauseMut.mutateAsync({ jobId, paused: next });
+        if (res.ok) setPaused(res.data.renotifyPaused);
     };
 
     return (

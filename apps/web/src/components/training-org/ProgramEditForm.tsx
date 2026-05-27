@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { updateProgramAction } from '@/lib/api/training-org-actions';
+import { useUpdateProgramMutation } from '@/lib/api/hooks/mutations/training-org';
 import type { ProgramFullView } from '@/lib/api/training-org';
 
 type Props = {
@@ -28,7 +27,6 @@ function toIsoFromLocal(local: string): string {
 }
 
 export function ProgramEditForm({ program, locale }: Props) {
-  const router = useRouter();
   const isEs = locale === 'es';
   const [descriptionEn, setDescriptionEn] = useState(program.descriptionEn);
   const [descriptionEs, setDescriptionEs] = useState(program.descriptionEs);
@@ -43,7 +41,8 @@ export function ProgramEditForm({ program, locale }: Props) {
   );
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const updateMut = useUpdateProgramMutation();
+  const pending = updateMut.isPending;
 
   function updateSession(i: number, patch: Partial<SessionRow>) {
     setSessions((prev) => prev.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
@@ -68,17 +67,19 @@ export function ProgramEditForm({ program, locale }: Props) {
         ...(s.notes ? { notes: s.notes } : {}),
       }));
 
-    startTransition(async () => {
-      const res = await updateProgramAction(program.id, {
-        descriptionEn,
-        descriptionEs,
-        locationName,
-        locationAddress,
-        sessionTimes: sessionsPayload,
+    void (async () => {
+      const res = await updateMut.mutateAsync({
+        id: program.id,
+        body: {
+          descriptionEn,
+          descriptionEs,
+          locationName,
+          locationAddress,
+          sessionTimes: sessionsPayload,
+        },
       });
       if (res.ok) {
         setSaved(true);
-        router.refresh();
         window.setTimeout(() => setSaved(false), 2000);
       } else {
         setError(
@@ -91,7 +92,7 @@ export function ProgramEditForm({ program, locale }: Props) {
               : 'Could not save. Try again.',
         );
       }
-    });
+    })();
   }
 
   return (

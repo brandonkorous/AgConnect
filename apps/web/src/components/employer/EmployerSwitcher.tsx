@@ -1,11 +1,10 @@
 'use client';
 
-import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuilding, faCheck, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { switchEmployerAction } from '@/lib/api/members-actions';
+import { useActiveEmployer } from '@/lib/context/active-employer-context';
 
 type EmployerOption = { employerId: string; legalName: string };
 
@@ -19,17 +18,17 @@ type Props = {
 // every API request then carries X-Employer-Id (re-validated by the API).
 export function EmployerSwitcher({ options, activeEmployerId }: Props) {
     const t = useTranslations('employer.shell.switcher');
-    const router = useRouter();
-    const [pending, startTransition] = useTransition();
+    const queryClient = useQueryClient();
+    const { setActiveEmployer } = useActiveEmployer();
+    const pending = false;
 
     const active = options.find((o) => o.employerId === activeEmployerId) ?? options[0];
 
     function pick(employerId: string) {
         if (employerId === activeEmployerId) return;
-        startTransition(async () => {
-            await switchEmployerAction(employerId);
-            router.refresh();
-        });
+        setActiveEmployer(employerId);
+        void queryClient.invalidateQueries({ queryKey: ['employer'] });
+        void queryClient.invalidateQueries({ queryKey: ['me'] });
     }
 
     return (

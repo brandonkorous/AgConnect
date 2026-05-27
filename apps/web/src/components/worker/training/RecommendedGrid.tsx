@@ -1,8 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -14,8 +12,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Pill } from '@/components/worker/primitives/Pill';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
-import { enrollInProgramAction } from '@/lib/api/training-actions';
-import type { ProgramCard } from '@/lib/api/training';
+import { useEnrollInProgramMutation } from '@/lib/api/hooks/mutations/training';
+import type { ProgramCard } from '@/lib/api/hooks/training';
 
 const ICONS: IconDefinition[] = [faShieldHalved, faTruckField, faSun, faLeaf];
 
@@ -24,8 +22,8 @@ type Props = { programs: ProgramCard[]; locale: string };
 export function RecommendedGrid({ programs, locale }: Props) {
   const t = useTranslations('worker.training_hub.recommended');
   const tEmpty = useTranslations('worker.training_hub');
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
+  const enrollMut = useEnrollInProgramMutation();
+  const pending = enrollMut.isPending;
 
   if (programs.length === 0) {
     return (
@@ -49,10 +47,7 @@ export function RecommendedGrid({ programs, locale }: Props) {
   }
 
   function enroll(programId: string) {
-    startTransition(async () => {
-      await enrollInProgramAction(programId);
-      router.refresh();
-    });
+    enrollMut.mutate(programId);
   }
 
   return (

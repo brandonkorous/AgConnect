@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Route } from 'next';
-import type { ShiftView } from '@/lib/api/employer-ops';
+import type { ShiftView } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
   shift: ShiftView;

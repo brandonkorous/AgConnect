@@ -11,7 +11,7 @@ import { SafetySection } from '../edit-shift/SafetySection';
 import { NotificationsSection } from '../edit-shift/NotificationsSection';
 import { PreviewRail } from '../edit-shift/PreviewRail';
 import { SECTION_IDS } from '../edit-shift/types';
-import type { CrewView } from '@/lib/api/employer-ops';
+import type { CrewView } from '@/lib/api/hooks/employer-ops';
 import { NewShiftHeader } from './NewShiftHeader';
 import { NewShiftFooter } from './NewShiftFooter';
 import { SeriesDateSection } from './SeriesDateSection';

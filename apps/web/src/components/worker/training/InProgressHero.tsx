@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
-import type { EnrollmentListItem } from '@/lib/api/training';
+import type { EnrollmentListItem } from '@/lib/api/hooks/training';
 
 type Props = { enrollment: EnrollmentListItem; locale: string };
 

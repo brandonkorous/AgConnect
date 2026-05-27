@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import type { Thread } from '@/lib/api/me';
+import type { Thread } from '@/lib/api/hooks/messages';
 
 type Props = { threads: Thread[]; activeId: string | undefined; locale: string };
 

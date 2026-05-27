@@ -9,8 +9,7 @@ import { WorkerMobileShell } from '@/components/worker/WorkerMobileShell';
 import { FieldModeSoftPrompt } from '@/components/field/FieldModeSoftPrompt';
 import { useMe } from '@/lib/api/hooks/me';
 import { useWorkerNavCounts } from '@/lib/api/hooks/nav-counts';
-import { homePathForRole } from '@/lib/auth/role';
-import { UserRole } from '@agconn/auth';
+import { homePathForRole, UserRole } from '@/lib/auth/role-client';
 import { ShellSkeleton } from './ShellSkeleton';
 
 // Client-side shell for /worker. Replaces the previous async server layout

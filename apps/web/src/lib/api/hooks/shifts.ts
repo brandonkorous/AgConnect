@@ -43,9 +43,20 @@ const myShiftsOptions = queryOptions({
   staleTime: 2 * 60_000,
 });
 
+function myShiftsRangeOptions(range: { from?: string; to?: string }) {
+  return queryOptions({
+    queryKey: [...qk.myShifts(), range.from ?? null, range.to ?? null] as const,
+    queryFn: () => fetchMyShifts(range),
+    staleTime: 2 * 60_000,
+  });
+}
+
 export function useMyShifts() {
   return useQuery(myShiftsOptions);
 }
 export function useMyShiftsSuspense() {
   return useSuspenseQuery(myShiftsOptions);
+}
+export function useMyShiftsRangeSuspense(range: { from?: string; to?: string }) {
+  return useSuspenseQuery(myShiftsRangeOptions(range));
 }

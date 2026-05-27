@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCircleCheck,
     faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
-import { confirmShiftAction } from '@/lib/api/me-actions';
+import { useConfirmShiftMutation } from '@/lib/api/hooks/mutations/me';
 
 type Props = {
     assignmentId: string;
@@ -18,7 +18,8 @@ export function ConfirmTile({ assignmentId, onConfirmed }: Props) {
     const t = useTranslations('worker.field.today.confirm');
     const [confirmed, setConfirmed] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [pending, startTransition] = useTransition();
+    const confirmMut = useConfirmShiftMutation();
+    const pending = confirmMut.isPending;
 
     if (confirmed) return null;
 
@@ -29,17 +30,15 @@ export function ConfirmTile({ assignmentId, onConfirmed }: Props) {
             <button
                 type="button"
                 disabled={pending}
-                onClick={() => {
+                onClick={async () => {
                     setError(null);
-                    startTransition(async () => {
-                        const res = await confirmShiftAction(assignmentId);
-                        if (res.ok) {
-                            setConfirmed(true);
-                            onConfirmed?.();
-                        } else {
-                            setError(t('error'));
-                        }
-                    });
+                    const res = await confirmMut.mutateAsync(assignmentId);
+                    if (res.ok) {
+                        setConfirmed(true);
+                        onConfirmed?.();
+                    } else {
+                        setError(t('error'));
+                    }
                 }}
                 className="bg-base-content text-base-100 active:bg-base-content/90 disabled:bg-base-content/60 mt-3 flex h-[60px] w-full items-center justify-center gap-2 rounded-full text-base font-semibold transition-colors disabled:cursor-progress"
             >

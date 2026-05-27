@@ -9,7 +9,7 @@ import {
   CREW_TYPES,
   type CrewDraft,
 } from './types';
-import type { CrewColor, CrewCrop, CrewType } from '@/lib/api/employer-ops';
+import type { CrewColor, CrewCrop, CrewType } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
   draft: CrewDraft;

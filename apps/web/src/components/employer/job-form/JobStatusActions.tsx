@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -23,7 +23,7 @@ type Props = {
 
 export function JobStatusActions({ locale, jobId, status, renotifyPaused }: Props) {
     const t = useTranslations('employer.jobs.form_v2');
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [pending, start] = useTransition();
     const [feedback, setFeedback] = useState<{ kind: 'ok' | 'err'; message: string } | null>(null);
     const [paused, setPaused] = useState(renotifyPaused);
@@ -49,7 +49,7 @@ export function JobStatusActions({ locale, jobId, status, renotifyPaused }: Prop
                 message: res.renotifyPaused ? t('renotify_paused_ok') : t('renotify_resumed_ok'),
             });
             clearLater();
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         });
     }
 
@@ -76,7 +76,7 @@ export function JobStatusActions({ locale, jobId, status, renotifyPaused }: Prop
                 clearLater();
                 return;
             }
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         });
     }
 

@@ -1,11 +1,10 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { sendMessageAction } from '@/lib/api/me-actions';
+import { useSendMessageMutation } from '@/lib/api/hooks/mutations/me';
 
 type Props = {
     conversationId: string;
@@ -13,29 +12,26 @@ type Props = {
 
 export function Composer({ conversationId }: Props) {
     const t = useTranslations('worker.field.messages.composer');
-    const router = useRouter();
     const [body, setBody] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const [pending, startTransition] = useTransition();
+    const sendMut = useSendMessageMutation();
+    const pending = sendMut.isPending;
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const trimmed = body.trim();
     const canSend = trimmed.length > 0 && !pending;
 
-    function send() {
+    async function send() {
         if (!canSend) return;
         const toSend = trimmed;
         setError(null);
-        startTransition(async () => {
-            const res = await sendMessageAction(conversationId, toSend);
-            if (res.ok) {
-                setBody('');
-                textareaRef.current?.focus();
-                router.refresh();
-            } else {
-                setError(t('error'));
-            }
-        });
+        const res = await sendMut.mutateAsync({ conversationId, body: toSend });
+        if (res.ok) {
+            setBody('');
+            textareaRef.current?.focus();
+        } else {
+            setError(t('error'));
+        }
     }
 
     return (

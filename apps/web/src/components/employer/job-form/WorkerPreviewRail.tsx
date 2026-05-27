@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
-import type { CropLookupView, SkillLookupView } from '@/lib/api/employer';
+import type { CropLookupView, SkillLookupView } from '@/lib/api/hooks/employer';
 import { CropGlyph } from '@/components/ui/CropGlyph';
 import { fetchMatchPreview, type MatchPreviewResult } from './api';
 import type { JobFormState } from './types';

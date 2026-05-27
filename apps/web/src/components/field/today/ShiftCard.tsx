@@ -6,7 +6,7 @@ import {
     faPhone,
     faClipboardList,
 } from '@fortawesome/free-solid-svg-icons';
-import type { ShiftRow } from '@/lib/api/me';
+import type { ShiftRow } from '@/lib/api/hooks/shifts';
 
 type Props = {
     row: ShiftRow;

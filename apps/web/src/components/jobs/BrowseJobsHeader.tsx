@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faBookmark, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { createSavedSearchAction } from '@/lib/api/saved-searches-actions';
+import { useCreateSavedSearchMutation } from '@/lib/api/hooks/mutations/saved-searches';
 
 type Props = {
     totalCount: number;
@@ -34,25 +34,24 @@ export function BrowseJobsHeader({ totalCount, county, locale }: Props) {
     const searchParams = useSearchParams();
     const [saved, setSaved] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [pending, startTransition] = useTransition();
+    const createMut = useCreateSavedSearchMutation();
+    const pending = createMut.isPending;
 
-    function save() {
+    async function save() {
         setError(null);
-        startTransition(async () => {
-            const filters = searchParamsToFilters(searchParams);
-            const res = await createSavedSearchAction({
-                name: null,
-                filters,
-                alertChannel: 'sms',
-                alertActive: true,
-            });
-            if (res.ok) {
-                setSaved(true);
-                setTimeout(() => setSaved(false), 3000);
-            } else {
-                setError(res.code === 'unauthenticated' ? t('save_search_login') : t('save_search_error'));
-            }
+        const filters = searchParamsToFilters(searchParams);
+        const res = await createMut.mutateAsync({
+            name: null,
+            filters,
+            alertChannel: 'sms',
+            alertActive: true,
         });
+        if (res.ok) {
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        } else {
+            setError(res.code === 'unauthenticated' ? t('save_search_login') : t('save_search_error'));
+        }
     }
 
     return (

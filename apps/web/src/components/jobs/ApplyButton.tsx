@@ -1,10 +1,10 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
-import { applyToJobAction } from '@/lib/api/applications-actions';
+import { useApplyToJobMutation } from '@/lib/api/hooks/mutations/applications';
 
 type Props = {
     locale: string;
@@ -22,7 +22,8 @@ export function ApplyButton({ locale, jobId, alreadyAppliedStatus, applyWith }: 
     const t = useTranslations('worker.application.apply');
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
-    const [pending, startTransition] = useTransition();
+    const applyMut = useApplyToJobMutation();
+    const pending = applyMut.isPending;
     const dialogRef = useRef<HTMLDialogElement | null>(null);
 
     if (alreadyAppliedStatus && alreadyAppliedStatus !== 'withdrawn') {
@@ -47,28 +48,26 @@ export function ApplyButton({ locale, jobId, alreadyAppliedStatus, applyWith }: 
         dialogRef.current?.showModal();
     }
 
-    function submit() {
-        startTransition(async () => {
-            const res = await applyToJobAction(jobId);
-            if (res.ok) {
-                dialogRef.current?.close();
-                router.push(`/${locale}/worker/applications`);
-                return;
-            }
-            if (res.code === 'conflict') {
-                setError(t('error_already_applied'));
-            } else if (res.code === 'unauthenticated') {
-                router.push(`/${locale}/sign-in` as Route);
-            } else if (res.code === 'forbidden' && /not.?onboarded/i.test(res.message)) {
-                setError(t('error_not_onboarded'));
-            } else if (res.code === 'forbidden') {
-                setError(t('error_forbidden'));
-            } else if (res.code === 'validation_failed' && /not.?active/i.test(res.message)) {
-                setError(t('error_job_closed'));
-            } else {
-                setError(t('error'));
-            }
-        });
+    async function submit() {
+        const res = await applyMut.mutateAsync(jobId);
+        if (res.ok) {
+            dialogRef.current?.close();
+            router.push(`/${locale}/worker/applications`);
+            return;
+        }
+        if (res.code === 'conflict') {
+            setError(t('error_already_applied'));
+        } else if (res.code === 'unauthenticated') {
+            router.push(`/${locale}/sign-in` as Route);
+        } else if (res.code === 'forbidden' && /not.?onboarded/i.test(res.message)) {
+            setError(t('error_not_onboarded'));
+        } else if (res.code === 'forbidden') {
+            setError(t('error_forbidden'));
+        } else if (res.code === 'validation_failed' && /not.?active/i.test(res.message)) {
+            setError(t('error_job_closed'));
+        } else {
+            setError(t('error'));
+        }
     }
 
     const summary = applyWith ?? {};

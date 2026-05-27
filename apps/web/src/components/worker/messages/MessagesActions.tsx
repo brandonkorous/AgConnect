@@ -1,25 +1,20 @@
 'use client';
 
-import { useTransition } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { markAllMessagesReadAction } from '@/lib/api/me-actions';
+import { useMarkAllMessagesReadMutation } from '@/lib/api/hooks/mutations/me';
 
 type Props = { locale: string; totalUnread: number };
 
 export function MessagesActions({ locale, totalUnread }: Props) {
   const t = useTranslations('worker.messages');
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const markAllRead = useMarkAllMessagesReadMutation();
+  const pending = markAllRead.isPending;
 
   function markAll() {
-    startTransition(async () => {
-      await markAllMessagesReadAction();
-      router.refresh();
-    });
+    markAllRead.mutate();
   }
 
   return (

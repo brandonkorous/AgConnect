@@ -1,7 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import type { Route } from 'next';
-import { getLocale } from 'next-intl/server';
-import type { CrewView } from '@/lib/api/employer-ops';
+import { useLocale } from 'next-intl';
+import type { CrewView } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
   crew: CrewView;
@@ -10,11 +12,8 @@ type Props = {
   children: React.ReactNode;
 };
 
-// Server component: links to the full-page crew editor. The previous modal
-// trigger is gone — every crew edit now happens at /employer/crews/:id/edit
-// so the workflow matches the design template.
-export async function CrewEditTrigger({ crew, className, ariaLabel, children }: Props) {
-  const locale = await getLocale();
+export function CrewEditTrigger({ crew, className, ariaLabel, children }: Props) {
+  const locale = useLocale();
   return (
     <Link
       href={`/${locale}/employer/crews/${crew.id}/edit` as Route}

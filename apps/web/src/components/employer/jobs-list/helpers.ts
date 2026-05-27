@@ -1,8 +1,8 @@
-import type { getTranslations } from 'next-intl/server';
-import type { EmployerJobView } from '@/lib/api/employer';
+import type { useTranslations } from 'next-intl';
+import type { EmployerJobView } from '@/lib/api/hooks/employer';
 import type { FilterKey, SortKey } from './JobsFilterRow';
 
-type Translator = Awaited<ReturnType<typeof getTranslations>>;
+type Translator = ReturnType<typeof useTranslations>;
 
 export const FILTER_KEYS: readonly FilterKey[] = [
     'all',

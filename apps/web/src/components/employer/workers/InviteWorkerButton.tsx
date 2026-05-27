@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { Modal } from '@/components/employer/primitives/Modal';
@@ -27,7 +27,7 @@ export function InviteWorkerButton({
     const t = useTranslations('employer.workers');
     const tModal = useTranslations('employer.workers.invite_modal');
     const locale = useLocale();
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -58,7 +58,7 @@ export function InviteWorkerButton({
             }
             setOpen(false);
             setDone(true);
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } finally {
             setBusy(false);
         }

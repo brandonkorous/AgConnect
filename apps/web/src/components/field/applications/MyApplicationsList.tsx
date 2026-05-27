@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,8 +10,8 @@ import {
     faTriangleExclamation,
     faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
-import { withdrawApplicationAction } from '@/lib/api/applications-actions';
-import type { ApplicationListItem } from '@/lib/api/applications';
+import { useWithdrawApplicationMutation } from '@/lib/api/hooks/mutations/applications';
+import type { ApplicationListItem } from '@/lib/api/hooks/applications';
 
 type Props = {
     locale: string;
@@ -40,7 +40,7 @@ export function MyApplicationsList({ locale, applications }: Props) {
     const [selected, setSelected] = useState<ApplicationListItem | null>(null);
     const [withdrawnIds, setWithdrawnIds] = useState<Set<string>>(new Set());
     const [state, setState] = useState<WithdrawState>({ kind: 'idle' });
-    const [, startTransition] = useTransition();
+    const withdrawMut = useWithdrawApplicationMutation();
     // Default the filter to whichever bucket is non-empty in priority order:
     // active first (most common landing case), then hired, then past, then all.
     const defaultFilter: FilterKey = (() => {
@@ -81,21 +81,19 @@ export function MyApplicationsList({ locale, applications }: Props) {
         }
     }
 
-    function withdraw(app: ApplicationListItem) {
+    async function withdraw(app: ApplicationListItem) {
         setState({ kind: 'pending', id: app.id });
-        startTransition(async () => {
-            const res = await withdrawApplicationAction(app.id);
-            if (res.ok) {
-                setWithdrawnIds((s) => new Set(s).add(app.id));
-                setState({ kind: 'done', id: app.id });
-                window.setTimeout(() => {
-                    setSelected(null);
-                    setState({ kind: 'idle' });
-                }, 1200);
-            } else {
-                setState({ kind: 'error', id: app.id, message: t('error') });
-            }
-        });
+        const res = await withdrawMut.mutateAsync(app.id);
+        if (res.ok) {
+            setWithdrawnIds((s) => new Set(s).add(app.id));
+            setState({ kind: 'done', id: app.id });
+            window.setTimeout(() => {
+                setSelected(null);
+                setState({ kind: 'idle' });
+            }, 1200);
+        } else {
+            setState({ kind: 'error', id: app.id, message: t('error') });
+        }
     }
 
     const isPending = state.kind === 'pending';

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
-import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
+import { usePatchOnboardingMutation } from '@/lib/api/hooks/mutations/onboarding';
 import { onboardingPath } from '@/lib/onboarding-steps';
 import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
@@ -21,22 +21,21 @@ export function CountyPicker({ locale, initialCounty = null }: Props) {
     'county',
     { county: initialCounty },
   );
-  const [submitting, startTransition] = useTransition();
+  const patchMut = usePatchOnboardingMutation();
+  const submitting = patchMut.isPending;
   const [error, setError] = useState<string | null>(null);
 
-  function next() {
+  async function next() {
     const county = value.county;
     if (!county) return;
     setError(null);
-    startTransition(async () => {
-      const res = await patchOnboardingAction({ county });
-      if (!res.ok) {
-        setError(t('error.generic'));
-        return;
-      }
-      await clear();
-      router.push(onboardingPath(locale, 'skills', shell));
-    });
+    const res = await patchMut.mutateAsync({ county });
+    if (!res.ok) {
+      setError(t('error.generic'));
+      return;
+    }
+    await clear();
+    router.push(onboardingPath(locale, 'skills', shell));
   }
 
   return (

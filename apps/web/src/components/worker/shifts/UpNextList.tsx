@@ -1,12 +1,10 @@
 'use client';
 
-import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Pill } from '@/components/worker/primitives/Pill';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
-import { confirmShiftAction } from '@/lib/api/me-actions';
-import type { ShiftRow } from '@/lib/api/me';
+import { useConfirmShiftMutation } from '@/lib/api/hooks/mutations/me';
+import type { ShiftRow } from '@/lib/api/hooks/shifts';
 
 const STATUS_TONE: Record<
     ShiftRow['status'],
@@ -40,14 +38,11 @@ type Props = { shifts: ShiftRow[]; locale: string };
 export function UpNextList({ shifts, locale }: Props) {
     const t = useTranslations('worker.shifts.up_next');
     const tEmpty = useTranslations('worker.shifts');
-    const [pending, startTransition] = useTransition();
-    const router = useRouter();
+    const confirmMut = useConfirmShiftMutation();
+    const pending = confirmMut.isPending;
 
     function confirm(assignmentId: string) {
-        startTransition(async () => {
-            await confirmShiftAction(assignmentId);
-            router.refresh();
-        });
+        confirmMut.mutate(assignmentId);
     }
 
     if (shifts.length === 0) {

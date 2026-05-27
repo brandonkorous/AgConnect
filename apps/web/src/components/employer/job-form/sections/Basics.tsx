@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import type { CropLookupView, LookupView, JobPhotoView } from '@/lib/api/employer';
+import type { CropLookupView, LookupView, JobPhotoView } from '@/lib/api/hooks/employer';
 import { CropGlyph } from '@/components/ui/CropGlyph';
 import { SectionShell } from '../SectionShell';
 import { PhotoGrid } from '../PhotoGrid';

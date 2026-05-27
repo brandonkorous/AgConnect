@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { bulkUpdateEnrollmentsAction } from '@/lib/api/training-org-actions';
+import { useBulkUpdateEnrollmentsMutation } from '@/lib/api/hooks/mutations/training-org';
 import type { RosterEnrollmentView } from '@/lib/api/training-org';
 
 type Props = {
@@ -20,12 +19,12 @@ const STATUS_TONE: Record<RosterEnrollmentView['status'], string> = {
 };
 
 export function Roster({ programId, enrollments, locale }: Props) {
-  const router = useRouter();
   const isEs = locale === 'es';
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const bulkMut = useBulkUpdateEnrollmentsMutation();
+  const pending = bulkMut.isPending;
 
   const selectableIds = useMemo(
     () => enrollments.filter((e) => e.status === 'enrolled').map((e) => e.id),
@@ -58,28 +57,30 @@ export function Roster({ programId, enrollments, locale }: Props) {
     return s === 'enrolled' ? 'Enrolled' : s === 'completed' ? 'Completed' : 'Dropped';
   }
 
-  function apply(status: 'completed' | 'dropped', noShow = false) {
+  async function apply(status: 'completed' | 'dropped', noShow = false) {
     if (selected.size === 0) return;
     setError(null);
     setSuccess(null);
     const ids = Array.from(selected);
-    startTransition(async () => {
-      const res = await bulkUpdateEnrollmentsAction(programId, ids, status, noShow);
-      if (res.ok) {
-        setSelected(new Set());
-        setSuccess(
-          isEs
-            ? `Actualizados ${res.data.updated}.`
-            : `Updated ${res.data.updated}.`,
-        );
-        router.refresh();
-        window.setTimeout(() => setSuccess(null), 2400);
-      } else {
-        setError(
-          isEs ? 'No se pudo actualizar. Intenta de nuevo.' : 'Could not update. Try again.',
-        );
-      }
+    const res = await bulkMut.mutateAsync({
+      programId,
+      enrollmentIds: ids,
+      status,
+      noShow,
     });
+    if (res.ok) {
+      setSelected(new Set());
+      setSuccess(
+        isEs
+          ? `Actualizados ${res.data.updated}.`
+          : `Updated ${res.data.updated}.`,
+      );
+      window.setTimeout(() => setSuccess(null), 2400);
+    } else {
+      setError(
+        isEs ? 'No se pudo actualizar. Intenta de nuevo.' : 'Could not update. Try again.',
+      );
+    }
   }
 
   if (enrollments.length === 0) {

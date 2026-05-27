@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBullhorn,
@@ -51,7 +51,7 @@ export function NewConversationButton({ variant = 'thread' }: Props) {
 function NewConversationModal({ variant, onClose }: { variant: Variant; onClose: () => void }) {
     const t = useTranslations('employer.messages.new_conversation');
     const locale = useLocale();
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [contacts, setContacts] = useState<Contact[]>([]);
@@ -134,7 +134,7 @@ function NewConversationModal({ variant, onClose }: { variant: Variant; onClose:
                 return;
             }
             onClose();
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } finally {
             setBusy(false);
         }

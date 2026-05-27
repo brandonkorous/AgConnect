@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faChevronDown, faPlus, faRotate, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
@@ -28,7 +28,7 @@ export function PayrollActions({
 }: Props) {
   const t = useTranslations('employer.payroll');
   const locale = useLocale();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [busy, setBusy] = useState<'none' | 'gen' | 'approve' | 'new'>('none');
   const [error, setError] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
@@ -56,7 +56,7 @@ export function PayrollActions({
       } else {
         pushToast({ variant: 'success', title: t('generate_success', { count }) });
       }
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } finally {
       setBusy('none');
     }
@@ -80,7 +80,7 @@ export function PayrollActions({
       }
       pushToast({ variant: 'success', title: t('approve_success') });
       setApproveOpen(false);
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } finally {
       setBusy('none');
     }
@@ -224,7 +224,7 @@ function ApproveModal({
 function NewPeriodModal({ onClose }: { onClose: () => void }) {
   const t = useTranslations('employer.payroll.new_period_modal');
   const locale = useLocale();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -246,7 +246,7 @@ function NewPeriodModal({ onClose }: { onClose: () => void }) {
         return;
       }
       onClose();
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } finally {
       setBusy(false);
     }

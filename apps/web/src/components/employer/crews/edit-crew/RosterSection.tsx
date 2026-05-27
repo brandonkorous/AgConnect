@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCrown, faXmark, faComments } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
-import type { CrewMemberView } from '@/lib/api/employer-ops';
+import type { CrewMemberView } from '@/lib/api/hooks/employer-ops';
 import { ActiveHiresPicker } from '../ActiveHiresPicker';
 import { SectionCard } from './SectionCard';
 

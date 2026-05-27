@@ -9,7 +9,7 @@ import type {
   MinAge,
   JobPhotoView,
   JobScreeningQuestionView,
-} from '@/lib/api/employer';
+} from '@/lib/api/hooks/employer';
 
 export type JobFormState = {
   titleEn: string;

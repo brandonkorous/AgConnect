@@ -7,7 +7,7 @@ import type {
     EmployerProfileView,
     LookupView,
     SkillLookupView,
-} from '@/lib/api/employer';
+} from '@/lib/api/hooks/employer';
 import { SectionNav } from './SectionNav';
 import { WorkerPreviewRail } from './WorkerPreviewRail';
 import { BasicsSection } from './sections/Basics';

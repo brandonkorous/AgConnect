@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { cancelProgramAction } from '@/lib/api/training-org-actions';
+import { useCancelProgramMutation } from '@/lib/api/hooks/mutations/training-org';
 
 type Props = {
   programId: string;
@@ -18,21 +18,19 @@ export function CancelProgramButton({ programId, enrolledCount, locale }: Props)
   const [confirming, setConfirming] = useState(false);
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const cancelMut = useCancelProgramMutation();
+  const pending = cancelMut.isPending;
 
-  function cancel() {
+  async function cancel() {
     setError(null);
-    startTransition(async () => {
-      const res = await cancelProgramAction(programId, reason || undefined);
-      if (res.ok) {
-        router.push(`/${locale}/training-org/programs`);
-        router.refresh();
-      } else {
-        setError(
-          isEs ? 'No se pudo cancelar. Intenta de nuevo.' : 'Could not cancel. Try again.',
-        );
-      }
-    });
+    const res = await cancelMut.mutateAsync({ id: programId, reason: reason || undefined });
+    if (res.ok) {
+      router.push(`/${locale}/training-org/programs`);
+    } else {
+      setError(
+        isEs ? 'No se pudo cancelar. Intenta de nuevo.' : 'Could not cancel. Try again.',
+      );
+    }
   }
 
   if (!confirming) {

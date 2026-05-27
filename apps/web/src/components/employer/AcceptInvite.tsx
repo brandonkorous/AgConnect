@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import { acceptInviteAction } from '@/lib/api/members-actions';
+import { useAcceptInviteMutation } from '@/lib/api/hooks/mutations/members';
+import { useActiveEmployer } from '@/lib/context/active-employer-context';
 
 type Props = { token: string; locale: string };
 
@@ -17,7 +18,9 @@ export function AcceptInvite({ token, locale }: Props) {
     const t = useTranslations('employer.accept_invite');
     const tRoles = useTranslations('employer.roles');
     const router = useRouter();
-    const [pending, startTransition] = useTransition();
+    const acceptMut = useAcceptInviteMutation();
+    const { setActiveEmployer } = useActiveEmployer();
+    const pending = acceptMut.isPending;
     const [error, setError] = useState<string | null>(null);
     const [done, setDone] = useState<{ employerName: string; roleKey: string } | null>(null);
 
@@ -28,18 +31,17 @@ export function AcceptInvite({ token, locale }: Props) {
         'invite_bound_elsewhere',
     ]);
 
-    function accept() {
+    async function accept() {
         setError(null);
-        startTransition(async () => {
-            const res = await acceptInviteAction(token);
-            if (res.ok) {
-                setDone({ employerName: res.employerName, roleKey: res.roleKey });
-            } else {
-                setError(
-                    KNOWN_CODES.has(res.code) ? t(`error.${res.code}`) : t('error.generic'),
-                );
-            }
-        });
+        const res = await acceptMut.mutateAsync(token);
+        if (res.ok) {
+            setActiveEmployer(res.employerId);
+            setDone({ employerName: res.employerName, roleKey: res.roleKey });
+        } else {
+            setError(
+                KNOWN_CODES.has(res.code) ? t(`error.${res.code}`) : t('error.generic'),
+            );
+        }
     }
 
     if (done) {

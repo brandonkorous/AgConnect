@@ -9,7 +9,7 @@ import type {
   EmployerJobView,
   JobPhotoView,
   JobScreeningQuestionView,
-} from '@/lib/api/employer';
+} from '@/lib/api/hooks/employer';
 
 type Locale = 'en' | 'es';
 const client = (l: string) => getApiClient(l === 'es' ? 'es' : 'en');

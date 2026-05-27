@@ -3,7 +3,7 @@ import type { Route } from 'next';
 import { useFormatter, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons';
-import type { ShiftRow } from '@/lib/api/me';
+import type { ShiftRow } from '@/lib/api/hooks/shifts';
 
 type Props = {
     locale: string;

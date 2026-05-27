@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Pill } from '@/components/worker/primitives/Pill';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
 import { CropGlyph } from '@/components/jobs/CropGlyph';
-import { withdrawApplicationAction } from '@/lib/api/applications-actions';
+import { useWithdrawApplicationMutation } from '@/lib/api/hooks/mutations/applications';
 
 export type ActiveAppRow = {
     id: string;
@@ -53,7 +53,7 @@ export function ActiveApplicationsTable({ rows, locale }: Props) {
     const filters = ['all', 'action', 'review', 'withdrawn'] as const;
     const heads = ['job', 'employer', 'applied', 'rate', 'stage', 'next', 'spacer'] as const;
     const [filter, setFilter] = useState<typeof filters[number]>('all');
-    const [, startTransition] = useTransition();
+    const withdrawMut = useWithdrawApplicationMutation();
     const router = useRouter();
 
     const visible = rows.filter((r) => {
@@ -66,10 +66,7 @@ export function ActiveApplicationsTable({ rows, locale }: Props) {
     function handleAction(row: ActiveAppRow) {
         const action = actionFor(row.status);
         if (action.key === 'withdraw') {
-            startTransition(async () => {
-                await withdrawApplicationAction(row.id);
-                router.refresh();
-            });
+            withdrawMut.mutate(row.id);
         } else {
             router.push(`/${locale}/worker/applications/${row.id}`);
         }

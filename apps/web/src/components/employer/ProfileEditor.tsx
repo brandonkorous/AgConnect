@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { isOk } from '@agconn/api-client';
 import { AddressAutocomplete, type AddressLabels, type AddressValue } from '@agconn/ui';
@@ -38,7 +38,7 @@ export function ProfileEditor({ initial }: Props) {
     const t = useTranslations('employer');
     const tShared = useTranslations('shell.address');
     const locale = useLocale();
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [busy, setBusy] = useState(false);
     const [saved, setSaved] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -89,7 +89,7 @@ export function ProfileEditor({ initial }: Props) {
                 return;
             }
             setSaved(true);
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } finally {
             setBusy(false);
         }

@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLocationDot, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { confirmShiftAction, declineShiftAction } from '@/lib/api/me-actions';
-import type { ShiftRow } from '@/lib/api/me';
+import {
+    useConfirmShiftMutation,
+    useDeclineShiftMutation,
+} from '@/lib/api/hooks/mutations/me';
+import type { ShiftRow } from '@/lib/api/hooks/shifts';
 
 type Props = {
     assignmentId: string;
@@ -25,37 +28,35 @@ export function UpNextActions({
     directionsUrl,
     labels,
 }: Props) {
-    const [isPending, startTransition] = useTransition();
+    const confirmMut = useConfirmShiftMutation();
+    const declineMut = useDeclineShiftMutation();
+    const isPending = confirmMut.isPending || declineMut.isPending;
     const [error, setError] = useState<string | null>(null);
     const [optimisticStatus, setOptimisticStatus] = useState<ShiftRow['status']>(status);
 
     const isConfirmed = optimisticStatus === 'confirmed' || optimisticStatus === 'attended';
     const isDeclined = optimisticStatus === 'declined';
 
-    function confirm() {
+    async function confirm() {
         setError(null);
         const prev = optimisticStatus;
         setOptimisticStatus('confirmed');
-        startTransition(async () => {
-            const res = await confirmShiftAction(assignmentId);
-            if (!res.ok) {
-                setOptimisticStatus(prev);
-                setError(labels.error);
-            }
-        });
+        const res = await confirmMut.mutateAsync(assignmentId);
+        if (!res.ok) {
+            setOptimisticStatus(prev);
+            setError(labels.error);
+        }
     }
 
-    function decline() {
+    async function decline() {
         setError(null);
         const prev = optimisticStatus;
         setOptimisticStatus('declined');
-        startTransition(async () => {
-            const res = await declineShiftAction(assignmentId);
-            if (!res.ok) {
-                setOptimisticStatus(prev);
-                setError(labels.error);
-            }
-        });
+        const res = await declineMut.mutateAsync(assignmentId);
+        if (!res.ok) {
+            setOptimisticStatus(prev);
+            setError(labels.error);
+        }
     }
 
     return (

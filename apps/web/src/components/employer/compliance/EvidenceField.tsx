@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPaperclip,
@@ -14,7 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
-import type { ComplianceEvidenceView } from '@/lib/api/employer-ops';
+import type { ComplianceEvidenceView } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
     itemId: string;
@@ -41,7 +41,7 @@ function fileIcon(contentType: string | null) {
 export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
     const t = useTranslations('employer.compliance.evidence');
     const locale = useLocale();
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const [evidence, setEvidence] = useState<ComplianceEvidenceView | null>(initialEvidence);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -71,7 +71,7 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
                 return;
             }
             setEvidence(res.data.item.evidence);
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } catch (err) {
             setError(err instanceof Error ? err.message : t('upload_error'));
         } finally {
@@ -93,7 +93,7 @@ export function EvidenceField({ itemId, initialEvidence, initialUrl }: Props) {
                 return;
             }
             setEvidence(null);
-            router.refresh();
+            void queryClient.invalidateQueries({ queryKey: ['employer'] });
         } catch (err) {
             setError(err instanceof Error ? err.message : t('remove_error'));
         } finally {

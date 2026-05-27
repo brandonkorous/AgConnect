@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAward } from '@fortawesome/free-solid-svg-icons';
 import { Pill } from '@/components/worker/primitives/Pill';
 import { SectionHeading } from '@/components/worker/primitives/SectionHeading';
-import type { EnrollmentListItem } from '@/lib/api/training';
+import type { EnrollmentListItem } from '@/lib/api/hooks/training';
 
 type Props = { certs: EnrollmentListItem[]; locale: string };
 

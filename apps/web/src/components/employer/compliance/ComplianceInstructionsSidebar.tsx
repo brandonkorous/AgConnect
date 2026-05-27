@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import type { ComplianceInstructionsView } from '@/lib/api/employer-ops';
+import type { ComplianceInstructionsView } from '@/lib/api/hooks/employer-ops';
 
 type Props = {
     instructions: ComplianceInstructionsView | null;

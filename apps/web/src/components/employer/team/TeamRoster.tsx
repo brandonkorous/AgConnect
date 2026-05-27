@@ -1,18 +1,17 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import type { MemberView } from '@agconn/schemas';
 import {
-    createMemberAction,
-    patchMemberAction,
-    deleteMemberAction,
-    resendInviteAction,
-    transferOwnerAction,
-} from '@/lib/api/members-actions';
+    useCreateMemberMutation,
+    usePatchMemberMutation,
+    useDeleteMemberMutation,
+    useResendInviteMutation,
+    useTransferOwnerMutation,
+} from '@/lib/api/hooks/mutations/members';
 import { MemberRow } from './MemberRow';
 import { MemberDialog, type MemberDraft } from './MemberDialog';
 
@@ -25,33 +24,39 @@ type Confirm =
 
 export function TeamRoster({ members, canManage }: Props) {
     const t = useTranslations('employer.team');
-    const router = useRouter();
-    const [pending, startTransition] = useTransition();
+    const createMut = useCreateMemberMutation();
+    const patchMut = usePatchMemberMutation();
+    const deleteMut = useDeleteMemberMutation();
+    const resendMut = useResendInviteMutation();
+    const transferMut = useTransferOwnerMutation();
+    const pending =
+        createMut.isPending ||
+        patchMut.isPending ||
+        deleteMut.isPending ||
+        resendMut.isPending ||
+        transferMut.isPending;
     const [dialog, setDialog] = useState<{ mode: 'add' | 'edit'; member: MemberView | null } | null>(
         null,
     );
     const [confirm, setConfirm] = useState<Confirm>(null);
     const [alert, setAlert] = useState<{ kind: 'ok' | 'error'; msg: string } | null>(null);
 
-    function run(p: Promise<{ ok: boolean; message?: string }>, okMsg: string) {
-        startTransition(async () => {
-            const res = await p;
-            if (res.ok) {
-                setAlert({ kind: 'ok', msg: okMsg });
-                setDialog(null);
-                setConfirm(null);
-                router.refresh();
-            } else {
-                setAlert({ kind: 'error', msg: res.message || t('error.generic') });
-            }
-        });
+    async function run(p: Promise<{ ok: boolean; message?: string }>, okMsg: string) {
+        const res = await p;
+        if (res.ok) {
+            setAlert({ kind: 'ok', msg: okMsg });
+            setDialog(null);
+            setConfirm(null);
+        } else {
+            setAlert({ kind: 'error', msg: res.message || t('error.generic') });
+        }
     }
 
     function submitDialog(draft: MemberDraft) {
         const email = draft.email || undefined;
         if (dialog?.mode === 'add') {
-            run(
-                createMemberAction({
+            void run(
+                createMut.mutateAsync({
                     name: draft.name,
                     phone: draft.phone,
                     email,
@@ -63,13 +68,16 @@ export function TeamRoster({ members, canManage }: Props) {
                 t('toast.added'),
             );
         } else if (dialog?.member) {
-            run(
-                patchMemberAction(dialog.member.id, {
-                    name: draft.name,
-                    phone: draft.phone,
-                    email,
-                    roleKey: draft.roleKey,
-                    languages: draft.languages,
+            void run(
+                patchMut.mutateAsync({
+                    id: dialog.member.id,
+                    patch: {
+                        name: draft.name,
+                        phone: draft.phone,
+                        email,
+                        roleKey: draft.roleKey,
+                        languages: draft.languages,
+                    },
                 }),
                 t('toast.saved'),
             );
@@ -124,7 +132,7 @@ export function TeamRoster({ members, canManage }: Props) {
                                     canManage={canManage}
                                     onEdit={(mem) => setDialog({ mode: 'edit', member: mem })}
                                     onResend={(mem) =>
-                                        run(resendInviteAction(mem.id), t('toast.invited'))
+                                        void run(resendMut.mutateAsync(mem.id), t('toast.invited'))
                                     }
                                     onTransfer={(mem) => setConfirm({ kind: 'transfer', member: mem })}
                                     onRemove={(mem) => setConfirm({ kind: 'remove', member: mem })}
@@ -174,12 +182,12 @@ export function TeamRoster({ members, canManage }: Props) {
                                 aria-busy={pending}
                                 onClick={() =>
                                     confirm.kind === 'remove'
-                                        ? run(
-                                              deleteMemberAction(confirm.member.id),
+                                        ? void run(
+                                              deleteMut.mutateAsync(confirm.member.id),
                                               t('toast.removed'),
                                           )
-                                        : run(
-                                              transferOwnerAction(confirm.member.id),
+                                        : void run(
+                                              transferMut.mutateAsync(confirm.member.id),
                                               t('toast.transferred'),
                                           )
                                 }

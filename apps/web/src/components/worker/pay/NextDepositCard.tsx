@@ -1,13 +1,21 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
-import type { PaySummary } from '@/lib/api/me';
+import { useMyPay, type PaySummary } from '@/lib/api/hooks/pay';
+import { buildPaystubsCsv, downloadBlob } from '@/lib/export/client-download';
 
 type Props = { nextDeposit: PaySummary['nextDeposit']; locale: string };
 
 export function NextDepositCard({ nextDeposit, locale }: Props) {
     const t = useTranslations('worker.pay.deposit');
     const fmtLocale = locale === 'es' ? 'es-MX' : 'en-US';
+    const myPay = useMyPay();
+    const downloadPaystubs = () => {
+        const paystubs = myPay.data?.paystubs ?? [];
+        downloadBlob('agconn-paystubs.csv', buildPaystubsCsv(paystubs), 'text/csv;charset=utf-8');
+    };
     if (!nextDeposit) {
         return (
             <div className="bg-primary text-primary-content relative overflow-hidden rounded-2xl p-[22px]">
@@ -73,14 +81,14 @@ export function NextDepositCard({ nextDeposit, locale }: Props) {
                         <div className="mt-0.5 font-mono font-bold">Direct</div>
                     </div>
                 </div>
-                <a
-                    href="/api/me/paystubs/csv"
-                    download="agconn-paystubs.csv"
-                    className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-2.5 text-[13px] font-semibold no-underline"
+                <button
+                    type="button"
+                    onClick={downloadPaystubs}
+                    className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-2.5 text-[13px] font-semibold"
                 >
                     <FontAwesomeIcon icon={faDownload} className="h-3 w-3" />
                     {t('download')}
-                </a>
+                </button>
             </div>
         </div>
     );

@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useOnboardingDraft } from '@/lib/useOnboardingDraft';
-import { patchOnboardingAction } from '@/lib/api/onboarding-actions';
+import { usePatchOnboardingMutation } from '@/lib/api/hooks/mutations/onboarding';
 import { onboardingPath } from '@/lib/onboarding-steps';
 import { useOnboardingShell } from '@/lib/use-onboarding-shell';
 
@@ -30,7 +30,8 @@ export function NameForm({
     'profile',
     { first: initialFirst, last: initialLast, email: initialEmail },
   );
-  const [submitting, startTransition] = useTransition();
+  const patchMut = usePatchOnboardingMutation();
+  const submitting = patchMut.isPending;
   const [error, setError] = useState<string | null>(null);
 
   // When server-side `initial*` updates after Clerk sync (e.g. they signed in
@@ -50,24 +51,22 @@ export function NameForm({
 
   const valid = value.first.trim().length > 0 && value.last.trim().length > 0;
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!valid) return;
     setError(null);
-    startTransition(async () => {
-      const trimmedEmail = value.email.trim();
-      const res = await patchOnboardingAction({
-        firstName: value.first.trim(),
-        lastName: value.last.trim(),
-        ...(trimmedEmail ? { email: trimmedEmail } : {}),
-      });
-      if (!res.ok) {
-        setError(t('error.generic'));
-        return;
-      }
-      await clear();
-      router.push(onboardingPath(locale, 'county', shell));
+    const trimmedEmail = value.email.trim();
+    const res = await patchMut.mutateAsync({
+      firstName: value.first.trim(),
+      lastName: value.last.trim(),
+      ...(trimmedEmail ? { email: trimmedEmail } : {}),
     });
+    if (!res.ok) {
+      setError(t('error.generic'));
+      return;
+    }
+    await clear();
+    router.push(onboardingPath(locale, 'county', shell));
   }
 
   return (

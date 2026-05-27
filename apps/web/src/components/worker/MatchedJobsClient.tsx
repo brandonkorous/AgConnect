@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { WorkerJobCard } from './WorkerJobCard';
-import type { RecommendedJob } from '@/lib/api/jobs';
+import type { RecommendedJob } from '@/lib/api/hooks/jobs';
 
 type FilterKey = 'all' | 'within_25' | 'this_week' | 'pays_22';
 

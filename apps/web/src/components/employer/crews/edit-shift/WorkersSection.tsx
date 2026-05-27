@@ -8,7 +8,7 @@ import { isOk } from '@agconn/api-client';
 import { getApiClient } from '@/lib/api/client';
 import { ActiveHiresPicker } from '@/components/employer/crews/ActiveHiresPicker';
 import { SectionCard } from './SectionCard';
-import type { ShiftAssignmentView } from '@/lib/api/employer-ops';
+import type { ShiftAssignmentView } from '@/lib/api/hooks/employer-ops';
 
 const STATUSES = ['assigned', 'confirmed', 'declined', 'no_show', 'completed'] as const;
 type AssignmentStatus = (typeof STATUSES)[number];

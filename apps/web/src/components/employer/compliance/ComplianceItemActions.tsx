@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { isOk } from '@agconn/api-client';
@@ -14,7 +14,7 @@ import { ComplianceInstructionsSidebar } from '@/components/employer/compliance/
 import type {
   ComplianceEvidenceView,
   ComplianceInstructionsView,
-} from '@/lib/api/employer-ops';
+} from '@/lib/api/hooks/employer-ops';
 
 const CATEGORIES = ['documentation', 'safety', 'wage_hour', 'pesticide', 'h2a', 'custom'] as const;
 const STATUSES = ['ok', 'warn', 'fail'] as const;
@@ -47,7 +47,7 @@ export function NewComplianceItemButton() {
 function NewItemModal({ onClose }: { onClose: () => void }) {
   const t = useTranslations('employer.compliance.new_item');
   const locale = useLocale();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,7 +96,7 @@ function NewItemModal({ onClose }: { onClose: () => void }) {
       }
       pushToast({ variant: 'success', title: t('toast_saved') });
       onClose();
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('error'));
     } finally {
@@ -181,7 +181,7 @@ type Action = {
 export function ComplianceActionCta({ action }: { action: Action }) {
   const t = useTranslations('employer.compliance.action_cta');
   const locale = useLocale();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -225,7 +225,7 @@ export function ComplianceActionCta({ action }: { action: Action }) {
       }
       pushToast({ variant: 'success', title: t('toast_saved') });
       setOpen(false);
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('error'));
     } finally {
@@ -299,7 +299,7 @@ export function EditComplianceItemButton({
 }) {
   const t = useTranslations('employer.compliance.edit_item');
   const locale = useLocale();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -337,7 +337,7 @@ export function EditComplianceItemButton({
       }
       pushToast({ variant: 'success', title: t('toast_saved') });
       setOpen(false);
-      router.refresh();
+      void queryClient.invalidateQueries({ queryKey: ['employer'] });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('error'));
     } finally {
