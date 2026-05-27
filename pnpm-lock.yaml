@@ -24,7 +24,7 @@ importers:
         version: 3.4.4(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@clerk/nextjs':
         specifier: ^7.2.9
-        version: 7.2.9(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 7.2.9(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.49.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@fortawesome/fontawesome-svg-core':
         specifier: 7.2.0
         version: 7.2.0
@@ -79,7 +79,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.2.4
-        version: 16.2.4(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
+        version: 16.2.4(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3))(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
       postcss:
         specifier: ^8.5.0
         version: 8.5.12
@@ -115,7 +115,7 @@ importers:
         version: 3.37.5(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@clerk/nextjs':
         specifier: ^7.2.9
-        version: 7.2.9(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 7.2.9(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.49.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -149,6 +149,15 @@ importers:
       '@serwist/next':
         specifier: 9.5.10
         version: 9.5.10(@serwist/cli@9.5.10(@types/node@22.19.19)(browserslist@4.28.2)(esbuild@0.28.0)(typescript@6.0.3))(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.49.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.0)(postcss@8.5.12))
+      '@tanstack/query-sync-storage-persister':
+        specifier: ^5.62.0
+        version: 5.100.14
+      '@tanstack/react-query':
+        specifier: ^5.62.0
+        version: 5.100.14(react@19.2.5)
+      '@tanstack/react-query-persist-client':
+        specifier: ^5.62.0
+        version: 5.100.14(@tanstack/react-query@5.100.14(react@19.2.5))(react@19.2.5)
       mapbox-gl:
         specifier: ^3.23.0
         version: 3.23.0
@@ -189,6 +198,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: 4.2.4
         version: 4.2.4
+      '@tanstack/react-query-devtools':
+        specifier: ^5.62.0
+        version: 5.100.14(@tanstack/react-query@5.100.14(react@19.2.5))(react@19.2.5)
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.19
@@ -206,7 +218,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.2.4
-        version: 16.2.4(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3))(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
+        version: 16.2.4(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
       postcss:
         specifier: ^8.5.0
         version: 8.5.12
@@ -3185,8 +3197,37 @@ packages:
   '@tailwindcss/postcss@4.2.4':
     resolution: {integrity: sha512-wgAVj6nUWAolAu8YFvzT2cTBIElWHkjZwFYovF+xsqKsW2ADxM/X2opxj5NsF/qVccAOjRNe8X2IdPzMsWyHTg==}
 
+  '@tanstack/query-core@5.100.14':
+    resolution: {integrity: sha512-5X41dGpxgeaHISCRW2oYwcSycZeULZzAunaudXT9ov1KOTj9xwt0CH6hbwqP1/z74ZWF7rYFnDpyYH07XFcZew==}
+
   '@tanstack/query-core@5.100.6':
     resolution: {integrity: sha512-Os2CPUr98to98RYm+D4qGqGkiffn7MGSyl2547a4MljVkHE30AMJRqTiyCqBfMwzAx/I91vCkAxp5tHSla6Twg==}
+
+  '@tanstack/query-devtools@5.100.14':
+    resolution: {integrity: sha512-g96SmSSQecYTYcyuAMRXr895GplJv01UGt7qttQWPOUyZ5EGz5tbRc589bMc2m5BsPFD6O0PCEAHdbDYNP6UBw==}
+
+  '@tanstack/query-persist-client-core@5.100.14':
+    resolution: {integrity: sha512-mn60cqoQO/xB6aHxp/hxlSj5mcdcTO4tjj4SXSz5MKzkaMZnvcEGySz3+cGQOT8McREN56fL41L0eR//v5RwNw==}
+
+  '@tanstack/query-sync-storage-persister@5.100.14':
+    resolution: {integrity: sha512-sDsiVjLJqslUdqIANGvRyB4hYpAooYj5R1fe2EzKfrSY7XufSe+AFBvirLgX/nL2uS1JeP4XeyUuG3TM0bAN9w==}
+
+  '@tanstack/react-query-devtools@5.100.14':
+    resolution: {integrity: sha512-JkP5VDgKOw3t/QSA1OABRHEqx8BuNs5MfvZRooNqdvN57SzTuGq3fKR1a2IH5rqa5HDLUm+FOXUEnB9ueHiLzg==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.100.14
+      react: ^18 || ^19
+
+  '@tanstack/react-query-persist-client@5.100.14':
+    resolution: {integrity: sha512-lQSnbJva85o7jGcJiIDrA8s3VGGx9zaBCgAljm0H1QcScU2iaDYnPuRLg/xI0k0dC45pgg9RTvpgJx5iVHRsjA==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.100.14
+      react: ^18 || ^19
+
+  '@tanstack/react-query@5.100.14':
+    resolution: {integrity: sha512-oOr6aRdSFEwWhzxEkD/9ZcItM3+LjBSkeVmadWKwUssAHTsqd/7bOjWrX4AbvEkoEhgAxzN0Xk6H/aYzXiYBAw==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -6773,7 +6814,7 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/nextjs@7.2.9(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@clerk/nextjs@7.2.9(next@16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.49.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@clerk/backend': 3.4.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@clerk/react': 6.4.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -8933,7 +8974,37 @@ snapshots:
       postcss: 8.5.12
       tailwindcss: 4.2.4
 
+  '@tanstack/query-core@5.100.14': {}
+
   '@tanstack/query-core@5.100.6': {}
+
+  '@tanstack/query-devtools@5.100.14': {}
+
+  '@tanstack/query-persist-client-core@5.100.14':
+    dependencies:
+      '@tanstack/query-core': 5.100.14
+
+  '@tanstack/query-sync-storage-persister@5.100.14':
+    dependencies:
+      '@tanstack/query-core': 5.100.14
+      '@tanstack/query-persist-client-core': 5.100.14
+
+  '@tanstack/react-query-devtools@5.100.14(@tanstack/react-query@5.100.14(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@tanstack/query-devtools': 5.100.14
+      '@tanstack/react-query': 5.100.14(react@19.2.5)
+      react: 19.2.5
+
+  '@tanstack/react-query-persist-client@5.100.14(@tanstack/react-query@5.100.14(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@tanstack/query-persist-client-core': 5.100.14
+      '@tanstack/react-query': 5.100.14(react@19.2.5)
+      react: 19.2.5
+
+  '@tanstack/react-query@5.100.14(react@19.2.5)':
+    dependencies:
+      '@tanstack/query-core': 5.100.14
+      react: 19.2.5
 
   '@tybys/wasm-util@0.10.1':
     dependencies:

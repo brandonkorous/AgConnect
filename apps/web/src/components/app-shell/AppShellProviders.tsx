@@ -14,6 +14,7 @@ import {
 } from '@agconn/ui';
 import { ApiProvider } from '@agconn/api-client/react';
 import { Analytics } from './Analytics';
+import { AppProviders } from '@/components/providers/AppProviders';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
@@ -77,7 +78,7 @@ export function AppShellProviders({
           >
             <Analytics>
               <OfflineBanner message={t('offline.banner')} />
-              {children}
+              <AppProviders>{children}</AppProviders>
               <ConsentBanner copy={consentCopy} />
               {enablePwa && (
                 <>
