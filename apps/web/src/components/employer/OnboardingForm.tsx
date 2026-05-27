@@ -23,18 +23,7 @@ export function OnboardingForm({ locale }: Props) {
     }
 
     return (
-        <form
-            onSubmit={actions.onSubmit}
-            className="bg-base-100 border-base-300 w-full rounded-3xl border p-7 shadow-md sm:p-8"
-            noValidate
-        >
-            <div className="mb-6">
-                <h1 className="font-display text-3xl font-light leading-tight tracking-tight">
-                    {t('title')}
-                </h1>
-                <p className="text-base-content/65 mt-2 text-sm leading-relaxed">{t('subtitle')}</p>
-            </div>
-
+        <form onSubmit={actions.onSubmit} className="w-full" noValidate>
             {state.errors._root && (
                 <div role="alert" className="alert alert-error alert-soft mb-5 text-sm">
                     {state.errors._root}

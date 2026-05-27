@@ -10,12 +10,28 @@ const PHONE_PEPPER = process.env.PHONE_HASH_PEPPER ?? 'dev-pepper-rotate-me';
 export const hashPhone = (phoneE164: string): string =>
   createHash('sha256').update(`${phoneE164}|${PHONE_PEPPER}`).digest('hex');
 
+export type SmsDraftLite = {
+  firstName?: string;
+  lastName?: string;
+  county?: string;
+} | null | undefined;
+
 export const deriveNextStep = (
   user: Pick<User, 'preferredLang'> & { onboarded: boolean },
   profile: WorkerProfile | null,
+  smsDraft?: SmsDraftLite,
 ): OnboardingNextStep => {
   if (profile?.onboardedAt) return 'complete';
-  if (!profile) return 'language';
+  if (!profile) {
+    // No WorkerProfile yet — fall back to SMS-side draft so workers who
+    // started over SMS skip steps they've already answered. SMS collects at
+    // most firstName, lastName, county; skills/availability are web-only.
+    if (smsDraft?.firstName && smsDraft.lastName) {
+      if (smsDraft.county) return 'skills';
+      return 'county';
+    }
+    return 'language';
+  }
   if (!profile.firstName || !profile.lastName) return 'profile_review';
   if (!profile.county) return 'county';
   if (profile.skills.length === 0) return 'skills';
@@ -101,18 +117,32 @@ export async function patchOnboardingProfile(
   body: PatchOnboardingProfileBody,
 ) {
   const existingProfile = await db.workerProfile.findUnique({ where: { id: userId } });
+  // SMS draft is used as a fallback when no profile row exists yet: workers
+  // who entered name/county over SMS shouldn't lose those values when the
+  // web wizard creates the WorkerProfile on first patch.
+  const userRow = await db.user.findUnique({
+    where: { id: userId },
+    select: { smsOnboardingDraft: true },
+  });
+  const smsDraft = (userRow?.smsOnboardingDraft ?? {}) as SmsDraftLite;
 
-  // Derive name from resume if not provided and profile not yet created.
+  // Derive name from resume / SMS draft if not provided and profile not yet
+  // created.
   const firstName =
     body.firstName ??
     existingProfile?.firstName ??
     body.resume?.contact?.firstName ??
+    smsDraft?.firstName ??
     '';
   const lastName =
     body.lastName ??
     existingProfile?.lastName ??
     body.resume?.contact?.lastName ??
+    smsDraft?.lastName ??
     '';
+  const fallbackCounty = !existingProfile?.county && smsDraft?.county
+    ? (smsDraft.county as County)
+    : undefined;
 
   // Merge resume partial onto existing.
   const existingResumeObj =
@@ -131,7 +161,7 @@ export async function patchOnboardingProfile(
       firstName,
       lastName,
       zipCode: body.zipCode ?? null,
-      county: body.county ? (body.county as County) : null,
+      county: body.county ? (body.county as County) : fallbackCounty ?? null,
       skills: body.skills ?? [],
       availability: (body.availability as object | undefined) ?? {},
       resume: (mergedResume as object | null) ?? undefined,

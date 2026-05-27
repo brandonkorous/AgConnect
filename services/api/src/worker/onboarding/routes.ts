@@ -12,10 +12,12 @@ import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   OnboardingError,
   completeOnboarding,
+  deriveNextStep,
   hashPhone,
   patchOnboardingProfile,
   setLanguage,
   startOnboarding,
+  type SmsDraftLite,
 } from './service.js';
 
 export const onboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
@@ -24,37 +26,29 @@ onboardingRoutes.use('*', requireAuth('worker'));
 onboardingRoutes.use('*', requireRole('worker'));
 
 // Merged onboarding draft — SMS partial state + any existing WorkerProfile
-// values. Web wizard reads this on initial render to prefill fields that the
-// worker already gave us via SMS, so they don't re-enter every answer.
+// values. Web wizard reads this on initial render to (a) prefill fields the
+// worker already gave us via SMS and (b) skip ahead past steps whose data
+// SMS already collected, via the returned nextStep.
 onboardingRoutes.get('/draft', async (c) => {
   const userId = c.var.userId;
   const [user, profile] = await Promise.all([
     c.var.db.user.findUnique({
       where: { id: userId },
-      select: { smsOnboardingDraft: true },
+      select: { preferredLang: true, onboarded: true, smsOnboardingDraft: true },
     }),
-    c.var.db.workerProfile.findUnique({
-      where: { id: userId },
-      select: {
-        firstName: true,
-        lastName: true,
-        county: true,
-        skills: true,
-        availability: true,
-      },
-    }),
+    c.var.db.workerProfile.findUnique({ where: { id: userId } }),
   ]);
-  const smsDraft = (user?.smsOnboardingDraft ?? {}) as {
-    firstName?: string;
-    lastName?: string;
-    county?: string;
-  };
+  const smsDraft = (user?.smsOnboardingDraft ?? {}) as SmsDraftLite;
+  const nextStep = user
+    ? deriveNextStep(user, profile, smsDraft)
+    : 'language';
   return ok(c, {
-    firstName: profile?.firstName || smsDraft.firstName || null,
-    lastName: profile?.lastName || smsDraft.lastName || null,
-    county: profile?.county || smsDraft.county || null,
+    firstName: profile?.firstName || smsDraft?.firstName || null,
+    lastName: profile?.lastName || smsDraft?.lastName || null,
+    county: profile?.county || smsDraft?.county || null,
     skills: profile?.skills && profile.skills.length > 0 ? profile.skills : null,
     availability: profile?.availability ?? null,
+    nextStep,
   });
 });
 

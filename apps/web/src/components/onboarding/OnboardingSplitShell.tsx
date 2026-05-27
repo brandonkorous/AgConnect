@@ -5,26 +5,40 @@ import { faCircleCheck, faSeedling } from '@fortawesome/free-solid-svg-icons';
 import { Wordmark } from '@/components/primitives/Wordmark';
 import { AccountChip } from '@/components/shell/AccountChip';
 
+type Audience = 'worker' | 'employer';
+
 type Props = {
-    step: number;
-    total: number;
     title: string;
     subtitle?: string;
     children: React.ReactNode;
     locale: string;
+    /** Defaults to 'worker' so existing /worker/onboarding pages keep working. */
+    audience?: Audience;
+    /** Multi-step wizards (worker) pass step+total to render a progress bar. */
+    step?: number;
+    total?: number;
 };
 
 export async function OnboardingSplitShell({
-    step,
-    total,
     title,
     subtitle,
     children,
     locale,
+    audience = 'worker',
+    step,
+    total,
 }: Props) {
     const tShell = await getTranslations({ locale, namespace: 'worker.onboarding.shell' });
-    const tChip = await getTranslations({ locale, namespace: 'worker.onboarding.account_chip' });
-    const tPitch = await getTranslations({ locale, namespace: 'worker.onboarding.pitch' });
+    const tChip = await getTranslations({
+        locale,
+        namespace: `${audience}.onboarding.account_chip`,
+    });
+    const tPitch = await getTranslations({
+        locale,
+        namespace: `${audience}.onboarding.pitch`,
+    });
+
+    const showProgress = typeof step === 'number' && typeof total === 'number';
 
     return (
         <main className="bg-base-200 min-h-[100dvh]">
@@ -91,29 +105,39 @@ export async function OnboardingSplitShell({
                             <Link href={`/${locale}`} aria-label="AGCONN home" className="shrink-0 lg:hidden">
                                 <Wordmark size="sm" tone="ink" />
                             </Link>
-                            <div
-                                className="text-base-content/60 text-xs font-mono"
-                                aria-live="polite"
-                            >
-                                {tShell('progress', { step, total })}
-                            </div>
+                            {showProgress ? (
+                                <div
+                                    className="text-base-content/60 text-xs font-mono"
+                                    aria-live="polite"
+                                >
+                                    {tShell('progress', { step, total })}
+                                </div>
+                            ) : (
+                                <span aria-hidden />
+                            )}
                             <AccountChip
                                 locale={locale}
                                 labels={{
                                     ariaLabel: tChip('aria_label'),
                                     signedInAs: tChip('signed_in_as'),
                                     signOut: tChip('sign_out'),
-                                    switchToField: tChip('switch_to_field'),
-                                    switchToWorker: tChip('switch_to_worker'),
+                                    ...(audience === 'worker'
+                                        ? {
+                                              switchToField: tChip('switch_to_field'),
+                                              switchToWorker: tChip('switch_to_worker'),
+                                          }
+                                        : {}),
                                 }}
                             />
                         </div>
-                        <div className="bg-base-300/50 h-1 w-full">
-                            <div
-                                className="bg-primary h-1 transition-all"
-                                style={{ width: `${(step / total) * 100}%` }}
-                            />
-                        </div>
+                        {showProgress && (
+                            <div className="bg-base-300/50 h-1 w-full">
+                                <div
+                                    className="bg-primary h-1 transition-all"
+                                    style={{ width: `${(step / total) * 100}%` }}
+                                />
+                            </div>
+                        )}
                     </header>
 
                     <div className="flex flex-1 flex-col px-6 py-10 sm:px-10 lg:px-12 lg:py-14">

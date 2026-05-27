@@ -4138,6 +4138,34 @@ export const employer: TranslationBundle = {
         en: "Programs you participate in",
         es: "Programas en los que participas",
     },
+    "onboarding.pitch.badge": {
+        en: "Grant-aligned",
+        es: "Alineado con subvenciones",
+    },
+    "onboarding.pitch.eyebrow": {
+        en: "Employer onboarding",
+        es: "Registro del empleador",
+    },
+    "onboarding.pitch.footer_note": {
+        en: "Verified employers only",
+        es: "Solo empleadores verificados",
+    },
+    "onboarding.pitch.lead": {
+        en: "Set up once. Hire from a verified pool of farmworkers.",
+        es: "Configura una vez. Contrata de un grupo verificado de trabajadores agrícolas.",
+    },
+    "onboarding.pitch.proof.p1": {
+        en: "Verified within one business day — bring drafts in the meantime.",
+        es: "Verificado en un día hábil — puedes preparar borradores mientras tanto.",
+    },
+    "onboarding.pitch.proof.p2": {
+        en: "FLC, H-2A, and MSPA compliance tracked alongside every posting.",
+        es: "Cumplimiento de FLC, H-2A y MSPA registrado junto a cada publicación.",
+    },
+    "onboarding.pitch.proof.p3": {
+        en: "Bilingual postings reach workers in their preferred language.",
+        es: "Las publicaciones bilingües llegan a los trabajadores en su idioma preferido.",
+    },
     "onboarding.programs.h2a_label": {
         en: "We hire H-2A workers",
         es: "Contratamos trabajadores H-2A",
