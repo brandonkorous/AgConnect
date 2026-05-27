@@ -53,10 +53,11 @@ export function NameForm({
     if (!valid) return;
     setError(null);
     startTransition(async () => {
+      const trimmedEmail = value.email.trim();
       const res = await patchOnboardingAction({
         firstName: value.first.trim(),
         lastName: value.last.trim(),
-        email: value.email.trim() || null,
+        ...(trimmedEmail ? { email: trimmedEmail } : {}),
       });
       if (!res.ok) {
         setError(t('error.generic'));

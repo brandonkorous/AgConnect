@@ -10,9 +10,9 @@ export type ActionResult<T = unknown> =
 export type OnboardingPatch = {
   firstName?: string;
   lastName?: string;
-  email?: string | null;
-  zipCode?: string | null;
-  county?: string | null;
+  email?: string;
+  zipCode?: string;
+  county?: string;
   skills?: string[];
   availability?: Record<string, unknown>;
 };

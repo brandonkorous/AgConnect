@@ -21,10 +21,11 @@ export function CountyPicker({ locale }: { locale: string }) {
   const [error, setError] = useState<string | null>(null);
 
   function next() {
-    if (!value.county) return;
+    const county = value.county;
+    if (!county) return;
     setError(null);
     startTransition(async () => {
-      const res = await patchOnboardingAction({ county: value.county });
+      const res = await patchOnboardingAction({ county });
       if (!res.ok) {
         setError(t('error.generic'));
         return;
