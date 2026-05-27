@@ -7,6 +7,7 @@ import { FieldHeader } from '@/components/field/FieldHeader';
 import { FieldBottomNav } from '@/components/field/FieldBottomNav';
 import { SwitchToFullView } from '@/components/field/SwitchToFullView';
 import { FieldOfflinePersistor } from '@/components/providers/FieldOfflinePersistor';
+import { ClerkReadyGate } from '@/components/providers/ClerkReadyGate';
 import { useMe } from '@/lib/api/hooks/me';
 import { homePathForRole, UserRole } from '@/lib/auth/role-client';
 import { FieldShellSkeleton } from './FieldShellSkeleton';
@@ -17,6 +18,14 @@ type Props = {
 };
 
 export function FieldShellClient({ locale, children }: Props) {
+  return (
+    <ClerkReadyGate fallback={<FieldShellSkeleton />}>
+      <FieldShellInner locale={locale}>{children}</FieldShellInner>
+    </ClerkReadyGate>
+  );
+}
+
+function FieldShellInner({ locale, children }: Props) {
   const router = useRouter();
   const me = useMe();
 
