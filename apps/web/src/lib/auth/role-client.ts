@@ -10,11 +10,12 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 export function homePathForRole(locale: string, role: UserRole): string {
   switch (role) {
     case UserRole.worker:
-      return `/${locale}/worker`;
+      return `/${locale}/worker/dashboard`;
     case UserRole.employer:
-      return `/${locale}/employer`;
-    case UserRole.admin:
+      return `/${locale}/employer/dashboard`;
     case UserRole.training_org:
+      return `/${locale}/training-org`;
+    case UserRole.admin:
     default:
       return `/${locale}`;
   }
