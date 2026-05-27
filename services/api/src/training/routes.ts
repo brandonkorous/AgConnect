@@ -41,8 +41,6 @@ function encodeCursor(cur: { startDate: Date; id: string }): string {
 
 trainingRoutes.get('/', validate('query', TrainingQuery), async (c) => {
     const q = c.var.body;
-    const tenantId = c.var.tenantId;
-    if (!tenantId) return err(c, 403, 'no_tenant');
 
     const limit = q.limit;
     const cursor = q.cursor ? decodeCursor(q.cursor) : null;
@@ -50,7 +48,6 @@ trainingRoutes.get('/', validate('query', TrainingQuery), async (c) => {
     const funders = q.funder?.length ? (q.funder as Funder[]) : null;
 
     const where = {
-        tenantId,
         deletedAt: null,
         status: q.hasCapacity
             ? { in: [ProgramStatus.active] }
@@ -97,11 +94,9 @@ trainingRoutes.get('/', validate('query', TrainingQuery), async (c) => {
 });
 
 trainingRoutes.get('/:slug', async (c) => {
-    const tenantId = c.var.tenantId;
-    if (!tenantId) return err(c, 403, 'no_tenant');
     const slug = c.req.param('slug');
     const program = await c.var.db.trainingProgram.findFirst({
-        where: { tenantId, seoSlug: slug, deletedAt: null },
+        where: { seoSlug: slug, deletedAt: null },
         include: { org: true },
     });
     if (!program) return err(c, 404, 'not_found');
@@ -128,8 +123,6 @@ trainingRoutes.get('/:slug', async (c) => {
 
 trainingRoutes.post('/:id/enroll', requireRole('worker'), async (c) => {
     const userId = c.var.userId;
-    const tenantId = c.var.tenantId;
-    if (!tenantId) return err(c, 403, 'no_tenant');
 
     const profile = await c.var.db.workerProfile.findUnique({ where: { id: userId } });
     if (!profile?.onboardedAt) return err(c, 403, 'forbidden', 'not_onboarded');
@@ -137,9 +130,10 @@ trainingRoutes.post('/:id/enroll', requireRole('worker'), async (c) => {
     const programId = c.req.param('id');
 
     const program = await c.var.db.trainingProgram.findFirst({
-        where: { id: programId, tenantId, deletedAt: null },
+        where: { id: programId, deletedAt: null },
     });
     if (!program) return err(c, 404, 'not_found', 'program_not_found');
+    const tenantId = program.tenantId;
     if (program.status !== ProgramStatus.active) {
         return err(c, 422, 'validation_failed', 'program_not_active');
     }
@@ -257,10 +251,9 @@ trainingRoutes.post('/:id/unenroll', requireRole('worker'), async (c) => {
 
     try {
         const program = await c.var.db.trainingProgram.findUnique({ where: { id: programId } });
-        const tenantId = c.var.tenantId;
-        if (program && tenantId) {
+        if (program) {
             await enqueueSms({
-                tenantId,
+                tenantId: program.tenantId,
                 userId,
                 template: 'training.unenrolled',
                 vars: { programTitle: program.titleEn },

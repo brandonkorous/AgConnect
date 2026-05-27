@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import { WorkerGreeting } from '@/components/worker/WorkerGreeting';
 import { WorkerKpiRow } from '@/components/worker/WorkerKpiRow';
 import { UpNextShift } from '@/components/worker/UpNextShift';
@@ -10,6 +10,7 @@ import { PaycheckCard } from '@/components/worker/PaycheckCard';
 import { AvailabilityCard } from '@/components/worker/AvailabilityCard';
 import { TrainingNudge } from '@/components/worker/TrainingNudge';
 import { MessagesCard } from '@/components/worker/MessagesCard';
+import { CardErrorBoundary } from '@/components/ui/CardErrorBoundary';
 import {
   SkeletonGreeting,
   SkeletonKpiRow,
@@ -22,44 +23,51 @@ import {
   SkeletonMessagesCard,
 } from '@/components/ui/skeleton/domain';
 
-// Client orchestrator. Each card is wrapped in its own Suspense boundary
-// with a per-card skeleton; cards fill in independently as their queries
-// resolve. No card gates another.
+// One card failing should not blank the dashboard. Each card is wrapped in
+// a CardErrorBoundary that swallows the throw and renders nothing, plus a
+// Suspense with a per-card skeleton.
+function Card({ skeleton, children }: { skeleton: ReactNode; children: ReactNode }) {
+  return (
+    <CardErrorBoundary fallback={null}>
+      <Suspense fallback={skeleton}>{children}</Suspense>
+    </CardErrorBoundary>
+  );
+}
 
 export function DashboardClient() {
   return (
     <div className="px-5 pb-16 pt-8">
-      <Suspense fallback={<SkeletonGreeting />}>
+      <Card skeleton={<SkeletonGreeting />}>
         <WorkerGreeting />
-      </Suspense>
-      <Suspense fallback={<SkeletonKpiRow />}>
+      </Card>
+      <Card skeleton={<SkeletonKpiRow />}>
         <WorkerKpiRow />
-      </Suspense>
-      <Suspense fallback={<SkeletonUpNextShift />}>
+      </Card>
+      <Card skeleton={<SkeletonUpNextShift />}>
         <UpNextShift />
-      </Suspense>
+      </Card>
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
         <div className="grid gap-5">
-          <Suspense fallback={<SkeletonMatchedJobs />}>
+          <Card skeleton={<SkeletonMatchedJobs />}>
             <MatchedJobs />
-          </Suspense>
-          <Suspense fallback={<SkeletonApplicationsPanel />}>
+          </Card>
+          <Card skeleton={<SkeletonApplicationsPanel />}>
             <ApplicationsPanel />
-          </Suspense>
+          </Card>
         </div>
         <div className="grid gap-3.5">
-          <Suspense fallback={<SkeletonPaycheckCard />}>
+          <Card skeleton={<SkeletonPaycheckCard />}>
             <PaycheckCard />
-          </Suspense>
-          <Suspense fallback={<SkeletonAvailabilityCard />}>
+          </Card>
+          <Card skeleton={<SkeletonAvailabilityCard />}>
             <AvailabilityCard />
-          </Suspense>
-          <Suspense fallback={<SkeletonTrainingNudge />}>
+          </Card>
+          <Card skeleton={<SkeletonTrainingNudge />}>
             <TrainingNudge />
-          </Suspense>
-          <Suspense fallback={<SkeletonMessagesCard />}>
+          </Card>
+          <Card skeleton={<SkeletonMessagesCard />}>
             <MessagesCard />
-          </Suspense>
+          </Card>
         </div>
       </div>
     </div>
