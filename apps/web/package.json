@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack -p 3000",
-    "build": "next build",
+    "build": "next build && serwist build serwist.config.mjs",
     "start": "next start -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.49.0",
+    "@serwist/cli": "9.5.10",
     "@tailwindcss/postcss": "4.2.4",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",

@@ -29,7 +29,7 @@ export function ServiceWorkerProvider({
 
     const onLoad = async () => {
       try {
-        const reg = await navigator.serviceWorker.register(scriptUrl, { scope });
+        const reg = await navigator.serviceWorker.register(scriptUrl, { scope, updateViaCache: 'none' });
         if (cancelled) return;
 
         const notifyUpdate = (waiting: ServiceWorker | null) => {
