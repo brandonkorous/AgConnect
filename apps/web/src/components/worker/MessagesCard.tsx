@@ -1,17 +1,19 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-import { fetchMyMessageThreads } from '@/lib/api/me';
+import { useLocale, useTranslations } from 'next-intl';
+import { useMyMessageThreadsSuspense } from '@/lib/api/hooks/messages';
 
 const CHANNEL_LABEL: Record<string, string> = {
   sms: 'SMS',
   app: 'In-app',
 };
 
-type Props = { locale: string };
-
-export async function MessagesCard({ locale }: Props) {
-  const t = await getTranslations({ locale, namespace: 'worker.dashboard.messages' });
-  const { threads, totalUnread } = await fetchMyMessageThreads();
+export function MessagesCard() {
+  const locale = useLocale();
+  const t = useTranslations('worker.dashboard.messages');
+  const { data } = useMyMessageThreadsSuspense();
+  const { threads, totalUnread } = data;
   const top = threads.slice(0, 3);
 
   return (

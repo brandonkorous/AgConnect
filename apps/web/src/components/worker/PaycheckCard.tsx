@@ -1,10 +1,10 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSackDollar, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { fetchMyPay } from '@/lib/api/me';
-
-type Props = { locale: string };
+import { useMyPaySuspense } from '@/lib/api/hooks/pay';
 
 function formatPayday(iso: string, locale: string): { weekday: string; date: string } {
     const d = new Date(iso);
@@ -15,10 +15,11 @@ function formatPayday(iso: string, locale: string): { weekday: string; date: str
     };
 }
 
-export async function PaycheckCard({ locale }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.dashboard.paycheck' });
-    const { summary } = await fetchMyPay();
-    const next = summary.nextDeposit;
+export function PaycheckCard() {
+    const locale = useLocale();
+    const t = useTranslations('worker.dashboard.paycheck');
+    const { data: pay } = useMyPaySuspense();
+    const next = pay.summary.nextDeposit;
 
     if (!next) {
         return (

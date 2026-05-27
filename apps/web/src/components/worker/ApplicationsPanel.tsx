@@ -1,9 +1,11 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { CropGlyph } from '@/components/jobs/CropGlyph';
-import { fetchApplications, type AppStatus } from '@/lib/api/applications';
+import { useApplicationsSuspense, type AppStatus } from '@/lib/api/hooks/applications';
 import { inferCrop } from '@/lib/crop';
 
 const STAGE_BADGE: Record<AppStatus, string> = {
@@ -14,12 +16,12 @@ const STAGE_BADGE: Record<AppStatus, string> = {
   withdrawn: 'badge-ghost',
 };
 
-type Props = { locale: string };
-
-export async function ApplicationsPanel({ locale }: Props) {
-  const t = await getTranslations({ locale, namespace: 'worker.dashboard.apps' });
-  const tStage = await getTranslations({ locale, namespace: 'worker.application.status' });
-  const { applications } = await fetchApplications('all');
+export function ApplicationsPanel() {
+  const locale = useLocale();
+  const t = useTranslations('worker.dashboard.apps');
+  const tStage = useTranslations('worker.application.status');
+  const { data: page } = useApplicationsSuspense('all');
+  const applications = page.applications;
   const rows = applications.slice(0, 5);
   const activeCount = applications.filter(
     (a) => a.status === 'applied' || a.status === 'reviewed',

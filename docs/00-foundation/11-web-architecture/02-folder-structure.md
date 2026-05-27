@@ -23,7 +23,7 @@ apps/web/src/
 │   │   ├── employer/(shell)/...                ← same shape
 │   │   ├── admin/(shell)/...                   ← same shape
 │   │   └── field/(shell)/...                   ← same shape, mobile-first
-│   └── middleware.ts                           ← proxy: edge auth redirects
+│   └── proxy.ts                           ← proxy: edge auth redirects
 ├── components/
 │   ├── providers/
 │   │   ├── AppProviders.tsx                    ← top-level provider stack
@@ -120,4 +120,4 @@ Component files matching the page subject get the bare name:
 - `lib/api/server-client.ts` — `getServerApiClient()` still exists for the marketing/auth exception list
 - `@agconn/api-client` package — same client, used in both server and browser
 - `lib/i18n/` — next-intl wiring unchanged
-- `middleware.ts` — proxy unchanged (handles unauth → /sign-in)
+- `proxy.ts` — proxy unchanged (handles unauth → /sign-in)

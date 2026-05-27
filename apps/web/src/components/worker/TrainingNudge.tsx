@@ -1,10 +1,10 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGraduationCap, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { fetchTrainingPrograms } from '@/lib/api/training';
-
-type Props = { locale: string };
+import { useTrainingProgramsSuspense } from '@/lib/api/hooks/training';
 
 function formatDuration(start: string, end: string, locale: string): string {
     const a = new Date(start);
@@ -17,13 +17,11 @@ function formatDuration(start: string, end: string, locale: string): string {
     return locale === 'es' ? `${weeks} semanas` : `${weeks} weeks`;
 }
 
-export async function TrainingNudge({ locale }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.dashboard.training' });
-    const { programs } = await fetchTrainingPrograms({
-        hasCapacity: true,
-        limit: 1,
-    });
-    const top = programs[0];
+export function TrainingNudge() {
+    const locale = useLocale();
+    const t = useTranslations('worker.dashboard.training');
+    const { data: page } = useTrainingProgramsSuspense({ hasCapacity: true, limit: 1 });
+    const top = page.programs[0];
 
     if (!top) {
         return (

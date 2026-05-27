@@ -1,12 +1,13 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-import { fetchProfile } from '@/lib/api/profile';
+import { useLocale, useTranslations } from 'next-intl';
+import { useProfileSuspense } from '@/lib/api/hooks/profile';
 
-type Props = { locale: string };
-
-export async function AvailabilityCard({ locale }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.dashboard.availability' });
-    const profile = await fetchProfile();
+export function AvailabilityCard() {
+    const locale = useLocale();
+    const t = useTranslations('worker.dashboard.availability');
+    const { data: profile } = useProfileSuspense();
     const availability = profile.availability;
     const daysRaw = t.raw('days') as string | string[];
     const days = Array.isArray(daysRaw)
@@ -52,7 +53,7 @@ export async function AvailabilityCard({ locale }: Props) {
             </header>
 
             <ol className="mt-3.5 grid grid-cols-7 gap-1">
-                {week.map((day, i) => (
+                {week.map((day) => (
                     <li
                         key={day.date.toISOString()}
                         className={[

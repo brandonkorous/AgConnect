@@ -1,4 +1,10 @@
-import { useTranslations } from 'next-intl';
+'use client';
+
+import { useLocale, useTranslations } from 'next-intl';
+import { useUser } from '@clerk/nextjs';
+import { useProfileSuspense } from '@/lib/api/hooks/profile';
+import { useMyShiftsSuspense } from '@/lib/api/hooks/shifts';
+import { useRecommendedJobsSuspense } from '@/lib/api/hooks/jobs';
 
 function Spark({
     points,
@@ -51,15 +57,6 @@ function Spark({
     );
 }
 
-type GreetingProps = {
-    name: string;
-    upcomingShifts: number;
-    newMatches: number;
-    locale: string;
-    county?: string | null;
-    earningsTrend?: number[] | null;
-};
-
 function formatContext(locale: string, county?: string | null): string {
     const fmtLocale = locale === 'es' ? 'es-MX' : 'en-US';
     const today = new Intl.DateTimeFormat(fmtLocale, {
@@ -71,17 +68,27 @@ function formatContext(locale: string, county?: string | null): string {
     return where ? `${today} · ${where}` : today;
 }
 
-export function WorkerGreeting({
-    name,
-    upcomingShifts,
-    newMatches,
-    locale,
-    county,
-    earningsTrend,
-}: GreetingProps) {
+export function WorkerGreeting() {
+    const locale = useLocale();
     const t = useTranslations('worker.dashboard.greeting');
+    const { user: clerkUser } = useUser();
+    const { data: profile } = useProfileSuspense();
+    const { data: shifts } = useMyShiftsSuspense();
+    const { data: matched } = useRecommendedJobsSuspense();
+
+    const name =
+        profile.firstName ||
+        clerkUser?.firstName ||
+        (locale === 'es' ? 'Trabajador' : 'there');
+    const county = profile.county ?? null;
+    const now = Date.now();
+    const upcomingShifts = shifts.filter(
+        (s) => new Date(s.shift.startTime).getTime() >= now,
+    ).length;
+    const newMatches = matched.length;
     const isFresh = upcomingShifts === 0 && newMatches === 0;
-    const showSpark = !!earningsTrend && earningsTrend.some((v) => v > 0);
+    const earningsTrend: number[] | null = null;
+    const showSpark = !!earningsTrend && (earningsTrend as number[]).some((v) => v > 0);
 
     return (
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4">

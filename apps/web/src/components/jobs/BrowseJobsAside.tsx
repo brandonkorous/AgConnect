@@ -1,9 +1,11 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 import type { Route } from 'next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import type { SavedSearch } from '@/lib/api/saved-searches';
+import type { SavedSearch } from '@/lib/api/hooks/saved-searches';
 import { getSmsApplyNumber, getSmsApplyKeyword } from '@/lib/sms-apply';
 
 type Props = { locale: string; savedSearches: SavedSearch[] };
@@ -27,8 +29,8 @@ function filtersToLabel(filters: SavedSearch['filters'], locale: string): string
     return parts.join(' · ') || (locale === 'es' ? 'Todos los trabajos' : 'All jobs');
 }
 
-export async function BrowseJobsAside({ locale, savedSearches }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.jobs.browse.aside' });
+export function BrowseJobsAside({ locale, savedSearches }: Props) {
+    const t = useTranslations('worker.jobs.browse.aside');
     const visible = savedSearches.slice(0, 3);
     const smsNumber = getSmsApplyNumber();
     const smsKeyword = getSmsApplyKeyword();

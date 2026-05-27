@@ -1,5 +1,7 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faLocationDot,
@@ -7,10 +9,8 @@ import {
     faUsers,
     faCalendarPlus,
 } from '@fortawesome/free-solid-svg-icons';
-import { fetchMyShifts, type ShiftRow } from '@/lib/api/me';
+import { useMyShiftsSuspense, type ShiftRow } from '@/lib/api/hooks/shifts';
 import { UpNextActions } from './UpNextActions';
-
-type Props = { locale: string };
 
 function formatShiftEyebrow(iso: string, locale: string): string {
     const d = new Date(iso);
@@ -35,9 +35,10 @@ function pickNextShift(shifts: ShiftRow[]): ShiftRow | null {
     return upcoming[0] ?? null;
 }
 
-export async function UpNextShift({ locale }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.dashboard.up_next' });
-    const shifts = await fetchMyShifts();
+export function UpNextShift() {
+    const locale = useLocale();
+    const t = useTranslations('worker.dashboard.up_next');
+    const { data: shifts } = useMyShiftsSuspense();
     const next = pickNextShift(shifts);
 
     if (!next) {

@@ -1,8 +1,8 @@
-import { getTranslations } from 'next-intl/server';
-import { fetchMyPay } from '@/lib/api/me';
-import { fetchApplications } from '@/lib/api/applications';
+'use client';
 
-type Props = { locale: string };
+import { useLocale, useTranslations } from 'next-intl';
+import { useMyPaySuspense } from '@/lib/api/hooks/pay';
+import { useApplicationsSuspense } from '@/lib/api/hooks/applications';
 
 const accentClass = {
     primary: 'text-primary',
@@ -26,17 +26,18 @@ function fmtRate(cents: number, locale: string): string {
     }).format(cents / 100);
 }
 
-export async function WorkerKpiRow({ locale }: Props) {
-    const t = await getTranslations({ locale, namespace: 'worker.dashboard.kpi' });
-    const [{ summary }, applications] = await Promise.all([
-        fetchMyPay(),
-        fetchApplications(),
-    ]);
+export function WorkerKpiRow() {
+    const locale = useLocale();
+    const t = useTranslations('worker.dashboard.kpi');
+    const { data: pay } = useMyPaySuspense();
+    const { data: applicationsPage } = useApplicationsSuspense('all');
+    const summary = pay.summary;
+    const applications = applicationsPage.applications;
 
-    const activeApps = applications.applications.filter(
+    const activeApps = applications.filter(
         (a) => a.status === 'applied' || a.status === 'reviewed',
     ).length;
-    const awaitingReply = applications.applications.filter((a) => a.status === 'applied').length;
+    const awaitingReply = applications.filter((a) => a.status === 'applied').length;
 
     const dash = '—';
     const tiles: Array<{

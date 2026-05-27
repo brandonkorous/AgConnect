@@ -232,7 +232,7 @@ export function WorkerShellClient({ locale, children }) {
 
 Two layers of defense:
 
-**Layer 9a — `apps/web/middleware.ts` (the proxy):**
+**Layer 9a — `apps/web/proxy.ts` (the proxy):**
 - Redirects unauthenticated requests to `/sign-in` before they hit the app
 - Cheap, runs at the edge, no app-pod CPU
 - Existing logic preserved

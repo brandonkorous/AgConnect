@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery, queryOptions } from '@tanstack/react-query';
 import type { UserRole } from '@agconn/auth';
 import { apiClient } from '../client';
 import { unwrap } from '../unwrap';
@@ -11,11 +11,16 @@ export type Me = {
   tenant: { id: string; slug: string; name: string } | null;
 };
 
+const meOptions = queryOptions({
+  queryKey: qk.me(),
+  queryFn: async (): Promise<Me> => unwrap(await apiClient().get<Me>('/v1/me')),
+  staleTime: 5 * 60_000,
+  gcTime: 30 * 60_000,
+});
+
 export function useMe() {
-  return useQuery({
-    queryKey: qk.me(),
-    queryFn: async (): Promise<Me> => unwrap(await apiClient().get<Me>('/v1/me')),
-    staleTime: 5 * 60_000,
-    gcTime: 30 * 60_000,
-  });
+  return useQuery(meOptions);
+}
+export function useMeSuspense() {
+  return useSuspenseQuery(meOptions);
 }

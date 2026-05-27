@@ -1,13 +1,14 @@
+'use client';
+
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-import { fetchRecommendedJobs } from '@/lib/api/jobs';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRecommendedJobsSuspense } from '@/lib/api/hooks/jobs';
 import { MatchedJobsClient } from './MatchedJobsClient';
 
-type Props = { locale: string };
-
-export async function MatchedJobs({ locale }: Props) {
-  const t = await getTranslations({ locale, namespace: 'worker.dashboard.matched' });
-  const jobs = await fetchRecommendedJobs();
+export function MatchedJobs() {
+  const locale = useLocale();
+  const t = useTranslations('worker.dashboard.matched');
+  const { data: jobs } = useRecommendedJobsSuspense();
 
   return (
     <section>
