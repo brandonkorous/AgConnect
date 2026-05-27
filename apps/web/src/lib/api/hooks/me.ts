@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useSuspenseQuery, queryOptions } from '@tanstack/react-query';
-import type { UserRole } from '@agconn/auth';
+import type { UserRole } from '@/lib/auth/role-client';
 import { apiClient } from '../client';
 import { unwrap } from '../unwrap';
 import { qk } from '../query-keys';

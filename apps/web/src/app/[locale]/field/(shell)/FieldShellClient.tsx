@@ -3,13 +3,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
-import { UserRole } from '@agconn/auth';
 import { FieldHeader } from '@/components/field/FieldHeader';
 import { FieldBottomNav } from '@/components/field/FieldBottomNav';
 import { SwitchToFullView } from '@/components/field/SwitchToFullView';
 import { FieldOfflinePersistor } from '@/components/providers/FieldOfflinePersistor';
 import { useMe } from '@/lib/api/hooks/me';
-import { homePathForRole } from '@/lib/auth/role-client';
+import { homePathForRole, UserRole } from '@/lib/auth/role-client';
 import { FieldShellSkeleton } from './FieldShellSkeleton';
 
 type Props = {

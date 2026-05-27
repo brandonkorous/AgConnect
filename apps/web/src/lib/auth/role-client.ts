@@ -1,6 +1,11 @@
-import { UserRole } from '@agconn/auth';
+export const UserRole = {
+  worker: 'worker',
+  employer: 'employer',
+  training_org: 'training_org',
+  admin: 'admin',
+} as const;
 
-export { UserRole };
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export function homePathForRole(locale: string, role: UserRole): string {
   switch (role) {
