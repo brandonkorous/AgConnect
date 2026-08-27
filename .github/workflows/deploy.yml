@@ -17,11 +17,12 @@ name: Deploy
 #     `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The four AZURE_* values
 #     are repository VARIABLES, not secrets — they are public identifiers, and
 #     treating them as secrets only makes a failed run harder to read.
-#   - SECRETS come from Key Vault at deploy time, not from ~45 GitHub Actions
-#     secrets. That list was unauditable and could only be rotated by whoever
-#     held repo admin — and GitHub secrets are WRITE ONLY, so adding one key
-#     meant reconstructing every one of them from a copy kept elsewhere. Adding a
-#     credential is now `az keyvault secret set`.
+#   - SECRETS still come from GitHub Actions, unlike every other tenant on this
+#     cluster, which read Key Vault. kv-agconn-prod-cus exists and is ready; the
+#     migration is deferred because GitHub secrets cannot be read back, so moving
+#     them means re-sourcing a third of them from vendor dashboards — a cost that
+#     buys nothing for this deploy. `scripts/load-keyvault.mjs` does it when
+#     there is time.
 #   - NO cert-manager, NO nginx-ingress. TLS and routing for agconn.com /
 #     www / api / admin are handled by the shared Caddy proxy in the `sparx-prod`
 #     namespace (reserved IP 20.12.217.0), which reaches these Services
@@ -29,11 +30,11 @@ name: Deploy
 #     and all four hostnames must ALSO be allow-listed in api-rest's
 #     PLATFORM_HOSTNAMES or on-demand TLS is denied and Cloudflare 525s.
 #
-# NEXT_PUBLIC_* STAY AS ACTIONS SECRETS, deliberately. They are baked into the
-# client bundle at build time and are public by definition, so a vault buys
-# nothing — and the build job authenticates to GitHub, not to Azure. They also
-# appear in the runtime Secret below, because the server components read some of
-# them at request time; the vault is the source for that copy.
+# NEXT_PUBLIC_* are baked into the client bundle at build time and are public by
+# definition. The ones that are plain facts about production — the API and admin
+# origins — are LITERALS here rather than secrets: a repository secret that is
+# never set renders as the empty string instead of failing, which is how the
+# admin app came to ship with a blank `metadataBase`.
 
 on:
   push:
@@ -130,7 +131,7 @@ jobs:
             NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
             NEXT_PUBLIC_API_BASE_URL=https://api.agconn.com
             NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
-            NEXT_PUBLIC_ADMIN_URL=${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
+            NEXT_PUBLIC_ADMIN_URL=https://admin.agconn.com
             NEXT_PUBLIC_SENTRY_DSN_ADMIN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
             SENTRY_RELEASE=${{ github.sha }}
           secrets: |
@@ -172,124 +173,179 @@ jobs:
           kubectl apply -f deploy/k8s/base/configmap.yaml
 
       # ---------------------------------------------------------------------
-      # Key Vault -> agconn-env
+      # GitHub Actions secrets -> agconn-env
       #
-      # THE VAULT IS THE SOURCE OF TRUTH. A value patched only with `kubectl` is
-      # reverted by the next push. Add or rotate one with:
+      # NOT Key Vault, and that is a deliberate reversal. kv-agconn-prod-cus
+      # exists and is the platform convention on this cluster, but GitHub secrets
+      # are WRITE ONLY — they cannot be read back — so migrating them means
+      # re-sourcing ten of the twenty-six from the Clerk, Resend, Twilio and
+      # Stripe dashboards. That cost buys a property (readable, versioned,
+      # rotatable without repo admin) which matters on a future rotation, not on
+      # this deploy. Move when there is time: scripts/load-keyvault.mjs does it.
       #
-      #   az keyvault secret set --vault-name kv-agconn-prod-cus \
-      #     --name DATABASE-URL --value '...'
+      # TWO VALUES ARE DELIBERATELY ABSENT BELOW, because they are not secrets:
       #
-      # NAME MAPPING is `${name//_/-}` — case PRESERVING, so the vault holds
-      # UPPERCASE-KEBAB (`DATABASE-URL`), matching jotacular and kanNINJA. sparx's
-      # own pipeline uses `tr 'a-z-' 'A-Z_'` and therefore lowercase names. Mixing
-      # the two conventions produces a secret that reads as present in the portal
-      # and is never found here.
+      #   NEXT_PUBLIC_ADMIN_URL   https://admin.agconn.com
+      #   WEB_INTERNAL_BASE_URL   http://web   (cluster DNS for the Service)
       #
-      # REQUIRED vs OPTIONAL: required is anything whose absence stops a pod
-      # booting or breaks a core flow. Optional is observability, maps, billing
-      # price ids and the LLM keys — each is reported when present so a silently
-      # missing integration is visible in the log rather than at runtime.
+      # Both live in deploy/k8s/base/configmap.yaml now, where they are
+      # reviewable in git. They MUST NOT also appear here. `envFrom` lists
+      # configMapRef BEFORE secretRef, so a Secret key wins — and an unset
+      # `${{ secrets.X }}` renders as the empty string rather than failing, which
+      # would silently override the good ConfigMap value with a blank.
+      #
+      # That is not hypothetical: it is what the GKE pipeline was doing. Both of
+      # those, plus INTERNAL_REVALIDATE_SECRET, were referenced as repository
+      # secrets that were never set, so the revalidate hook has been signing with
+      # an empty key and posting to an empty base URL.
       # ---------------------------------------------------------------------
-      - name: Read secrets from Key Vault
+      - name: Resolve the shared revalidate secret
+        id: revalidate
+        run: |
+          set -euo pipefail
+          # api signs a payload that web verifies, so both pods must hold the
+          # SAME value. Minting a fresh one per deploy would work in steady state
+          # and break during the rollout: api and web roll separately, so for a
+          # few minutes an old pod and a new pod disagree and every revalidate
+          # call fails closed, with nothing in either log naming a key mismatch.
+          #
+          # So read back what the cluster already holds and reuse it. The Secret
+          # is the persistence layer. The first deploy mints one; every later
+          # deploy keeps it. Deleting the Secret re-mints, which is harmless.
+          existing=$(kubectl -n "$NAMESPACE" get secret agconn-env \
+                       -o jsonpath='{.data.INTERNAL_REVALIDATE_SECRET}' 2>/dev/null \
+                     | base64 -d 2>/dev/null || true)
+          if [ -n "$existing" ]; then
+            echo "reusing the INTERNAL_REVALIDATE_SECRET already in the cluster"
+            value="$existing"
+          else
+            # `tr -d` is not decoration. openssl emits a trailing newline, and a
+            # stray byte in key material does not fail loudly — it silently
+            # produces a DIFFERENT key on one side of the signature.
+            value=$(openssl rand -base64 48 | tr -d '\r\n')
+            echo "minted a new INTERNAL_REVALIDATE_SECRET (none was set)"
+          fi
+          echo "::add-mask::$value"
+          echo "value=$value" >> "$GITHUB_OUTPUT"
+
+      - name: Apply the runtime Secret
         env:
-          VAULT: ${{ vars.AZURE_KEY_VAULT_NAME }}
+          DATABASE_URL:                            ${{ secrets.DATABASE_URL }}
+          DIRECT_URL:                              ${{ secrets.DIRECT_URL }}
+          AUDIT_HMAC_KEY:                          ${{ secrets.AUDIT_HMAC_KEY }}
+          AUDIT_HMAC_KEY_VERSION:                  ${{ secrets.AUDIT_HMAC_KEY_VERSION }}
+          ADMIN_BEARER_TOKEN:                      ${{ secrets.ADMIN_BEARER_TOKEN }}
+          PARTICIPANT_PEPPER:                      ${{ secrets.PARTICIPANT_PEPPER }}
+          CLERK_SECRET_KEY:                        ${{ secrets.CLERK_SECRET_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:       ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_WEBHOOK_SECRET:                    ${{ secrets.CLERK_WEBHOOK_SECRET }}
+          CLERK_ENCRYPTION_KEY:                    ${{ secrets.CLERK_ENCRYPTION_KEY }}
+          ADMIN_CLERK_SECRET_KEY:                  ${{ secrets.ADMIN_CLERK_SECRET_KEY }}
+          NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
+          RESEND_API_KEY:                          ${{ secrets.RESEND_API_KEY }}
+          RESEND_WEBHOOK_SECRET:                   ${{ secrets.RESEND_WEBHOOK_SECRET }}
+          WAITLIST_TOKEN_SECRET:                   ${{ secrets.WAITLIST_TOKEN_SECRET }}
+          SUPABASE_URL:                            ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:               ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TWILIO_ACCOUNT_SID:                      ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:                       ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_MESSAGING_SERVICE_SID:            ${{ secrets.TWILIO_MESSAGING_SERVICE_SID }}
+          TWILIO_INBOUND_PHONE:                    ${{ secrets.TWILIO_INBOUND_PHONE }}
+          STRIPE_SECRET_KEY:                       ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET:                   ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_PRO_MONTHLY:                ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
+          STRIPE_PRICE_PRO_YEARLY:                 ${{ secrets.STRIPE_PRICE_PRO_YEARLY }}
+          STRIPE_PRICE_ENT_MONTHLY:                ${{ secrets.STRIPE_PRICE_ENT_MONTHLY }}
+          STRIPE_PRICE_ENT_YEARLY:                 ${{ secrets.STRIPE_PRICE_ENT_YEARLY }}
+          STRIPE_PRICE_PRO_FOUNDER_MONTHLY:        ${{ secrets.STRIPE_PRICE_PRO_FOUNDER_MONTHLY }}
+          STRIPE_PRICE_PRO_FOUNDER_YEARLY:         ${{ secrets.STRIPE_PRICE_PRO_FOUNDER_YEARLY }}
+          STRIPE_PRICE_ENT_FOUNDER_MONTHLY:        ${{ secrets.STRIPE_PRICE_ENT_FOUNDER_MONTHLY }}
+          STRIPE_PRICE_ENT_FOUNDER_YEARLY:         ${{ secrets.STRIPE_PRICE_ENT_FOUNDER_YEARLY }}
+          SENTRY_DSN:                              ${{ secrets.SENTRY_DSN }}
+          NEXT_PUBLIC_SENTRY_DSN:                  ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN:                       ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG:                              ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT:                          ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_PROJECT_ADMIN:                    ${{ secrets.SENTRY_PROJECT_ADMIN }}
+          NEXT_PUBLIC_SENTRY_DSN_ADMIN:            ${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
+          NEXT_PUBLIC_POSTHOG_KEY:                 ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          POSTHOG_API_KEY:                         ${{ secrets.POSTHOG_API_KEY }}
+          NEXT_PUBLIC_MAPBOX_TOKEN:                ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+          ANTHROPIC_API_KEY:                       ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:                          ${{ secrets.OPENAI_API_KEY }}
+          INTERNAL_REVALIDATE_SECRET:              ${{ steps.revalidate.outputs.value }}
+          SENTRY_RELEASE:                          ${{ github.sha }}
         run: |
           set -euo pipefail
           umask 077
-          : > /tmp/agconn.env
 
+          # Required is anything whose absence stops a pod booting or breaks a
+          # core flow. An unset repository secret renders as the empty string
+          # rather than an error, so this loop is the only thing between a
+          # missing credential and a pod that starts and then misbehaves.
           required=(
-            DATABASE_URL
-            DIRECT_URL
-            AUDIT_HMAC_KEY
-            AUDIT_HMAC_KEY_VERSION
-            ADMIN_BEARER_TOKEN
-            PARTICIPANT_PEPPER
-            CLERK_SECRET_KEY
-            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-            CLERK_WEBHOOK_SECRET
-            CLERK_ENCRYPTION_KEY
-            ADMIN_CLERK_SECRET_KEY
-            NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY
-            NEXT_PUBLIC_ADMIN_URL
-            RESEND_API_KEY
-            RESEND_WEBHOOK_SECRET
+            DATABASE_URL DIRECT_URL
+            AUDIT_HMAC_KEY AUDIT_HMAC_KEY_VERSION
+            ADMIN_BEARER_TOKEN PARTICIPANT_PEPPER
+            CLERK_SECRET_KEY NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+            CLERK_WEBHOOK_SECRET CLERK_ENCRYPTION_KEY
+            ADMIN_CLERK_SECRET_KEY NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY
+            RESEND_API_KEY RESEND_WEBHOOK_SECRET
             WAITLIST_TOKEN_SECRET
-            SUPABASE_URL
-            SUPABASE_SERVICE_ROLE_KEY
-            TWILIO_ACCOUNT_SID
-            TWILIO_AUTH_TOKEN
-            TWILIO_MESSAGING_SERVICE_SID
-            TWILIO_INBOUND_PHONE
-            STRIPE_SECRET_KEY
-            STRIPE_WEBHOOK_SECRET
-            INTERNAL_REVALIDATE_SECRET
-            WEB_INTERNAL_BASE_URL
+            SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+            TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN
+            TWILIO_MESSAGING_SERVICE_SID TWILIO_INBOUND_PHONE
+            STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET
+            INTERNAL_REVALIDATE_SECRET SENTRY_RELEASE
           )
 
+          # Observability, maps, billing price ids and the LLM keys. Absent is a
+          # supported state for each; the platform boots without them.
           optional=(
+            STRIPE_PRICE_PRO_MONTHLY STRIPE_PRICE_PRO_YEARLY
+            STRIPE_PRICE_ENT_MONTHLY STRIPE_PRICE_ENT_YEARLY
+            STRIPE_PRICE_PRO_FOUNDER_MONTHLY STRIPE_PRICE_PRO_FOUNDER_YEARLY
+            STRIPE_PRICE_ENT_FOUNDER_MONTHLY STRIPE_PRICE_ENT_FOUNDER_YEARLY
             SENTRY_DSN NEXT_PUBLIC_SENTRY_DSN SENTRY_AUTH_TOKEN
             SENTRY_ORG SENTRY_PROJECT SENTRY_PROJECT_ADMIN
             NEXT_PUBLIC_SENTRY_DSN_ADMIN
             NEXT_PUBLIC_POSTHOG_KEY POSTHOG_API_KEY
             NEXT_PUBLIC_MAPBOX_TOKEN
-            STRIPE_PRICE_PRO_MONTHLY STRIPE_PRICE_PRO_YEARLY
-            STRIPE_PRICE_ENT_MONTHLY STRIPE_PRICE_ENT_YEARLY
-            STRIPE_PRICE_PRO_FOUNDER_MONTHLY STRIPE_PRICE_PRO_FOUNDER_YEARLY
-            STRIPE_PRICE_ENT_FOUNDER_MONTHLY STRIPE_PRICE_ENT_FOUNDER_YEARLY
-            ANTHROPIC_API_KEY OPENAI_API_KEY LLM_FALLBACKS
+            ANTHROPIC_API_KEY OPENAI_API_KEY
           )
 
           missing=()
           for name in "${required[@]}"; do
-            kv_name="${name//_/-}"
-            if value=$(az keyvault secret show --vault-name "$VAULT" \
-                         --name "$kv_name" --query value -o tsv 2>/dev/null); then
-              printf '%s=%s\n' "$name" "$value" >> /tmp/agconn.env
-            else
-              missing+=("$kv_name")
-            fi
+            [ -n "${!name:-}" ] || missing+=("$name")
           done
-
           if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error::Missing required secrets in $VAULT: ${missing[*]}"
-            echo "Set one with: az keyvault secret set --vault-name $VAULT --name <NAME> --value '...'"
+            echo "::error::Unset repository secrets: ${missing[*]}"
+            echo "Set one with: gh secret set <NAME> -R ${{ github.repository }}"
             exit 1
           fi
 
-          for name in "${optional[@]}"; do
-            kv_name="${name//_/-}"
-            if value=$(az keyvault secret show --vault-name "$VAULT" \
-                         --name "$kv_name" --query value -o tsv 2>/dev/null); then
-              printf '%s=%s\n' "$name" "$value" >> /tmp/agconn.env
-              echo "optional secret present: $name"
+          # Empty values are SKIPPED, never written as "". A key present with an
+          # empty value would shadow the ConfigMap entry of the same name, which
+          # is the failure this whole block is arranged to avoid.
+          : > /tmp/agconn.env
+          for name in "${required[@]}" "${optional[@]}"; do
+            if [ -n "${!name:-}" ]; then
+              printf '%s=%s\n' "$name" "${!name}" >> /tmp/agconn.env
             else
               echo "optional secret absent: $name"
             fi
           done
 
-          # Not a vault value — it is this commit. Sentry ties errors to a build
-          # with it, so it has to be written per deploy rather than stored.
-          printf 'SENTRY_RELEASE=%s\n' "$GITHUB_SHA" >> /tmp/agconn.env
-
-          # resume-parser and the translation helper need one of these two.
-          # Neither is required above because the rest of the platform boots
-          # without them; say so loudly rather than letting it surface as a
-          # failed job three hours later.
           if ! grep -qE '^(ANTHROPIC_API_KEY|OPENAI_API_KEY)=' /tmp/agconn.env; then
-            echo "::warning::No LLM key in the vault — resume parsing and LLM-assisted translation are disabled this deploy."
+            echo "::warning::No LLM key set — resume parsing and LLM-assisted translation are disabled this deploy."
           fi
 
-      - name: Apply the runtime Secret
-        run: |
-          set -euo pipefail
+          keys=$(wc -l < /tmp/agconn.env)
           kubectl create secret generic agconn-env -n "$NAMESPACE" \
             --from-env-file=/tmp/agconn.env \
             --dry-run=client -o yaml | kubectl apply -f -
           rm -f /tmp/agconn.env
-          echo "Applied agconn-env."
-
+          echo "Applied agconn-env with ${keys} keys."
       # ---------------------------------------------------------------------
       # Migrations run as an in-cluster Job rather than from this runner.
       #

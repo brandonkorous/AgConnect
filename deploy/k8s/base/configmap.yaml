@@ -11,6 +11,14 @@ data:
   NEXT_PUBLIC_API_BASE_URL: "https://api.agconn.com"
   PUBLIC_API_URL: "https://api.agconn.com"
   PUBLIC_WEB_URL: "https://agconn.com"
+  # Public origin of the admin app — metadataBase and Sentry tagging.
+  NEXT_PUBLIC_ADMIN_URL: "https://admin.agconn.com"
+  # Where api reaches web for the revalidate hook and the health probe. Cluster
+  # DNS, so it resolves to the `web` Service inside this namespace and the call
+  # never leaves the node. Not a secret, and it must not be one: it lived in the
+  # runtime Secret as an unset repository secret, which rendered as "" and made
+  # every revalidate POST target an empty URL.
+  WEB_INTERNAL_BASE_URL: "http://web"
   NEXT_PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com"
   POSTHOG_HOST: "https://us.i.posthog.com"
   RESEND_FROM_EMAIL: "AGCONN <hello@agconn.com>"
