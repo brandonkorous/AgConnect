@@ -32,11 +32,6 @@ spec:
             app.kubernetes.io/name: flc-sweep
         spec:
           serviceAccountName: agconn
-          nodeSelector: { pool: worker }
-          tolerations:
-            - key: cloud.google.com/gke-spot
-              value: "true"
-              effect: NoSchedule
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
@@ -44,7 +39,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: us-west1-docker.pkg.dev/agconn/containers/flc-verifier:latest
+              image: ghcr.io/brandonkorous/agconn-flc-verifier:latest
               command: ["node", "services/flc-verifier/dist/sweep-main.js"]
               envFrom:
                 - configMapRef: { name: agconn-config }
@@ -75,11 +70,6 @@ spec:
             app.kubernetes.io/name: flc-mspa-sync
         spec:
           serviceAccountName: agconn
-          nodeSelector: { pool: worker }
-          tolerations:
-            - key: cloud.google.com/gke-spot
-              value: "true"
-              effect: NoSchedule
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
@@ -87,7 +77,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: us-west1-docker.pkg.dev/agconn/containers/flc-verifier:latest
+              image: ghcr.io/brandonkorous/agconn-flc-verifier:latest
               command: ["node", "services/flc-verifier/dist/mspa-sync-main.js"]
               envFrom:
                 - configMapRef: { name: agconn-config }

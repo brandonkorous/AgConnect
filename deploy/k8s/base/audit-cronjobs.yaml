@@ -28,11 +28,6 @@ spec:
             app.kubernetes.io/name: audit-retention
         spec:
           serviceAccountName: agconn
-          nodeSelector: { pool: worker }
-          tolerations:
-            - key: cloud.google.com/gke-spot
-              value: "true"
-              effect: NoSchedule
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
@@ -40,7 +35,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: us-west1-docker.pkg.dev/agconn/containers/audit-retention:latest
+              image: ghcr.io/brandonkorous/agconn-audit-retention:latest
               envFrom:
                 - configMapRef: { name: agconn-config }
                 - secretRef: { name: agconn-env }
@@ -70,11 +65,6 @@ spec:
             app.kubernetes.io/name: audit-verifier
         spec:
           serviceAccountName: agconn
-          nodeSelector: { pool: worker }
-          tolerations:
-            - key: cloud.google.com/gke-spot
-              value: "true"
-              effect: NoSchedule
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
@@ -82,7 +72,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: us-west1-docker.pkg.dev/agconn/containers/audit-verifier:latest
+              image: ghcr.io/brandonkorous/agconn-audit-verifier:latest
               envFrom:
                 - configMapRef: { name: agconn-config }
                 - secretRef: { name: agconn-env }

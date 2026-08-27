@@ -5,9 +5,11 @@ metadata:
   namespace: agconn
   labels: { app.kubernetes.io/name: flc-verifier, app.kubernetes.io/part-of: agconn }
 spec:
-  # No replicas: KEDA's ScaledObject (deploy/k8s/base/keda-scaledobjects.yaml)
-  # owns the replica count and idles this at 0 when flc.verify is empty. The
-  # two cron ticks this used to host are now flc-cronjobs.yaml.
+  # replicas: 1, not KEDA. The ScaledObject that owned this count is no longer
+  # applied: the shared AKS cluster has no KEDA operator, and scale-to-zero was
+  # buying money on a GKE spot pool that no longer exists. On a fixed single
+  # node an idle pod costs nothing extra. See keda-scaledobjects.yaml.
+  replicas: 1
   selector: { matchLabels: { app.kubernetes.io/name: flc-verifier } }
   template:
     metadata:
@@ -15,18 +17,13 @@ spec:
         app.kubernetes.io/name: flc-verifier
     spec:
       serviceAccountName: agconn
-      nodeSelector: { pool: worker }
-      tolerations:
-        - key: cloud.google.com/gke-spot
-          value: "true"
-          effect: NoSchedule
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: worker
-          image: us-west1-docker.pkg.dev/agconn/containers/flc-verifier:latest
+          image: ghcr.io/brandonkorous/agconn-flc-verifier:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

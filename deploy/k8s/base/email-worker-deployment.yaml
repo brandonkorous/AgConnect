@@ -13,18 +13,13 @@ spec:
         app.kubernetes.io/name: email-worker
     spec:
       serviceAccountName: agconn
-      nodeSelector: { pool: worker }
-      tolerations:
-        - key: cloud.google.com/gke-spot
-          value: "true"
-          effect: NoSchedule
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: worker
-          image: us-west1-docker.pkg.dev/agconn/containers/email-worker:latest
+          image: ghcr.io/brandonkorous/agconn-email-worker:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

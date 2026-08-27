@@ -25,7 +25,7 @@ spec:
   podSelector: {}
   policyTypes: [Ingress]
 ---
-# ─── Web: accept HTTP from ingress-nginx only ──────────────────────────────
+# ─── Web: accept HTTP from the shared Caddy proxy only ─────────────────────
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -40,12 +40,12 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: ingress-nginx
+              kubernetes.io/metadata.name: sparx-prod
       ports:
         - protocol: TCP
           port: 3000
 ---
-# ─── Admin: accept HTTP from ingress-nginx only ────────────────────────────
+# ─── Admin: accept HTTP from the shared Caddy proxy only ───────────────────
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -60,12 +60,12 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: ingress-nginx
+              kubernetes.io/metadata.name: sparx-prod
       ports:
         - protocol: TCP
           port: 3100
 ---
-# ─── API: accept HTTP from ingress-nginx AND from any pod in the agconn
+# ─── API: accept HTTP from the shared Caddy proxy AND any pod in the agconn
 #         namespace (web RSCs call the api server-to-server) ───────────────
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -81,7 +81,7 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: ingress-nginx
+              kubernetes.io/metadata.name: sparx-prod
         - podSelector: {}
       ports:
         - protocol: TCP

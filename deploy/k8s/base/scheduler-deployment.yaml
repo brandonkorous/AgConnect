@@ -18,18 +18,13 @@ spec:
         app.kubernetes.io/name: scheduler
     spec:
       serviceAccountName: agconn
-      nodeSelector: { pool: worker }
-      tolerations:
-        - key: cloud.google.com/gke-spot
-          value: "true"
-          effect: NoSchedule
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: scheduler
-          image: us-west1-docker.pkg.dev/agconn/containers/scheduler:latest
+          image: ghcr.io/brandonkorous/agconn-scheduler:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

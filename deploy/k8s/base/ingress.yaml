@@ -1,3 +1,23 @@
+# NOT APPLIED ON THE CURRENT CLUSTER. Kept for reference and for the day the
+# topology changes; deliberately absent from kustomization.yaml.
+#
+# AGCONN runs on the shared `aks-sparx-prod-cus` cluster, which has no
+# nginx-ingress controller and no cert-manager. Routing and TLS for agconn.com,
+# www.agconn.com, api.agconn.com and admin.agconn.com are handled by the shared
+# Caddy proxy in the `sparx-prod` namespace (reserved LB IP 20.12.217.0), which
+# reaches these Services cross-namespace at <svc>.agconn.svc.cluster.local. The
+# route blocks live in sparx.works/k8s/ingress/Caddyfile.
+#
+# Those blocks use ON-DEMAND TLS, which means all four AGCONN hostnames must
+# ALSO appear in api-rest's PLATFORM_HOSTNAMES allow-list
+# (sparx.works/wizeworks/services/api-rest/src/routes/internal/domain-check.ts).
+# Removing one there silently costs that hostname its certificate and Cloudflare
+# returns 525.
+#
+# `kubectl apply` on this file fails with `no matches for kind "ClusterIssuer"`
+# — the cert-manager CRDs are not installed. That is the expected outcome, not a
+# problem to fix by installing cert-manager.
+
 # Ingress: agconn.com / www.agconn.com → web, api.agconn.com → api.
 #
 # Assumes nginx-ingress + cert-manager are installed cluster-wide (one-time

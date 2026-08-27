@@ -19,18 +19,13 @@ spec:
         app.kubernetes.io/name: admin
     spec:
       serviceAccountName: agconn
-      nodeSelector: { pool: app }
-      tolerations:
-        - key: pool
-          value: app
-          effect: NoSchedule
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: admin
-          image: us-west1-docker.pkg.dev/agconn/containers/admin:latest
+          image: ghcr.io/brandonkorous/agconn-admin:latest
           ports:
             - containerPort: 3100
               name: http

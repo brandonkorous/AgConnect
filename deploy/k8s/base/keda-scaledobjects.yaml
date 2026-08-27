@@ -1,3 +1,21 @@
+# NOT APPLIED ON THE CURRENT CLUSTER. Kept because the decision is reversible;
+# deliberately absent from kustomization.yaml.
+#
+# The shared `aks-sparx-prod-cus` cluster has no KEDA operator, so the keda.sh
+# CRDs do not exist and `kubectl apply` on this file fails with `no matches for
+# kind "ScaledObject"`. Installing KEDA is a cluster-wide act — CRDs, an
+# operator, an upgrade obligation — affecting five co-tenants, not just AGCONN.
+#
+# resume-parser, cert-generator and flc-verifier therefore carry an explicit
+# `replicas: 1` instead. That is not a downgrade: scale-to-zero was buying money
+# on a GKE spot node pool that no longer exists, and on a fixed single node an
+# idle pod costs nothing extra. Their combined request is ~100m CPU / 704Mi.
+#
+# If KEDA is ever installed here, this file should work unchanged — the
+# TriggerAuthentication reads DATABASE_URL from `agconn-env` and the queries hit
+# the `pgboss.job` table, both of which are still true. Remove the `replicas: 1`
+# lines when re-enabling it, or the ScaledObject and the manifest will fight.
+
 # KEDA scale-to-zero for the bursty workers. Each ScaledObject drives its
 # Deployment 0→N off pg-boss queue depth so the spot worker pool can idle at
 # zero nodes instead of pinning two e2-small nodes 24/7 for work that is

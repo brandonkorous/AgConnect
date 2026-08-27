@@ -1,5 +1,40 @@
 name: Deploy
 
+# Builds AGCONN's eleven images, pushes them to GHCR, then rolls them out to the
+# shared `aks-sparx-prod-cus` cluster in the `agconn` namespace — co-tenant with
+# sparx, jotacular, kanNINJA and SilicaUI.
+#
+# WHAT CHANGED FROM THE GKE PIPELINE THIS REPLACES. AGCONN moved off GKE +
+# Artifact Registry onto the shared AKS cluster. See
+# docs/00-foundation/10-infra-cicd/09-azure-migration.md.
+#
+#   - COMPUTE ONLY. The data layer did NOT move: Postgres and object storage stay
+#     on Supabase, reached from the cluster over the public internet. Every
+#     DATABASE_* and SUPABASE_* value below is the same value it was on GKE; only
+#     where it is READ FROM changed.
+#   - AUTH is workload identity federation, no stored credential. Azure trusts a
+#     GitHub OIDC token whose subject is
+#     `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The four AZURE_* values
+#     are repository VARIABLES, not secrets — they are public identifiers, and
+#     treating them as secrets only makes a failed run harder to read.
+#   - SECRETS come from Key Vault at deploy time, not from ~45 GitHub Actions
+#     secrets. That list was unauditable and could only be rotated by whoever
+#     held repo admin — and GitHub secrets are WRITE ONLY, so adding one key
+#     meant reconstructing every one of them from a copy kept elsewhere. Adding a
+#     credential is now `az keyvault secret set`.
+#   - NO cert-manager, NO nginx-ingress. TLS and routing for agconn.com /
+#     www / api / admin are handled by the shared Caddy proxy in the `sparx-prod`
+#     namespace (reserved IP 20.12.217.0), which reaches these Services
+#     cross-namespace. Route blocks live in sparx.works/k8s/ingress/Caddyfile,
+#     and all four hostnames must ALSO be allow-listed in api-rest's
+#     PLATFORM_HOSTNAMES or on-demand TLS is denied and Cloudflare 525s.
+#
+# NEXT_PUBLIC_* STAY AS ACTIONS SECRETS, deliberately. They are baked into the
+# client bundle at build time and are public by definition, so a vault buys
+# nothing — and the build job authenticates to GitHub, not to Azure. They also
+# appear in the runtime Secret below, because the server components read some of
+# them at request time; the vault is the source for that copy.
+
 on:
   push:
     branches: [main]
@@ -13,69 +48,79 @@ on:
         options: [prod]
 
 concurrency:
-  group: deploy-${{ inputs.environment || 'prod' }}
+  group: deploy-aks-${{ inputs.environment || 'prod' }}
   cancel-in-progress: false
 
 permissions:
   contents: read
   packages: write
-  id-token: write
+  id-token: write # required for federated auth to Azure
 
 env:
-  REGISTRY: us-west1-docker.pkg.dev
-  AR_PATH: ${{ secrets.GCP_PROJECT_ID }}/containers
-  TAG: ${{ github.sha }}
+  RESOURCE_GROUP: rg-sparx-prod-cus
+  CLUSTER: aks-sparx-prod-cus
+  NAMESPACE: agconn
+  # GHCR, matching every other tenant on this cluster.
+  #
+  # THE NAMES ARE HYPHENATED — `agconn-web`, NOT `agconn/web`. GHCR treats a
+  # slash as a package path under the owner, and the cluster pulls anonymously,
+  # which requires the packages to be PUBLIC. Nothing in deploy/k8s carries an
+  # imagePullSecret for that reason. A pod sitting in ImagePullBackOff with a 401
+  # means a package's visibility reverted to private — check that before the tag.
+  REGISTRY: ghcr.io/brandonkorous
+  IMAGE_PREFIX: agconn
 
 jobs:
   build:
+    name: Build ${{ matrix.target.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         target:
-          - { name: web,             dockerfile: apps/web/Dockerfile,                 image: web }
-          - { name: admin,           dockerfile: apps/admin/Dockerfile,               image: admin }
-          - { name: api,             dockerfile: services/api/Dockerfile,             image: api }
-          - { name: email-worker,    dockerfile: services/email-worker/Dockerfile,    image: email-worker }
-          - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile,      image: sms-worker }
-          - { name: flc-verifier,    dockerfile: services/flc-verifier/Dockerfile,    image: flc-verifier }
-          - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile, image: audit-retention }
-          - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile,  image: audit-verifier }
-          - { name: resume-parser,   dockerfile: services/resume-parser/Dockerfile,   image: resume-parser }
-          - { name: cert-generator,  dockerfile: services/cert-generator/Dockerfile,  image: cert-generator }
-          - { name: scheduler,       dockerfile: services/scheduler/Dockerfile,       image: scheduler }
+          - { name: web,             dockerfile: apps/web/Dockerfile }
+          - { name: admin,           dockerfile: apps/admin/Dockerfile }
+          - { name: api,             dockerfile: services/api/Dockerfile }
+          - { name: email-worker,    dockerfile: services/email-worker/Dockerfile }
+          - { name: sms-worker,      dockerfile: services/sms-worker/Dockerfile }
+          - { name: flc-verifier,    dockerfile: services/flc-verifier/Dockerfile }
+          - { name: audit-retention, dockerfile: services/audit-retention/Dockerfile }
+          - { name: audit-verifier,  dockerfile: services/audit-verifier/Dockerfile }
+          - { name: resume-parser,   dockerfile: services/resume-parser/Dockerfile }
+          - { name: cert-generator,  dockerfile: services/cert-generator/Dockerfile }
+          - { name: scheduler,       dockerfile: services/scheduler/Dockerfile }
     steps:
       - uses: actions/checkout@v4
 
       - uses: docker/setup-buildx-action@v3
 
-      - id: auth
-        uses: google-github-actions/auth@v2
+      - uses: docker/login-action@v3
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: google-github-actions/setup-gcloud@v2
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.target.name }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Configure docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
-
-      - uses: docker/build-push-action@v6
+      - name: Build & push
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.target.dockerfile }}
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.AR_PATH }}/${{ matrix.target.image }}:${{ env.TAG }}
-            ${{ env.REGISTRY }}/${{ env.AR_PATH }}/${{ matrix.target.image }}:latest
+          provenance: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.target.name }}
-          cache-to: type=gha,scope=${{ matrix.target.name }},mode=max
-          # NEXT_PUBLIC_* are inlined into the client bundle by Next.js at build
-          # time, so they have to live here rather than in the runtime K8s
-          # secret. Non-web Dockerfiles ignore unrecognized ARGs (warn-only).
+          cache-to: type=gha,mode=max,scope=${{ matrix.target.name }},ignore-error=true
           build-args: |
             NODE_VERSION=22.12.0
             PNPM_VERSION=10.9.0
@@ -91,195 +136,231 @@ jobs:
           secrets: |
             fontawesome_token=${{ secrets.FONTAWESOME_TOKEN }}
 
-      # Trivy CVE scan deferred — preventative hygiene that flaps when new
-      # CVEs drop in upstream base images. Re-enable when we have actual
-      # users hitting prod and the cost of a vulnerable base image outweighs
-      # the deploy-gate noise. See Phase 6 item 6.8 in docs/GAP-CLOSURE-PLAN.md.
-
   deploy:
+    name: Deploy to AKS
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     environment: ${{ inputs.environment || 'prod' }}
     steps:
       - uses: actions/checkout@v4
 
-      # Federated identity to GCP. The provider + service account are
-      # created by Terraform (infra/terraform). Repo binding is enforced via
-      # the WIF provider's attribute_condition.
-      - id: auth
-        uses: google-github-actions/auth@v2
+      - uses: azure/login@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-      - id: gke
-        uses: google-github-actions/get-gke-credentials@v2
-        with:
-          cluster_name: agconn-prod
-          location: us-west1-a
+      - name: Get cluster credentials
+        run: |
+          set -euo pipefail
+          az aks get-credentials \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" \
+            --overwrite-existing
 
       - name: Install kustomize
         uses: imranismail/setup-kustomize@v2
         with:
           kustomize-version: "5.4.3"
 
-      - name: Ensure namespace, ServiceAccount, and ConfigMap exist
+      - name: Ensure namespace, ServiceAccount and ConfigMap
         run: |
-          # All three are bootstrap resources the migrate Job needs before
-          # the full manifest apply later. Job spec references the agconn SA
-          # AND envFrom configMapRef: agconn-config — both must exist before
-          # K8s will start the pod (FailedCreate / CreateContainerConfigError).
+          set -euo pipefail
           kubectl apply -f deploy/k8s/base/namespace.yaml
           kubectl apply -f deploy/k8s/base/service-account.yaml
           kubectl apply -f deploy/k8s/base/configmap.yaml
 
-      - name: Apply runtime Secret (agconn-env) from GHA secrets
+      # ---------------------------------------------------------------------
+      # Key Vault -> agconn-env
+      #
+      # THE VAULT IS THE SOURCE OF TRUTH. A value patched only with `kubectl` is
+      # reverted by the next push. Add or rotate one with:
+      #
+      #   az keyvault secret set --vault-name kv-agconn-prod-cus \
+      #     --name DATABASE-URL --value '...'
+      #
+      # NAME MAPPING is `${name//_/-}` — case PRESERVING, so the vault holds
+      # UPPERCASE-KEBAB (`DATABASE-URL`), matching jotacular and kanNINJA. sparx's
+      # own pipeline uses `tr 'a-z-' 'A-Z_'` and therefore lowercase names. Mixing
+      # the two conventions produces a secret that reads as present in the portal
+      # and is never found here.
+      #
+      # REQUIRED vs OPTIONAL: required is anything whose absence stops a pod
+      # booting or breaks a core flow. Optional is observability, maps, billing
+      # price ids and the LLM keys — each is reported when present so a silently
+      # missing integration is visible in the log rather than at runtime.
+      # ---------------------------------------------------------------------
+      - name: Read secrets from Key Vault
         env:
-          DATABASE_URL:                          ${{ secrets.DATABASE_URL }}
-          DIRECT_URL:                            ${{ secrets.DIRECT_URL }}
-          AUDIT_HMAC_KEY:                        ${{ secrets.AUDIT_HMAC_KEY }}
-          AUDIT_HMAC_KEY_VERSION:                ${{ secrets.AUDIT_HMAC_KEY_VERSION }}
-          ADMIN_BEARER_TOKEN:                    ${{ secrets.ADMIN_BEARER_TOKEN }}
-          PARTICIPANT_PEPPER:                    ${{ secrets.PARTICIPANT_PEPPER }}
-          CLERK_SECRET_KEY:                      ${{ secrets.CLERK_SECRET_KEY }}
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:     ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          CLERK_WEBHOOK_SECRET:                  ${{ secrets.CLERK_WEBHOOK_SECRET }}
-          RESEND_API_KEY:                        ${{ secrets.RESEND_API_KEY }}
-          RESEND_WEBHOOK_SECRET:                 ${{ secrets.RESEND_WEBHOOK_SECRET }}
-          WAITLIST_TOKEN_SECRET:                 ${{ secrets.WAITLIST_TOKEN_SECRET }}
-          SENTRY_DSN:                            ${{ secrets.SENTRY_DSN }}
-          NEXT_PUBLIC_SENTRY_DSN:                ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-          SENTRY_AUTH_TOKEN:                     ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG:                            ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT:                        ${{ secrets.SENTRY_PROJECT }}
-          NEXT_PUBLIC_POSTHOG_KEY:               ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
-          POSTHOG_API_KEY:                       ${{ secrets.POSTHOG_API_KEY }}
-          STRIPE_SECRET_KEY:                     ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET:                 ${{ secrets.STRIPE_WEBHOOK_SECRET }}
-          STRIPE_PRICE_PRO_MONTHLY:              ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
-          STRIPE_PRICE_PRO_YEARLY:               ${{ secrets.STRIPE_PRICE_PRO_YEARLY }}
-          STRIPE_PRICE_ENT_MONTHLY:              ${{ secrets.STRIPE_PRICE_ENT_MONTHLY }}
-          STRIPE_PRICE_ENT_YEARLY:               ${{ secrets.STRIPE_PRICE_ENT_YEARLY }}
-          STRIPE_PRICE_PRO_FOUNDER_MONTHLY:      ${{ secrets.STRIPE_PRICE_PRO_FOUNDER_MONTHLY }}
-          STRIPE_PRICE_PRO_FOUNDER_YEARLY:       ${{ secrets.STRIPE_PRICE_PRO_FOUNDER_YEARLY }}
-          STRIPE_PRICE_ENT_FOUNDER_MONTHLY:      ${{ secrets.STRIPE_PRICE_ENT_FOUNDER_MONTHLY }}
-          STRIPE_PRICE_ENT_FOUNDER_YEARLY:       ${{ secrets.STRIPE_PRICE_ENT_FOUNDER_YEARLY }}
-          TWILIO_ACCOUNT_SID:                    ${{ secrets.TWILIO_ACCOUNT_SID }}
-          TWILIO_AUTH_TOKEN:                     ${{ secrets.TWILIO_AUTH_TOKEN }}
-          TWILIO_MESSAGING_SERVICE_SID:          ${{ secrets.TWILIO_MESSAGING_SERVICE_SID }}
-          TWILIO_INBOUND_PHONE:                  ${{ secrets.TWILIO_INBOUND_PHONE }}
-          SUPABASE_URL:                          ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY:             ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_MAPBOX_TOKEN:              ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
-          # Admin app — separate Clerk instance + own Sentry project. Both the
-          # admin pod and the api pod read these at runtime; build-args only
-          # inline NEXT_PUBLIC_* into the client bundle, not process.env.
-          NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY }}
-          ADMIN_CLERK_SECRET_KEY:                ${{ secrets.ADMIN_CLERK_SECRET_KEY }}
-          # Required by clerkMiddleware's dynamic-keys mode (we pass
-          # secretKey/publishableKey to bind admin middleware to the admin
-          # Clerk instance). Used by both admin pod and api pod. See
-          # https://clerk.com/docs/references/nextjs/clerk-middleware#dynamic-keys
-          CLERK_ENCRYPTION_KEY:                  ${{ secrets.CLERK_ENCRYPTION_KEY }}
-          NEXT_PUBLIC_ADMIN_URL:                 ${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
-          NEXT_PUBLIC_SENTRY_DSN_ADMIN:          ${{ secrets.NEXT_PUBLIC_SENTRY_DSN_ADMIN }}
-          SENTRY_PROJECT_ADMIN:                  ${{ secrets.SENTRY_PROJECT_ADMIN }}
-          INTERNAL_REVALIDATE_SECRET:            ${{ secrets.INTERNAL_REVALIDATE_SECRET }}
-          WEB_INTERNAL_BASE_URL:                 ${{ secrets.WEB_INTERNAL_BASE_URL }}
-          # Tags every Sentry event with the deploy commit so regressions
-          # bisect to a release. Backend SDKs read this at runtime; web/admin
-          # also bake it into the client bundle via build-args.
-          SENTRY_RELEASE:                        ${{ github.sha }}
+          VAULT: ${{ vars.AZURE_KEY_VAULT_NAME }}
         run: |
           set -euo pipefail
-          kubectl -n agconn create secret generic agconn-env \
-            --from-literal=DATABASE_URL="$DATABASE_URL" \
-            --from-literal=DIRECT_URL="$DIRECT_URL" \
-            --from-literal=AUDIT_HMAC_KEY="$AUDIT_HMAC_KEY" \
-            --from-literal=AUDIT_HMAC_KEY_VERSION="$AUDIT_HMAC_KEY_VERSION" \
-            --from-literal=ADMIN_BEARER_TOKEN="$ADMIN_BEARER_TOKEN" \
-            --from-literal=PARTICIPANT_PEPPER="$PARTICIPANT_PEPPER" \
-            --from-literal=CLERK_SECRET_KEY="$CLERK_SECRET_KEY" \
-            --from-literal=NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" \
-            --from-literal=CLERK_WEBHOOK_SECRET="$CLERK_WEBHOOK_SECRET" \
-            --from-literal=RESEND_API_KEY="$RESEND_API_KEY" \
-            --from-literal=RESEND_WEBHOOK_SECRET="$RESEND_WEBHOOK_SECRET" \
-            --from-literal=WAITLIST_TOKEN_SECRET="$WAITLIST_TOKEN_SECRET" \
-            --from-literal=SENTRY_DSN="$SENTRY_DSN" \
-            --from-literal=NEXT_PUBLIC_SENTRY_DSN="$NEXT_PUBLIC_SENTRY_DSN" \
-            --from-literal=SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
-            --from-literal=SENTRY_ORG="$SENTRY_ORG" \
-            --from-literal=SENTRY_PROJECT="$SENTRY_PROJECT" \
-            --from-literal=NEXT_PUBLIC_POSTHOG_KEY="$NEXT_PUBLIC_POSTHOG_KEY" \
-            --from-literal=POSTHOG_API_KEY="$POSTHOG_API_KEY" \
-            --from-literal=STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" \
-            --from-literal=STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" \
-            --from-literal=STRIPE_PRICE_PRO_MONTHLY="$STRIPE_PRICE_PRO_MONTHLY" \
-            --from-literal=STRIPE_PRICE_PRO_YEARLY="$STRIPE_PRICE_PRO_YEARLY" \
-            --from-literal=STRIPE_PRICE_ENT_MONTHLY="$STRIPE_PRICE_ENT_MONTHLY" \
-            --from-literal=STRIPE_PRICE_ENT_YEARLY="$STRIPE_PRICE_ENT_YEARLY" \
-            --from-literal=STRIPE_PRICE_PRO_FOUNDER_MONTHLY="$STRIPE_PRICE_PRO_FOUNDER_MONTHLY" \
-            --from-literal=STRIPE_PRICE_PRO_FOUNDER_YEARLY="$STRIPE_PRICE_PRO_FOUNDER_YEARLY" \
-            --from-literal=STRIPE_PRICE_ENT_FOUNDER_MONTHLY="$STRIPE_PRICE_ENT_FOUNDER_MONTHLY" \
-            --from-literal=STRIPE_PRICE_ENT_FOUNDER_YEARLY="$STRIPE_PRICE_ENT_FOUNDER_YEARLY" \
-            --from-literal=TWILIO_ACCOUNT_SID="$TWILIO_ACCOUNT_SID" \
-            --from-literal=TWILIO_AUTH_TOKEN="$TWILIO_AUTH_TOKEN" \
-            --from-literal=TWILIO_MESSAGING_SERVICE_SID="$TWILIO_MESSAGING_SERVICE_SID" \
-            --from-literal=TWILIO_INBOUND_PHONE="$TWILIO_INBOUND_PHONE" \
-            --from-literal=SUPABASE_URL="$SUPABASE_URL" \
-            --from-literal=SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
-            --from-literal=NEXT_PUBLIC_MAPBOX_TOKEN="$NEXT_PUBLIC_MAPBOX_TOKEN" \
-            --from-literal=NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY" \
-            --from-literal=ADMIN_CLERK_SECRET_KEY="$ADMIN_CLERK_SECRET_KEY" \
-            --from-literal=CLERK_ENCRYPTION_KEY="$CLERK_ENCRYPTION_KEY" \
-            --from-literal=NEXT_PUBLIC_ADMIN_URL="$NEXT_PUBLIC_ADMIN_URL" \
-            --from-literal=NEXT_PUBLIC_SENTRY_DSN_ADMIN="$NEXT_PUBLIC_SENTRY_DSN_ADMIN" \
-            --from-literal=SENTRY_PROJECT_ADMIN="$SENTRY_PROJECT_ADMIN" \
-            --from-literal=INTERNAL_REVALIDATE_SECRET="$INTERNAL_REVALIDATE_SECRET" \
-            --from-literal=WEB_INTERNAL_BASE_URL="$WEB_INTERNAL_BASE_URL" \
-            --from-literal=SENTRY_RELEASE="$SENTRY_RELEASE" \
-            --dry-run=client -o yaml | kubectl apply -f -
+          umask 077
+          : > /tmp/agconn.env
 
-      - name: Pin image tags via kustomize
+          required=(
+            DATABASE_URL
+            DIRECT_URL
+            AUDIT_HMAC_KEY
+            AUDIT_HMAC_KEY_VERSION
+            ADMIN_BEARER_TOKEN
+            PARTICIPANT_PEPPER
+            CLERK_SECRET_KEY
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+            CLERK_WEBHOOK_SECRET
+            CLERK_ENCRYPTION_KEY
+            ADMIN_CLERK_SECRET_KEY
+            NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY
+            NEXT_PUBLIC_ADMIN_URL
+            RESEND_API_KEY
+            RESEND_WEBHOOK_SECRET
+            WAITLIST_TOKEN_SECRET
+            SUPABASE_URL
+            SUPABASE_SERVICE_ROLE_KEY
+            TWILIO_ACCOUNT_SID
+            TWILIO_AUTH_TOKEN
+            TWILIO_MESSAGING_SERVICE_SID
+            TWILIO_INBOUND_PHONE
+            STRIPE_SECRET_KEY
+            STRIPE_WEBHOOK_SECRET
+            INTERNAL_REVALIDATE_SECRET
+            WEB_INTERNAL_BASE_URL
+          )
+
+          optional=(
+            SENTRY_DSN NEXT_PUBLIC_SENTRY_DSN SENTRY_AUTH_TOKEN
+            SENTRY_ORG SENTRY_PROJECT SENTRY_PROJECT_ADMIN
+            NEXT_PUBLIC_SENTRY_DSN_ADMIN
+            NEXT_PUBLIC_POSTHOG_KEY POSTHOG_API_KEY
+            NEXT_PUBLIC_MAPBOX_TOKEN
+            STRIPE_PRICE_PRO_MONTHLY STRIPE_PRICE_PRO_YEARLY
+            STRIPE_PRICE_ENT_MONTHLY STRIPE_PRICE_ENT_YEARLY
+            STRIPE_PRICE_PRO_FOUNDER_MONTHLY STRIPE_PRICE_PRO_FOUNDER_YEARLY
+            STRIPE_PRICE_ENT_FOUNDER_MONTHLY STRIPE_PRICE_ENT_FOUNDER_YEARLY
+            ANTHROPIC_API_KEY OPENAI_API_KEY LLM_FALLBACKS
+          )
+
+          missing=()
+          for name in "${required[@]}"; do
+            kv_name="${name//_/-}"
+            if value=$(az keyvault secret show --vault-name "$VAULT" \
+                         --name "$kv_name" --query value -o tsv 2>/dev/null); then
+              printf '%s=%s\n' "$name" "$value" >> /tmp/agconn.env
+            else
+              missing+=("$kv_name")
+            fi
+          done
+
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required secrets in $VAULT: ${missing[*]}"
+            echo "Set one with: az keyvault secret set --vault-name $VAULT --name <NAME> --value '...'"
+            exit 1
+          fi
+
+          for name in "${optional[@]}"; do
+            kv_name="${name//_/-}"
+            if value=$(az keyvault secret show --vault-name "$VAULT" \
+                         --name "$kv_name" --query value -o tsv 2>/dev/null); then
+              printf '%s=%s\n' "$name" "$value" >> /tmp/agconn.env
+              echo "optional secret present: $name"
+            else
+              echo "optional secret absent: $name"
+            fi
+          done
+
+          # Not a vault value — it is this commit. Sentry ties errors to a build
+          # with it, so it has to be written per deploy rather than stored.
+          printf 'SENTRY_RELEASE=%s\n' "$GITHUB_SHA" >> /tmp/agconn.env
+
+          # resume-parser and the translation helper need one of these two.
+          # Neither is required above because the rest of the platform boots
+          # without them; say so loudly rather than letting it surface as a
+          # failed job three hours later.
+          if ! grep -qE '^(ANTHROPIC_API_KEY|OPENAI_API_KEY)=' /tmp/agconn.env; then
+            echo "::warning::No LLM key in the vault — resume parsing and LLM-assisted translation are disabled this deploy."
+          fi
+
+      - name: Apply the runtime Secret
+        run: |
+          set -euo pipefail
+          kubectl create secret generic agconn-env -n "$NAMESPACE" \
+            --from-env-file=/tmp/agconn.env \
+            --dry-run=client -o yaml | kubectl apply -f -
+          rm -f /tmp/agconn.env
+          echo "Applied agconn-env."
+
+      # ---------------------------------------------------------------------
+      # Migrations run as an in-cluster Job rather than from this runner.
+      #
+      # Supabase IS publicly reachable, so the runner COULD do it — the reason it
+      # does not is that the Job runs the exact image being deployed, which keeps
+      # the schema and the code that expects it in lockstep. It also keeps the
+      # step identical for the day the database moves into the VNet, where an
+      # in-cluster Job stops being a preference and becomes the only thing that
+      # can reach it.
+      #
+      # The Job name carries the tag, so each deploy creates a fresh one and this
+      # step waits on that specific Job rather than a stale completed one.
+      #
+      # Prisma's schema engine reads DIRECT_URL (packages/db/prisma.config.ts),
+      # not DATABASE_URL — transaction-mode pooling breaks its prepared
+      # statements. Both are in agconn-env, so the manifest needs no special
+      # wiring; it is worth knowing when a migration fails with a prepared
+      # statement error.
+      # ---------------------------------------------------------------------
+      - name: Migrate the schema
+        run: |
+          set -euo pipefail
+          TAG="sha-${GITHUB_SHA::7}"
+          API_IMAGE="${REGISTRY}/${IMAGE_PREFIX}-api:${TAG}"
+
+          kubectl delete job "db-migrate-${TAG}" -n "$NAMESPACE" --ignore-not-found
+
+          sed -e "s|REPLACE_IMAGE|${API_IMAGE}|g" -e "s|REPLACE_TAG|${TAG}|g" \
+            deploy/k8s/base/db-migrate-job.yaml | kubectl apply -f -
+
+          if ! kubectl wait --for=condition=complete "job/db-migrate-${TAG}" \
+                 -n "$NAMESPACE" --timeout=600s; then
+            echo "::error::Migration job did not complete. Logs follow."
+            kubectl logs "job/db-migrate-${TAG}" -n "$NAMESPACE" --tail=200 || true
+            exit 1
+          fi
+          kubectl logs "job/db-migrate-${TAG}" -n "$NAMESPACE" --tail=50
+
+      - name: Pin image tags
         working-directory: deploy/k8s/overlays/prod
         run: |
           set -euo pipefail
-          AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
-          TAG=${{ env.TAG }}
-          for img in web admin api email-worker sms-worker flc-verifier audit-retention audit-verifier resume-parser cert-generator scheduler; do
-            kustomize edit set image ${AR_BASE}/${img}=${AR_BASE}/${img}:${TAG}
+          TAG="sha-${GITHUB_SHA::7}"
+          for img in web admin api email-worker sms-worker flc-verifier \
+                     audit-retention audit-verifier resume-parser \
+                     cert-generator scheduler; do
+            kustomize edit set image \
+              "${REGISTRY}/${IMAGE_PREFIX}-${img}=${REGISTRY}/${IMAGE_PREFIX}-${img}:${TAG}"
           done
-
-      - name: Run DB migrate Job (waits for completion)
-        run: |
-          set -euo pipefail
-          AR_BASE="${{ env.REGISTRY }}/${{ env.AR_PATH }}"
-          TAG=${{ env.TAG }}
-          sed -e "s|REPLACE_AR_BASE|${AR_BASE}|g" -e "s|REPLACE_TAG|${TAG}|g" \
-            deploy/k8s/base/db-migrate-job.yaml | kubectl apply -f -
-          kubectl -n agconn wait --for=condition=complete --timeout=10m \
-            job/db-migrate-${TAG} || {
-              kubectl -n agconn logs job/db-migrate-${TAG} || true
-              exit 1
-            }
 
       - name: Apply manifests
         run: |
+          set -euo pipefail
           kubectl apply -k deploy/k8s/overlays/prod
-          kubectl -n agconn rollout status deployment/web --timeout=10m
-          kubectl -n agconn rollout status deployment/admin --timeout=10m
-          kubectl -n agconn rollout status deployment/api --timeout=10m
-          kubectl -n agconn rollout status deployment/email-worker --timeout=5m
-          kubectl -n agconn rollout status deployment/sms-worker --timeout=5m
-          kubectl -n agconn rollout status deployment/flc-verifier --timeout=5m
-          kubectl -n agconn rollout status deployment/resume-parser --timeout=5m
-          kubectl -n agconn rollout status deployment/cert-generator --timeout=5m
-          kubectl -n agconn rollout status deployment/scheduler --timeout=5m
+
+      # Rollout waits are split from the apply so a hung Deployment names itself
+      # in the log instead of failing an opaque combined step.
+      #
+      # The node is single and shared with four other products: every Deployment
+      # here is `replicas: 1`, so a rollout SURGES one extra pod each while images
+      # are still pulling. If a rollout times out with the pod Pending, read
+      # `kubectl -n agconn describe pod` before assuming the image is bad —
+      # insufficient memory and a leftover nodeSelector both look like this.
+      - name: Wait for rollouts
+        run: |
+          set -euo pipefail
+          for d in web admin api email-worker sms-worker scheduler \
+                   flc-verifier resume-parser cert-generator; do
+            echo "--- rollout: $d"
+            kubectl -n "$NAMESPACE" rollout status "deployment/$d" --timeout=10m
+          done
 
       - name: Ping IndexNow with sitemap URLs
         env:

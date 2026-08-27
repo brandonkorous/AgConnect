@@ -18,9 +18,24 @@ resources:
   - scheduler-deployment.yaml
   - audit-cronjobs.yaml
   - flc-cronjobs.yaml
-  - keda-scaledobjects.yaml
-  - ingress.yaml
   - network-policy.yaml
+
+# NOT LISTED, and both are deliberate rather than forgotten. Each file is still
+# on disk with a header explaining itself; neither is applied.
+#
+#   ingress.yaml           The shared AKS cluster has no nginx-ingress and no
+#                          cert-manager. Routing and TLS for agconn.com / www /
+#                          api / admin are handled by the Caddy proxy in the
+#                          `sparx-prod` namespace, which reaches these Services
+#                          cross-namespace. Applying this file fails outright —
+#                          `no matches for kind "ClusterIssuer"`.
+#   keda-scaledobjects.yaml  No KEDA operator on that cluster either, so the
+#                          CRDs do not exist and the apply fails the same way.
+#                          The three workers it scaled now carry `replicas: 1`.
+#
+# No imagePullSecrets anywhere in this base: the GHCR packages are public, so the
+# kubelet pulls anonymously. A pod in ImagePullBackOff with a 401 means a
+# package's visibility reverted to private — check that before the tag.
 
 # Container-level securityContext additions to satisfy Pod Security Standards
 # `restricted`. Pod-level runAsNonRoot + seccompProfile + non-zero runAsUser
