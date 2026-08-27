@@ -19,6 +19,22 @@ data:
   # runtime Secret as an unset repository secret, which rendered as "" and made
   # every revalidate POST target an empty URL.
   WEB_INTERNAL_BASE_URL: "http://web"
+  # The mirror of the line above, and the one that was missing. web's server-side
+  # render fetches every translation from api at /v1/i18n/messages
+  # (src/i18n/messages.ts), which reads API_BASE_URL and falls back to
+  # NEXT_PUBLIC_API_BASE_URL when it is unset.
+  #
+  # That fallback is a public hostname, so an unset value sent every SSR message
+  # lookup out through Cloudflare and back. On this cluster api.agconn.com does
+  # not resolve here yet, so the fetch failed, getMessages returned {}, and
+  # next-intl rendered each key as its own path — the page shipped the literal
+  # text "landing.pricing" to the browser while still returning 200.
+  #
+  # Keep it cluster-internal even after DNS lands. A server rendering against its
+  # own API has no business leaving the node to do it: the public path adds a
+  # round trip through the proxy and makes every render depend on external DNS
+  # and TLS being healthy.
+  API_BASE_URL: "http://api"
   NEXT_PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com"
   POSTHOG_HOST: "https://us.i.posthog.com"
   RESEND_FROM_EMAIL: "AGCONN <hello@agconn.com>"
