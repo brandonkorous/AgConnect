@@ -35,7 +35,7 @@
     "@opentelemetry/api": "^1.9.1",
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
-    "@wizeworks/lens-node": "0.3.0-alpha.9",
+    "@wizeworks/lens-node": "0.3.0-alpha.10",
     "pg": "8.20.0"
   },
   "devDependencies": {
