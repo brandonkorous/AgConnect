@@ -1,5 +1,11 @@
 # GitHub Actions Secrets — AGCONN
 
+> **Superseded 2026-10-22.** Runtime and build secrets now live in Azure Key Vault
+> `kv-agconn-prod-cus`, read by [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+> A name like `FOO_BAR` is stored as `FOO-BAR`. Set or rotate one with
+> `az keyvault secret set --vault-name kv-agconn-prod-cus --name FOO-BAR --value '...'`.
+> The repository secrets below are no longer read by any workflow.
+
 Set under **Settings → Secrets and variables → Actions** at the repo level (or
 under a `prod` GitHub Environment if you want to scope them later). Total: 33.
 
