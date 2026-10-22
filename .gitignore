@@ -43,6 +43,8 @@ coverage/
 # Misc
 .turbo/
 .cache/
+# WizeLens local trace store (development)
+.wizelens/
 
 # One-shot secrets push script — never commit values.
 set-github-secrets.ps1

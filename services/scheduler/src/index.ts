@@ -1,6 +1,10 @@
 import { PgBoss } from 'pg-boss';
+import { traceWorker } from '@agconn/db/wizelens';
 import { runSavedSearchDispatcher } from './saved-search-dispatcher.js';
 import { runTrainingReminders } from './training-reminders.js';
+
+// WizeLens: one trace per job batch; see packages/db/src/wizelens.ts.
+traceWorker('agconn-scheduler', PgBoss);
 
 // Single scheduler service that owns every cron job + every queue consumer
 // that isn't tied to a specific output adapter (SMS, email). The cert

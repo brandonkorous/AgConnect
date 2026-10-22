@@ -1,4 +1,5 @@
 import './instrument.js';
+import { wizelensMiddleware } from './lib/wizelens.js';
 import * as Sentry from '@sentry/node';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
@@ -70,6 +71,7 @@ import { employerReportsRoutes } from './employer/reports/routes.js';
 
 const app = new Hono<{ Variables: AuditCtxVars }>();
 
+if (wizelensMiddleware) app.use('*', wizelensMiddleware);
 app.use('*', logger());
 app.use(
     '*',

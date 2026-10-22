@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import { inter, interTight, dmMono } from '@/lib/fonts';
+import { WizeLens } from '@/components/WizeLens';
 import {
     adminClerkPublishableKey,
     clerkConfigured,
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en" data-theme="tierra-light" style={{ colorScheme: 'light' }} className={fontVars}>
             <body className="bg-base-200 text-base-content antialiased">
                 <MaybeClerkProvider>{children}</MaybeClerkProvider>
+                <WizeLens />
             </body>
         </html>
     );

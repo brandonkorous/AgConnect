@@ -27,6 +27,12 @@ spec:
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }
+          env:
+            # WizeLens ingest key for this app alone. Optional: a missing key
+            # leaves the pod running, untraced in the cloud.
+            - name: WIZELENS_HUB_TOKEN
+              valueFrom:
+                secretKeyRef: { name: agconn-env, key: WIZELENS_KEY_FLC_VERIFIER, optional: true }
           resources:
             requests: { cpu: 25m, memory: 192Mi }
             # MSPA ingest holds ~12k rows in memory while parsing; bumping

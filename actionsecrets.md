@@ -125,6 +125,30 @@ Injected into the `agconn-env` K8s Secret at deploy time. Rotation = redeploy.
 |---|
 | `NEXT_PUBLIC_MAPBOX_TOKEN` |
 
+### WizeLens (tracing) — 9, optional
+
+One ingest key per deployed app, all in the WizeLens Cloud project `agconnect`
+(app.wizelens.com → project → Keys). Each Deployment maps its own key to
+`WIZELENS_HUB_TOKEN`; the rest of the setup is in
+[`deploy/k8s/base/configmap.yaml`](deploy/k8s/base/configmap.yaml). A missing key
+leaves that app running and untraced in the cloud.
+
+| Name | App |
+|---|---|
+| `WIZELENS_KEY_WEB` | `web` |
+| `WIZELENS_KEY_ADMIN` | `admin` |
+| `WIZELENS_KEY_API` | `api` |
+| `WIZELENS_KEY_EMAIL_WORKER` | `email-worker` |
+| `WIZELENS_KEY_SMS_WORKER` | `sms-worker` |
+| `WIZELENS_KEY_FLC_VERIFIER` | `flc-verifier` |
+| `WIZELENS_KEY_RESUME_PARSER` | `resume-parser` |
+| `WIZELENS_KEY_CERT_GENERATOR` | `cert-generator` |
+| `WIZELENS_KEY_SCHEDULER` | `scheduler` |
+
+```bash
+gh secret set WIZELENS_KEY_API -R brandonkorous/AgConnect   # paste the key when asked
+```
+
 ---
 
 ## Counts

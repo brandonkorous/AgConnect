@@ -84,6 +84,7 @@ before the first deploy:
 | Twilio | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_MESSAGING_SERVICE_SID`, `TWILIO_INBOUND_PHONE` (E.164 — public, displayed on marketing surfaces and printed on opt-in flyers) |
 | Supabase Storage | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |
 | Mapbox | `NEXT_PUBLIC_MAPBOX_TOKEN` |
+| WizeLens (optional) | `WIZELENS_KEY_WEB`, `WIZELENS_KEY_ADMIN`, `WIZELENS_KEY_API`, `WIZELENS_KEY_EMAIL_WORKER`, `WIZELENS_KEY_SMS_WORKER`, `WIZELENS_KEY_FLC_VERIFIER`, `WIZELENS_KEY_RESUME_PARSER`, `WIZELENS_KEY_CERT_GENERATOR`, `WIZELENS_KEY_SCHEDULER`: one ingest key per app from the WizeLens Cloud project `agconnect`. See [`../actionsecrets.md`](../actionsecrets.md). |
 
 ### 3. Cluster controllers (Terraform-managed)
 

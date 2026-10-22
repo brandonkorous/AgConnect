@@ -1,4 +1,13 @@
 import * as Sentry from '@sentry/nextjs';
+import { installReactHook } from '@wizeworks/lens-react';
+import { serverTraces } from './components/providers/WizeLens';
+
+// WizeLens: React reports every commit to a global hook that react-dom reads
+// once, when it loads, and this file runs before hydration. Installing it here
+// times each render per component, only when this page's server traces it.
+if (serverTraces()) {
+    installReactHook();
+}
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 

@@ -1,6 +1,10 @@
 import { PgBoss } from 'pg-boss';
+import { traceWorker } from '@agconn/db/wizelens';
 import { FLC_VERIFY_QUEUE, type FlcVerifyJob } from '@agconn/flc-verify';
 import { handleVerifyJob } from './handler.js';
+
+// WizeLens: one trace per job batch; see packages/db/src/wizelens.ts.
+traceWorker('agconn-flc-verifier', PgBoss);
 
 // Scale-to-zero consumer for the per-employer FLC verification queue.
 //

@@ -23,6 +23,12 @@ spec:
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }
+          env:
+            # WizeLens ingest key for this app alone. Optional: a missing key
+            # leaves the pod running, untraced in the cloud.
+            - name: WIZELENS_HUB_TOKEN
+              valueFrom:
+                secretKeyRef: { name: agconn-env, key: WIZELENS_KEY_EMAIL_WORKER, optional: true }
           resources:
             requests: { cpu: 25m, memory: 128Mi }
             limits: { cpu: 500m, memory: 512Mi }

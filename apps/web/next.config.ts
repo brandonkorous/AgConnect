@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     // Workspace packages export TypeScript source via the "source" condition.
     // SWC transpiles them so no pre-build step is required during next build.
     transpilePackages: ['@agconn/api-client', '@agconn/auth', '@agconn/schemas', '@agconn/sms', '@agconn/ui'],
+    // WizeLens hooks node:http at runtime; bundling it would break that.
+    serverExternalPackages: ['@wizeworks/lens-node'],
     webpack(config) {
         // Prepend the custom "source" condition so webpack picks up the TypeScript
         // source entry from workspace package exports before the "import" condition
