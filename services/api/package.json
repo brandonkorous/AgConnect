@@ -26,6 +26,7 @@
     "@hono/node-server": "^1.13.0",
     "@sentry/node": "10.51.0",
     "@supabase/supabase-js": "^2.45.0",
+    "@wizeworks/lens-node": "0.3.0-alpha.9",
     "hono": "4.12.15",
     "pg-boss": "12.18.1",
     "stripe": "22.1.0",

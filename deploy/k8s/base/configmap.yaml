@@ -48,3 +48,9 @@ data:
   # REMOVE before real workers are on the platform — quiet-hours compliance is
   # a TCPA/FCC legal requirement. Tracked: revert with launch.
   SMS_QUIET_HOURS_DISABLED: "1"
+  # WizeLens tracing (web, admin, api and the pg-boss workers), SEND-ONLY in
+  # production: no dashboard, traces go to the hub. Each Deployment maps its own
+  # ingest key (WIZELENS_KEY_<APP> in agconn-env) to WIZELENS_HUB_TOKEN.
+  WIZELENS_ENABLED: "true"
+  WIZELENS_HUB: "https://app.wizelens.com"
+  WIZELENS_SAMPLE_RATE: "0.25"

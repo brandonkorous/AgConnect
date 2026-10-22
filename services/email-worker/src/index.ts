@@ -1,4 +1,9 @@
+import { PgBoss } from 'pg-boss';
+import { traceWorker } from '@agconn/db/wizelens';
 import { runEmailWorker } from '@agconn/email';
+
+// WizeLens: one trace per job batch; see packages/db/src/wizelens.ts.
+traceWorker('agconn-email-worker', PgBoss);
 
 const ENV_KEYS_REQUIRED = [
   'DATABASE_URL',

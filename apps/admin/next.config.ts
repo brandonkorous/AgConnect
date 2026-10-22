@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   outputFileTracingRoot: process.env.NEXT_OUTPUT_FILE_TRACING_ROOT,
   transpilePackages: ['@agconn/api-client', '@agconn/schemas', '@agconn/ui'],
+  // WizeLens hooks node:http at runtime; bundling it would break that.
+  serverExternalPackages: ['@wizeworks/lens-node'],
   // Turbopack is the Next 16 default for build. Workspace packages
   // (@agconn/api-client, @agconn/schemas) resolve via their `import` export
   // condition to pre-built `dist/` outputs — the Dockerfile builds those

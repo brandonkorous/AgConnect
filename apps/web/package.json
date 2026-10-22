@@ -35,6 +35,8 @@
     "@tanstack/query-sync-storage-persister": "^5.62.0",
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-query-persist-client": "^5.62.0",
+    "@wizeworks/lens-node": "0.3.0-alpha.9",
+    "@wizeworks/lens-react": "0.3.0-alpha.9",
     "mapbox-gl": "^3.23.0",
     "next": "16.2.4",
     "next-intl": "4.11.0",

@@ -1,8 +1,12 @@
 import { PgBoss } from 'pg-boss';
+import { traceWorker } from '@agconn/db/wizelens';
 import { prisma, EnrollmentStatus } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 import { renderCertPdf } from './render.js';
 import { uploadCert } from './storage.js';
+
+// WizeLens: one trace per job batch; see packages/db/src/wizelens.ts.
+traceWorker('agconn-cert-generator', PgBoss);
 
 // Cert generator: consumes `enrollment.completed` events and produces a
 // bilingual certificate PDF. Renders via React-PDF, uploads to the private

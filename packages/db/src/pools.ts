@@ -58,10 +58,21 @@ function createClient(name: PoolName, max: number): PrismaClient {
     max,
     application_name: `agconn-${name}`,
   });
-  return new PrismaClient({
+  const client = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
   });
+  return withWizeLens(client);
+}
+
+// Set by startWizeLens (./wizelens.ts) in a process that traces itself; unset
+// everywhere else, so the client is exactly what it was.
+function withWizeLens(client: PrismaClient): PrismaClient {
+  const extension = (globalThis as { __wizelensPrisma?: unknown }).__wizelensPrisma;
+  if (!extension) return client;
+  // A one-method view: Prisma's own $extends typing is too deep for tsc here.
+  const extendable = client as unknown as { $extends(extension: unknown): unknown };
+  return extendable.$extends(extension) as PrismaClient;
 }
 
 // Lazy per-pool instantiation. Building a client requires DATABASE_URL, which

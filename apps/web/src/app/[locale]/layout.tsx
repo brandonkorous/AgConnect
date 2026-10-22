@@ -9,6 +9,7 @@ import { routing } from '@/i18n/routing';
 import { inter, interTight, dmMono } from '@/lib/fonts';
 import { dataThemeFor, DEFAULT_THEME, themeInitScript } from '@/lib/theme';
 import { AppShellProviders } from '@/components/app-shell/AppShellProviders';
+import { WizeLens } from '@/components/providers/WizeLens';
 import '../globals.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
@@ -93,6 +94,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                         </AppShellProviders>
                     </NextIntlClientProvider>
                 </MaybeClerkProvider>
+                <WizeLens />
             </body>
         </html>
     );

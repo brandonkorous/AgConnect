@@ -273,6 +273,15 @@ jobs:
           NEXT_PUBLIC_MAPBOX_TOKEN:                ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
           ANTHROPIC_API_KEY:                       ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY:                          ${{ secrets.OPENAI_API_KEY }}
+          WIZELENS_KEY_WEB:                        ${{ secrets.WIZELENS_KEY_WEB }}
+          WIZELENS_KEY_ADMIN:                      ${{ secrets.WIZELENS_KEY_ADMIN }}
+          WIZELENS_KEY_API:                        ${{ secrets.WIZELENS_KEY_API }}
+          WIZELENS_KEY_EMAIL_WORKER:               ${{ secrets.WIZELENS_KEY_EMAIL_WORKER }}
+          WIZELENS_KEY_SMS_WORKER:                 ${{ secrets.WIZELENS_KEY_SMS_WORKER }}
+          WIZELENS_KEY_FLC_VERIFIER:               ${{ secrets.WIZELENS_KEY_FLC_VERIFIER }}
+          WIZELENS_KEY_RESUME_PARSER:              ${{ secrets.WIZELENS_KEY_RESUME_PARSER }}
+          WIZELENS_KEY_CERT_GENERATOR:             ${{ secrets.WIZELENS_KEY_CERT_GENERATOR }}
+          WIZELENS_KEY_SCHEDULER:                  ${{ secrets.WIZELENS_KEY_SCHEDULER }}
           INTERNAL_REVALIDATE_SECRET:              ${{ steps.revalidate.outputs.value }}
           SENTRY_RELEASE:                          ${{ github.sha }}
         run: |
@@ -299,8 +308,9 @@ jobs:
             INTERNAL_REVALIDATE_SECRET SENTRY_RELEASE
           )
 
-          # Observability, maps, billing price ids and the LLM keys. Absent is a
-          # supported state for each; the platform boots without them.
+          # Observability (incl. one WizeLens ingest key per app), maps, billing
+          # price ids and the LLM keys. Absent is a supported state for each; the
+          # platform boots without them.
           optional=(
             STRIPE_PRICE_PRO_MONTHLY STRIPE_PRICE_PRO_YEARLY
             STRIPE_PRICE_ENT_MONTHLY STRIPE_PRICE_ENT_YEARLY
@@ -312,6 +322,10 @@ jobs:
             NEXT_PUBLIC_POSTHOG_KEY POSTHOG_API_KEY
             NEXT_PUBLIC_MAPBOX_TOKEN
             ANTHROPIC_API_KEY OPENAI_API_KEY
+            WIZELENS_KEY_WEB WIZELENS_KEY_ADMIN WIZELENS_KEY_API
+            WIZELENS_KEY_EMAIL_WORKER WIZELENS_KEY_SMS_WORKER
+            WIZELENS_KEY_FLC_VERIFIER WIZELENS_KEY_RESUME_PARSER
+            WIZELENS_KEY_CERT_GENERATOR WIZELENS_KEY_SCHEDULER
           )
 
           missing=()

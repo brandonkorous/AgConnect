@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@agconn/db": "workspace:*",
-    "@agconn/email": "workspace:*"
+    "@agconn/email": "workspace:*",
+    "pg-boss": "12.18.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

@@ -1,7 +1,11 @@
 import { PgBoss } from 'pg-boss';
+import { traceWorker } from '@agconn/db/wizelens';
 import { ParseExtractKind, ParseJobStatus, prisma } from '@agconn/db';
 import { isProviderConfigured } from '@agconn/llm';
 import { parseResume, type ParseResult } from './parser.js';
+
+// WizeLens: one trace per job batch; see packages/db/src/wizelens.ts.
+traceWorker('agconn-resume-parser', PgBoss);
 
 // Resume parser: consumes `resume.parse` events. Each job carries a tenant +
 // worker user id + the raw text/PDF URL of an uploaded resume. We extract a

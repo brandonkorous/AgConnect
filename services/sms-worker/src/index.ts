@@ -1,7 +1,12 @@
+import { PgBoss } from 'pg-boss';
+import { traceWorker } from '@agconn/db/wizelens';
 import { runSmsWorker, getSmsBoss } from '@agconn/sms';
 import { startRenotifyWorker } from './renotify.js';
 import { startAutomatchWorker } from './automatch.js';
 import { startProvisionWorker } from './provision.js';
+
+// WizeLens: one trace per job batch; see packages/db/src/wizelens.ts.
+traceWorker('agconn-sms-worker', PgBoss);
 
 // CLERK_SECRET_KEY is required by the sms.provision consumer (identity
 // keystone) — fail fast at startup rather than on the first inbound SMS.
