@@ -359,6 +359,22 @@ jobs:
           set -euo pipefail
           kubectl apply -k deploy/k8s/overlays/prod
 
+      # A pod reads its Secrets only when it starts, and a deploy whose image
+      # did not change leaves the pods alone, so a changed key went unread.
+      # A hash of the Secrets on the pod template changes exactly when they
+      # do, and that change rolls the pods.
+      - name: Restart pods when their Secrets change
+        run: |
+          set -euo pipefail
+          hash=$(for s in agconn-env; do
+            kubectl get secret "$s" -n "$NAMESPACE" \
+              -o go-template='{{range $k, $v := .data}}{{$k}}={{$v}};{{end}}'
+          done | sha256sum | cut -c1-16)
+          patch="{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"wizeworks/secrets-hash\":\"$hash\"}}}}}"
+          for d in web admin api email-worker sms-worker scheduler flc-verifier resume-parser cert-generator; do
+            kubectl patch deployment "$d" -n "$NAMESPACE" --type merge -p "$patch"
+          done
+
       # Rollout waits are split from the apply so a hung Deployment names itself
       # in the log instead of failing an opaque combined step.
       #
