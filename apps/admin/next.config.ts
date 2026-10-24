@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
+import { SECURITY_HEADERS } from './src/lib/security-headers';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -32,6 +33,7 @@ const nextConfig: NextConfig = {
           { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          ...SECURITY_HEADERS,
         ],
       },
     ];
