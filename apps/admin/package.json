@@ -9,7 +9,7 @@
     "start": "next start -p 3100",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/lib/admin-access.test.mjs"
+    "test": "node --experimental-strip-types --test \"src/**/*.test.mjs\""
   },
   "dependencies": {
     "@agconn/api-client": "workspace:*",

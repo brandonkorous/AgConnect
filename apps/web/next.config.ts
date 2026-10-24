@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     // slim Docker images (no node_modules in the runtime layer).
     output: 'standalone',
     outputFileTracingRoot: process.env.NEXT_OUTPUT_FILE_TRACING_ROOT,
+    // OG routes read bundled TTFs with fs at runtime, which the tracer cannot see.
+    outputFileTracingIncludes: {
+        '/og/**': ['./src/app/og/_shared/fonts/*.ttf'],
+    },
     // Workspace packages export TypeScript source via the "source" condition.
     // SWC transpiles them so no pre-build step is required during next build.
     transpilePackages: ['@agconn/api-client', '@agconn/auth', '@agconn/schemas', '@agconn/sms', '@agconn/ui'],
