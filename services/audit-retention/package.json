@@ -12,7 +12,7 @@
   "dependencies": {
     "@agconn/audit": "workspace:*",
     "@agconn/db": "workspace:*",
-    "@sentry/node": "10.51.0"
+    "@sentry/node": "10.76.2"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

@@ -25,15 +25,15 @@
     "@agconn/sms": "workspace:*",
     "@clerk/backend": "^3.4.3",
     "@clerk/hono": "^0.1.22",
-    "@hono/node-server": "^1.13.0",
-    "@sentry/node": "10.51.0",
+    "@hono/node-server": "^1.19.17",
+    "@sentry/node": "10.76.2",
     "@supabase/supabase-js": "^2.45.0",
     "@wizeworks/lens-node": "0.3.0-alpha.10",
-    "hono": "4.12.15",
+    "hono": "4.13.13",
     "pg-boss": "12.18.1",
     "stripe": "22.1.0",
     "svix": "1.92.2",
-    "zod": "4.3.6"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
