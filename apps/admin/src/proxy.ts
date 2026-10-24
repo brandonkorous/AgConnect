@@ -36,5 +36,6 @@ export default clerkConfigured
   : (_req: NextRequest): NextResponse | undefined => undefined;
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|__dev|og|.*\\..*).*)'],
+  // Second entry: every /api path (export.csv included) runs Clerk, so handlers can read the session.
+  matcher: ['/((?!api|_next|_vercel|__dev|og|.*\\..*).*)', '/api/(.*)'],
 };

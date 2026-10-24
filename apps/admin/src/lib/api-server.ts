@@ -1,5 +1,6 @@
 import 'server-only';
 import { auth } from '@clerk/nextjs/server';
+import { bearerFallback } from './admin-access';
 
 // Server-side API client for the admin app. All admin pages call /admin/v1/*
 // via this helper — the admin app never touches Prisma directly.
@@ -13,7 +14,7 @@ import { auth } from '@clerk/nextjs/server';
 //      as X-Admin-Tenant-Id so api can pin RLS to that tenant.
 //
 // Dev/CI fallback: if no Clerk session, fall back to ADMIN_BEARER_TOKEN. Lets
-// admin pages render during local dev without a real Clerk login.
+// admin pages render during local dev without a real Clerk login. Never in production.
 
 const API_BASE = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 const ADMIN_BEARER = process.env.ADMIN_BEARER_TOKEN ?? '';
@@ -60,8 +61,7 @@ async function authHeader(): Promise<string | null> {
   } catch {
     // No active Clerk context (e.g. local build smoke test). Fall through.
   }
-  if (ADMIN_BEARER) return `Bearer ${ADMIN_BEARER}`;
-  return null;
+  return bearerFallback(ADMIN_BEARER, process.env.NODE_ENV);
 }
 
 export async function adminFetch<T>(

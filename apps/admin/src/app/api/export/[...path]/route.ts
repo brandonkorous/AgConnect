@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/api-server';
+import { denyUnlessAdmin } from '@/lib/api-route-auth';
 
 // Generic CSV export proxy. Forwards GET /api/export/<segments...>?<query>
 // to /admin/v1/<segments...>?<query>, streaming the binary body back. Only
@@ -9,6 +10,9 @@ import { adminFetch } from '@/lib/api-server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
+  const denied = await denyUnlessAdmin();
+  if (denied) return denied;
+
   const { path } = await ctx.params;
   const last = path[path.length - 1];
   if (last !== 'export.csv') {
