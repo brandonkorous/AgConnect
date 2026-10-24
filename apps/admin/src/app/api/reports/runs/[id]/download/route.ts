@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/api-server';
+import { denyUnlessAdmin } from '@/lib/api-route-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,6 +8,9 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const denied = await denyUnlessAdmin();
+  if (denied) return denied;
+
   const { id } = await params;
   const result = await adminFetch<{ url: string }>(
     `/admin/v1/reports/runs/${encodeURIComponent(id)}/download`,

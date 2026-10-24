@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/api-server';
+import { denyUnlessAdmin } from '@/lib/api-route-auth';
 
 // Server-side proxy: takes the GET request from the in-page link, builds the
 // upstream POST body, streams the binary response back to the browser. Doing
@@ -9,6 +10,9 @@ import { adminFetch } from '@/lib/api-server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const denied = await denyUnlessAdmin();
+  if (denied) return denied;
+
   const sp = req.nextUrl.searchParams;
   const email = sp.get('email');
   const body: Record<string, unknown> = {

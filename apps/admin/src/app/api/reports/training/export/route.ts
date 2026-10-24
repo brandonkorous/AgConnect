@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/api-server';
+import { denyUnlessAdmin } from '@/lib/api-route-auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const denied = await denyUnlessAdmin();
+  if (denied) return denied;
+
   const sp = req.nextUrl.searchParams;
   const body: Record<string, unknown> = {
     start: sp.get('start'),
