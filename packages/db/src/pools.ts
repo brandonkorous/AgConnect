@@ -48,16 +48,24 @@ const globalForPools = globalThis as unknown as {
   agconnPools?: Partial<Record<PoolName, PrismaClient>>;
 };
 
+// Idle connections stay open 5 min (pg's default is 10 s): a fresh TLS connection to the
+// Supabase pooler cost ~200 ms on most API requests. Idle-client errors are handled by PrismaPg.
+export function poolConfig(name: PoolName, max: number, connectionString: string) {
+  return {
+    connectionString,
+    max,
+    application_name: `agconn-${name}`,
+    idleTimeoutMillis: 300_000,
+    keepAlive: true,
+  };
+}
+
 function createClient(name: PoolName, max: number): PrismaClient {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error('DATABASE_URL is not set — required for @agconn/db pools');
   }
-  const adapter = new PrismaPg({
-    connectionString: url,
-    max,
-    application_name: `agconn-${name}`,
-  });
+  const adapter = new PrismaPg(poolConfig(name, max, url));
   const client = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],

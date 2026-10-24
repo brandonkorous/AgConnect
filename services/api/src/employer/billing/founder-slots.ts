@@ -23,7 +23,7 @@ export type FounderSlots = {
  * ('active','trialing','past_due')` so a `past_due` sub keeps its slot through
  * Stripe Smart Retries.
  */
-export async function getFounderSlots(): Promise<FounderSlots> {
+export async function countFounderSlots(): Promise<FounderSlots> {
   const used = await runWithRlsContext({ role: 'service' }, async () =>
     dbClients.shared.employerProfile.count({
       where: {
@@ -36,7 +36,24 @@ export async function getFounderSlots(): Promise<FounderSlots> {
   return { remaining, total: TOTAL_FOUNDER_SLOTS, active: remaining > 0 };
 }
 
+const CACHE_MS = 30_000;
+let cached: { at: number; slots: Promise<FounderSlots> } | null = null;
+
+// The landing page polls this; a 30 s copy matches its Cache-Control. Checkout reads fresh.
+export function getFounderSlots(
+  now: number = Date.now(),
+  count: () => Promise<FounderSlots> = countFounderSlots,
+): Promise<FounderSlots> {
+  if (cached && now - cached.at < CACHE_MS) return cached.slots;
+  const entry = { at: now, slots: count() };
+  cached = entry;
+  entry.slots.catch(() => {
+    if (cached === entry) cached = null;
+  });
+  return entry.slots;
+}
+
 export async function resolveCheckoutCohort(): Promise<PriceCohort> {
-  const slots = await getFounderSlots();
+  const slots = await countFounderSlots();
   return slots.active ? 'founder' : 'standard';
 }
