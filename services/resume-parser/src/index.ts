@@ -1,6 +1,6 @@
 import { PgBoss } from 'pg-boss';
 import { traceWorker } from '@agconn/db/wizelens';
-import { ParseExtractKind, ParseJobStatus, prisma } from '@agconn/db';
+import { asService, serviceDb, ParseExtractKind, ParseJobStatus } from '@agconn/db';
 import { isProviderConfigured } from '@agconn/llm';
 import { parseResume, type ParseResult } from './parser.js';
 
@@ -52,7 +52,7 @@ async function start(): Promise<void> {
 
     await boss.work<ParseJob>(QUEUE, async (jobs) => {
         for (const job of jobs) {
-            await handle(job.data);
+            await asService(handle)(job.data);
         }
     });
     console.log('[resume-parser] running');
@@ -62,7 +62,7 @@ async function handle(job: ParseJob): Promise<void> {
     const { tenantId, userId, resumeRawUrl, rawText } = job;
 
     // Create the audit row first so we can attribute even crashed parses.
-    const row = await prisma.resumeParseJob.create({
+    const row = await serviceDb.resumeParseJob.create({
         data: {
             tenantId,
             userId,
@@ -75,7 +75,7 @@ async function handle(job: ParseJob): Promise<void> {
     try {
         result = await parseResume({ resumeRawUrl, rawText });
     } catch (e) {
-        await prisma.resumeParseJob.update({
+        await serviceDb.resumeParseJob.update({
             where: { id: row.id },
             data: {
                 status: ParseJobStatus.failed,
@@ -92,7 +92,7 @@ async function handle(job: ParseJob): Promise<void> {
     }
 
     if (result.status === 'parsed') {
-        const existing = await prisma.workerProfile.findUnique({
+        const existing = await serviceDb.workerProfile.findUnique({
             where: { id: userId },
             select: { resume: true },
         });
@@ -100,7 +100,7 @@ async function handle(job: ParseJob): Promise<void> {
             (existing?.resume as Record<string, unknown> | null) ?? {},
             result.resume,
         );
-        await prisma.workerProfile.update({
+        await serviceDb.workerProfile.update({
             where: { id: userId },
             data: {
                 resume: merged as object,
@@ -110,7 +110,7 @@ async function handle(job: ParseJob): Promise<void> {
             },
         });
 
-        await prisma.resumeParseJob.update({
+        await serviceDb.resumeParseJob.update({
             where: { id: row.id },
             data: {
                 status: ParseJobStatus.succeeded,
@@ -139,7 +139,7 @@ async function handle(job: ParseJob): Promise<void> {
     }
 
     // Failure path — record the diagnostic detail so an operator can re-process.
-    await prisma.resumeParseJob.update({
+    await serviceDb.resumeParseJob.update({
         where: { id: row.id },
         data: {
             status: ParseJobStatus.failed,

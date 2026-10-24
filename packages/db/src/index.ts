@@ -1,5 +1,6 @@
 import type { PrismaClient, Prisma as PrismaNS } from '@prisma/client';
 import { pools } from './pools.js';
+import { dbClients } from './rls.js';
 
 // `prisma` is the cross-cutting client used for work that doesn't belong to a
 // specific domain pool: provisioning users from Clerk, audit writes, the four
@@ -16,6 +17,14 @@ import { pools } from './pools.js';
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
     get(_target, prop, receiver) {
         return Reflect.get(pools.shared as object, prop, receiver);
+    },
+});
+
+// RLS-aware view of the shared pool for background jobs: wrap the handler in
+// asService() so every call runs with app.role = 'service'. Lazy like `prisma`.
+export const serviceDb: PrismaClient = new Proxy({} as PrismaClient, {
+    get(_target, prop) {
+        return Reflect.get(dbClients.shared as object, prop);
     },
 });
 
@@ -125,6 +134,7 @@ export {
     dbClients,
     makeRlsClient,
     runWithRlsContext,
+    asService,
     getRlsContext,
     applyRlsToTx,
     type RlsRole,

@@ -1,4 +1,4 @@
-import { prisma } from '@agconn/db';
+import { asService, prisma } from '@agconn/db';
 import { stopFlcVerifyBoss } from '@agconn/flc-verify';
 import { runFlcSweep } from './sweep.js';
 
@@ -12,7 +12,7 @@ import { runFlcSweep } from './sweep.js';
 // process to exit instead of hanging on open handles.
 
 async function main(): Promise<void> {
-  const outcome = await runFlcSweep();
+  const outcome = await asService(runFlcSweep)();
   console.log('[flc-sweep] complete', outcome);
 }
 

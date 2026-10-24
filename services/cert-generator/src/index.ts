@@ -1,6 +1,6 @@
 import { PgBoss } from 'pg-boss';
 import { traceWorker } from '@agconn/db/wizelens';
-import { prisma, EnrollmentStatus } from '@agconn/db';
+import { asService, serviceDb, EnrollmentStatus } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 import { renderCertPdf } from './render.js';
 import { uploadCert } from './storage.js';
@@ -47,14 +47,14 @@ async function start(): Promise<void> {
 
     await boss.work<CompletionJob>(QUEUE, async (jobs) => {
         for (const job of jobs) {
-            await handle(job.data);
+            await asService(handle)(job.data);
         }
     });
     console.log('[cert-generator] running');
 }
 
 async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> {
-    const enrollment = await prisma.enrollment.findUnique({
+    const enrollment = await serviceDb.enrollment.findUnique({
         where: { id: enrollmentId },
         include: {
             program: {
@@ -90,7 +90,7 @@ async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> 
         enrollment.certificateId ??
         `AC-${new Date().getFullYear()}-${enrollmentId.slice(0, 8).toUpperCase()}`;
 
-    const profile = await prisma.workerProfile.findUnique({
+    const profile = await serviceDb.workerProfile.findUnique({
         where: { id: enrollment.workerId },
     });
 
@@ -116,7 +116,7 @@ async function handle({ enrollmentId, tenantId }: CompletionJob): Promise<void> 
 
     // certUrl now stores the Supabase storage key, not a directly-fetchable URL.
     // The wallet endpoint signs it on read with a 24h TTL.
-    await prisma.enrollment.update({
+    await serviceDb.enrollment.update({
         where: { id: enrollmentId },
         data: { certificateId, certUrl: storageKey, certGeneratedAt: new Date() },
     });

@@ -1,5 +1,5 @@
 import {
-  prisma,
+  serviceDb,
   FlcCheckStatus,
   LicenseType,
   VerificationAction,
@@ -24,7 +24,7 @@ import { lookupMspa, type MspaLookupResult } from './mspa-lookup.js';
 const SYSTEM_ACTOR_ID = 'system:flc-verifier';
 
 export async function handleVerifyJob(job: FlcVerifyJob): Promise<void> {
-  const employer = await prisma.employerProfile.findUnique({
+  const employer = await serviceDb.employerProfile.findUnique({
     where: { id: job.employerId },
   });
   if (!employer) {
@@ -37,7 +37,7 @@ export async function handleVerifyJob(job: FlcVerifyJob): Promise<void> {
   // attestation path. Leave them alone and tag the snapshot so the sweep
   // doesn't keep retrying.
   if (employer.licenseType !== LicenseType.flc) {
-    await prisma.employerProfile.update({
+    await serviceDb.employerProfile.update({
       where: { id: employer.id },
       data: {
         flcCheckStatus: FlcCheckStatus.not_applicable,
@@ -53,7 +53,7 @@ export async function handleVerifyJob(job: FlcVerifyJob): Promise<void> {
     return;
   }
 
-  await prisma.verificationLog.create({
+  await serviceDb.verificationLog.create({
     data: {
       tenantId: job.tenantId,
       employerId: job.employerId,
@@ -89,7 +89,7 @@ async function applyResult(input: {
   const status = mapDlseToStatus(input.dlse);
   const wasActive = status === FlcCheckStatus.active;
 
-  await prisma.$transaction(
+  await serviceDb.$transaction(
     async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
 
@@ -243,7 +243,7 @@ async function writeAuditAndSnapshot(
   legalNameOnRecord: string | null,
   payload: Prisma.InputJsonObject,
 ): Promise<void> {
-  await prisma.$transaction(
+  await serviceDb.$transaction(
     async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
       await tx.employerProfile.update({

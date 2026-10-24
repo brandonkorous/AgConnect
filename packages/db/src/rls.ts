@@ -46,6 +46,13 @@ export function runWithRlsContext<T>(ctx: RlsContext, fn: () => Promise<T> | T):
   return Promise.resolve(als.run(ctx, fn));
 }
 
+// Wraps a background job handler so dbClients.* queries in it run as app.role = 'service'.
+export function asService<A extends unknown[], R>(
+  fn: (...args: A) => Promise<R>,
+): (...args: A) => Promise<R> {
+  return (...args) => runWithRlsContext({ role: 'service' }, () => fn(...args));
+}
+
 // Sets app.role / app.user_id / app.tenant_id for the duration of `tx`.
 // One round-trip via three set_config(_, _, true) calls in a single SELECT.
 // `true` = transaction-local — equivalent to SET LOCAL but composable.
