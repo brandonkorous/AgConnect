@@ -67,6 +67,9 @@ jobs:
             - name: Migrate CI database
               run: pnpm --filter @agconn/db db:migrate:deploy
 
+            - name: Database tests
+              run: pnpm -r --if-present test:db
+
             - name: Seed translations
               run: pnpm --filter @agconn/db i18n:seed
 

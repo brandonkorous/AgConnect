@@ -8,6 +8,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --conditions=source --test \"src/**/*.test.ts\"",
+    "test:db": "tsx --conditions=source --test \"src/**/*.db-test.ts\"",
     "storage:setup": "tsx --env-file=../../.env scripts/setup-storage.ts"
   },
   "dependencies": {
