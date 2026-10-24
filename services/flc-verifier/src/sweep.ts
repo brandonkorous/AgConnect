@@ -1,4 +1,4 @@
-import { prisma, LicenseType } from '@agconn/db';
+import { serviceDb, LicenseType } from '@agconn/db';
 import { enqueueFlcVerify } from '@agconn/flc-verify';
 
 // Nightly sweep — picks every FLC employer whose last check is older than the
@@ -21,7 +21,7 @@ export type SweepOutcome = {
 export async function runFlcSweep(): Promise<SweepOutcome> {
   const cutoff = new Date(Date.now() - RECHECK_INTERVAL_MS);
 
-  const due = await prisma.employerProfile.findMany({
+  const due = await serviceDb.employerProfile.findMany({
     where: {
       licenseType: LicenseType.flc,
       deletedAt: null,

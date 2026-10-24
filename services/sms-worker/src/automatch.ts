@@ -6,7 +6,7 @@
 // singleton key, so retries fold instead of double-sending.
 
 import type { Job, PgBoss } from 'pg-boss';
-import { prisma } from '@agconn/db';
+import { asService, serviceDb } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 
 export const AUTOMATCH_QUEUE = 'job.publish.automatch' as const;
@@ -42,7 +42,7 @@ function haversineMiles(a: { lat: number; lng: number }, b: { lat: number; lng: 
 async function handle(job: Job<AutomatchJob>): Promise<void> {
     const { tenantId, jobId } = job.data;
 
-    const posting = await prisma.jobPosting.findFirst({
+    const posting = await serviceDb.jobPosting.findFirst({
         where: { id: jobId, tenantId, deletedAt: null },
         include: {
             employer: true,
@@ -66,7 +66,7 @@ async function handle(job: Job<AutomatchJob>): Promise<void> {
     const wantedSkills = (posting.skills ?? []).map((s) => s.toLowerCase());
 
     // Pre-filter to same county (cheap), then score in JS.
-    const workers = await prisma.workerProfile.findMany({
+    const workers = await serviceDb.workerProfile.findMany({
         where: {
             tenantId,
             county: posting.county,
@@ -129,7 +129,7 @@ export async function startAutomatchWorker(boss: PgBoss): Promise<void> {
         async (jobs) => {
             for (const j of jobs) {
                 try {
-                    await handle(j);
+                    await asService(handle)(j);
                 } catch (err) {
                     console.error('[automatch] failed', { id: j.id, err });
                     throw err;

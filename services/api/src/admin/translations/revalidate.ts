@@ -1,4 +1,5 @@
 import { createHmac } from 'node:crypto';
+import { clearMessagesCache } from '../../i18n/messages-store.js';
 
 // Fire-and-mostly-forget POST to the web app's internal revalidate hook.
 // HMAC over the JSON body + timestamp; web validates with the same secret.
@@ -27,6 +28,7 @@ function buildTags({ tenantId, locale }: RevalidateInput): string[] {
 }
 
 export async function revalidateTranslations(input: RevalidateInput): Promise<void> {
+  clearMessagesCache();
   if (!SECRET) return; // Hook disabled until secret provisioned.
   const body = JSON.stringify({ tags: buildTags(input), at: Date.now() });
   const signature = createHmac('sha256', SECRET).update(body).digest('hex');

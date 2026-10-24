@@ -1,4 +1,5 @@
 import { PgBoss } from 'pg-boss';
+import { asService } from '@agconn/db';
 import { traceWorker } from '@agconn/db/wizelens';
 import { FLC_VERIFY_QUEUE, type FlcVerifyJob } from '@agconn/flc-verify';
 import { handleVerifyJob } from './handler.js';
@@ -47,7 +48,7 @@ async function start(): Promise<void> {
   await boss.work<FlcVerifyJob>(FLC_VERIFY_QUEUE, async (jobs) => {
     for (const job of jobs) {
       try {
-        await handleVerifyJob(job.data);
+        await asService(handleVerifyJob)(job.data);
       } catch (err) {
         console.error('[flc-verifier] verify handler failed', {
           employerId: job.data.employerId,

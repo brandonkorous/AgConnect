@@ -6,7 +6,7 @@
 // hours, opt-outs, and the audit trail still apply.
 
 import type { Job, PgBoss } from 'pg-boss';
-import { prisma } from '@agconn/db';
+import { asService, serviceDb } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 import { RENOTIFY_QUEUE, type RenotifyJob } from './renotify-queue.js';
 
@@ -53,7 +53,7 @@ async function handle(job: Job<RenotifyJob>): Promise<void> {
 
   // Idempotency: if this row's already sent, exit. The unique constraint
   // (editEventId, applicationId, channel) backstops duplicate enqueues.
-  const row = await prisma.jobRenotification.findFirst({
+  const row = await serviceDb.jobRenotification.findFirst({
     where: { editEventId, applicationId, channel },
   });
   if (!row) {
@@ -76,7 +76,7 @@ async function handle(job: Job<RenotifyJob>): Promise<void> {
     });
   }
 
-  await prisma.jobRenotification.update({
+  await serviceDb.jobRenotification.update({
     where: { id: row.id },
     data: { status: 'sent', sentAt: new Date() },
   });
@@ -90,7 +90,7 @@ export async function startRenotifyWorker(boss: PgBoss): Promise<void> {
     async (jobs) => {
       for (const j of jobs) {
         try {
-          await handle(j);
+          await asService(handle)(j);
         } catch (err) {
           console.error('[renotify] failed', { id: j.id, err });
           throw err;

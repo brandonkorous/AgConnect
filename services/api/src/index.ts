@@ -4,10 +4,10 @@ import * as Sentry from '@sentry/node';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { cors } from 'hono/cors';
 import { ok, err, onErrorEnvelope } from '@agconn/api-client/server';
 import { auditMiddleware, emitSystemAudit, type AuditCtxVars } from './middleware/audit.js';
 import { clerkAuthMiddleware } from './middleware/authContext.js';
+import { corsMiddleware, securityHeaders } from './lib/security.js';
 import { landingRoutes } from './landing/routes.js';
 import { publicJobsRoutes } from './landing/jobs.js';
 import { publicTrainingRoutes } from './landing/training.js';
@@ -73,16 +73,8 @@ const app = new Hono<{ Variables: AuditCtxVars }>();
 
 if (wizelensMiddleware) app.use('*', wizelensMiddleware);
 app.use('*', logger());
-app.use(
-    '*',
-    cors({
-        origin: (origin) => origin ?? '*',
-        allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization', 'x-correlation-id'],
-        exposeHeaders: ['x-correlation-id'],
-        credentials: true,
-    }),
-);
+app.use('*', securityHeaders());
+app.use('*', corsMiddleware());
 
 // Clerk parses the session cookie / Authorization header into c.var.auth.
 // No-ops if Clerk env keys are missing (dev without Clerk works).

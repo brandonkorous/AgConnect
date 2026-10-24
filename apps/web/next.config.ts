@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { withSentryConfig } from '@sentry/nextjs';
+import { SECURITY_HEADERS } from './src/lib/security-headers';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -12,6 +13,10 @@ const nextConfig: NextConfig = {
     // slim Docker images (no node_modules in the runtime layer).
     output: 'standalone',
     outputFileTracingRoot: process.env.NEXT_OUTPUT_FILE_TRACING_ROOT,
+    // OG routes read bundled TTFs with fs at runtime, which the tracer cannot see.
+    outputFileTracingIncludes: {
+        '/og/**': ['./src/app/og/_shared/fonts/*.ttf'],
+    },
     // Workspace packages export TypeScript source via the "source" condition.
     // SWC transpiles them so no pre-build step is required during next build.
     transpilePackages: ['@agconn/api-client', '@agconn/auth', '@agconn/schemas', '@agconn/sms', '@agconn/ui'],
@@ -35,6 +40,7 @@ const nextConfig: NextConfig = {
                     { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
                     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
                     { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+                    ...SECURITY_HEADERS,
                 ],
             },
             {
