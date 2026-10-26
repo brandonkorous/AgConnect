@@ -87,7 +87,7 @@ jobs:
                   DATABASE_URL: ${{ env.APP_DATABASE_URL }}
 
             - name: Database tests (as agconn_app)
-              run: pnpm -r --if-present test:db
+              run: pnpm -r --no-bail --if-present test:db
               env:
                   DATABASE_URL: ${{ env.APP_DATABASE_URL }}
 

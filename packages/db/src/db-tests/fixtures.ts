@@ -72,7 +72,8 @@ async function seedTenancy(tx: Tx): Promise<void> {
 
 async function seedJobs(tx: Tx): Promise<void> {
   const job = (id: string, tenantId: string, employerId: string, status: 'active' | 'draft') => ({
-    id, tenantId, employerId, status, titleEn: 'Fixture job', titleEs: 'Trabajo de prueba',
+    id, tenantId, employerId, status, seoSlug: status === 'draft' ? null : `rls-fixture-${id}`,
+    titleEn: 'Fixture job', titleEs: 'Trabajo de prueba',
     descriptionEn: 'Fixture job description', descriptionEs: 'Descripcion de prueba',
     county: 'Madera' as const, wageMin: 18, wageMax: 22, startDate: new Date('2026-01-05'),
   });
