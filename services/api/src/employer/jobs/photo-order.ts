@@ -1,3 +1,4 @@
+// audit-required:exempt — display order only, same as before the move out of photos.ts (upload and delete are audited there).
 import type { Tx } from '@agconn/db';
 
 // One transaction in callback form: the RLS client rejects $transaction([...]), which made every reorder fail.
