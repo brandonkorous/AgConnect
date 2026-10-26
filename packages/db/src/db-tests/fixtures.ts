@@ -26,8 +26,9 @@ export async function seedFixture(admin: PrismaClient): Promise<void> {
 async function clearFixture(tx: Tx): Promise<void> {
   const tenants = [TENANT.A, TENANT.B];
   await tx.$executeRaw`DELETE FROM audit_events WHERE actor_id IN (${AUDIT_ACTOR.A}, ${AUDIT_ACTOR.B})`;
+  await tx.$executeRaw`DELETE FROM search_views WHERE worker_id = ANY(${Object.values(USER)}::text[])`;
   for (const table of ['messages', 'conversation_participants', 'conversations', 'shift_assignments',
-    'shifts', 'applications', 'job_postings', 'sms_log', 'email_log']) {
+    'shifts', 'application_events', 'applications', 'job_postings', 'verification_log', 'sms_log', 'email_log']) {
     await tx.$executeRawUnsafe(`DELETE FROM "${table}" WHERE tenant_id = ANY($1::uuid[])`, tenants);
   }
   await tx.$executeRaw`UPDATE employer_profiles SET owner_contact_id = NULL WHERE tenant_id = ANY(${tenants}::uuid[])`;

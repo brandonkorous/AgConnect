@@ -46,3 +46,44 @@ test('an authenticated user with no tenant reads nothing tenant-scoped and does 
     db().employerProfile.findMany({ where: { id: { in: [ROW.profileA, ROW.profileB] } } }));
   assert.equal(rows.length, 0);
 });
+
+const workerA = { role: 'authenticated' as const, userId: USER.workerA, tenantId: TENANT.A };
+const employerA = { role: 'authenticated' as const, userId: USER.employerA, tenantId: TENANT.A, employerId: ROW.profileA };
+const event = (actorUserId: string, applicationId: string) => ({
+  tenantId: TENANT.A, applicationId, toStatus: 'applied' as const, actorUserId, actorRole: 'worker' as const,
+});
+
+test('a worker logs an event on their own application, not on someone else\'s', async () => {
+  const own = await runWithRlsContext(workerA, () => db().applicationEvent.create({ data: event(USER.workerA, ROW.appA) }));
+  assert.equal(own.applicationId, ROW.appA);
+  const other = runWithRlsContext(workerA, () => db().applicationEvent.create({ data: event(USER.workerA, ROW.appB) }));
+  await assert.rejects(other, /row-level security/);
+});
+
+test('an employer member logs an event on an application to their own job', async () => {
+  const row = await runWithRlsContext(employerA, () =>
+    db().applicationEvent.create({ data: { ...event(USER.employerA, ROW.appA), actorRole: 'employer' } }));
+  assert.equal(row.actorUserId, USER.employerA);
+});
+
+test('an employer member records their own license submission', async () => {
+  const row = await runWithRlsContext(employerA, () => db().verificationLog.create({
+    data: { tenantId: TENANT.A, employerId: ROW.profileA, action: 'submitted', actorUserId: USER.employerA, payload: {} },
+  }));
+  assert.equal(row.employerId, ROW.profileA);
+});
+
+test('a signed-in user updates their own row but not its role, tenant or consent', async () => {
+  const user = await runWithRlsContext(workerA, () =>
+    db().user.update({ where: { id: USER.workerA }, data: { preferredLang: 'en' } }));
+  assert.equal(user.preferredLang, 'en');
+  const promote = runWithRlsContext(workerA, () =>
+    db().user.update({ where: { id: USER.workerA }, data: { role: 'admin' } }));
+  await assert.rejects(promote, /not self-service/);
+});
+
+test('a worker search view is recorded without reading it back', async () => {
+  const written = await runWithRlsContext(workerA, () =>
+    db().searchView.createMany({ data: { workerId: USER.workerA, filters: {}, resultCount: 0 } }));
+  assert.equal(written.count, 1);
+});

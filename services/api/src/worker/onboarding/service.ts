@@ -1,8 +1,6 @@
-// audit-required:exempt — onboarding mutations are audited at the route
-// layer (worker/onboarding/routes.ts emits worker.profile.updated and
-// worker.resume.uploaded); duplicating the call in service.ts would log twice.
+// audit-required:exempt — audited at the route layer (worker/onboarding/routes.ts); logging here would double it.
 import { createHash } from 'node:crypto';
-import { County, Lang, UserRole, type Tx, type User, type WorkerProfile } from '@agconn/db';
+import { County, Lang, UserRole, runWithRlsContext, type Tx, type User, type WorkerProfile } from '@agconn/db';
 import type { OnboardingNextStep, PatchOnboardingProfileBody } from '@agconn/schemas';
 
 const PHONE_PEPPER = process.env.PHONE_HASH_PEPPER ?? 'dev-pepper-rotate-me';
@@ -23,9 +21,7 @@ export const deriveNextStep = (
 ): OnboardingNextStep => {
   if (profile?.onboardedAt) return 'complete';
   if (!profile) {
-    // No WorkerProfile yet — fall back to SMS-side draft so workers who
-    // started over SMS skip steps they've already answered. SMS collects at
-    // most firstName, lastName, county; skills/availability are web-only.
+    // No WorkerProfile yet: the SMS draft (name, county) lets an SMS starter skip answered steps.
     if (smsDraft?.firstName && smsDraft.lastName) {
       if (smsDraft.county) return 'skills';
       return 'county';
@@ -61,16 +57,11 @@ export async function startOnboarding(db: Tx, ctx: StartContext) {
   // Workers are platform-level (bucket 2): User.tenantId stays null.
   const existing = await db.user.findUnique({ where: { id: ctx.userId } });
 
-  // Phone uniqueness for workers is platform-wide — the same phone can't be
-  // registered to two different worker accounts.
+  // Worker phones are unique platform-wide; other users' rows are only visible to the service role.
   if (ctx.phone) {
-    const collision = await db.user.findFirst({
-      where: {
-        role: UserRole.worker,
-        phone: ctx.phone,
-        NOT: { id: ctx.userId },
-      },
-    });
+    const collision = await runWithRlsContext({ role: 'service' }, () => db.user.findFirst({
+      where: { role: UserRole.worker, phone: ctx.phone, NOT: { id: ctx.userId } },
+    }));
     if (collision) {
       throw new OnboardingError('phone_collision', 409);
     }
@@ -117,17 +108,14 @@ export async function patchOnboardingProfile(
   body: PatchOnboardingProfileBody,
 ) {
   const existingProfile = await db.workerProfile.findUnique({ where: { id: userId } });
-  // SMS draft is used as a fallback when no profile row exists yet: workers
-  // who entered name/county over SMS shouldn't lose those values when the
-  // web wizard creates the WorkerProfile on first patch.
+  // With no profile row yet, the SMS draft keeps name/county a worker already sent by SMS.
   const userRow = await db.user.findUnique({
     where: { id: userId },
     select: { smsOnboardingDraft: true },
   });
   const smsDraft = (userRow?.smsOnboardingDraft ?? {}) as SmsDraftLite;
 
-  // Derive name from resume / SMS draft if not provided and profile not yet
-  // created.
+  // Name from the resume or SMS draft when the body has none and no profile exists yet.
   const firstName =
     body.firstName ??
     existingProfile?.firstName ??
