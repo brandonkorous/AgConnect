@@ -1,0 +1,112 @@
+name: Move to Azure
+
+# AG-11: the one-time move of AgConnect's data from Supabase to psql-agconn-prod-cus and Azure Blob.
+# Run it by hand at cutover (docs/bug-plan runbook, step 3), after sparx turned agconn_data_enabled on
+# and before this repo's AG-11 code deploys. It:
+#   1. scales every AgConnect Deployment to 0 and suspends the CronJobs, so nothing writes during the move;
+#   2. dumps the public schema from Supabase and restores it as agconn_owner, in-cluster (the server is
+#      private), failing on any row-count difference (deploy/k8s/jobs/move-db.sh);
+#   3. copies every Supabase Storage object to the matching container, failing on any count or size
+#      difference (scripts/move-files-to-azure.sh).
+# pgboss is not moved: pg-boss recreates it on start, and queued jobs are dropped.
+# The next normal deploy brings the Deployments and CronJobs back (replicas and suspend are in the manifests).
+# Secrets come only from kv-agconn-prod-cus: SUPABASE-DB-URL (session port 5432), SUPABASE-URL,
+# SUPABASE-SERVICE-ROLE-KEY, DATABASE-ADMIN-URL, AZURE-STORAGE-ACCOUNT, AZURE-STORAGE-KEY.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type MOVE to scale AgConnect to zero and copy its data to Azure
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-aks-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  RESOURCE_GROUP: rg-sparx-prod-cus
+  CLUSTER: aks-sparx-prod-cus
+  NAMESPACE: agconn
+  VAULT: kv-agconn-prod-cus
+
+jobs:
+  move:
+    name: Move data to Azure
+    if: inputs.confirm == 'MOVE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: az aks get-credentials --resource-group "$RESOURCE_GROUP" --name "$CLUSTER" --overwrite-existing
+
+      # Every value is required; a missing one stops the move before anything is scaled down.
+      - name: Read the move secrets from Key Vault
+        run: |
+          set -euo pipefail
+          for name in SUPABASE_DB_URL SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY \
+                      DATABASE_ADMIN_URL AZURE_STORAGE_ACCOUNT AZURE_STORAGE_KEY; do
+            if ! value=$(az keyvault secret show --vault-name "$VAULT" --name "${name//_/-}" --query value -o tsv); then
+              echo "::error::Missing required secret in $VAULT: ${name//_/-}"
+              exit 1
+            fi
+            echo "::add-mask::$value"
+            echo "$name=$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Stop every writer
+        run: |
+          set -euo pipefail
+          kubectl -n "$NAMESPACE" scale deployment --all --replicas=0
+          for cj in $(kubectl -n "$NAMESPACE" get cronjob -o name); do
+            kubectl -n "$NAMESPACE" patch "$cj" --type merge -p '{"spec":{"suspend":true}}'
+          done
+          apps='web,admin,api,email-worker,sms-worker,scheduler,flc-verifier,resume-parser,cert-generator,pgbouncer'
+          # No matching pod is also fine: wait reports it as an error, so the pod list below is the record.
+          kubectl -n "$NAMESPACE" wait --for=delete pod -l "app.kubernetes.io/name in ($apps)" --timeout=5m || true
+          kubectl -n "$NAMESPACE" get pods
+
+      - name: Move the database
+        run: |
+          set -euo pipefail
+          umask 077
+          kubectl -n "$NAMESPACE" delete job move-db --ignore-not-found
+          kubectl -n "$NAMESPACE" create configmap move-db-sh --from-file=move-db.sh=deploy/k8s/jobs/move-db.sh \
+            --dry-run=client -o yaml | kubectl apply -f -
+          printf '%s' "$SUPABASE_DB_URL" > /tmp/source-url
+          printf '%s' "$DATABASE_ADMIN_URL" > /tmp/target-url
+          kubectl -n "$NAMESPACE" create secret generic move-db \
+            --from-file=SUPABASE_DB_URL=/tmp/source-url --from-file=DATABASE_ADMIN_URL=/tmp/target-url \
+            --dry-run=client -o yaml | kubectl apply -f -
+          rm -f /tmp/source-url /tmp/target-url
+          kubectl apply -f deploy/k8s/jobs/move-db.yaml
+          ok=true
+          kubectl -n "$NAMESPACE" wait --for=condition=complete job/move-db --timeout=30m || ok=false
+          kubectl -n "$NAMESPACE" logs job/move-db --tail=500 || true
+          kubectl -n "$NAMESPACE" delete secret move-db --ignore-not-found
+          if [ "$ok" != true ]; then
+            echo "::error::The database move did not complete; the target was left as it was before the restore."
+            exit 1
+          fi
+
+      - name: Move the files
+        run: bash scripts/move-files-to-azure.sh
+
+      - name: Next step
+        run: |
+          echo "Data is on Azure and AgConnect is scaled to zero."
+          echo "Merge the AG-11 PR now: its deploy migrates, runs the role SQL and brings every pod back as agconn_app."
