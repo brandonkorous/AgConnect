@@ -65,7 +65,7 @@ jobs:
               run: pnpm check:conventions
 
             - name: Script tests
-              run: node --test scripts/
+              run: node --test "scripts/*.test.mjs"
 
             # Apply migrations + seed translations against the CI Postgres so the
             # next step can run the live parity check. (Eventually: refactor the
