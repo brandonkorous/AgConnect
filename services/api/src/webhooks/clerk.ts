@@ -42,20 +42,24 @@ const getWebhook = (): Webhook => {
 // gets gated downstream by FLC verification — self-attesting is just a UX
 // hint, not a permission grant.
 const ROLE_VALUES = ['worker', 'employer', 'training_org', 'admin'] as const;
+// The roles a user may declare in unsafe_metadata; admin comes only from public_metadata.
+const SELF_DECLARED_ROLES = ['worker', 'employer', 'training_org'] as const;
 
-const readRole = (md: unknown): UserRole | null => {
+const readRole = (md: unknown, allowed: readonly string[] = ROLE_VALUES): UserRole | null => {
   if (md && typeof md === 'object' && 'role' in md) {
     const r = (md as { role?: unknown }).role;
-    if ((ROLE_VALUES as readonly string[]).includes(String(r))) {
+    if (allowed.includes(String(r))) {
       return r as UserRole;
     }
   }
   return null;
 };
 
-const deriveRoleFromEvent = (data: Record<string, unknown>): UserRole => {
+export const deriveRoleFromEvent = (data: Record<string, unknown>): UserRole => {
   return (
-    readRole(data['public_metadata']) ?? readRole(data['unsafe_metadata']) ?? UserRole.worker
+    readRole(data['public_metadata']) ??
+    readRole(data['unsafe_metadata'], SELF_DECLARED_ROLES) ??
+    UserRole.worker
   );
 };
 

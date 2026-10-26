@@ -73,8 +73,9 @@ async function provisionFromClerk(c: Context, userId: string) {
             cu.phoneNumbers[0]?.phoneNumber ??
             null;
         const meta = (cu.unsafeMetadata ?? {}) as { role?: string; locale?: string };
+        // unsafeMetadata is user-editable, so admin is never granted from it (same rule as webhooks/clerk.ts).
         const role: UserRole =
-            meta.role === 'employer' || meta.role === 'training_org' || meta.role === 'admin'
+            meta.role === 'employer' || meta.role === 'training_org'
                 ? (meta.role as UserRole)
                 : UserRole.worker;
         const preferredLang = meta.locale === 'en' ? Lang.en : Lang.es;
