@@ -1,7 +1,4 @@
-// Job photo subroutes: list / upload / reorder / delete.
-//
-// All uploads pass through the API — the web app never touches Supabase
-// directly. Multipart bodies max 10MB per file; bucket allows JPG/PNG/WEBP/HEIC.
+// Job photo subroutes: list / upload / reorder / delete. Uploads go through the API (10MB, JPG/PNG/WEBP/HEIC).
 
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
@@ -12,7 +9,8 @@ import {
   uploadJobPhoto,
   deleteJobPhoto,
   isAllowedPhotoType,
-} from '../../lib/supabase-storage.js';
+  jobPhotoUrl,
+} from '../../lib/blob-storage.js';
 
 const MAX_PHOTOS_PER_JOB = 6;
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -80,7 +78,7 @@ employerJobPhotosRoutes.post('/:id/photos', requireEmployerPermission('jobs.writ
     data: {
       tenantId,
       jobId: id,
-      url: upload.publicUrl,
+      url: upload.storageKey,
       storageKey: upload.storageKey,
       sortOrder: existingCount,
       uploadedById: userId,
@@ -167,7 +165,7 @@ function toPhotoView(p: {
 }) {
   return {
     id: p.id,
-    url: p.url,
+    url: jobPhotoUrl(p.url),
     captionEn: p.captionEn,
     captionEs: p.captionEs,
     width: p.width,

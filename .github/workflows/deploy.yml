@@ -8,10 +8,10 @@ name: Deploy
 # Artifact Registry onto the shared AKS cluster. See
 # docs/00-foundation/10-infra-cicd/09-azure-migration.md.
 #
-#   - COMPUTE ONLY. The data layer did NOT move: Postgres and object storage stay
-#     on Supabase, reached from the cluster over the public internet. Every
-#     DATABASE_* and SUPABASE_* value below is the same value it was on GKE; only
-#     where it is READ FROM changed.
+#   - DATA (AG-11): Postgres is psql-agconn-prod-cus (private, in the VNet) and files are
+#     in Azure Blob (stagconnprodcus). Pods connect as agconn_app through PgBouncer;
+#     migrations and the role SQL run as agconn_owner. The vault values come from
+#     sparx.works/terraform/envs/azure/agconn.tf.
 #   - AUTH is workload identity federation, no stored credential. Azure trusts a
 #     GitHub OIDC token whose subject is
 #     `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The four AZURE_* values
@@ -241,7 +241,7 @@ jobs:
             ADMIN_CLERK_SECRET_KEY NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY
             RESEND_API_KEY RESEND_WEBHOOK_SECRET
             WAITLIST_TOKEN_SECRET
-            SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+            AZURE_STORAGE_ACCOUNT AZURE_STORAGE_KEY
             TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN
             TWILIO_MESSAGING_SERVICE_SID TWILIO_INBOUND_PHONE
             STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET

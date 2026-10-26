@@ -19,7 +19,7 @@ import {
   deleteComplianceEvidence,
   signComplianceEvidenceUrl,
   isAllowedEvidenceType,
-} from '../../lib/supabase-storage.js';
+} from '../../lib/blob-storage.js';
 import { csvResponse, rowsToCsv, type CsvColumn } from '../../admin/_lib/csv.js';
 
 const MAX_EVIDENCE_BYTES = 25 * 1024 * 1024;
