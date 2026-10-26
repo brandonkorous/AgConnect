@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { ok, err, validate } from '@agconn/api-client/server';
-import { MessageChannel, MessageDirection } from '@agconn/db';
+import { MessageChannel, MessageDirection, runWithRlsContext } from '@agconn/db';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
 import type { AuditCtxVars } from '../middleware/audit.js';
 
@@ -151,15 +151,13 @@ meMessagesRoutes.post('/:id/send', validate('json', SendBody), async (c) => {
         },
     });
 
-    await c.var.db.conversation.update({
-        where: { id },
-        data: { lastMessageAt: new Date() },
-    });
-
-    // Bump unread for everyone else.
-    await c.var.db.conversationParticipant.updateMany({
-        where: { conversationId: id, userId: { not: workerId } },
-        data: { unreadCount: { increment: 1 } },
+    // A worker may not write the conversation or other people's participant rows; these two run as service.
+    await runWithRlsContext({ role: 'service' }, async () => {
+        await c.var.db.conversation.update({ where: { id }, data: { lastMessageAt: new Date() } });
+        await c.var.db.conversationParticipant.updateMany({
+            where: { conversationId: id, userId: { not: workerId } },
+            data: { unreadCount: { increment: 1 } },
+        });
     });
 
     await c.var.audit.log({

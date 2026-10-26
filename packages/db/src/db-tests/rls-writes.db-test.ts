@@ -87,3 +87,24 @@ test('a worker search view is recorded without reading it back', async () => {
     db().searchView.createMany({ data: { workerId: USER.workerA, filters: {}, resultCount: 0 } }));
   assert.equal(written.count, 1);
 });
+
+test('a participant marks their own conversation read, not someone else\'s', async () => {
+  const own = await runWithRlsContext(workerA, () =>
+    db().conversationParticipant.updateMany({ where: { id: ROW.cpWorkerA }, data: { unreadCount: 0 } }));
+  assert.equal(own.count, 1);
+  const other = await runWithRlsContext(workerA, () =>
+    db().conversationParticipant.updateMany({ where: { id: ROW.cpEmployerA }, data: { unreadCount: 0 } }));
+  assert.equal(other.count, 0);
+});
+
+test('an employer member who is not a participant reads the employer\'s conversation', async () => {
+  const member = { ...employerA, userId: 'rls_fixture_other_member' };
+  const rows = await runWithRlsContext(member, () => db().message.findMany({ where: { id: ROW.msgA } }));
+  assert.equal(rows.length, 1);
+});
+
+test('the SMS keyword check sees keywords in every tenant', async () => {
+  const [row] = await runWithRlsContext(employerA, () =>
+    db().$queryRaw<{ taken: boolean }[]>`SELECT app.sms_keyword_taken('rls-no-such-keyword') AS taken`);
+  assert.equal(row?.taken, false);
+});
