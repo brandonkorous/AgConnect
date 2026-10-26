@@ -1,6 +1,6 @@
 import { PgBoss } from 'pg-boss';
 import { traceWorker } from '@agconn/db/wizelens';
-import { asService, serviceDb, ParseExtractKind, ParseJobStatus } from '@agconn/db';
+import { runWithRlsContext, serviceDb, ParseExtractKind, ParseJobStatus } from '@agconn/db';
 import { isProviderConfigured } from '@agconn/llm';
 import { parseResume, type ParseResult } from './parser.js';
 
@@ -51,8 +51,9 @@ async function start(): Promise<void> {
     await boss.createQueue(QUEUE);
 
     await boss.work<ParseJob>(QUEUE, async (jobs) => {
+        // resume_parse_jobs is tenant-scoped for the service role, so the job runs in its own tenant.
         for (const job of jobs) {
-            await asService(handle)(job.data);
+            await runWithRlsContext({ role: 'service', tenantId: job.data.tenantId }, () => handle(job.data));
         }
     });
     console.log('[resume-parser] running');

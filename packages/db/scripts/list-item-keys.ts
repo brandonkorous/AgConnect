@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { config as loadEnv } from 'dotenv';
 const here = dirname(fileURLToPath(import.meta.url));
 loadEnv({ path: resolve(here, '..', '..', '..', '.env') });
-const { prisma } = await import('../src/index.js');
+const { adminDb: prisma } = await import('../src/index.js');
 const items = await prisma.complianceItem.findMany({
   select: { itemKey: true, label: true },
   orderBy: { itemKey: 'asc' },

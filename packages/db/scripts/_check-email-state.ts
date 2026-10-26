@@ -1,4 +1,4 @@
-import { prisma } from '../src/index.js';
+import { adminDb as prisma } from '../src/index.js';
 
 const cols = await prisma.$queryRaw<{ column_name: string }[]>`
   SELECT column_name FROM information_schema.columns WHERE table_name='email_log' ORDER BY ordinal_position`;

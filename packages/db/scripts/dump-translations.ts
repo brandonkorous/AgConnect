@@ -13,7 +13,7 @@ import { config as loadEnv } from 'dotenv';
 const here = dirname(fileURLToPath(import.meta.url));
 loadEnv({ path: resolve(here, '..', '..', '..', '.env') });
 
-const { prisma } = await import('../src/index.js');
+const { adminDb: prisma } = await import('../src/index.js');
 
 const OUT_DIR = resolve(here, '..', 'seed-data', 'translations');
 mkdirSync(OUT_DIR, { recursive: true });

@@ -108,7 +108,7 @@ async function applyPrivateBucketRls() {
   // Use the Prisma client (already a workspace dep) to run raw SQL against
   // storage.objects. Supabase JS doesn't expose raw SQL, and pulling pg in
   // directly would add a redundant dep.
-  const { prisma } = await import('@agconn/db');
+  const { adminDb: prisma } = await import('@agconn/db');
   try {
     // $executeRawUnsafe is needed because the SQL contains multiple statements
     // and PG-quoted identifiers — Prisma's tagged-template variant won't accept

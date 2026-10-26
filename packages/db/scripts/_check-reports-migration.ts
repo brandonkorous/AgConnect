@@ -1,4 +1,4 @@
-import { prisma } from '../src/index.js';
+import { adminDb as prisma } from '../src/index.js';
 
 const main = async () => {
   const migrations = await prisma.$queryRaw<{ migration_name: string }[]>`

@@ -16,9 +16,7 @@ export interface RlsContext {
   role: RlsRole;
   userId?: string;
   tenantId?: string;
-  // Active employer profile id for an employer member request. Policies on
-  // the employer data surface compare to NULLIF(current_setting,'')::uuid so
-  // an unset value (workers / non-employer requests) fails closed, not errors.
+  // Active employer profile id; unset reads as NULL in policies (app.setting_uuid), so it matches nothing.
   employerId?: string;
 }
 
@@ -53,9 +51,7 @@ export function asService<A extends unknown[], R>(
   return (...args) => runWithRlsContext({ role: 'service' }, () => fn(...args));
 }
 
-// Sets app.role / app.user_id / app.tenant_id for the duration of `tx`.
-// One round-trip via three set_config(_, _, true) calls in a single SELECT.
-// `true` = transaction-local — equivalent to SET LOCAL but composable.
+// Sets the app.* settings transaction-locally (set_config(..., true)) in one round trip.
 export async function applyRlsToTx(
   tx: Prisma.TransactionClient,
   ctx: RlsContext,
@@ -75,86 +71,62 @@ export async function applyRlsToTx(
 const RAW_OPS = new Set(['$queryRaw', '$queryRawUnsafe', '$executeRaw', '$executeRawUnsafe']);
 const PASSTHROUGH_OPS = new Set(['$connect', '$disconnect', '$on', '$use', '$extends']);
 
-// Wraps a PrismaClient with a per-query short-transaction proxy. Every model
-// operation, raw query, or $transaction(callback) routed through the returned
-// client opens a Prisma transaction on `prisma`, applies the current ALS
-// RlsContext (if any), runs the work, and commits — releasing the pooled
-// connection immediately. This keeps a connection pinned only for the duration
-// of one statement (or one explicit handler-level transaction) instead of for
-// an entire HTTP request.
-export function makeRlsClient(prisma: PrismaClient): PrismaClient {
-  const handler: ProxyHandler<PrismaClient> = {
-    get(_target, prop, _receiver) {
-      if (typeof prop !== 'string') return undefined;
+type AnyFn = (...a: unknown[]) => unknown;
+type TxWork<T> = (tx: Prisma.TransactionClient) => Promise<T>;
 
-      // Prevent accidental thenable behavior (e.g. `await db`).
-      if (prop === 'then') return undefined;
+// One short transaction per call: apply the ALS context (or the fixed one), run the work, commit.
+function inRlsTx<T>(prisma: PrismaClient, fixed: RlsContext | undefined, work: TxWork<T>, opts?: unknown) {
+  return prisma.$transaction(async (tx) => {
+    const ctx = als.getStore() ?? fixed;
+    if (ctx) await applyRlsToTx(tx, ctx);
+    return work(tx);
+  }, opts as Parameters<PrismaClient['$transaction']>[1]);
+}
 
-      if (prop === '$transaction') {
-        return ((arg: unknown, opts?: unknown) => {
-          if (typeof arg === 'function') {
-            return prisma.$transaction(
-              async (tx) => {
-                const ctx = als.getStore();
-                if (ctx) await applyRlsToTx(tx, ctx);
-                return (arg as (tx: Prisma.TransactionClient) => Promise<unknown>)(tx);
-              },
-              opts as Parameters<PrismaClient['$transaction']>[1],
-            );
-          }
-          throw new Error(
-            'rlsClient.$transaction(array) is not supported — use the callback form so RLS context can be applied inside the transaction.',
-          );
-        }) as PrismaClient['$transaction'];
-      }
+function transactionOp(prisma: PrismaClient, fixed: RlsContext | undefined) {
+  return ((arg: unknown, opts?: unknown) => {
+    if (typeof arg === 'function') return inRlsTx(prisma, fixed, arg as TxWork<unknown>, opts);
+    throw new Error(
+      'rlsClient.$transaction(array) is not supported — use the callback form so RLS context can be applied inside the transaction.',
+    );
+  }) as PrismaClient['$transaction'];
+}
 
-      if (RAW_OPS.has(prop)) {
-        return (...args: unknown[]) =>
-          prisma.$transaction(async (tx) => {
-            const ctx = als.getStore();
-            if (ctx) await applyRlsToTx(tx, ctx);
-            return (tx as unknown as Record<string, (...a: unknown[]) => unknown>)[prop]!(
-              ...args,
-            );
-          });
-      }
-
-      if (PASSTHROUGH_OPS.has(prop)) {
-        const fn = (prisma as unknown as Record<string, unknown>)[prop];
-        return typeof fn === 'function' ? (fn as Function).bind(prisma) : fn;
-      }
-
-      // Treat as a model accessor: prisma.user, prisma.tenant, ...
-      const modelTarget = (prisma as unknown as Record<string, unknown>)[prop];
-      if (!modelTarget || typeof modelTarget !== 'object') {
-        return undefined;
-      }
-      return new Proxy(modelTarget as object, {
-        get(_t, op, _r) {
-          if (typeof op !== 'string') return undefined;
-          if (op === 'then') return undefined;
-          const fn = (modelTarget as Record<string, unknown>)[op];
-          if (typeof fn !== 'function') return fn;
-          return (...args: unknown[]) =>
-            prisma.$transaction(async (tx) => {
-              const ctx = als.getStore();
-              if (ctx) await applyRlsToTx(tx, ctx);
-              const txModel = (tx as unknown as Record<string, Record<string, Function>>)[prop]!;
-              return txModel[op]!.apply(txModel, args);
-            });
-        },
+function modelProxy(prisma: PrismaClient, fixed: RlsContext | undefined, model: string, target: object) {
+  return new Proxy(target, {
+    get(_t, op) {
+      if (typeof op !== 'string' || op === 'then') return undefined;
+      const fn = (target as Record<string, unknown>)[op];
+      if (typeof fn !== 'function') return fn;
+      return (...args: unknown[]) => inRlsTx(prisma, fixed, async (tx) => {
+        const txModel = (tx as unknown as Record<string, Record<string, AnyFn>>)[model]!;
+        return txModel[op]!.apply(txModel, args);
       });
+    },
+  });
+}
+
+// A client whose every model call, raw query and $transaction(callback) runs in its own RLS-scoped transaction.
+// `fixed` applies when no runWithRlsContext is active (the admin client for seeds and scripts).
+export function makeRlsClient(prisma: PrismaClient, fixed?: RlsContext): PrismaClient {
+  const handler: ProxyHandler<PrismaClient> = {
+    get(_target, prop) {
+      if (typeof prop !== 'string' || prop === 'then') return undefined;
+      if (prop === '$transaction') return transactionOp(prisma, fixed);
+      if (RAW_OPS.has(prop)) {
+        return (...args: unknown[]) => inRlsTx(prisma, fixed, async (tx) =>
+          (tx as unknown as Record<string, AnyFn>)[prop]!(...args));
+      }
+      const value = (prisma as unknown as Record<string, unknown>)[prop];
+      if (PASSTHROUGH_OPS.has(prop)) return typeof value === 'function' ? (value as AnyFn).bind(prisma) : value;
+      if (!value || typeof value !== 'object') return undefined;
+      return modelProxy(prisma, fixed, prop, value);
     },
   };
   return new Proxy({} as PrismaClient, handler);
 }
 
-// RLS-aware proxies, one per pool. Routes import the one that matches their
-// domain (e.g. `dbClients.worker`, `dbClients.employer`, …) and pass it through
-// the auth middleware factory.
-//
-// Lazy via Proxy so module load does not eagerly construct every pool (which
-// would require DATABASE_URL at `next build` time).
+// RLS-aware clients, one per pool, built on first use so module load needs no DATABASE_URL.
 const rlsClientCache: Partial<Record<PoolName, PrismaClient>> = {};
 export const dbClients: Record<PoolName, PrismaClient> = new Proxy(
   {} as Record<PoolName, PrismaClient>,

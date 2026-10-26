@@ -34,3 +34,16 @@ test('asService passes arguments and return values through', async () => {
   const add = asService(async (a: number, b: number) => a + b);
   assert.equal(await add(2, 3), 5);
 });
+
+test('a fixed context applies when no runWithRlsContext is active', async () => {
+  const seen: string[] = [];
+  await makeRlsClient(fakeClient(seen), { role: 'admin' }).enrollment.findMany();
+  assert.deepEqual(seen, ['admin']);
+});
+
+test('an active runWithRlsContext wins over the fixed context', async () => {
+  const seen: string[] = [];
+  const db = makeRlsClient(fakeClient(seen), { role: 'admin' });
+  await asService(async () => db.enrollment.findMany())();
+  assert.deepEqual(seen, ['service']);
+});

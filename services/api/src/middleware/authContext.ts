@@ -3,40 +3,26 @@ import { createMiddleware } from 'hono/factory';
 import { clerkMiddleware, getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
 import {
-    Lang,
-    prisma,
     dbClients,
     runWithRlsContext,
     getRlsContext,
     UserRole,
     type PoolName,
     type Tx,
+    type User,
 } from '@agconn/db';
 import { hasPermission, type Permission } from '@agconn/schemas';
+import {
+    findAuthUser,
+    loadMemberships,
+    upsertClerkUser,
+    type EmployerMembership,
+} from './auth-bootstrap.js';
 
-// Per docs/00-foundation/02-auth/* the API authenticates via Clerk, then
-// reads role + permissions from the local users row. RLS uses app.role
-// ('authenticated' | 'admin' | 'service' | 'webhook') for coarse cuts;
-// permission scopes are enforced at the application layer.
-//
-// Employer access is membership-based: employer_contacts rows with a user_id
-// and accepted_at are this user's memberships. The active employer (one per
-// request) is resolved from the X-Employer-Id header validated against the
-// membership set, defaulting to the sole membership. Its role's permission
-// bundle governs every employer route; app.employer_id pins RLS to it.
-//
-// RLS context (app.role / app.user_id / app.tenant_id / app.employer_id) is
-// propagated via AsyncLocalStorage and applied per-query by the rlsClient
-// proxy in @agconn/db.
+// Clerk authenticates; the users row and accepted employer_contacts memberships decide role and permissions.
+// The active employer comes from X-Employer-Id (or the sole membership) and pins app.employer_id for RLS.
 
-export type EmployerMembership = {
-    employerId: string;
-    tenantId: string;
-    legalName: string;
-    roleKey: string;
-    permissions: string[];
-    scopeQualifier: string | null;
-};
+export type { EmployerMembership };
 
 export type AuthVars = {
     db: Tx;
@@ -57,11 +43,8 @@ export const clerkAuthMiddleware = clerkMiddleware({
     secretKey: process.env.CLERK_SECRET_KEY,
 });
 
-async function provisionFromClerk(c: Context, userId: string) {
-    // The Clerk -> DB sync normally lands via the user.created webhook, but in
-    // dev (no public webhook URL) and on a brand-new Clerk session the webhook
-    // has not yet run. Hydrate a minimal User row from the Clerk session so the
-    // request can proceed; the webhook (idempotent upsert) reconciles drift.
+// The user.created webhook normally creates the row; a brand-new session can arrive first.
+async function provisionFromClerk(c: Context, userId: string): Promise<User | null> {
     try {
         const cu = await c.get('clerk').users.getUser(userId);
         const email =
@@ -73,50 +56,10 @@ async function provisionFromClerk(c: Context, userId: string) {
             cu.phoneNumbers[0]?.phoneNumber ??
             null;
         const meta = (cu.unsafeMetadata ?? {}) as { role?: string; locale?: string };
-        const role: UserRole =
-            meta.role === 'employer' || meta.role === 'training_org' || meta.role === 'admin'
-                ? (meta.role as UserRole)
-                : UserRole.worker;
-        const preferredLang = meta.locale === 'en' ? Lang.en : Lang.es;
-        return prisma.user.upsert({
-            where: { id: userId },
-            update: { email: email?.toLowerCase() ?? null, phone },
-            create: {
-                id: userId,
-                role,
-                preferredLang,
-                email: email?.toLowerCase() ?? null,
-                phone,
-                tenantId: null,
-            },
-        });
+        return await upsertClerkUser(userId, { email, phone, role: meta.role, locale: meta.locale });
     } catch {
         return null;
     }
-}
-
-// Resolves the user's employer memberships from the roster. Uses the raw
-// (non-RLS) client because this runs during the auth bootstrap, before the
-// RLS context exists — same rationale as the user lookup above.
-async function loadMemberships(userId: string): Promise<EmployerMembership[]> {
-    const rows = await prisma.employerContact.findMany({
-        where: { userId, acceptedAt: { not: null }, deletedAt: null },
-        select: {
-            role: { select: { key: true, permissions: true, scopeQualifier: true } },
-            employer: { select: { id: true, tenantId: true, legalName: true, deletedAt: true } },
-        },
-        orderBy: { createdAt: 'asc' },
-    });
-    return rows
-        .filter((r) => r.employer.deletedAt === null)
-        .map((r) => ({
-            employerId: r.employer.id,
-            tenantId: r.employer.tenantId,
-            legalName: r.employer.legalName,
-            roleKey: r.role.key,
-            permissions: r.role.permissions,
-            scopeQualifier: r.role.scopeQualifier,
-        }));
 }
 
 function resolveActiveEmployer(
@@ -130,55 +73,43 @@ function resolveActiveEmployer(
     return memberships.length === 1 ? memberships[0]! : null;
 }
 
-// Factory: each domain's route file calls `requireAuth('worker')`,
-// `requireAuth('employer')`, etc. so handlers receive a domain-scoped Prisma
-// client via c.var.db. Pool isolation prevents one domain from starving others.
+type AuthContext = Context<{ Variables: AuthVars }>;
+
+function setAuthVars(c: AuthContext, poolName: PoolName, user: User, memberships: EmployerMembership[], active: EmployerMembership | null) {
+    c.set('db', dbClients[poolName]);
+    c.set('userId', user.id);
+    c.set('userRole', user.role);
+    c.set('permissions', user.permissions);
+    c.set('tenantId', active?.tenantId ?? user.tenantId);
+    c.set('role', 'authenticated');
+    c.set('employerMemberships', memberships);
+    c.set('employerId', active?.employerId ?? null);
+    c.set('employerPermissions', active?.permissions ?? []);
+    c.set('employerScope', active?.scopeQualifier ?? null);
+}
+
+// requireAuth('worker'), requireAuth('employer'), ... hands each domain its own pool via c.var.db.
 export const requireAuth = (poolName: PoolName) =>
     createMiddleware<{ Variables: AuthVars }>(async (c, next) => {
         const auth = getAuth(c);
         if (!auth?.userId) {
             return err(c, 401, 'unauthenticated');
         }
-
-        let user = await prisma.user.findUnique({ where: { id: auth.userId } });
+        const user = (await findAuthUser(auth.userId)) ?? (await provisionFromClerk(c, auth.userId));
         if (!user) {
-            user = await provisionFromClerk(c, auth.userId);
-            if (!user) {
-                return err(c, 403, 'no_tenant');
-            }
+            return err(c, 403, 'no_tenant');
         }
-
         const memberships = await loadMemberships(user.id);
         const requested = c.req.header('X-Employer-Id') ?? undefined;
         const active = resolveActiveEmployer(memberships, requested);
         if (requested && !active) {
             return err(c, 403, 'employer_forbidden', 'not a member of the requested employer');
         }
-
-        // An employer member acts within the active employer's tenant; fall
-        // back to the user's own tenant (workers / non-employer requests).
-        const tenantId = active?.tenantId ?? user.tenantId;
-
-        c.set('db', dbClients[poolName]);
-        c.set('userId', user.id);
-        c.set('userRole', user.role);
-        c.set('permissions', user.permissions);
-        c.set('tenantId', tenantId);
-        c.set('role', 'authenticated');
-        c.set('employerMemberships', memberships);
-        c.set('employerId', active?.employerId ?? null);
-        c.set('employerPermissions', active?.permissions ?? []);
-        c.set('employerScope', active?.scopeQualifier ?? null);
-
-        await runWithRlsContext(
-            {
-                role: 'authenticated',
-                userId: user.id,
-                tenantId: tenantId ?? undefined,
-                employerId: active?.employerId ?? undefined,
-            },
-            () => next(),
-        );
+        setAuthVars(c, poolName, user, memberships, active);
+        // An employer member acts in the active employer's tenant; anyone else in their own.
+        const tenantId = c.var.tenantId ?? undefined;
+        const employerId = active?.employerId ?? undefined;
+        await runWithRlsContext({ role: 'authenticated', userId: user.id, tenantId, employerId }, () => next());
     });
 
 export const requireRole =

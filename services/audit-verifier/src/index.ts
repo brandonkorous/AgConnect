@@ -13,7 +13,7 @@ import {
     initHmacKeysFromEnv,
     verifyHmac,
 } from '@agconn/audit';
-import { prisma } from '@agconn/db';
+import { insertAuditEvent, serviceDb } from '@agconn/db';
 
 initHmacKeysFromEnv();
 
@@ -45,22 +45,17 @@ async function emitMeta(
     });
     const eventHmac = computeHmac(canonical, key);
 
-    await prisma.$transaction(async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'system'`);
-        await tx.auditEvent.create({
-            data: {
-                tenantId: SYSTEM_TENANT_ID,
-                occurredAt,
-                actorType: 'system',
-                actorRole: 'system',
-                action,
-                resourceType: auditRegistry[action].resourceType,
-                outcome: 'success',
-                metadata: metadata as object,
-                eventHmac: Uint8Array.from(eventHmac),
-                eventHmacV: version,
-            },
-        });
+    await insertAuditEvent({
+        tenantId: SYSTEM_TENANT_ID,
+        occurredAt,
+        actorType: 'system',
+        actorRole: 'system',
+        action,
+        resourceType: auditRegistry[action].resourceType,
+        outcome: 'success',
+        metadata: metadata as object,
+        eventHmac: Uint8Array.from(eventHmac),
+        eventHmacV: version,
     });
 }
 
@@ -68,7 +63,7 @@ async function verifyPartition(
     partitionStart: Date,
     partitionEnd: Date,
 ): Promise<{ rowCount: number; mismatchCount: number; mismatchedIds: bigint[] }> {
-    const rows = await prisma.$transaction(async (tx) => {
+    const rows = await serviceDb.$transaction(async (tx) => {
         await tx.$executeRawUnsafe(`SET LOCAL app.role = 'audit_redact'`); // SELECT-only is enough; redact role has SELECT
         return tx.auditEvent.findMany({
             where: { occurredAt: { gte: partitionStart, lt: partitionEnd } },
@@ -148,7 +143,7 @@ async function main(): Promise<void> {
         }
     }
 
-    await prisma.$disconnect();
+    await serviceDb.$disconnect();
 
     if (totalMismatch > 0) {
         console.error(`[audit-verifier] DETECTED ${totalMismatch} mismatches`);

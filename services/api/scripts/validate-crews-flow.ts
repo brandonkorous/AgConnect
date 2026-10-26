@@ -13,7 +13,7 @@
 
 // Env is supplied by tsx --env-file; see the run command in the file header.
 
-const { prisma, AppStatus } = await import('@agconn/db');
+const { adminDb: prisma, AppStatus } = await import('@agconn/db');
 const { hasPermission } = await import('@agconn/schemas');
 const { Hono } = await import('hono');
 const { createMiddleware } = await import('hono/factory');

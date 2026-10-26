@@ -130,6 +130,8 @@ export type Db = PrismaClient;
 export type Tx = PrismaNS.TransactionClient;
 
 export { pools, type PoolName } from './pools.js';
+export { adminDb } from './admin-db.js';
+export { insertAuditEvent } from './audit-write.js';
 export {
     dbClients,
     makeRlsClient,

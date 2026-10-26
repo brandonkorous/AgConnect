@@ -5,8 +5,7 @@
 // safe under duplicate inbound and pg-boss retries.
 
 import type { Job, PgBoss } from 'pg-boss';
-import { prisma } from '@agconn/db';
-import { UserRole, Lang } from '@agconn/db';
+import { insertAuditEvent, serviceDb, UserRole, Lang } from '@agconn/db';
 import { ensureClerkUserByPhone } from '@agconn/auth';
 import {
   enqueueSms,
@@ -49,25 +48,20 @@ async function emitOptInPending(userId: string, meta: Record<string, unknown>): 
   };
   const { key, version } = hmacKeys.current();
   const eventHmac = computeHmac(canonicalize(input), key);
-  await prisma.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'system'`);
-    await tx.auditEvent.create({
-      data: {
-        tenantId: input.tenantId,
-        occurredAt: new Date(input.occurredAtMs),
-        actorType: input.actorType,
-        actorId: input.actorId,
-        actorRole: input.actorRole,
-        action: input.action,
-        resourceType: input.resourceType ?? null,
-        resourceId: input.resourceId ?? null,
-        outcome: input.outcome,
-        correlationId: input.correlationId,
-        metadata: input.metadata as object,
-        eventHmac: Uint8Array.from(eventHmac),
-        eventHmacV: version,
-      },
-    });
+  await insertAuditEvent({
+    tenantId: input.tenantId,
+    occurredAt: new Date(input.occurredAtMs),
+    actorType: input.actorType,
+    actorId: input.actorId,
+    actorRole: input.actorRole,
+    action: input.action,
+    resourceType: input.resourceType ?? null,
+    resourceId: input.resourceId ?? null,
+    outcome: input.outcome,
+    correlationId: input.correlationId,
+    metadata: input.metadata as object,
+    eventHmac: Uint8Array.from(eventHmac),
+    eventHmacV: version,
   });
 }
 
@@ -85,7 +79,7 @@ async function handle(job: Job<SmsProvisionJob>): Promise<void> {
   // smsOptInState / onboarded / consent for a user who already exists (e.g.
   // a prior web signup texting the keyword). The clerk user.created webhook
   // reconciles role/lang/email idempotently and does not touch these fields.
-  await prisma.$transaction(async (tx) => {
+  await serviceDb.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.role = 'webhook'`);
     await tx.user.upsert({
       where: { id: clerkUserId },
