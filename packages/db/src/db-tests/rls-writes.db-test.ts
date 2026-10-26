@@ -43,7 +43,7 @@ test('system writes a tenantless audit event with no app.tenant_id', async () =>
 
 test('an authenticated user with no tenant reads nothing tenant-scoped and does not error', async () => {
   const rows = await runWithRlsContext({ role: 'authenticated', userId: USER.noTenant }, () =>
-    db().employerProfile.findMany({ where: { id: { in: [ROW.profileA, ROW.profileB] } } }));
+    db().employerContact.findMany({ where: { id: { in: [ROW.contactA, ROW.contactB] } } }));
   assert.equal(rows.length, 0);
 });
 
