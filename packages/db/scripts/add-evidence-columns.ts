@@ -8,7 +8,7 @@ import { config as loadEnv } from 'dotenv';
 const here = dirname(fileURLToPath(import.meta.url));
 loadEnv({ path: resolve(here, '..', '..', '..', '.env') });
 
-const { prisma } = await import('../src/index.js');
+const { adminDb: prisma } = await import('../src/index.js');
 
 const SQL = `
 ALTER TABLE compliance_items

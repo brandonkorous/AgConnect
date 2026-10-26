@@ -1,6 +1,6 @@
-// Shared response-shaper for an employer-facing job. Returns the v2 detail
-// shape (everything the Edit Job page needs); list/card endpoints pick a
-// subset.
+import { jobPhotoUrl } from '../../lib/blob-storage.js';
+
+// Shared response-shaper for an employer-facing job (the Edit Job detail shape); list endpoints pick a subset.
 
 type Decimalish = { toString: () => string } | null;
 
@@ -165,7 +165,7 @@ export function shapeJob(j: JobRowFull, counts: Record<string, number>) {
     autosavedAt: j.autosavedAt?.toISOString() ?? null,
     photos: (j.photos ?? []).map((p) => ({
       id: p.id,
-      url: p.url,
+      url: jobPhotoUrl(p.url),
       captionEn: p.captionEn,
       captionEs: p.captionEs,
       width: p.width,

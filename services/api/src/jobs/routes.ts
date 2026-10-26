@@ -184,7 +184,8 @@ jobsRoutes.get('/', validate('query', JobsQuery), async (c) => {
     ) as Record<(typeof CROPS)[number], number>;
 
     // Lightweight analytics for content-gap detection.
-    await c.var.db.searchView.create({
+    // createMany: workers may insert search_views but not read them back (create would RETURNING).
+    await c.var.db.searchView.createMany({
         data: {
             workerId: c.var.userId,
             filters: q as object,

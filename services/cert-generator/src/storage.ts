@@ -1,28 +1,20 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { BlobServiceClient, StorageSharedKeyCredential, type ContainerClient } from '@azure/storage-blob';
 
-// Supabase Storage adapter for generated certificate PDFs. The bucket is
-// private — the wallet API hands out short-lived signed URLs (see
-// services/api/src/lib/supabase-storage.ts → signCertUrl).
-//
-// Multi-tenancy layout matches the rest of the storage namespace:
-//   `<tenantId>/<enrollmentId>/<certificateId>.pdf`
-// RLS on the bucket constrains writes to the service role and reads to none —
-// every read happens via a signed URL minted by the API.
-
-const BUCKET = 'certs';
+// Generated certificate PDFs on Azure Blob (AG-11), in the private `certs` container.
+// Key layout `<tenantId>/<enrollmentId>/<certificateId>.pdf`; the wallet API reads them through signed URLs.
+const CONTAINER = 'certs';
 const CONTENT_TYPE = 'application/pdf';
 
-let cached: SupabaseClient | null = null;
-function getClient(): SupabaseClient {
+let cached: ContainerClient | null = null;
+function container(): ContainerClient {
     if (cached) return cached;
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) {
-        throw new Error(
-            'cert-generator: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set',
-        );
+    const name = process.env.AZURE_STORAGE_ACCOUNT;
+    const key = process.env.AZURE_STORAGE_KEY;
+    if (!name || !key) {
+        throw new Error('cert-generator: AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must be set');
     }
-    cached = createClient(url, key, { auth: { persistSession: false } });
+    const service = new BlobServiceClient(`https://${name}.blob.core.windows.net`, new StorageSharedKeyCredential(name, key));
+    cached = service.getContainerClient(CONTAINER);
     return cached;
 }
 
@@ -33,17 +25,15 @@ export type UploadCertArgs = {
     body: Buffer;
 };
 
+// Overwrites: a regenerated certificate replaces the old PDF under the same key.
 export async function uploadCert(args: UploadCertArgs): Promise<string> {
     const storageKey = `${args.tenantId}/${args.enrollmentId}/${args.certificateId}.pdf`;
-    const { error } = await getClient()
-        .storage.from(BUCKET)
-        .upload(storageKey, args.body, {
-            contentType: CONTENT_TYPE,
-            upsert: true,
-            cacheControl: '0',
+    try {
+        await container().getBlockBlobClient(storageKey).uploadData(args.body, {
+            blobHTTPHeaders: { blobContentType: CONTENT_TYPE, blobCacheControl: 'no-store' },
         });
-    if (error) {
-        throw new Error(`cert-generator: supabase upload failed: ${error.message}`);
+    } catch (e) {
+        throw new Error(`cert-generator: blob upload failed: ${e instanceof Error ? e.message : String(e)}`);
     }
     return storageKey;
 }

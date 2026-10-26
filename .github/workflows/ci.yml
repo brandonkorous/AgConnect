@@ -16,14 +16,15 @@ jobs:
         timeout-minutes: 15
         env:
             FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
-            # Real Postgres for steps that need it (i18n parity reads translation_keys
-            # rows). Same URL for DATABASE_URL + DIRECT_URL since the CI Postgres has
-            # no pgbouncer in front of it.
+            # Migrations and seeds run as the superuser, standing in for agconn_owner.
+            # The tests run as agconn_app (NOBYPASSRLS), the role production connects as.
             DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
             DIRECT_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
+            DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci
+            APP_DATABASE_URL: postgresql://agconn_app:agconn_app_ci@localhost:5432/agconn_ci
         services:
             postgres:
-                image: postgres:16
+                image: postgres:18
                 env:
                     POSTGRES_USER: postgres
                     POSTGRES_PASSWORD: postgres
@@ -60,11 +61,11 @@ jobs:
             - name: Typecheck
               run: pnpm typecheck
 
-            - name: Unit tests
-              run: pnpm -r --if-present test
-
             - name: Convention checks (tenant_id, RLS)
               run: pnpm check:conventions
+
+            - name: Script tests
+              run: node --test "scripts/*.test.mjs"
 
             # Apply migrations + seed translations against the CI Postgres so the
             # next step can run the live parity check. (Eventually: refactor the
@@ -75,8 +76,23 @@ jobs:
             - name: Seed translations
               run: pnpm --filter @agconn/db i18n:seed
 
-            - name: Database tests
-              run: pnpm -r --if-present test:db
+            # Twice, to prove the role SQL is safe to run again.
+            - name: Create the app role
+              run: |
+                  for i in 1 2; do
+                    psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 -v app_password=agconn_app_ci \
+                      -f deploy/k8s/jobs/db-role.sql
+                  done
+
+            - name: Unit tests (as agconn_app)
+              run: pnpm -r --if-present test
+              env:
+                  DATABASE_URL: ${{ env.APP_DATABASE_URL }}
+
+            - name: Database tests (as agconn_app)
+              run: pnpm -r --no-bail --if-present test:db
+              env:
+                  DATABASE_URL: ${{ env.APP_DATABASE_URL }}
 
             - name: i18n parity
               run: pnpm --filter @agconn/web run i18n:check

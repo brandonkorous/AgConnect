@@ -1,5 +1,5 @@
 import type { Job } from 'pg-boss';
-import { prisma, type Tx } from '@agconn/db';
+import { runWithRlsContext, serviceDb, type Tx } from '@agconn/db';
 import {
   QUEUE_NAMES,
   getBoss,
@@ -42,13 +42,7 @@ function buildOneClickUnsubscribeUrl(token: string): string {
   return `${publicApiUrl()}/v1/landing/unsubscribe?token=${encodeURIComponent(token)}`;
 }
 
-/**
- * Wraps a unit of email work in a service-role Postgres transaction.
- * Pass `tenantId` to scope RLS to a specific tenant (employer emails);
- * pass `null` for platform-level work (waitlist confirm/welcome) — the
- * `*_service` policies on waitlist + email_log treat unset app.tenant_id
- * as NULL via NULLIF and permit NULL-tenant rows.
- */
+// app.role = 'service', scoped to the employer's tenant, or to NULL-tenant rows when tenantId is null.
 async function withTenantTx<T>(
   tenantId: string | null,
   fn: (db: Tx) => Promise<T>,
@@ -56,16 +50,8 @@ async function withTenantTx<T>(
   if (tenantId !== null && !UUID_RE.test(tenantId)) {
     throw new Error(`worker received invalid tenantId: ${tenantId}`);
   }
-  return prisma.$transaction(
-    async (tx) => {
-      await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
-      if (tenantId !== null) {
-        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-      }
-      return fn(tx);
-    },
-    { timeout: 60_000, maxWait: 10_000 },
-  );
+  return runWithRlsContext({ role: 'service', tenantId: tenantId ?? undefined }, () =>
+    serviceDb.$transaction(fn, { timeout: 60_000, maxWait: 10_000 }));
 }
 
 async function handleWaitlistConfirm(job: Job<WaitlistConfirmJob>): Promise<void> {
@@ -140,9 +126,7 @@ async function handleEmployerEmail(job: Job<EmployerEmailJob>): Promise<void> {
       return;
     }
 
-    // Employers don't have signed unsubscribe tokens like waitlist; we use a
-    // generic transactional unsubscribe link. Resend's List-Unsubscribe is
-    // still set so they can opt out at the suppression level.
+    // Employers have no signed unsubscribe token; List-Unsubscribe still lets them opt out via suppression.
     const unsubscribeUrl = `${publicWebUrl()}/${locale}/employer/billing`;
     const oneClickUnsubscribeUrl = `${publicApiUrl()}/v1/landing/unsubscribe?employerId=${employerId}`;
 
@@ -196,79 +180,30 @@ export type EmailWorkerHandle = {
   stop: () => Promise<void>;
 };
 
+type Boss = Awaited<ReturnType<typeof getBoss>>;
+
+// Each queue handles its jobs one at a time and rethrows, so pg-boss retries a failed job.
+async function workEach<T extends object>(boss: Boss, queue: string, label: string, handle: (job: Job<T>) => Promise<void>) {
+  await boss.work<T>(queue, { batchSize: 5, pollingIntervalSeconds: 2 }, async (jobs) => {
+    for (const job of jobs) {
+      try {
+        await handle(job);
+      } catch (err) {
+        const template = (job.data as { template?: string }).template;
+        console.error(`[worker] ${label} failed`, { jobId: job.id, template, err });
+        throw err;
+      }
+    }
+  });
+}
+
 export async function runEmailWorker(): Promise<EmailWorkerHandle> {
   const boss = await getBoss();
-
-  await boss.work<WaitlistConfirmJob>(
-    QUEUE_NAMES.waitlistConfirm,
-    { batchSize: 5, pollingIntervalSeconds: 2 },
-    async (jobs) => {
-      for (const job of jobs) {
-        try {
-          await handleWaitlistConfirm(job);
-        } catch (err) {
-          console.error('[worker] waitlist confirm failed', { jobId: job.id, err });
-          throw err;
-        }
-      }
-    },
-  );
-
-  await boss.work<WaitlistWelcomeJob>(
-    QUEUE_NAMES.waitlistWelcome,
-    { batchSize: 5, pollingIntervalSeconds: 2 },
-    async (jobs) => {
-      for (const job of jobs) {
-        try {
-          await handleWaitlistWelcome(job);
-        } catch (err) {
-          console.error('[worker] waitlist welcome failed', { jobId: job.id, err });
-          throw err;
-        }
-      }
-    },
-  );
-
-  await boss.work<EmployerEmailJob>(
-    QUEUE_NAMES.employer,
-    { batchSize: 5, pollingIntervalSeconds: 2 },
-    async (jobs) => {
-      for (const job of jobs) {
-        try {
-          await handleEmployerEmail(job);
-        } catch (err) {
-          console.error('[worker] employer email failed', {
-            jobId: job.id,
-            template: job.data.template,
-            err,
-          });
-          throw err;
-        }
-      }
-    },
-  );
-
-  await boss.work<GrantReportEmailJob>(
-    QUEUE_NAMES.grantReport,
-    { batchSize: 5, pollingIntervalSeconds: 2 },
-    async (jobs) => {
-      for (const job of jobs) {
-        try {
-          await handleGrantReportEmail(job);
-        } catch (err) {
-          console.error('[worker] grant report email failed', {
-            jobId: job.id,
-            template: job.data.template,
-            err,
-          });
-          throw err;
-        }
-      }
-    },
-  );
-
+  await workEach<WaitlistConfirmJob>(boss, QUEUE_NAMES.waitlistConfirm, 'waitlist confirm', handleWaitlistConfirm);
+  await workEach<WaitlistWelcomeJob>(boss, QUEUE_NAMES.waitlistWelcome, 'waitlist welcome', handleWaitlistWelcome);
+  await workEach<EmployerEmailJob>(boss, QUEUE_NAMES.employer, 'employer email', handleEmployerEmail);
+  await workEach<GrantReportEmailJob>(boss, QUEUE_NAMES.grantReport, 'grant report email', handleGrantReportEmail);
   console.log('[worker] email worker started — listening on', Object.values(QUEUE_NAMES));
-
   return {
     stop: async () => {
       await boss.stop({ graceful: true, timeout: 10_000 });

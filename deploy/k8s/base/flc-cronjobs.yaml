@@ -17,6 +17,8 @@ metadata:
   namespace: agconn
 spec:
   schedule: "0 4 * * *"
+  # Explicit, so a deploy resumes a CronJob that move-to-azure.yml suspended.
+  suspend: false
   timeZone: "Etc/UTC"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
@@ -55,6 +57,8 @@ metadata:
   namespace: agconn
 spec:
   schedule: "30 4 * * *"
+  # Explicit, so a deploy resumes a CronJob that move-to-azure.yml suspended.
+  suspend: false
   timeZone: "Etc/UTC"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3

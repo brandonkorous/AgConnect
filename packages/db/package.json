@@ -30,7 +30,8 @@
     "aewr:seed": "tsx scripts/seed-aewr-rates.ts",
     "sweep:sms-optin": "tsx scripts/sweep-stale-sms-optin.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test \"src/**/*.test.ts\""
+    "test": "tsx --test \"src/**/*.test.ts\"",
+    "test:db": "tsx --test --test-concurrency=1 \"src/**/*.db-test.ts\""
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",

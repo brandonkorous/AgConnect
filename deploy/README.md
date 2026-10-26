@@ -29,8 +29,11 @@ CronJobs:    audit-retention (02:00 UTC), audit-verifier (03:00 UTC),
   api-rest's `PLATFORM_HOSTNAMES`, or on-demand TLS is denied and Cloudflare
   returns 525.
 - No cert-manager, nginx-ingress or KEDA on this cluster.
-- Postgres and object storage stay on Supabase, reached over the internet.
-  Migrations and audit HMAC roles live under `packages/db/prisma/migrations`.
+- Postgres is `psql-agconn-prod-cus` (private, reachable only in the VNet) and files
+  are in Azure Blob (`stagconnprodcus`), both from sparx.works Terraform. Pods connect
+  as `agconn_app` (NOBYPASSRLS) through PgBouncer (`base/pgbouncer.yaml`); the migrate
+  Job runs migrations, seeds and `jobs/db-role.sql` as `agconn_owner`. The one-time
+  move from Supabase is `.github/workflows/move-to-azure.yml` (AG-11).
 
 ## Images
 
@@ -79,7 +82,7 @@ docker run --rm -p 3001:3001 --env-file .env --network host agconn-api:dev
 Revert the commit on `main` and let the deploy run. That is the normal path.
 Database migrations are forward-only: if one breaks production, write a
 follow-up migration that reverses it. Never `prisma migrate reset` in prod.
-Supabase keeps daily backups with 7-day point-in-time recovery.
+The Flexible Server keeps 7 days of point-in-time restore.
 
 ## Not in this setup
 

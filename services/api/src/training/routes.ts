@@ -6,6 +6,7 @@ import {
     Funder,
     ProgramStatus,
     type Tx,
+    runWithRlsContext,
 } from '@agconn/db';
 import {
     BulkUpdateEnrollmentsBody,
@@ -143,15 +144,15 @@ trainingRoutes.post('/:id/enroll', requireRole('worker'), async (c) => {
     });
     if (dup) return err(c, 409, 'conflict', 'already_enrolled');
 
-    // Atomic capacity check + decrement.
-    const updateResult = await c.var.db.$executeRaw`
+    // Atomic capacity check; the program's counter is not the worker's to write, so it runs as service.
+    const updateResult = await runWithRlsContext({ role: 'service' }, () => c.var.db.$executeRaw`
     UPDATE "training_programs"
     SET "enrolled_count" = "enrolled_count" + 1,
         "status" = CASE WHEN "enrolled_count" + 1 >= "capacity" THEN 'full'::"ProgramStatus" ELSE "status" END,
         "updated_at" = NOW()
     WHERE "id" = ${programId}::uuid
       AND "enrolled_count" < "capacity"
-      AND "status" = 'active'`;
+      AND "status" = 'active'`);
 
     if (updateResult === 0) {
         return err(c, 409, 'conflict', 'program_full');
@@ -236,12 +237,12 @@ trainingRoutes.post('/:id/unenroll', requireRole('worker'), async (c) => {
         data: { status: EnrollmentStatus.dropped, droppedAt: new Date() },
     });
 
-    await c.var.db.$executeRaw`
+    await runWithRlsContext({ role: 'service' }, () => c.var.db.$executeRaw`
     UPDATE "training_programs"
     SET "enrolled_count" = GREATEST("enrolled_count" - 1, 0),
         "status" = CASE WHEN "status" = 'full' THEN 'active'::"ProgramStatus" ELSE "status" END,
         "updated_at" = NOW()
-    WHERE "id" = ${programId}::uuid`;
+    WHERE "id" = ${programId}::uuid`);
 
     await c.var.audit.log({
         action: 'training.enrollment.created',

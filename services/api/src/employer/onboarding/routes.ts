@@ -99,6 +99,9 @@ employerOnboardingRoutes.post('/', validate('json', EmployerOnboardingBody), asy
         },
       });
 
+      // Pin the new employer so its roster, verification, compliance and payroll rows pass RLS.
+      await tx.$executeRaw`SELECT set_config('app.employer_id', ${created.id}, true)`;
+
       // The owner is a roster row; owner_contact_id mirrors it (reassignable).
       const owner = await tx.employerContact.create({
         data: {

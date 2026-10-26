@@ -8,7 +8,7 @@ import { config as loadEnv } from 'dotenv';
 loadEnv({ path: '../../.env' });
 
 async function main() {
-  const { prisma, ShiftType, AppStatus } = await import('../src/index.js');
+  const { adminDb: prisma, ShiftType, AppStatus } = await import('../src/index.js');
 
   const profile = await prisma.employerProfile.findFirst({
     where: { flcVerifiedAt: { not: null } },

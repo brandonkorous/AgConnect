@@ -1,15 +1,7 @@
-import { prisma } from '@agconn/db';
+import { serviceDb } from '@agconn/db';
 
-// Local lookup against the cached MSPA registry. Two strategies, in order:
-//   1. If the employer self-reported a DOL MSPA certificate number, we look
-//      it up directly. Authoritative when present.
-//   2. Otherwise, fuzzy-match on legal name. Used to catch employers who
-//      didn't fill in the MSPA field but who do appear in the federal list
-//      (so they get the badge anyway).
-//
-// "Not found" is meaningful: DOL only publishes *active* certificates, so
-// absence in the latest sync = not currently registered. Lapsed certs are
-// soft-deleted (removedAt set) on the next sync that doesn't include them.
+// MSPA lookup: by self-reported certificate number first, else a fuzzy legal-name match.
+// Not found is meaningful: DOL lists active certificates only.
 
 export type MspaMatch = {
   certificateNumber: string;
@@ -29,7 +21,7 @@ export async function lookupMspa(args: {
   legalName: string;
 }): Promise<MspaLookupResult> {
   if (args.certificateNumber && args.certificateNumber.trim().length > 0) {
-    const direct = await prisma.mspaFlcRegistry.findFirst({
+    const direct = await serviceDb.mspaFlcRegistry.findFirst({
       where: {
         certificateNumber: args.certificateNumber.trim().toUpperCase(),
         removedAt: null,
@@ -48,7 +40,7 @@ export async function lookupMspa(args: {
   const normalized = stripBusinessSuffixes(args.legalName).slice(0, 24);
   if (normalized.length < 4) return { kind: 'not_found' };
 
-  const fuzzy = await prisma.mspaFlcRegistry.findFirst({
+  const fuzzy = await serviceDb.mspaFlcRegistry.findFirst({
     where: {
       removedAt: null,
       legalName: { startsWith: normalized, mode: 'insensitive' },

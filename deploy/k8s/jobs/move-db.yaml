@@ -1,0 +1,44 @@
+# Runs deploy/k8s/jobs/move-db.sh in the cluster, because psql-agconn-prod-cus is reachable only from the VNet.
+# move-to-azure.yml makes the move-db-sh ConfigMap and the move-db Secret, applies this, and deletes the Secret after.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: move-db
+  namespace: agconn
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1800
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: move-db }
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 70
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: move
+          image: postgres:18-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+          command: ["sh", "/scripts/move-db.sh"]
+          env:
+            - name: SUPABASE_DB_URL
+              valueFrom: { secretKeyRef: { name: move-db, key: SUPABASE_DB_URL } }
+            - name: DATABASE_ADMIN_URL
+              valueFrom: { secretKeyRef: { name: move-db, key: DATABASE_ADMIN_URL } }
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 1Gi }
+          volumeMounts:
+            - { name: scripts, mountPath: /scripts }
+            - { name: work, mountPath: /work }
+      volumes:
+        - name: scripts
+          configMap: { name: move-db-sh }
+        - name: work
+          emptyDir: { sizeLimit: 2Gi }

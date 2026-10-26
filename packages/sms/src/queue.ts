@@ -1,4 +1,5 @@
 import { PgBoss } from 'pg-boss';
+import { pgBossOptions } from '@agconn/db';
 import { computeQuietHoursDefer } from './quiet-hours.js';
 import type { SmsTemplateName, TemplateVars } from './templates/index.js';
 
@@ -37,10 +38,7 @@ export async function getSmsBoss(): Promise<PgBoss> {
   if (starting) return starting;
 
   starting = (async () => {
-    const boss = new PgBoss({
-      connectionString: getDatabaseUrl(),
-      schema: 'pgboss',
-    });
+    const boss = new PgBoss(pgBossOptions(getDatabaseUrl()));
     boss.on('error', (err: unknown) => {
       console.error('[sms pg-boss] error', err);
     });

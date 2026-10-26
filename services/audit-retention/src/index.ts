@@ -15,7 +15,7 @@ import {
     hmacKeys,
     initHmacKeysFromEnv,
 } from '@agconn/audit';
-import { prisma } from '@agconn/db';
+import { insertAuditEvent, serviceDb } from '@agconn/db';
 
 initHmacKeysFromEnv();
 
@@ -28,7 +28,7 @@ async function ensureForwardPartitions(): Promise<void> {
         monthStart.setUTCHours(0, 0, 0, 0);
         monthStart.setUTCMonth(monthStart.getUTCMonth() + i);
         const dateStr = monthStart.toISOString().slice(0, 10);
-        await prisma.$executeRawUnsafe(`SELECT ensure_audit_partition('${dateStr}'::date)`);
+        await serviceDb.$executeRaw`SELECT ensure_audit_partition(${dateStr}::date)`;
     }
 }
 
@@ -56,22 +56,17 @@ async function emitMeta(action: 'system.audit.retention.purged', metadata: {
     });
     const eventHmac = computeHmac(canonical, key);
 
-    await prisma.$transaction(async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'system'`);
-        await tx.auditEvent.create({
-            data: {
-                tenantId: SYSTEM_TENANT_ID,
-                occurredAt,
-                actorType: 'system',
-                actorRole: 'system',
-                action,
-                resourceType: auditRegistry[action].resourceType,
-                outcome: 'success',
-                metadata: metadata as object,
-                eventHmac: Uint8Array.from(eventHmac),
-                eventHmacV: version,
-            },
-        });
+    await insertAuditEvent({
+        tenantId: SYSTEM_TENANT_ID,
+        occurredAt,
+        actorType: 'system',
+        actorRole: 'system',
+        action,
+        resourceType: auditRegistry[action].resourceType,
+        outcome: 'success',
+        metadata: metadata as object,
+        eventHmac: Uint8Array.from(eventHmac),
+        eventHmacV: version,
     });
 }
 
@@ -79,7 +74,7 @@ async function purgeAction(action: keyof typeof auditRegistry): Promise<number> 
     const entry = auditRegistry[action];
     const cutoff = new Date(Date.now() - entry.retentionDays * 86_400_000);
 
-    const deleted = await prisma.$transaction(async (tx) => {
+    const deleted = await serviceDb.$transaction(async (tx) => {
         await tx.$executeRawUnsafe(`SET LOCAL app.role = 'audit_purge'`);
         return tx.auditEvent.deleteMany({
             where: { action, occurredAt: { lt: cutoff } },
@@ -111,7 +106,7 @@ async function main(): Promise<void> {
         }
     }
     console.log(`[audit-retention] complete; total=${total}`);
-    await prisma.$disconnect();
+    await serviceDb.$disconnect();
 }
 
 main().catch(async (e) => {

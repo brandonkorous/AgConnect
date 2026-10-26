@@ -1,5 +1,5 @@
 import type { Job } from 'pg-boss';
-import { prisma, type Tx } from '@agconn/db';
+import { insertAuditEvent, runWithRlsContext, serviceDb, type Tx } from '@agconn/db';
 import {
     auditRegistry,
     canonicalize,
@@ -22,18 +22,13 @@ function publicApiUrl(): string {
     return (process.env.PUBLIC_API_URL ?? 'http://localhost:3001').replace(/\/$/, '');
 }
 
+// app.role = 'service' pinned to the job's tenant, bound through set_config rather than pasted into SQL.
 async function withTenantTx<T>(tenantId: string, fn: (db: Tx) => Promise<T>): Promise<T> {
     if (!UUID_RE.test(tenantId)) {
         throw new Error(`sms-worker received invalid tenantId: ${tenantId}`);
     }
-    return prisma.$transaction(
-        async (tx) => {
-            await tx.$executeRawUnsafe(`SET LOCAL app.role = 'service'`);
-            await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-            return fn(tx);
-        },
-        { timeout: 60_000, maxWait: 10_000 },
-    );
+    return runWithRlsContext({ role: 'service', tenantId }, () =>
+        serviceDb.$transaction(fn, { timeout: 60_000, maxWait: 10_000 }));
 }
 
 async function emitAudit(args: {
@@ -62,25 +57,20 @@ async function emitAudit(args: {
     const { key, version } = hmacKeys.current();
     const eventHmac = computeHmac(canonicalize(input), key);
 
-    await prisma.$transaction(async (tx) => {
-        await tx.$executeRawUnsafe(`SET LOCAL app.role = 'system'`);
-        await tx.auditEvent.create({
-            data: {
-                tenantId: input.tenantId,
-                occurredAt: new Date(input.occurredAtMs),
-                actorType: input.actorType,
-                actorId: input.actorId,
-                actorRole: input.actorRole,
-                action: input.action,
-                resourceType: input.resourceType ?? null,
-                resourceId: input.resourceId ?? null,
-                outcome: input.outcome,
-                correlationId: input.correlationId,
-                metadata: input.metadata as object,
-                eventHmac: Uint8Array.from(eventHmac),
-                eventHmacV: version,
-            },
-        });
+    await insertAuditEvent({
+        tenantId: input.tenantId,
+        occurredAt: new Date(input.occurredAtMs),
+        actorType: input.actorType,
+        actorId: input.actorId,
+        actorRole: input.actorRole,
+        action: input.action,
+        resourceType: input.resourceType ?? null,
+        resourceId: input.resourceId ?? null,
+        outcome: input.outcome,
+        correlationId: input.correlationId,
+        metadata: input.metadata as object,
+        eventHmac: Uint8Array.from(eventHmac),
+        eventHmacV: version,
     });
 }
 
@@ -123,10 +113,7 @@ async function handleSmsJob<T extends SmsTemplateName>(job: Job<SmsJob<T>>): Pro
             return;
         }
 
-        // Must use db (inside withTenantTx) so SET LOCAL app.role = 'service' is
-        // active and the sms_opt_out_service RLS policy allows the read.
-        // Using the global prisma here would see 0 rows (no app.role set on the
-        // connection) and silently bypass the opt-out check — a TCPA violation.
+        // Read inside withTenantTx (app.role = 'service'); without a role it sees 0 rows and skips the TCPA opt-out check.
         const optOut = await db.smsOptOut.findUnique({ where: { phone: user.phone } });
         if (optOut) {
             console.warn('[sms-worker] dropped: opted out', { userId, template, toPhone: user.phone });

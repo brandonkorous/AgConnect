@@ -118,12 +118,12 @@ Injected into the `agconn-env` K8s Secret at deploy time. Rotation = redeploy.
 | `TWILIO_MESSAGING_SERVICE_SID` |
 | `TWILIO_INBOUND_PHONE` |
 
-### Supabase Storage — 2
+### Azure Blob storage — 2 (written to kv-agconn-prod-cus by sparx Terraform)
 
 | Name |
 |---|
-| `SUPABASE_URL` |
-| `SUPABASE_SERVICE_ROLE_KEY` |
+| `AZURE_STORAGE_ACCOUNT` |
+| `AZURE_STORAGE_KEY` |
 
 ### Mapbox — 1
 

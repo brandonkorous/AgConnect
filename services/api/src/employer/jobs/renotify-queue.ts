@@ -7,6 +7,7 @@
 // email-worker counterpart) reads the row and dispatches.
 
 import { PgBoss } from 'pg-boss';
+import { pgBossOptions } from '@agconn/db';
 
 export const RENOTIFY_QUEUE = 'job.edit.renotify' as const;
 
@@ -36,7 +37,7 @@ export async function getRenotifyBoss(): Promise<PgBoss> {
   starting = (async () => {
     const url = process.env.DATABASE_URL;
     if (!url) throw new Error('DATABASE_URL not set');
-    const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
+    const boss = new PgBoss(pgBossOptions(url));
     boss.on('error', (e: unknown) => console.error('[renotify pg-boss]', e));
     await boss.start();
     await boss.createQueue(RENOTIFY_QUEUE);

@@ -19,7 +19,7 @@ const TARGETS = [
 ] as const;
 
 async function main() {
-  const { prisma } = await import('../src/index.js');
+  const { adminDb: prisma } = await import('../src/index.js');
   let missing = 0;
   await prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);

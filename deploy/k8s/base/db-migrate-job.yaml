@@ -1,10 +1,7 @@
-# Runs Prisma migrations + seeds during deploy. Wired as a kubectl-applied Job
-# whose name includes the image tag so each deploy creates a fresh Job and the
-# rollout waits on its completion before flipping web/api Deployments.
-#
-# Image is the API image — it already has Prisma + the migrations + the seed
-# scripts bundled. Seeds are idempotent, so re-running on every deploy is safe.
-
+# Schema, seeds and the app role, as agconn_owner (DATABASE_ADMIN_URL from the db-admin Secret, which no Deployment mounts).
+# deploy.yml applies it per image tag and waits for it before the Deployments roll.
+# 1. migrate (init container, the API image): prisma migrate deploy, then the idempotent seeds.
+# 2. db-role (postgres image): deploy/k8s/jobs/db-role.sql, from the db-role-sql ConfigMap the deploy makes.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -21,25 +18,22 @@ spec:
     spec:
       serviceAccountName: agconn
       restartPolicy: Never
+      enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
         seccompProfile: { type: RuntimeDefault }
-      containers:
+      initContainers:
         - name: migrate
           image: REPLACE_IMAGE
           securityContext:
             allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            capabilities: { drop: ["ALL"] }
           command: ["bash", "-c"]
+          # Seeds run through npx tsx (a dev dependency the prod image strips); npx caches it after the first run.
           args:
             - |
               set -euo pipefail
-              # Run migrate deploy with the real DATABASE_URL injected from the
-              # agconn-env secret, then re-seed translations + lookup tables.
-              # Seed scripts run via npx tsx (devDep stripped from prod image)
-              # — first run downloads tsx once, npx caches after.
               cd /app/packages/db
               npx --yes prisma migrate deploy --schema prisma/schema.prisma
               npx --yes tsx scripts/seed-translations.ts
@@ -47,3 +41,27 @@ spec:
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }
+          # prisma.config.ts reads DIRECT_URL; the seeds read DATABASE_ADMIN_URL (adminDb).
+          env:
+            - name: DIRECT_URL
+              valueFrom: { secretKeyRef: { name: db-admin, key: DATABASE_ADMIN_URL } }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: db-admin, key: DATABASE_ADMIN_URL } }
+            - name: DATABASE_ADMIN_URL
+              valueFrom: { secretKeyRef: { name: db-admin, key: DATABASE_ADMIN_URL } }
+      containers:
+        - name: db-role
+          image: postgres:18-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+          command: ["sh", "-c", 'psql "$DATABASE_ADMIN_URL" -v ON_ERROR_STOP=1 -v app_password="$AGCONN_APP_PASSWORD" -f /sql/db-role.sql']
+          env:
+            - name: DATABASE_ADMIN_URL
+              valueFrom: { secretKeyRef: { name: db-admin, key: DATABASE_ADMIN_URL } }
+            - name: AGCONN_APP_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-admin, key: AGCONN_APP_PASSWORD } }
+          volumeMounts: [{ name: sql, mountPath: /sql }]
+      volumes:
+        - name: sql
+          configMap: { name: db-role-sql }

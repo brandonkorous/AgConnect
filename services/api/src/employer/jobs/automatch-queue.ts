@@ -2,6 +2,7 @@
 // services/sms-worker/src/automatch.ts.
 
 import { PgBoss } from 'pg-boss';
+import { pgBossOptions } from '@agconn/db';
 
 export const AUTOMATCH_QUEUE = 'job.publish.automatch' as const;
 
@@ -19,7 +20,7 @@ export async function getAutomatchBoss(): Promise<PgBoss> {
   starting = (async () => {
     const url = process.env.DATABASE_URL;
     if (!url) throw new Error('DATABASE_URL not set');
-    const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
+    const boss = new PgBoss(pgBossOptions(url));
     boss.on('error', (e: unknown) => console.error('[automatch pg-boss]', e));
     await boss.start();
     await boss.createQueue(AUTOMATCH_QUEUE);

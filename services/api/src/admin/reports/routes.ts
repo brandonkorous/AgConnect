@@ -8,7 +8,7 @@ import type { AuditCtxVars } from '../../middleware/audit.js';
 import {
   signGrantReportUrl,
   uploadGrantReport,
-} from '../../lib/supabase-storage.js';
+} from '../../lib/blob-storage.js';
 import { placementColumns, runPlacementReport } from './placement.js';
 import {
   placementExportBody,

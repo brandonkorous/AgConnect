@@ -8,10 +8,10 @@ name: Deploy
 # Artifact Registry onto the shared AKS cluster. See
 # docs/00-foundation/10-infra-cicd/09-azure-migration.md.
 #
-#   - COMPUTE ONLY. The data layer did NOT move: Postgres and object storage stay
-#     on Supabase, reached from the cluster over the public internet. Every
-#     DATABASE_* and SUPABASE_* value below is the same value it was on GKE; only
-#     where it is READ FROM changed.
+#   - DATA (AG-11): Postgres is psql-agconn-prod-cus (private, in the VNet) and files are
+#     in Azure Blob (stagconnprodcus). Pods connect as agconn_app through PgBouncer;
+#     migrations and the role SQL run as agconn_owner. The vault values come from
+#     sparx.works/terraform/envs/azure/agconn.tf.
 #   - AUTH is workload identity federation, no stored credential. Azure trusts a
 #     GitHub OIDC token whose subject is
 #     `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The four AZURE_* values
@@ -241,7 +241,7 @@ jobs:
             ADMIN_CLERK_SECRET_KEY NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY
             RESEND_API_KEY RESEND_WEBHOOK_SECRET
             WAITLIST_TOKEN_SECRET
-            SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+            AZURE_STORAGE_ACCOUNT AZURE_STORAGE_KEY
             TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN
             TWILIO_MESSAGING_SERVICE_SID TWILIO_INBOUND_PHONE
             STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET
@@ -298,30 +298,54 @@ jobs:
             echo "::warning::No LLM key set — resume parsing and LLM-assisted translation are disabled this deploy."
           fi
 
+          # The vault's DATABASE_URL is agconn_app direct to the server. It becomes PgBouncer's
+          # config, and the pods reach the same role through PgBouncer instead.
+          pg_dir=$(mktemp -d)
+          node scripts/pgbouncer-config.mjs files /tmp/agconn.env "$pg_dir"
+          kubectl create secret generic pgbouncer-config -n "$NAMESPACE" \
+            --from-file=pgbouncer.ini="$pg_dir/pgbouncer.ini" \
+            --from-file=userlist.txt="$pg_dir/userlist.txt" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          pooled=$(node scripts/pgbouncer-config.mjs pooled-url /tmp/agconn.env "pgbouncer.$NAMESPACE.svc.cluster.local")
+          echo "::add-mask::$pooled"
+          grep -v '^DATABASE_URL=' /tmp/agconn.env > "$pg_dir/app.env"
+          printf 'DATABASE_URL=%s\n' "$pooled" >> "$pg_dir/app.env"
+          mv "$pg_dir/app.env" /tmp/agconn.env
+          rm -rf "$pg_dir"
+
           keys=$(wc -l < /tmp/agconn.env)
           kubectl create secret generic agconn-env -n "$NAMESPACE" \
             --from-env-file=/tmp/agconn.env \
             --dry-run=client -o yaml | kubectl apply -f -
           rm -f /tmp/agconn.env
           echo "Applied agconn-env with ${keys} keys."
+
+      # The owner URL and the app role's password, for the migrate Job only: a separate Secret that no
+      # Deployment mounts, so a running pod can never connect as agconn_owner. Both are required.
+      # printf %s writes the exact bytes, without az's trailing newline.
+      - name: Apply the database admin Secret
+        run: |
+          set -euo pipefail
+          umask 077
+          dir=$(mktemp -d)
+          for name in DATABASE_ADMIN_URL AGCONN_APP_PASSWORD; do
+            if ! value=$(az keyvault secret show --vault-name "$VAULT" --name "${name//_/-}" --query value -o tsv); then
+              echo "::error::Missing required secret in $VAULT: ${name//_/-}"
+              exit 1
+            fi
+            echo "::add-mask::$value"
+            printf '%s' "$value" > "$dir/$name"
+          done
+          kubectl create secret generic db-admin -n "$NAMESPACE" \
+            --from-file=DATABASE_ADMIN_URL="$dir/DATABASE_ADMIN_URL" \
+            --from-file=AGCONN_APP_PASSWORD="$dir/AGCONN_APP_PASSWORD" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          rm -rf "$dir"
+
       # ---------------------------------------------------------------------
-      # Migrations run as an in-cluster Job rather than from this runner.
-      #
-      # Supabase IS publicly reachable, so the runner COULD do it — the reason it
-      # does not is that the Job runs the exact image being deployed, which keeps
-      # the schema and the code that expects it in lockstep. It also keeps the
-      # step identical for the day the database moves into the VNet, where an
-      # in-cluster Job stops being a preference and becomes the only thing that
-      # can reach it.
-      #
-      # The Job name carries the tag, so each deploy creates a fresh one and this
-      # step waits on that specific Job rather than a stale completed one.
-      #
-      # Prisma's schema engine reads DIRECT_URL (packages/db/prisma.config.ts),
-      # not DATABASE_URL — transaction-mode pooling breaks its prepared
-      # statements. Both are in agconn-env, so the manifest needs no special
-      # wiring; it is worth knowing when a migration fails with a prepared
-      # statement error.
+      # Migrations, seeds and the app role (deploy/k8s/jobs/db-role.sql) run as one in-cluster Job, as
+      # agconn_owner: the server is private, and the Job runs the exact image being deployed. Its name
+      # carries the tag, so this step waits on this deploy's Job and not a stale one.
       # ---------------------------------------------------------------------
       - name: Migrate the schema
         run: |
@@ -330,6 +354,9 @@ jobs:
           API_IMAGE="${REGISTRY}/${IMAGE_PREFIX}-api:${TAG}"
 
           kubectl delete job "db-migrate-${TAG}" -n "$NAMESPACE" --ignore-not-found
+          kubectl create configmap db-role-sql -n "$NAMESPACE" \
+            --from-file=db-role.sql=deploy/k8s/jobs/db-role.sql \
+            --dry-run=client -o yaml | kubectl apply -f -
 
           sed -e "s|REPLACE_IMAGE|${API_IMAGE}|g" -e "s|REPLACE_TAG|${TAG}|g" \
             deploy/k8s/base/db-migrate-job.yaml | kubectl apply -f -
@@ -337,10 +364,21 @@ jobs:
           if ! kubectl wait --for=condition=complete "job/db-migrate-${TAG}" \
                  -n "$NAMESPACE" --timeout=600s; then
             echo "::error::Migration job did not complete. Logs follow."
-            kubectl logs "job/db-migrate-${TAG}" -n "$NAMESPACE" --tail=200 || true
+            kubectl logs "job/db-migrate-${TAG}" -n "$NAMESPACE" --all-containers --tail=200 || true
             exit 1
           fi
-          kubectl logs "job/db-migrate-${TAG}" -n "$NAMESPACE" --tail=50
+          kubectl logs "job/db-migrate-${TAG}" -n "$NAMESPACE" --all-containers --tail=50
+
+      # The pods connect through PgBouncer, so it is up before they roll. PgBouncer reads its config
+      # once at start, so a changed pgbouncer-config Secret restarts it.
+      - name: Start PgBouncer
+        run: |
+          set -euo pipefail
+          kubectl apply -f deploy/k8s/base/pgbouncer.yaml
+          hash=$(kubectl get secret pgbouncer-config -n "$NAMESPACE" -o jsonpath='{.data}' | sha256sum | cut -c1-16)
+          patch="{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"wizeworks/config-hash\":\"$hash\"}}}}}"
+          kubectl patch deployment pgbouncer -n "$NAMESPACE" --type merge -p "$patch"
+          kubectl -n "$NAMESPACE" rollout status deployment/pgbouncer --timeout=5m
 
       - name: Pin image tags
         working-directory: deploy/k8s/overlays/prod

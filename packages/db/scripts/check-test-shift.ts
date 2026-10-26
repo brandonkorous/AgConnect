@@ -7,7 +7,7 @@ if (!id) {
   process.exit(1);
 }
 
-const { prisma } = await import('../src/index.js');
+const { adminDb: prisma } = await import('../src/index.js');
 const s = await prisma.shift.findUnique({
   where: { id },
   select: {

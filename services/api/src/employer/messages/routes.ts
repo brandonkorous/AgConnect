@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
 import { CreateConversationBody, SendMessageBody, ConversationListQuery } from '@agconn/schemas';
 import { enqueueSms } from '@agconn/sms';
+import { runWithRlsContext } from '@agconn/db';
 import {
     requireAuth,
     requireActiveEmployer,
@@ -336,7 +337,8 @@ employerMessagesRoutes.post('/:id/messages', requireEmployerPermission('messagin
         });
         const phones = recipients.map((r) => r.user.phone).filter((p): p is string => Boolean(p));
         const optOuts = phones.length
-            ? await c.var.db.smsOptOut.findMany({ where: { phone: { in: phones } } })
+            ? await runWithRlsContext({ role: 'service' }, () =>
+                c.var.db.smsOptOut.findMany({ where: { phone: { in: phones } } }))
             : [];
         const optOutSet = new Set(optOuts.map((o) => o.phone));
         for (const r of recipients) {
@@ -446,10 +448,11 @@ employerMessagesRoutes.get('/:id/messages/:messageId/deliveries', requireEmploye
     });
     if (!message) return err(c, 404, 'not_found');
 
-    const logs = await c.var.db.smsLog.findMany({
+    // sms_log rows belong to their recipients; the employer reads its own message's deliveries as service.
+    const logs = await runWithRlsContext({ role: 'service', tenantId }, () => c.var.db.smsLog.findMany({
         where: { tenantId, messageId },
         orderBy: { queuedAt: 'asc' },
-    });
+    }));
 
     return ok(c, {
         deliveries: logs.map((l) => ({

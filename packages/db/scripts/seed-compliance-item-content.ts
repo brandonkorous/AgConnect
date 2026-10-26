@@ -17,7 +17,7 @@ import { config as loadEnv } from 'dotenv';
 const here = dirname(fileURLToPath(import.meta.url));
 loadEnv({ path: resolve(here, '..', '..', '..', '.env') });
 
-const { prisma } = await import('../src/index.js');
+const { adminDb: prisma } = await import('../src/index.js');
 const { COMPLIANCE_ITEM_CONTENT } = await import('../seed-data/compliance-item-content.js');
 
 // Mirror of ITEM_KEY_ALIASES from the TS file, but inverted: long-form

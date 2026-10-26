@@ -5,7 +5,7 @@ import {
   SetLanguageBody,
   WaitlistBody,
 } from '@agconn/schemas';
-import { Lang } from '@agconn/db';
+import { Lang, runWithRlsContext } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 import { requireAuth, requireRole, type AuthVars } from '../../middleware/authContext.js';
 import type { AuditCtxVars } from '../../middleware/audit.js';
@@ -25,10 +25,7 @@ export const onboardingRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>
 onboardingRoutes.use('*', requireAuth('worker'));
 onboardingRoutes.use('*', requireRole('worker'));
 
-// Merged onboarding draft — SMS partial state + any existing WorkerProfile
-// values. Web wizard reads this on initial render to (a) prefill fields the
-// worker already gave us via SMS and (b) skip ahead past steps whose data
-// SMS already collected, via the returned nextStep.
+// Merged draft (SMS partial state + WorkerProfile) so the wizard prefills and skips steps SMS already answered.
 onboardingRoutes.get('/draft', async (c) => {
   const userId = c.var.userId;
   const [user, profile] = await Promise.all([
@@ -132,8 +129,7 @@ onboardingRoutes.post('/complete', async (c) => {
     metadata: { fields: 'onboardedAt' },
   });
 
-  // Welcome SMS — best-effort. A queue failure must not block onboarding
-  // completion; the worker is already in the system.
+  // Welcome SMS is best-effort: a queue failure must not block onboarding completion.
   try {
     const profile = await c.var.db.workerProfile.findUnique({
       where: { id: c.var.userId },
@@ -157,10 +153,7 @@ onboardingRoutes.post('/complete', async (c) => {
   return ok(c, { status: 'complete', redirect: '/jobs' });
 });
 
-// Resume upload — stub. The 07-resume-parser foundation work owns the actual
-// Anthropic-backed parser + Supabase Storage upload (deferred). For now
-// record audit + return a friendly "manual entry" fallback so the UI can
-// move forward.
+// Resume upload stub: audit it and steer the UI to manual entry until the parser pipeline owns uploads.
 onboardingRoutes.post('/resume', async (c) => {
   await c.var.audit.log({
     action: 'worker.resume.uploaded',
@@ -175,8 +168,7 @@ onboardingRoutes.post('/resume', async (c) => {
 });
 
 onboardingRoutes.get('/resume/status', async (c) => {
-  // Stub: until the parser pipeline is online, immediately steer the UI
-  // toward manual fill-in. This keeps the onboarding flow usable end-to-end.
+  // Manual fill-in keeps onboarding usable end to end until the parser pipeline is online.
   return ok(c, {
     status: 'failed' as const,
     reason: 'parser_error' as const,
@@ -184,15 +176,15 @@ onboardingRoutes.get('/resume/status', async (c) => {
   });
 });
 
-// Public-ish waitlist for unsupported counties. Reuses the landing waitlist
-// shape so the same EmailLog + welcome pipeline kicks in.
+// Waitlist for unsupported counties, in the landing waitlist shape so the same email pipeline runs.
 export const onboardingWaitlistRoute = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 onboardingWaitlistRoute.use('*', requireAuth('worker'));
 onboardingWaitlistRoute.post('/waitlist', validate('json', WaitlistBody), async (c) => {
   const tenantId = c.var.tenantId;
   if (!tenantId) return err(c, 403, 'no_tenant');
   const body = c.var.body;
-  await c.var.db.waitlist.create({
+  // Signed-in users have no waitlist policy; the row is written as the service role in the worker's tenant.
+  await runWithRlsContext({ role: 'service', tenantId }, () => c.var.db.waitlist.create({
     data: {
       tenantId,
       email: body.email ?? null,
@@ -202,7 +194,7 @@ onboardingWaitlistRoute.post('/waitlist', validate('json', WaitlistBody), async 
       audience: 'worker',
       source: 'landing_waitlist_form',
     },
-  });
+  }));
   await c.var.audit.log({
     action: 'worker.profile.updated',
     resourceId: c.var.userId,

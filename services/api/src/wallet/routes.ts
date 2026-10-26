@@ -3,7 +3,7 @@ import { ok, err } from '@agconn/api-client/server';
 import { EnrollmentStatus, type Tx } from '@agconn/db';
 import { requireAuth, requireRole, type AuthVars } from '../middleware/authContext.js';
 import type { AuditCtxVars } from '../middleware/audit.js';
-import { signCertUrl } from '../lib/supabase-storage.js';
+import { signCertUrl } from '../lib/blob-storage.js';
 
 export const walletRoutes = new Hono<{ Variables: AuthVars & AuditCtxVars }>();
 

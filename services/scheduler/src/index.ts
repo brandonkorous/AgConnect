@@ -1,5 +1,5 @@
 import { PgBoss } from 'pg-boss';
-import { prisma } from '@agconn/db';
+import { serviceDb, pgBossOptions } from '@agconn/db';
 import { traceWorker } from '@agconn/db/wizelens';
 import { runSavedSearchDispatcher } from './saved-search-dispatcher.js';
 import { runTrainingReminders } from './training-reminders.js';
@@ -30,11 +30,8 @@ let boss: PgBoss | null = null;
 async function start(): Promise<void> {
     assertEnv();
     // Opens the shared pool up front so the first tick after a pod start is not slow.
-    await prisma.$queryRaw`SELECT 1`;
-    boss = new PgBoss({
-        connectionString: process.env.DATABASE_URL!,
-        schema: 'pgboss',
-    });
+    await serviceDb.$queryRaw`SELECT 1`;
+    boss = new PgBoss(pgBossOptions(process.env.DATABASE_URL!));
     boss.on('error', (err) => {
         console.error('[scheduler] pg-boss error', err);
     });

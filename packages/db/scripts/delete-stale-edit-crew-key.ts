@@ -7,7 +7,7 @@
 import { config as loadEnv } from 'dotenv';
 loadEnv({ path: '../../.env' });
 
-const { prisma } = await import('../src/index.js');
+const { adminDb: prisma } = await import('../src/index.js');
 
 const STALE_KEYS = [
   // Renamed → crews.edit_crew_button

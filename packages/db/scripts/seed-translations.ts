@@ -13,7 +13,7 @@ import { config as loadEnv } from 'dotenv';
 const here = dirname(fileURLToPath(import.meta.url));
 loadEnv({ path: resolve(here, '..', '..', '..', '.env') });
 
-const { prisma, Lang, TranslationStatus } = await import('../src/index.js');
+const { adminDb: prisma, Lang, TranslationStatus } = await import('../src/index.js');
 const bundles = (await import('../seed-data/translations/index.js')) as Record<string, unknown>;
 
 interface Pair {

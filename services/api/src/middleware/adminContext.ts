@@ -1,17 +1,10 @@
 import { createMiddleware } from 'hono/factory';
 import { getAuth } from '@clerk/hono';
 import { err } from '@agconn/api-client/server';
-import { prisma, dbClients, runWithRlsContext, type PoolName, type Tx } from '@agconn/db';
+import { dbClients, runWithRlsContext, type PoolName, type Tx } from '@agconn/db';
+import { findAuthUser } from './auth-bootstrap.js';
 
-// Admin gate. Two acceptable paths:
-//   1. Clerk session with publicMetadata.role === 'admin' (preferred)
-//   2. Authorization: Bearer <ADMIN_BEARER_TOKEN> matching env (MVP fallback,
-//      retained while Clerk admin onboarding is bootstrapped — remove once
-//      every operator has a Clerk admin account).
-//
-// RLS bypass is enforced by stamping app.role = 'admin' on the per-request
-// AsyncLocalStorage context; the rlsClient applies it inside each query's
-// short transaction.
+// Admin gate: a Clerk user whose users row is admin, or the ADMIN_BEARER_TOKEN; the request then runs as app.role = 'admin'.
 
 export type AdminVars = {
   db: Tx;
@@ -32,7 +25,7 @@ export const adminMiddleware = (poolName: PoolName) =>
 
     const clerkAuth = getAuth(c);
     if (clerkAuth?.userId) {
-      const user = await prisma.user.findUnique({ where: { id: clerkAuth.userId } });
+      const user = await findAuthUser(clerkAuth.userId);
       if (user && user.role === 'admin') {
         userId = user.id;
       }

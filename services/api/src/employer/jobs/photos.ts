@@ -1,7 +1,4 @@
-// Job photo subroutes: list / upload / reorder / delete.
-//
-// All uploads pass through the API — the web app never touches Supabase
-// directly. Multipart bodies max 10MB per file; bucket allows JPG/PNG/WEBP/HEIC.
+// Job photo subroutes: list / upload / reorder / delete. Uploads go through the API (10MB, JPG/PNG/WEBP/HEIC).
 
 import { Hono } from 'hono';
 import { ok, err, validate } from '@agconn/api-client/server';
@@ -12,7 +9,9 @@ import {
   uploadJobPhoto,
   deleteJobPhoto,
   isAllowedPhotoType,
-} from '../../lib/supabase-storage.js';
+  jobPhotoUrl,
+} from '../../lib/blob-storage.js';
+import { reorderJobPhotos } from './photo-order.js';
 
 const MAX_PHOTOS_PER_JOB = 6;
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -80,7 +79,7 @@ employerJobPhotosRoutes.post('/:id/photos', requireEmployerPermission('jobs.writ
     data: {
       tenantId,
       jobId: id,
-      url: upload.publicUrl,
+      url: upload.storageKey,
       storageKey: upload.storageKey,
       sortOrder: existingCount,
       uploadedById: userId,
@@ -120,14 +119,7 @@ employerJobPhotosRoutes.put(
       return err(c, 422, 'validation_failed', 'order_mismatch');
     }
 
-    await c.var.db.$transaction(
-      body.order.map((photoId, idx) =>
-        c.var.db.jobPhoto.update({
-          where: { id: photoId },
-          data: { sortOrder: idx },
-        }),
-      ),
-    );
+    await reorderJobPhotos(c.var.db, body.order);
     return ok(c, { ok: true });
   },
 );
@@ -167,7 +159,7 @@ function toPhotoView(p: {
 }) {
   return {
     id: p.id,
-    url: p.url,
+    url: jobPhotoUrl(p.url),
     captionEn: p.captionEn,
     captionEs: p.captionEs,
     width: p.width,

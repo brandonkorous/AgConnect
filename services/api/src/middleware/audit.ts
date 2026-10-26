@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory';
-import { prisma } from '@agconn/db';
+import { insertAuditEvent } from '@agconn/db';
 import {
   AuditBreaker,
   auditRegistry,
@@ -58,25 +58,24 @@ const deriveActorType = (role: string | undefined | null): ActorType => {
   }
 };
 
-const writeAuditRow = async (row: AuditEventRow): Promise<void> => {
-  await prisma.auditEvent.create({
-    data: {
-      tenantId: row.tenantId,
-      occurredAt: new Date(row.occurredAtMs),
-      actorType: row.actorType,
-      actorId: row.actorId ?? null,
-      actorRole: row.actorRole ?? null,
-      actorIp: row.actorIp ?? null,
-      actorUserAgent: row.actorUserAgent ?? null,
-      action: row.action,
-      resourceType: row.resourceType ?? null,
-      resourceId: row.resourceId ?? null,
-      outcome: row.outcome,
-      correlationId: row.correlationId ?? null,
-      metadata: row.metadata as object,
-      eventHmac: Uint8Array.from(row.eventHmac),
-      eventHmacV: row.eventHmacV,
-    },
+// Runs as app.role = 'system', which audit_insert allows for any tenant.
+export const writeAuditRow = async (row: AuditEventRow): Promise<void> => {
+  await insertAuditEvent({
+    tenantId: row.tenantId,
+    occurredAt: new Date(row.occurredAtMs),
+    actorType: row.actorType,
+    actorId: row.actorId ?? null,
+    actorRole: row.actorRole ?? null,
+    actorIp: row.actorIp ?? null,
+    actorUserAgent: row.actorUserAgent ?? null,
+    action: row.action,
+    resourceType: row.resourceType ?? null,
+    resourceId: row.resourceId ?? null,
+    outcome: row.outcome,
+    correlationId: row.correlationId ?? null,
+    metadata: row.metadata as object,
+    eventHmac: Uint8Array.from(row.eventHmac),
+    eventHmacV: row.eventHmacV,
   });
 };
 
@@ -108,8 +107,7 @@ export const buildAuditRow = (input: AuditEventInput): AuditEventRow => {
   return { ...input, eventHmac, eventHmacV: version };
 };
 
-// System-level audit emission, used outside HTTP requests (background jobs,
-// breaker recovery callbacks). Bypasses RLS via app.role = 'system'.
+// Audit emission outside a request (background jobs, breaker recovery), as app.role = 'system'.
 export const emitSystemAudit = async (input: {
   action: AuditAction;
   tenantId?: string;
@@ -142,26 +140,7 @@ export const emitSystemAudit = async (input: {
     metadata,
   });
 
-  await prisma.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.role = 'system'`);
-    await tx.auditEvent.create({
-      data: {
-        tenantId: row.tenantId,
-        occurredAt: new Date(row.occurredAtMs),
-        actorType: row.actorType,
-        actorId: row.actorId,
-        actorRole: row.actorRole,
-        action: row.action,
-        resourceType: row.resourceType,
-        resourceId: row.resourceId,
-        outcome: row.outcome,
-        correlationId: row.correlationId,
-        metadata: row.metadata as object,
-        eventHmac: Uint8Array.from(row.eventHmac),
-        eventHmacV: row.eventHmacV,
-      },
-    });
-  });
+  await writeAuditRow(row);
 };
 
 // Hono middleware. Mounts a typed `c.var.audit.log()` and `c.var.correlationId`.

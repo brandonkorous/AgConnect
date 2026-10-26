@@ -756,10 +756,9 @@ async function reserveSmsKeyword(
   for (let attempt = 0; attempt < 6; attempt++) {
     const suffix = randomAlnum(3);
     const candidate = `${base}-${suffix}`;
-    const existing = await tx.smsKeyword.findFirst({
-      where: { keyword: { equals: candidate, mode: 'insensitive' } },
-    });
-    if (!existing) {
+    // Keywords are unique across tenants, which this employer cannot see; the helper checks all of them.
+    const [row] = await tx.$queryRaw<{ taken: boolean }[]>`SELECT app.sms_keyword_taken(${candidate}) AS taken`;
+    if (!row?.taken) {
       await tx.smsKeyword.create({
         data: { tenantId, keyword: candidate, kind: 'job_apply', entityId: jobId, active: true },
       });

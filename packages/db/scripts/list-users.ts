@@ -2,7 +2,7 @@ import { config as loadEnv } from 'dotenv';
 loadEnv({ path: '../../.env' });
 
 async function main() {
-    const { prisma } = await import('../src/index.js');
+    const { adminDb: prisma } = await import('../src/index.js');
     const users = await prisma.$transaction(async (tx) => {
         await tx.$executeRawUnsafe(`SET LOCAL app.role = 'admin'`);
         return tx.user.findMany({
