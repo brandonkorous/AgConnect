@@ -52,3 +52,9 @@ test('upsertClerkUser provisions a first-time user as a tenantless worker', asyn
   assert.equal(user.email, 'new@example.com');
   assert.equal(user.tenantId, null);
 });
+
+test('upsertClerkUser never grants admin from user-editable Clerk metadata', async () => {
+  await adminDb.$executeRaw`DELETE FROM users WHERE id = ${NEWCOMER}`;
+  const user = await upsertClerkUser(NEWCOMER, { email: null, phone: null, role: 'admin' });
+  assert.equal(user.role, 'worker');
+});

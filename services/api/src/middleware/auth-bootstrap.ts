@@ -27,10 +27,9 @@ export function findAuthUser(userId: string): Promise<User | null> {
 
 // Mirrors the user.created webhook (idempotent upsert) for a session that arrives before it.
 export function upsertClerkUser(userId: string, who: ClerkIdentity): Promise<User> {
+    // Clerk unsafeMetadata is user-editable, so admin is never granted from it (same rule as webhooks/clerk.ts).
     const role: UserRole =
-        who.role === 'employer' || who.role === 'training_org' || who.role === 'admin'
-            ? (who.role as UserRole)
-            : UserRole.worker;
+        who.role === 'employer' || who.role === 'training_org' ? (who.role as UserRole) : UserRole.worker;
     const preferredLang = who.locale === 'en' ? Lang.en : Lang.es;
     const email = who.email?.toLowerCase() ?? null;
     return asUser(userId, () =>
