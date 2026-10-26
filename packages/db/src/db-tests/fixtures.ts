@@ -27,6 +27,7 @@ async function clearFixture(tx: Tx): Promise<void> {
   const tenants = [TENANT.A, TENANT.B];
   await tx.$executeRaw`DELETE FROM audit_events WHERE actor_id IN (${AUDIT_ACTOR.A}, ${AUDIT_ACTOR.B})`;
   await tx.$executeRaw`DELETE FROM search_views WHERE worker_id = ANY(${Object.values(USER)}::text[])`;
+  await tx.$executeRaw`DELETE FROM worker_profiles WHERE id = ANY(${Object.values(USER)}::text[])`;
   for (const table of ['messages', 'conversation_participants', 'conversations', 'shift_assignments',
     'shifts', 'application_events', 'applications', 'job_postings', 'verification_log', 'sms_log', 'email_log']) {
     await tx.$executeRawUnsafe(`DELETE FROM "${table}" WHERE tenant_id = ANY($1::uuid[])`, tenants);
@@ -72,7 +73,7 @@ async function seedTenancy(tx: Tx): Promise<void> {
 }
 
 async function seedJobs(tx: Tx): Promise<void> {
-  const job = (id: string, tenantId: string, employerId: string, status: 'active' | 'draft') => ({
+  const job = (id: string, tenantId: string, employerId: string, status: 'active' | 'draft' | 'closed') => ({
     id, tenantId, employerId, status, seoSlug: status === 'draft' ? null : `rls-fixture-${id}`,
     titleEn: 'Fixture job', titleEs: 'Trabajo de prueba',
     descriptionEn: 'Fixture job description', descriptionEs: 'Descripcion de prueba',
@@ -83,12 +84,21 @@ async function seedJobs(tx: Tx): Promise<void> {
       job(ROW.jobA, TENANT.A, ROW.profileA, 'active'),
       job(ROW.jobB, TENANT.B, ROW.profileB, 'active'),
       job(ROW.draftA, TENANT.A, ROW.profileA, 'draft'),
+      job(ROW.closedA, TENANT.A, ROW.profileA, 'closed'),
     ],
   });
   await tx.application.createMany({
     data: [
       { id: ROW.appA, tenantId: TENANT.A, jobId: ROW.jobA, workerId: USER.workerA },
       { id: ROW.appB, tenantId: TENANT.B, jobId: ROW.jobB, workerId: USER.workerB },
+      { id: ROW.appClosedA, tenantId: TENANT.A, jobId: ROW.closedA, workerId: USER.workerA },
+    ],
+  });
+  // workerA is onboarded (searchable by employers); workerB is not.
+  await tx.workerProfile.createMany({
+    data: [
+      { id: USER.workerA, firstName: 'Ana', lastName: 'Fixture', onboardedAt: new Date() },
+      { id: USER.workerB, firstName: 'Beto', lastName: 'Fixture' },
     ],
   });
 }
