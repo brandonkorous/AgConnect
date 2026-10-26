@@ -1,17 +1,9 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import { checkRoleOnce } from './boot-check.js';
 
-// Per-domain Prisma connection pools. Each domain folder under
-// services/api/src/* gets its own PrismaClient with its own pool, so that
-// a burst in one domain (or a single runaway query) cannot starve every
-// other domain of database capacity.
-//
-// All clients connect to the same Postgres but advertise distinct
-// application_name values, which makes pg_stat_activity immediately
-// readable when diagnosing where connections are being held.
-//
-// Pool sizes are starting values informed by domain traffic shape, not
-// load-tested values. Revisit when production telemetry exists.
+// One Prisma pool per API domain, so a burst in one domain cannot starve the rest; application_name tells them apart.
+// Pools open on first use, so a process only connects the pools it touches.
 
 export type PoolName =
   | 'shared'
@@ -44,12 +36,19 @@ const POOL_SIZES: Record<PoolName, number> = {
   webhooks: 5,
 };
 
+// DB_POOL_<NAME> sets one pool's size; DB_POOL_MAX caps every pool in the process (set per Deployment).
+export function poolSize(name: PoolName, env: NodeJS.ProcessEnv = process.env): number {
+  const own = Number(env[`DB_POOL_${name.toUpperCase()}`]);
+  if (Number.isInteger(own) && own > 0) return own;
+  const cap = Number(env.DB_POOL_MAX);
+  return Number.isInteger(cap) && cap > 0 ? Math.min(cap, POOL_SIZES[name]) : POOL_SIZES[name];
+}
+
 const globalForPools = globalThis as unknown as {
   agconnPools?: Partial<Record<PoolName, PrismaClient>>;
 };
 
-// Idle connections stay open 5 min (pg's default is 10 s): a fresh TLS connection to the
-// Supabase pooler cost ~200 ms on most API requests. Idle-client errors are handled by PrismaPg.
+// Idle connections stay open 5 min (pg's default is 10 s) so requests skip a fresh connect; PrismaPg handles idle errors.
 export function poolConfig(name: PoolName, max: number, connectionString: string) {
   return {
     connectionString,
@@ -70,11 +69,11 @@ function createClient(name: PoolName, max: number): PrismaClient {
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
   });
+  void checkRoleOnce(client);
   return withWizeLens(client);
 }
 
-// Set by startWizeLens (./wizelens.ts) in a process that traces itself; unset
-// everywhere else, so the client is exactly what it was.
+// Set by startWizeLens (./wizelens.ts) in a process that traces itself; unset elsewhere.
 function withWizeLens(client: PrismaClient): PrismaClient {
   const extension = (globalThis as { __wizelensPrisma?: unknown }).__wizelensPrisma;
   if (!extension) return client;
@@ -83,14 +82,12 @@ function withWizeLens(client: PrismaClient): PrismaClient {
   return extendable.$extends(extension) as PrismaClient;
 }
 
-// Lazy per-pool instantiation. Building a client requires DATABASE_URL, which
-// is not present during `next build` page-data collection. Deferring to first
-// access lets module load remain side-effect-free.
+// Built on first access: `next build` page-data collection has no DATABASE_URL.
 function getPool(name: PoolName): PrismaClient {
   const store = (globalForPools.agconnPools ??= {});
   let client = store[name];
   if (!client) {
-    client = createClient(name, POOL_SIZES[name]);
+    client = createClient(name, poolSize(name));
     store[name] = client;
   }
   return client;

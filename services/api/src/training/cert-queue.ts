@@ -1,4 +1,5 @@
 import { PgBoss } from 'pg-boss';
+import { pgBossOptions } from '@agconn/db';
 
 // Producer-side wrapper for the cert generator queue. The consumer lives in
 // services/cert-generator and owns the queue contract; we just publish.
@@ -15,7 +16,7 @@ export async function getCertGeneratorBoss(): Promise<PgBoss> {
     if (!url) throw new Error('DATABASE_URL is not set — required for cert generator queue');
 
     starting = (async () => {
-        const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
+        const boss = new PgBoss(pgBossOptions(url));
         boss.on('error', (err: unknown) => console.error('[cert-generator-queue] error', err));
         await boss.start();
         await boss.createQueue(CERT_GENERATOR_QUEUE);

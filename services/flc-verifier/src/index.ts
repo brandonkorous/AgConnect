@@ -1,5 +1,5 @@
 import { PgBoss } from 'pg-boss';
-import { asService } from '@agconn/db';
+import { asService, pgBossOptions } from '@agconn/db';
 import { traceWorker } from '@agconn/db/wizelens';
 import { FLC_VERIFY_QUEUE, type FlcVerifyJob } from '@agconn/flc-verify';
 import { handleVerifyJob } from './handler.js';
@@ -34,10 +34,7 @@ let boss: PgBoss | null = null;
 
 async function start(): Promise<void> {
   assertEnv();
-  boss = new PgBoss({
-    connectionString: process.env.DATABASE_URL!,
-    schema: 'pgboss',
-  });
+  boss = new PgBoss(pgBossOptions(process.env.DATABASE_URL!));
   boss.on('error', (err) => console.error('[flc-verifier] pg-boss error', err));
   await boss.start();
 

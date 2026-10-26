@@ -1,6 +1,6 @@
 import { PgBoss } from 'pg-boss';
 import { traceWorker } from '@agconn/db/wizelens';
-import { asService, serviceDb, EnrollmentStatus } from '@agconn/db';
+import { asService, serviceDb, EnrollmentStatus, pgBossOptions } from '@agconn/db';
 import { enqueueSms } from '@agconn/sms';
 import { renderCertPdf } from './render.js';
 import { uploadCert } from './storage.js';
@@ -37,10 +37,7 @@ let boss: PgBoss | null = null;
 
 async function start(): Promise<void> {
     assertEnv();
-    boss = new PgBoss({
-        connectionString: process.env.DATABASE_URL!,
-        schema: 'pgboss',
-    });
+    boss = new PgBoss(pgBossOptions(process.env.DATABASE_URL!));
     boss.on('error', (e) => console.error('[cert-generator] pg-boss error', e));
     await boss.start();
     await boss.createQueue(QUEUE);

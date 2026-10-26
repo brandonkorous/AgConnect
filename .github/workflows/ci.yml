@@ -64,6 +64,9 @@ jobs:
             - name: Convention checks (tenant_id, RLS)
               run: pnpm check:conventions
 
+            - name: Script tests
+              run: node --test scripts/
+
             # Apply migrations + seed translations against the CI Postgres so the
             # next step can run the live parity check. (Eventually: refactor the
             # check to read seed bundles directly and drop the Postgres service.)

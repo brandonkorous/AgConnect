@@ -132,6 +132,7 @@ export type Tx = PrismaNS.TransactionClient;
 export { pools, type PoolName } from './pools.js';
 export { adminDb } from './admin-db.js';
 export { insertAuditEvent } from './audit-write.js';
+export { pgBossOptions } from './pgboss.js';
 export {
     dbClients,
     makeRlsClient,

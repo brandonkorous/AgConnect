@@ -1,4 +1,5 @@
 import { PgBoss } from 'pg-boss';
+import { pgBossOptions } from '@agconn/db';
 
 // Thin wrapper around the resume-parser pg-boss queue. Lives here in the API
 // rather than in @agconn/llm because the queue contract is owned by the
@@ -16,7 +17,7 @@ export async function getResumeParserBoss(): Promise<PgBoss> {
     if (!url) throw new Error('DATABASE_URL is not set — required for resume parser queue');
 
     starting = (async () => {
-        const boss = new PgBoss({ connectionString: url, schema: 'pgboss' });
+        const boss = new PgBoss(pgBossOptions(url));
         boss.on('error', (err: unknown) => console.error('[resume-parser-queue] error', err));
         await boss.start();
         await boss.createQueue(RESUME_PARSE_QUEUE);

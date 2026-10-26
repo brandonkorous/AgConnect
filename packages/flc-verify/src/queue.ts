@@ -1,4 +1,5 @@
 import { PgBoss } from 'pg-boss';
+import { pgBossOptions } from '@agconn/db';
 
 // Per-employer FLC verification job. Producers (POST /v1/employer/onboarding,
 // PATCH /v1/employer/me on license change, the nightly sweep) enqueue here;
@@ -40,10 +41,7 @@ export async function getFlcVerifyBoss(): Promise<PgBoss> {
   if (starting) return starting;
 
   starting = (async () => {
-    const boss = new PgBoss({
-      connectionString: getDatabaseUrl(),
-      schema: 'pgboss',
-    });
+    const boss = new PgBoss(pgBossOptions(getDatabaseUrl()));
     boss.on('error', (err: unknown) => {
       console.error('[flc-verify pg-boss] error', err);
     });
