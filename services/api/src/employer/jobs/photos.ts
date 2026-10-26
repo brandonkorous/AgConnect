@@ -11,6 +11,7 @@ import {
   isAllowedPhotoType,
   jobPhotoUrl,
 } from '../../lib/blob-storage.js';
+import { reorderJobPhotos } from './photo-order.js';
 
 const MAX_PHOTOS_PER_JOB = 6;
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -118,14 +119,7 @@ employerJobPhotosRoutes.put(
       return err(c, 422, 'validation_failed', 'order_mismatch');
     }
 
-    await c.var.db.$transaction(
-      body.order.map((photoId, idx) =>
-        c.var.db.jobPhoto.update({
-          where: { id: photoId },
-          data: { sortOrder: idx },
-        }),
-      ),
-    );
+    await reorderJobPhotos(c.var.db, body.order);
     return ok(c, { ok: true });
   },
 );
