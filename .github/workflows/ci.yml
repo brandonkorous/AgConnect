@@ -16,11 +16,12 @@ jobs:
         timeout-minutes: 15
         env:
             FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
-            # Migrations and seeds run as the superuser, standing in for agconn_owner.
+            # Migrations and seeds run as agconn_owner, not a superuser, the same as Azure's server admin.
             # The tests run as agconn_app (NOBYPASSRLS), the role production connects as.
-            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
-            DIRECT_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
-            DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci
+            SUPERUSER_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci
+            DATABASE_URL: postgresql://agconn_owner:agconn_owner_ci@localhost:5432/agconn_ci?schema=public
+            DIRECT_URL: postgresql://agconn_owner:agconn_owner_ci@localhost:5432/agconn_ci?schema=public
+            DATABASE_ADMIN_URL: postgresql://agconn_owner:agconn_owner_ci@localhost:5432/agconn_ci
             APP_DATABASE_URL: postgresql://agconn_app:agconn_app_ci@localhost:5432/agconn_ci
         services:
             postgres:
@@ -66,6 +67,14 @@ jobs:
 
             - name: Script tests
               run: node --test "scripts/*.test.mjs"
+
+            # Azure gives its admin CREATEROLE and CREATEDB, never SUPERUSER or BYPASSRLS.
+            - name: Create the owner role
+              run: |
+                  psql "$SUPERUSER_URL" -v ON_ERROR_STOP=1 \
+                    -c "CREATE ROLE agconn_owner LOGIN PASSWORD 'agconn_owner_ci' CREATEROLE CREATEDB NOSUPERUSER NOBYPASSRLS" \
+                    -c "ALTER DATABASE agconn_ci OWNER TO agconn_owner" \
+                    -c "ALTER SCHEMA public OWNER TO agconn_owner"
 
             # Apply migrations + seed translations against the CI Postgres so the
             # next step can run the live parity check. (Eventually: refactor the

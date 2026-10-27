@@ -35,6 +35,8 @@ spec:
             - |
               set -euo pipefail
               cd /app/packages/db
+              # AG-11: this migration failed on 2026-10-27 and Postgres rolled it back; a no-op once it is applied.
+              npx --yes prisma migrate resolve --rolled-back 20261026120000_rls_without_bypass --schema prisma/schema.prisma || true
               npx --yes prisma migrate deploy --schema prisma/schema.prisma
               npx --yes tsx scripts/seed-translations.ts
               npx --yes tsx scripts/seed-lookups.ts

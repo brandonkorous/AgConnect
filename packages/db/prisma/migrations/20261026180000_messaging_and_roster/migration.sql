@@ -18,7 +18,7 @@ CREATE POLICY "messages_employer" ON "messages"
 
 -- A training org reads the users and profiles of workers enrolled in its programs.
 CREATE FUNCTION app.enrolled_with_my_org(target text) RETURNS boolean
-    LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp SET app.role = 'admin'
+    LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp
     AS $$ SELECT EXISTS (SELECT 1 FROM enrollments e JOIN training_programs tp ON tp.id = e.program_id
                          WHERE e.worker_id = target AND tp.org_id = current_setting('app.user_id', true)) $$;
 
@@ -29,5 +29,5 @@ CREATE POLICY "worker_profiles_training_org_roster" ON "worker_profiles" FOR SEL
 
 -- SMS keywords are unique across tenants, so publishing asks about every tenant's keywords, and nothing else.
 CREATE FUNCTION app.sms_keyword_taken(candidate text) RETURNS boolean
-    LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp SET app.role = 'admin'
+    LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp
     AS $$ SELECT EXISTS (SELECT 1 FROM sms_keywords k WHERE lower(k.keyword) = lower(candidate)) $$;
