@@ -10,7 +10,7 @@ traceWorker('agconn-cert-generator', PgBoss);
 
 // Cert generator: consumes `enrollment.completed` events and produces a
 // bilingual certificate PDF. Renders via React-PDF, uploads to the private
-// Supabase 'certs' bucket, stamps the resulting storage key on the Enrollment.
+// Azure Blob 'certs' container, stamps the resulting storage key on the Enrollment.
 // The wallet API mints 24h signed URLs on read.
 //
 // Producers: training/routes.ts mark-complete + employer org training tools
@@ -24,7 +24,7 @@ export type CompletionJob = {
     tenantId: string;
 };
 
-const ENV_KEYS_REQUIRED = ['DATABASE_URL', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'] as const;
+const ENV_KEYS_REQUIRED = ['DATABASE_URL', 'AZURE_STORAGE_ACCOUNT', 'AZURE_STORAGE_KEY'] as const;
 
 function assertEnv(): void {
     const missing = ENV_KEYS_REQUIRED.filter((k) => !process.env[k]);
