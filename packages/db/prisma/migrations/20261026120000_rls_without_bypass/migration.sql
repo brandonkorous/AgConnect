@@ -8,18 +8,16 @@ CREATE OR REPLACE FUNCTION app.setting_uuid(name text) RETURNS uuid
     LANGUAGE sql STABLE
     AS $$ SELECT NULLIF(current_setting(name, true), '')::uuid $$;
 
--- Helpers run as admin inside the function only, so a policy can ask one narrow question without a policy cycle.
+-- Helpers run as the owner, whose owner_all policy (db-role.sql) lets them ask one narrow question without a policy cycle.
 CREATE OR REPLACE FUNCTION app.is_active_employer_conversation(conversation uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path = public, pg_temp
-    SET app.role = 'admin'
     AS $$ SELECT EXISTS (SELECT 1 FROM conversations c
             WHERE c.id = conversation AND c.employer_id = app.setting_uuid('app.employer_id')) $$;
 
 CREATE OR REPLACE FUNCTION app.is_active_employer_shift(shift uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path = public, pg_temp
-    SET app.role = 'admin'
     AS $$ SELECT EXISTS (SELECT 1 FROM shifts s
             WHERE s.id = shift AND s.employer_id = app.setting_uuid('app.employer_id')) $$;
 

@@ -16,11 +16,12 @@ jobs:
         timeout-minutes: 15
         env:
             FONTAWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
-            # Migrations and seeds run as the superuser, standing in for agconn_owner.
+            # Migrations and seeds run as agconn_owner, not a superuser, the same as Azure's server admin.
             # The tests run as agconn_app (NOBYPASSRLS), the role production connects as.
-            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
-            DIRECT_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci?schema=public
-            DATABASE_ADMIN_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci
+            SUPERUSER_URL: postgresql://postgres:postgres@localhost:5432/agconn_ci
+            DATABASE_URL: postgresql://agconn_owner:agconn_owner_ci@localhost:5432/agconn_ci?schema=public
+            DIRECT_URL: postgresql://agconn_owner:agconn_owner_ci@localhost:5432/agconn_ci?schema=public
+            DATABASE_ADMIN_URL: postgresql://agconn_owner:agconn_owner_ci@localhost:5432/agconn_ci
             APP_DATABASE_URL: postgresql://agconn_app:agconn_app_ci@localhost:5432/agconn_ci
         services:
             postgres:
@@ -67,6 +68,14 @@ jobs:
             - name: Script tests
               run: node --test "scripts/*.test.mjs"
 
+            # Azure gives its admin CREATEROLE and CREATEDB, never SUPERUSER; BYPASSRLS is only for the old migrations.
+            - name: Create the owner role
+              run: |
+                  psql "$SUPERUSER_URL" -v ON_ERROR_STOP=1 \
+                    -c "CREATE ROLE agconn_owner LOGIN PASSWORD 'agconn_owner_ci' CREATEROLE CREATEDB NOSUPERUSER BYPASSRLS" \
+                    -c "ALTER DATABASE agconn_ci OWNER TO agconn_owner" \
+                    -c "ALTER SCHEMA public OWNER TO agconn_owner"
+
             # Apply migrations + seed translations against the CI Postgres so the
             # next step can run the live parity check. (Eventually: refactor the
             # check to read seed bundles directly and drop the Postgres service.)
@@ -75,6 +84,11 @@ jobs:
 
             - name: Seed translations
               run: pnpm --filter @agconn/db i18n:seed
+
+            # The April migrations wrote rows the way the old superuser could; prod has had them since.
+            # From here the owner has no BYPASSRLS, as on Azure, so the role SQL and helpers are tested that way.
+            - name: Take BYPASSRLS from the owner
+              run: psql "$SUPERUSER_URL" -v ON_ERROR_STOP=1 -c "ALTER ROLE agconn_owner NOBYPASSRLS"
 
             # Twice, to prove the role SQL is safe to run again.
             - name: Create the app role

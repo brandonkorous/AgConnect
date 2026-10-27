@@ -37,3 +37,18 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO agconn_a
 GRANT agconn_app TO CURRENT_USER WITH INHERIT FALSE, SET TRUE;
 CREATE SCHEMA IF NOT EXISTS pgboss AUTHORIZATION agconn_app;
 ALTER SCHEMA pgboss OWNER TO agconn_app;
+
+-- SECURITY DEFINER helpers in schema app run as the owner, and FORCE RLS binds the owner too.
+-- owner_all lets the owner (this role, never a login the services use) read and write each RLS table.
+DO $do$
+DECLARE t text;
+BEGIN
+  FOR t IN SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+           WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p') AND c.relrowsecurity AND NOT c.relispartition
+             AND NOT EXISTS (SELECT 1 FROM pg_policies p
+                             WHERE p.schemaname = 'public' AND p.tablename = c.relname AND p.policyname = 'owner_all')
+  LOOP
+    EXECUTE format('CREATE POLICY owner_all ON public.%I TO CURRENT_USER USING (true) WITH CHECK (true)', t);
+  END LOOP;
+END
+$do$;
