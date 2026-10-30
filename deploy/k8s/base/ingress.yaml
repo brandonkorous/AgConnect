@@ -6,7 +6,8 @@
 # www.agconn.com, api.agconn.com and admin.agconn.com are handled by the shared
 # Caddy proxy in the `sparx-prod` namespace (reserved LB IP 20.12.217.0), which
 # reaches these Services cross-namespace at <svc>.agconn.svc.cluster.local. The
-# route blocks live in sparx.works/k8s/ingress/Caddyfile.
+# route blocks live in wize-infrastructure's k8s/ingress/Caddyfile
+# (wizeworksllc/wize-infrastructure), applied by that repo's own release.
 #
 # Those blocks use ON-DEMAND TLS, which means all four AGCONN hostnames must
 # ALSO appear in api-rest's PLATFORM_HOSTNAMES allow-list
