@@ -37,14 +37,14 @@ CronJobs:    audit-retention (02:00 UTC), audit-verifier (03:00 UTC),
 
 ## Images
 
-`ghcr.io/brandonkorous/agconn-<name>` (hyphenated, not `agconn/<name>`). The
+`ghcr.io/wizeworksllc/agconn-<name>` (hyphenated, not `agconn/<name>`). The
 cluster pulls anonymously, so every package must be **public**. A pod in
 `ImagePullBackOff` with a 401 means a package went private; check that first.
 
 ## Auth and secrets
 
 - GitHub Actions signs in to Azure with OIDC workload identity federation for
-  `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The `AZURE_*` values are
+  `repo:wizeworksllc/AgConnect:ref:refs/heads/main`. The `AZURE_*` values are
   repository **variables**, not secrets.
 - Runtime secrets come from Key Vault `kv-agconn-prod-cus`. A secret named
   `FOO_BAR` is stored as `FOO-BAR`. The deploy identity can read, never write.

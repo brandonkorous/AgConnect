@@ -37,7 +37,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: ghcr.io/brandonkorous/agconn-audit-retention:latest
+              image: ghcr.io/wizeworksllc/agconn-audit-retention:latest
               envFrom:
                 - configMapRef: { name: agconn-config }
                 - secretRef: { name: agconn-env }
@@ -76,7 +76,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: ghcr.io/brandonkorous/agconn-audit-verifier:latest
+              image: ghcr.io/wizeworksllc/agconn-audit-verifier:latest
               envFrom:
                 - configMapRef: { name: agconn-config }
                 - secretRef: { name: agconn-env }

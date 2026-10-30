@@ -152,7 +152,7 @@ leaves that app running and untraced in the cloud.
 | `WIZELENS_KEY_SCHEDULER` | `scheduler` |
 
 ```bash
-gh secret set WIZELENS_KEY_API -R brandonkorous/AgConnect   # paste the key when asked
+gh secret set WIZELENS_KEY_API -R wizeworksllc/AgConnect   # paste the key when asked
 ```
 
 ---

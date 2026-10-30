@@ -24,7 +24,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: scheduler
-          image: ghcr.io/brandonkorous/agconn-scheduler:latest
+          image: ghcr.io/wizeworksllc/agconn-scheduler:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

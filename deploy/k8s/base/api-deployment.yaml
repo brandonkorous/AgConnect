@@ -22,7 +22,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: api
-          image: ghcr.io/brandonkorous/agconn-api:latest
+          image: ghcr.io/wizeworksllc/agconn-api:latest
           ports:
             - containerPort: 3001
               name: http

@@ -17,36 +17,36 @@ resources:
 # `latest` is the default only so a manual `kubectl apply -k .` works. Every CI
 # deploy pins `sha-<short>`.
 images:
-  - name: ghcr.io/brandonkorous/agconn-web
-    newName: ghcr.io/brandonkorous/agconn-web
+  - name: ghcr.io/wizeworksllc/agconn-web
+    newName: ghcr.io/wizeworksllc/agconn-web
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-admin
-    newName: ghcr.io/brandonkorous/agconn-admin
+  - name: ghcr.io/wizeworksllc/agconn-admin
+    newName: ghcr.io/wizeworksllc/agconn-admin
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-api
-    newName: ghcr.io/brandonkorous/agconn-api
+  - name: ghcr.io/wizeworksllc/agconn-api
+    newName: ghcr.io/wizeworksllc/agconn-api
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-email-worker
-    newName: ghcr.io/brandonkorous/agconn-email-worker
+  - name: ghcr.io/wizeworksllc/agconn-email-worker
+    newName: ghcr.io/wizeworksllc/agconn-email-worker
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-sms-worker
-    newName: ghcr.io/brandonkorous/agconn-sms-worker
+  - name: ghcr.io/wizeworksllc/agconn-sms-worker
+    newName: ghcr.io/wizeworksllc/agconn-sms-worker
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-flc-verifier
-    newName: ghcr.io/brandonkorous/agconn-flc-verifier
+  - name: ghcr.io/wizeworksllc/agconn-flc-verifier
+    newName: ghcr.io/wizeworksllc/agconn-flc-verifier
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-audit-retention
-    newName: ghcr.io/brandonkorous/agconn-audit-retention
+  - name: ghcr.io/wizeworksllc/agconn-audit-retention
+    newName: ghcr.io/wizeworksllc/agconn-audit-retention
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-audit-verifier
-    newName: ghcr.io/brandonkorous/agconn-audit-verifier
+  - name: ghcr.io/wizeworksllc/agconn-audit-verifier
+    newName: ghcr.io/wizeworksllc/agconn-audit-verifier
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-resume-parser
-    newName: ghcr.io/brandonkorous/agconn-resume-parser
+  - name: ghcr.io/wizeworksllc/agconn-resume-parser
+    newName: ghcr.io/wizeworksllc/agconn-resume-parser
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-cert-generator
-    newName: ghcr.io/brandonkorous/agconn-cert-generator
+  - name: ghcr.io/wizeworksllc/agconn-cert-generator
+    newName: ghcr.io/wizeworksllc/agconn-cert-generator
     newTag: latest
-  - name: ghcr.io/brandonkorous/agconn-scheduler
-    newName: ghcr.io/brandonkorous/agconn-scheduler
+  - name: ghcr.io/wizeworksllc/agconn-scheduler
+    newName: ghcr.io/wizeworksllc/agconn-scheduler
     newTag: latest

@@ -23,7 +23,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: worker
-          image: ghcr.io/brandonkorous/agconn-resume-parser:latest
+          image: ghcr.io/wizeworksllc/agconn-resume-parser:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

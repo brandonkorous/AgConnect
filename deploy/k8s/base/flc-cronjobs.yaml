@@ -41,7 +41,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: ghcr.io/brandonkorous/agconn-flc-verifier:latest
+              image: ghcr.io/wizeworksllc/agconn-flc-verifier:latest
               command: ["node", "services/flc-verifier/dist/sweep-main.js"]
               envFrom:
                 - configMapRef: { name: agconn-config }
@@ -81,7 +81,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
           containers:
             - name: worker
-              image: ghcr.io/brandonkorous/agconn-flc-verifier:latest
+              image: ghcr.io/wizeworksllc/agconn-flc-verifier:latest
               command: ["node", "services/flc-verifier/dist/mspa-sync-main.js"]
               envFrom:
                 - configMapRef: { name: agconn-config }

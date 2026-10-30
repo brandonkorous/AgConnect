@@ -23,7 +23,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: worker
-          image: ghcr.io/brandonkorous/agconn-flc-verifier:latest
+          image: ghcr.io/wizeworksllc/agconn-flc-verifier:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

@@ -25,7 +25,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: admin
-          image: ghcr.io/brandonkorous/agconn-admin:latest
+          image: ghcr.io/wizeworksllc/agconn-admin:latest
           ports:
             - containerPort: 3100
               name: http

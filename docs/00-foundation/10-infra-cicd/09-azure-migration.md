@@ -210,14 +210,14 @@ GitHub qualifies the `sub` claim with numeric owner/repo ids on newer
 repositories and not on older ones, per repository, and no setting changes it:
 
 ```
-kanninja   repo:brandonkorous/kanninja
-jotacular  repo:brandonkorous@13042540/jotacular@1341839746
+kanninja   repo:wizeworksllc@350084568/kanninja@1208384367
+jotacular  repo:wizeworksllc@350084568/jotdojo@1341839746
 ```
 
 Read AGCONN's back before writing the credential:
 
 ```bash
-gh api repos/brandonkorous/AgConnect/actions/oidc/customization/sub --jq .sub_claim_prefix
+gh api repos/wizeworksllc/AgConnect/actions/oidc/customization/sub --jq .sub_claim_prefix
 ```
 
 Entra matches byte for byte and, on a mismatch, reports only the subject it
@@ -225,7 +225,7 @@ Entra matches byte for byte and, on a mismatch, reports only the subject it
 direction and would have cost kanNINJA one in the other.
 
 **Casing:** the local directory is `AgConnect` and `terraform.tfvars` records
-`github_repository = "brandonkorous/AgConnect"`. Confirm what GitHub actually
+`github_repository = "wizeworksllc/AgConnect"`. Confirm what GitHub actually
 serves; the OIDC claim carries canonical casing, and a browser resolves either
 spelling, so the wrong one survives review and fails only at the token exchange.
 
@@ -340,7 +340,7 @@ KEDA belongs on this cluster.
 ### 5.4 Manifests
 
 - **Images:** `us-west1-docker.pkg.dev/agconn/containers/*` becomes
-  `ghcr.io/brandonkorous/agconn-*` (hyphenated, and **public**, so the kubelet
+  `ghcr.io/wizeworksllc/agconn-*` (hyphenated, and **public**, so the kubelet
   pulls anonymously and nothing needs `imagePullSecrets` — the cluster
   convention). A pod in `ImagePullBackOff` with a 401 means the package
   visibility reverted to private; that is the first thing to check, not the tag.

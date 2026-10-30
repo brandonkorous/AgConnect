@@ -23,7 +23,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: worker
-          image: ghcr.io/brandonkorous/agconn-cert-generator:latest
+          image: ghcr.io/wizeworksllc/agconn-cert-generator:latest
           envFrom:
             - configMapRef: { name: agconn-config }
             - secretRef: { name: agconn-env }

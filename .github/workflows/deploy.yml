@@ -14,7 +14,7 @@ name: Deploy
 #     wize-infrastructure's terraform/envs/azure/agconn.tf.
 #   - AUTH is workload identity federation, no stored credential. Azure trusts a
 #     GitHub OIDC token whose subject is
-#     `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The four AZURE_* values
+#     `repo:wizeworksllc/AgConnect:ref:refs/heads/main`. The four AZURE_* values
 #     are repository VARIABLES, not secrets — they are public identifiers, and
 #     treating them as secrets only makes a failed run harder to read.
 #   - SECRETS come from kv-agconn-prod-cus, like every other tenant on this
@@ -70,7 +70,7 @@ env:
   # which requires the packages to be PUBLIC. Nothing in deploy/k8s carries an
   # imagePullSecret for that reason. A pod sitting in ImagePullBackOff with a 401
   # means a package's visibility reverted to private — check that before the tag.
-  REGISTRY: ghcr.io/brandonkorous
+  REGISTRY: ghcr.io/wizeworksllc
   IMAGE_PREFIX: agconn
   VAULT: kv-agconn-prod-cus
 
