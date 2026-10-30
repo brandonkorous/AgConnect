@@ -11,7 +11,7 @@ name: Deploy
 #   - DATA (AG-11): Postgres is psql-agconn-prod-cus (private, in the VNet) and files are
 #     in Azure Blob (stagconnprodcus). Pods connect as agconn_app through PgBouncer;
 #     migrations and the role SQL run as agconn_owner. The vault values come from
-#     sparx.works/terraform/envs/azure/agconn.tf.
+#     wize-infrastructure's terraform/envs/azure/agconn.tf.
 #   - AUTH is workload identity federation, no stored credential. Azure trusts a
 #     GitHub OIDC token whose subject is
 #     `repo:brandonkorous/AgConnect:ref:refs/heads/main`. The four AZURE_* values
@@ -26,8 +26,10 @@ name: Deploy
 #   - NO cert-manager, NO nginx-ingress. TLS and routing for agconn.com /
 #     www / api / admin are handled by the shared Caddy proxy in the `sparx-prod`
 #     namespace (reserved IP 20.12.217.0), which reaches these Services
-#     cross-namespace. Route blocks live in sparx.works/k8s/ingress/Caddyfile,
-#     and all four hostnames must ALSO be allow-listed in api-rest's
+#     cross-namespace. Route blocks live in wize-infrastructure's
+#     k8s/ingress/Caddyfile (wizeworksllc/wize-infrastructure, applied by that
+#     repo's own release, as is terraform/envs/azure/agconn.tf), and all four
+#     hostnames must ALSO be allow-listed in sparx's api-rest
 #     PLATFORM_HOSTNAMES or on-demand TLS is denied and Cloudflare 525s.
 #
 # NEXT_PUBLIC_* are baked into the client bundle at build time and are public by

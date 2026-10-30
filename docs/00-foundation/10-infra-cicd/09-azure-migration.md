@@ -4,6 +4,22 @@ Research pass, 2026-08-26. Every "verified" fact below was read from the live
 subscription (`az` / `kubectl` against `13b32167-3051-4e00-8bbd-0f7d578a06eb`)
 or from the sparx.works working tree, not from memory.
 
+> **Update, 2026-10-29: the shared infrastructure has its own repository.**
+> Everything this research places in the sparx.works repo now lives in
+> **wize-infrastructure** (`wizeworksllc/wize-infrastructure`, local checkout
+> `G:/code/@wizeworks/wize-infrastructure`) at the same paths:
+> `terraform/envs/azure/agconn.tf`, `terraform/bootstrap-azure/agconn.tf`,
+> `terraform/envs/azure/kanninja.tf` and `k8s/ingress/Caddyfile`. That repo's own
+> release applies the Terraform (`envs/azure`, then `bootstrap-azure`) and the
+> Caddy ingress, in minutes and without building any app images. sparx's release
+> no longer applies Terraform, so an AGCONN infrastructure change no longer rides
+> it, and the identity that provisions tenant vaults is wize-infrastructure's,
+> not sparx's. The `PLATFORM_HOSTNAMES` allow-list (4.2) is still sparx code in
+> `wizeworks/services/api-rest/src/routes/internal/domain-check.ts`. Read
+> "sparx.works" and "sparx's release" below as wize-infrastructure wherever they
+> refer to Terraform or Caddy. Open decision 2 in section 9 is answered: the
+> Terraform lives in wize-infrastructure.
+
 **Scope, as decided 2026-08-26.** AGCONN becomes the fourth co-tenant on
 `aks-sparx-prod-cus`, alongside sparx, jotacular and kanNINJA. It gets its own
 namespace, its own Key Vault, and its own Entra identity now. **The data layer
